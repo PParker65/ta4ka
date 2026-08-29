@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Mercedes-Benz roundel: ring + three-pointed star (up / 4 o'clock / 8 o'clock) -->
+  <defs>
+    <linearGradient id="mbzRing" x1="18" y1="10" x2="104" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7F8FA"/>
+      <stop offset="0.4" stop-color="#C5C9D0"/>
+      <stop offset="0.72" stop-color="#8B9098"/>
+      <stop offset="1" stop-color="#E6E8EC"/>
+    </linearGradient>
+    <linearGradient id="mbzStar" x1="60" y1="16" x2="60" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.55" stop-color="#D2D6DC"/>
+      <stop offset="1" stop-color="#9AA0A8"/>
+    </linearGradient>
+    <radialGradient id="mbzFace" cx="46%" cy="38%" r="62%">
+      <stop stop-color="#2C3036"/>
+      <stop offset="1" stop-color="#0A0B0D"/>
+    </radialGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#mbzRing)"/>
+  <circle cx="60" cy="60" r="46" fill="url(#mbzFace)"/>
+  <circle cx="60" cy="60" r="46" stroke="url(#mbzRing)" stroke-width="2.2" fill="none"/>
+  <path fill="url(#mbzStar)" d="M60 17 L70.57 53.9 L97.24 81.5 L60 72.2 L22.76 81.5 L49.43 53.9 Z"/>
+</svg>

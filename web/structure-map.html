@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoShift · Структура продукту</title>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --surface: #141416;
+      --carbon: #1c1c1f;
+      --stroke: #3a3a3e;
+      --text: #f2f2f7;
+      --muted: #8e8e93;
+      --accent: #ebebf5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(145deg, #1a1a1d 0%, var(--bg) 35%, #050506 100%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+    header {
+      padding: 28px 24px 16px;
+      border-bottom: 1px solid var(--stroke);
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 12, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+    h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+    .sub { margin: 0; color: var(--muted); font-size: 14px; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--stroke);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .links a:hover { border-color: var(--accent); }
+    main { padding: 20px 16px 48px; max-width: 1200px; margin: 0 auto; }
+    section { margin-bottom: 32px; }
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin: 0 0 14px;
+      font-weight: 700;
+    }
+    .card {
+      background: var(--surface);
+      border: 1.5px solid rgba(242, 242, 247, 0.14);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
+    /* Bottom nav strip */
+    .nav-bar {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .nav-item {
+      text-align: center;
+      padding: 12px 6px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: var(--carbon);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .nav-item.primary {
+      border-color: rgba(235, 235, 245, 0.45);
+      color: var(--accent);
+      background: rgba(235, 235, 245, 0.08);
+      transform: scale(1.02);
+    }
+    .nav-item .icon { font-size: 18px; display: block; margin-bottom: 4px; }
+    /* Flow grid */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .node {
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 14px;
+      background: var(--carbon);
+      position: relative;
+    }
+    .node h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
+    .node p { margin: 0; font-size: 12px; color: var(--muted); }
+    .node .route {
+      margin-top: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--accent);
+      opacity: 0.85;
+    }
+    .node a { color: inherit; text-decoration: none; }
+    .node a:hover h3 { text-decoration: underline; }
+    .badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 99px;
+      border: 1px solid var(--stroke);
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .badge.live { border-color: rgba(235,235,245,0.35); color: var(--accent); }
+    /* Services flyout */
+    .sheet {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .sheet .node { flex: 1; min-width: 140px; }
+    .arrow-row {
+      text-align: center;
+      color: var(--muted);
+      font-size: 20px;
+      margin: 8px 0;
+    }
+    /* Tree for shop */
+    .tree { padding-left: 0; list-style: none; }
+    .tree li {
+      border-left: 2px solid var(--stroke);
+      margin-left: 8px;
+      padding: 8px 0 8px 16px;
+      font-size: 13px;
+    }
+    .tree li strong { color: var(--accent); font-weight: 600; }
+    .tree code { font-size: 11px; color: var(--muted); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border: 1px solid var(--stroke);
+      background: var(--carbon);
+    }
+    .legend .c-client::before { border-color: rgba(235,235,245,0.4); }
+    .legend .c-shop::before { background: #2a2a2e; }
+    @media (max-width: 700px) {
+      .nav-bar { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AutoShift · Карта структури</h1>
+    <p class="sub">Один скелет · клієнт · СТО · майстер · кіоск. v<span id="ver">23</span></p>
+    <div class="links">
+      <a href="/?v=23" target="_blank">Відкрити застосунок</a>
+      <a href="/?v=23" target="_blank">Екран «Авто»</a>
+      <a href="design-lab.html?v=23">5 layout-скінів</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="legend">
+      <span class="c-client">Клієнтський shell</span>
+      <span class="c-shop">СТО / staff</span>
+    </div>
+
+    <section>
+      <h2>Клієнт · нижня навігація</h2>
+      <div class="card">
+        <div class="nav-bar">
+          <div class="nav-item"><span class="icon">▶</span>Стрічка</div>
+          <div class="nav-item"><span class="icon">▦</span>СТО</div>
+          <div class="nav-item primary"><span class="icon">🚗</span>Авто</div>
+          <div class="nav-item"><span class="icon">☰</span>Категорії</div>
+          <div class="nav-item"><span class="icon">📅</span>Записи</div>
+          <div class="nav-item"><span class="icon">⌃</span>Сервіси</div>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin:0;">
+          Центральна вкладка — <strong style="color:var(--accent)">Авто</strong>: 3D-модель + блок «Знайти СТО» (AI-пошук, фото, аналіз).
+          Профіль і мова — у AppBar зверху.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Екрани вкладок</h2>
+      <div class="flow">
+        <div class="node"><span class="badge">tab 0</span><h3>Стрічка</h3><p>Відео/контент майстерні</p><div class="route">FeedScreen</div></div>
+        <div class="node"><span class="badge">tab 1</span><h3>Каталог СТО</h3><p>Карта · пошук · MAPA · запис</p><div class="route">/home → shops</div></div>
+        <div class="node"><span class="badge live">tab 2 · home</span><a href="/?v=23" target="_blank"><h3>Авто + AI</h3></a><p>GLB 3D · знайти СТО · категорії робіт</p><div class="route">PostLoginAiScreen</div></div>
+        <div class="node"><span class="badge">tab 3</span><h3>Категорії</h3><p>Сфери ремонту · іконки</p><div class="route">/home/categories/:id</div></div>
+        <div class="node"><span class="badge">tab 5</span><h3>Мої записи</h3><p>Активні бронювання</p><div class="route">/home/bookings/:id</div></div>
+        <div class="node"><span class="badge">appbar</span><h3>Профіль</h3><p>10 рівнів лояльності · реферал</p><div class="route">/home/profile</div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Сервіси · flyout (⌃)</h2>
+      <div class="card">
+        <div class="sheet">
+          <div class="node"><span class="badge">services</span><h3>Заявки</h3><p>Відкриті роботи клієнта</p></div>
+          <div class="node"><span class="badge live">services</span><h3>Аукціон</h3><p>Copart-style · ставки · Buy Now</p></div>
+          <div class="node"><span class="badge">services</span><h3>Допомога MAPA</h3><p>Евакуатор · мережа СТО</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Шлях запису (клієнт)</h2>
+      <div class="card">
+        <div class="flow">
+          <div class="node"><h3>1 · Авто / категорія</h3><p>AI або категорія робіт</p></div>
+          <div class="node"><h3>2 · Каталог СТО</h3><p>Фільтр · MAPA · рейтинг</p><div class="route">/home/shops/:shopId</div></div>
+          <div class="node"><h3>3 · Слот</h3><p>Дата · майстер</p><div class="route">/home/slots</div></div>
+          <div class="node"><h3>4 · Підтвердження</h3><p>Підсумок замовлення</p><div class="route">/home/confirm</div></div>
+        </div>
+        <div class="arrow-row">↓</div>
+        <p style="text-align:center;color:var(--muted);font-size:13px;margin:0;">Деталі запису · чат · аукціон з кошторису</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Реферал · 3 рівні</h2>
+      <div class="flow">
+        <div class="node"><h3>Кабінет реферала</h3><p>3% L1 · умови · підключення</p><div class="route">/referral · /home/referral</div></div>
+        <div class="node"><h3>Chip на «Авто»</h3><p>Швидкий вхід з головного екрана</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>СТО · staff shell</h2>
+      <div class="card">
+        <ul class="tree">
+          <li><strong>/staff</strong> — робочий стіл СТО <code>ShopTabsHost</code></li>
+          <li><strong>/staff/orders/:id</strong> — замовлення · чат · «Прийняти в бокс»</li>
+          <li><strong>/staff/chat/:id</strong> — чат з клієнтом / майстром</li>
+          <li><strong>/staff/parts-requests</strong> — запити на запчастини</li>
+          <li><strong>/staff/referral</strong> — реферальна програма СТО</li>
+          <li><strong>/auth/shop</strong> — вхід менеджер / майстер / приймальня</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Інші ролі</h2>
+      <div class="flow">
+        <div class="node"><h3>Майстер</h3><p>Замовлення в боксі</p><div class="route">/master/orders/:id</div></div>
+        <div class="node"><h3>Кіоск</h3><p>Intake · оцінка · inspection</p><div class="route">/kiosk · /client-kiosk</div></div>
+        <div class="node"><h3>Лояльність</h3><p>XP · кешбек 1→10%</p><div class="route">/loyalty</div></div>
+        <div class="node"><h3>Auth</h3><p>Login · register</p><div class="route">/ · /auth/register</div></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const p = new URLSearchParams(location.search);
+    if (p.get("v")) document.getElementById("ver").textContent = p.get("v");
+  </script>
+</body>
+</html>

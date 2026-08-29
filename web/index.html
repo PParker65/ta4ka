@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Autoservice">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ta4ka">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Ta4ka</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="canvaskit/canvaskit.js" as="script" crossorigin>
+  <link rel="preload" href="main.dart.js" as="script">
+  <link rel="preload" as="fetch" href="assets/assets/models/2023_bmw_m2_m-performance_parts_g87.glb" crossorigin="anonymous" fetchpriority="low">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #07070A;
+      overscroll-behavior: none;
+    }
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    window.apexAttachHls = function (video, url) {
+      function kick() {
+        try {
+          video.muted = true;
+          video.defaultMuted = true;
+          video.volume = 0;
+          var p = video.play();
+          if (p && p.catch) p.catch(function () {});
+        } catch (e) {}
+      }
+      function nativePlay() {
+        video.src = url;
+        video.addEventListener('canplay', kick);
+        kick();
+      }
+      var type = '';
+      try { type = video.canPlayType('application/vnd.apple.mpegurl'); } catch (e) {}
+      if (type) {
+        nativePlay();
+        return;
+      }
+      function withHls(Hls) {
+        if (!Hls || !Hls.isSupported()) {
+          nativePlay();
+          return;
+        }
+        var hls = new Hls({ enableWorker: false, lowLatencyMode: true, maxBufferLength: 8 });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, kick);
+        hls.on(Hls.Events.ERROR, function (_, data) {
+          if (data && data.fatal) nativePlay();
+        });
+      }
+      if (window.Hls) {
+        withHls(window.Hls);
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js';
+      s.onload = function () { withHls(window.Hls); };
+      s.onerror = nativePlay;
+      document.head.appendChild(s);
+    };
+  </script>
+  <script>
+    (function () {
+      var wa = window.Telegram && window.Telegram.WebApp;
+      if (!wa) return;
+      wa.ready();
+      wa.expand();
+      try { wa.setHeaderColor('#07070A'); } catch (e) {}
+      try { wa.setBackgroundColor('#07070A'); } catch (e) {}
+      try { wa.disableVerticalSwipes(); } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) {
+        rs.forEach(function (r) { r.unregister(); });
+      });
+    }
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    function apexWarmGlb(url) {
+      try {
+        fetch(url, {mode: 'cors', credentials: 'omit', cache: 'force-cache'});
+      } catch (e) {}
+    }
+    function apexWarmMoreCars() {
+      apexWarmGlb('assets/assets/models/2025_mercedes_g_class_amg_g63.glb');
+      apexWarmGlb('assets/assets/models/2018_audi_rs3_sportback.glb');
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function () { setTimeout(apexWarmMoreCars, 5000); }, {timeout: 12000});
+    } else {
+      setTimeout(apexWarmMoreCars, 8000);
+    }
+  </script>
+</body>
+</html>

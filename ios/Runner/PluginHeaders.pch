@@ -1,0 +1,5 @@
+#ifdef __OBJC__
+#import <file_picker/FilePickerPlugin.h>
+#import <geolocator_apple/GeolocatorPlugin.h>
+#import <image_picker_ios/FLTImagePickerPlugin.h>
+#endif

@@ -1,0 +1,44 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+telegram/.env
+telegram/.bin/
+*.jks
+key.properties
+
+# Style-reference downloads (not shipped)
+.tmp-refs/
+
+# Huge / local-only
+.cursor/
+*.apk
+exports/
+video/
+assets/models/
+tools/.pw-chrome/
+tools/.teaser_stage/
+tools/.teaser_diag/
+*.glb
+agent-transcripts/
+
+# Python
+__pycache__/
+*.pyc

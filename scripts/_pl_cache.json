@@ -1,0 +1,15 @@
+{
+  "Repair category": "Kategoria naprawy",
+  "Smash the car and tap the pluses. Clear them all and they come back. 100 pluses = +\\$5, 1000 = +\\$10, then more.": "Rozbij samochód i stuknij w plusy. Wyczyść je wszystkie, a wrócą. 100 plusów = +\\$ 5, 1000 = +\\$ 10, a następnie więcej.",
+  "1. On Car, pick your brand and a category — you will see the job description and a “from” price.\\n2. In Shops, open AutoShift Warsaw for that category: Mon–Sat 09:00–18:00, hourly slots.\\n3. Choose jobs, a technician and a time. Status, bay camera and the report are in Bookings.\\n4. The “from” price is labour unless parts are listed as included.": "1. W przypadku samochodu wybierz markę i kategorię — zobaczysz opis stanowiska i cenę „od”.\\n2. W sklepach otwórz AutoShift Warszawa dla tej kategorii: pon-sob 09:00–18:00, przydziały godzinowe.\\n3. Wybierz pracę, technika i czas. Status, kamera i raport znajdują się w sekcji Rezerwacje.\\n4. Cena „od” jest robocizną, chyba że części są wymienione jako wliczone w cenę.",
+  "AA 1234 BB": "AA 1234 BB",
+  "Model": "Model",
+  "VIN": "Nr identyfikacyjny pojazdu (VIN)",
+  "km": "km",
+  "AutoShift · demo 1.0": "AutoShift · demo 1.0",
+  "Standard": "Standardowy",
+  "Premium": "Premium",
+  "min": "min",
+  "Tuning": "Strojenie",
+  "h": "h"
+}

@@ -1,0 +1,5 @@
+#include "Generated.xcconfig"
+DEVELOPER_DIR=/Users/anastasiia/Downloads/Xcode.app/Contents/Developer
+HEADER_SEARCH_PATHS = $(inherited) $(SRCROOT)/Flutter/ephemeral/Packages/.packages/file_picker-8.3.7/Sources/file_picker/include $(SRCROOT)/Flutter/ephemeral/Packages/.packages/geolocator_apple-2.3.14/Sources/geolocator_apple/include $(SRCROOT)/Flutter/ephemeral/Packages/.packages/image_picker_ios-0.8.13+6/Sources/image_picker_ios/include
+GCC_PREFIX_HEADER = Runner/PluginHeaders.pch
+GCC_PRECOMPILE_PREFIX_HEADER = YES

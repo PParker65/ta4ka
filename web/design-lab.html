@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AutoShift · 5 layout products</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #0b0f14;
+      color: #f3f5f7;
+    }
+    header {
+      padding: 14px 18px 8px;
+      border-bottom: 1px solid #2d3742;
+      position: sticky;
+      top: 0;
+      background: #0b0f14ee;
+      z-index: 2;
+    }
+    h1 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+    p { margin: 0; color: #9aa3ad; font-size: 13px; line-height: 1.4; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .links a {
+      color: #2b88d8;
+      text-decoration: none;
+      border: 1px solid #2d3742;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .links a:hover { border-color: #2b88d8; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(280px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      min-height: calc(100vh - 110px);
+    }
+    @media (max-width: 1400px) {
+      .grid { grid-template-columns: repeat(3, minmax(280px, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 72vh;
+      border: 1px solid #2d3742;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #151b23;
+    }
+    figcaption {
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border-bottom: 1px solid #2d3742;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    figcaption a { color: #5ba3e0; text-decoration: none; font-weight: 600; }
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: 0;
+      background: #000;
+      min-height: 640px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>5 різних продуктів · один скелет функцій</h1>
+    <p>Не теми кольорів — різні компоновки: навігація, екран авто, каталог, сервіси, профіль. Кожен скін ніби зробила інша людина.</p>
+    <div class="links" id="solo-links"></div>
+  </header>
+  <div class="grid" id="grid"></div>
+  <script>
+    const skins = [
+      { id: "fluent", title: "A · Fluent", hint: "низ-бар · авто зверху · картки СТО" },
+      { id: "brutal", title: "B · Brutal", hint: "нав ЗВЕРХУ · пошук перший · full-bleed сервіси" },
+      { id: "soft", title: "C · Soft", hint: "плаваючий док · авто в кутку · magazine hero" },
+      { id: "neon", title: "D · Neon", hint: "рейка ЗЛІВА · side-by-side · таблиця СТО" },
+      { id: "forge", title: "E · Forge", hint: "товстий низ · 50/50 dash · сітка 2 кол." },
+    ];
+    const v = "20";
+    const base = location.origin;
+    const solo = document.getElementById("solo-links");
+    const grid = document.getElementById("grid");
+    for (const s of skins) {
+      const href = `${base}/?v=${v}&skin=${s.id}`;
+      const a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = s.title;
+      solo.appendChild(a);
+
+      const fig = document.createElement("figure");
+      fig.innerHTML = `<figcaption><span>${s.title}<br/><small style="font-weight:500;color:#9aa3ad">${s.hint}</small></span><a href="${href}" target="_blank" rel="noopener">окрема вкладка</a></figcaption>`;
+      const frame = document.createElement("iframe");
+      frame.src = href;
+      frame.title = s.title;
+      frame.loading = "lazy";
+      fig.appendChild(frame);
+      grid.appendChild(fig);
+    }
+  </script>
+</body>
+</html>
