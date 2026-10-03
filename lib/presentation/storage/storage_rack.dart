@@ -316,6 +316,7 @@ class _StorageRackViewState extends State<StorageRackView> {
                     l10n: l10n,
                     selectedId: widget.selectedId,
                     lite: lite,
+                    ink: compact,
                     onTapSlot: widget.onTapSlot,
                   ),
                 ),
@@ -364,10 +365,13 @@ class _StorageRackViewState extends State<StorageRackView> {
   }) {
     const gap = 4.0;
     const slotGap = 2.0;
+    // A tire-and-rim mark under ~22px disappears into the light phone floor.
+    // Portrait pages to one sector; landscape still fits every sector in a row.
+    const minWheel = 22.0;
     final gaps = count > 1 ? gap * (count - 1) : 0.0;
     final per = count == 0 ? maxW : (maxW - gaps) / count;
     final wheel = (per - slotGap * (kWheelsPerCell - 1)) / kWheelsPerCell;
-    final page = count > 1 && wheel < 11;
+    final page = count > 1 && wheel < minWheel;
     if (!page) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -461,6 +465,7 @@ class _SectorStack extends StatelessWidget {
     required this.l10n,
     required this.selectedId,
     this.lite = false,
+    this.ink = false,
     required this.onTapSlot,
   });
 
@@ -469,6 +474,8 @@ class _SectorStack extends StatelessWidget {
   final StorageL10n l10n;
   final String? selectedId;
   final bool lite;
+  /// Phone rack: paint a dark tire even when the slot is empty.
+  final bool ink;
   final void Function(int sector, int rackRow, int slot) onTapSlot;
 
   @override
@@ -490,6 +497,7 @@ class _SectorStack extends StatelessWidget {
                       lots: lots,
                       selectedId: selectedId,
                       lite: lite,
+                      ink: ink,
                       l10n: l10n,
                       onTapSlot: onTapSlot,
                     ),
@@ -512,6 +520,7 @@ class _WheelSlot extends StatelessWidget {
     required this.lots,
     required this.selectedId,
     this.lite = false,
+    this.ink = false,
     required this.l10n,
     required this.onTapSlot,
   });
@@ -522,6 +531,7 @@ class _WheelSlot extends StatelessWidget {
   final List<WheelLot> lots;
   final String? selectedId;
   final bool lite;
+  final bool ink;
   final StorageL10n l10n;
   final void Function(int sector, int rackRow, int slot) onTapSlot;
 
@@ -551,6 +561,7 @@ class _WheelSlot extends StatelessWidget {
                 selected: lot?.id == selectedId,
                 size: size,
                 lite: lite,
+                ink: ink,
               ),
             );
           },
@@ -568,6 +579,7 @@ class WheelCargoIcon extends StatelessWidget {
     this.selected = false,
     this.size = 36,
     this.lite = false,
+    this.ink = false,
   });
 
   final StorageCargo? cargo;
@@ -575,26 +587,13 @@ class WheelCargoIcon extends StatelessWidget {
   final bool selected;
   final double size;
   final bool lite;
+  /// Phone: filled dark rubber and a rim, including empty slots and web/lite.
+  final bool ink;
 
   @override
   Widget build(BuildContext context) {
     final palette = paletteOf(context);
-    if (empty) {
-      return SizedBox(
-        width: size,
-        height: size,
-        child: CustomPaint(
-          painter: WheelCargoPainter(
-            cargo: null,
-            selected: selected,
-            dark: palette.isDark,
-            accent: palette.accent,
-            muted: palette.isDark ? palette.muted : palette.text,
-          ),
-        ),
-      );
-    }
-    if (lite) {
+    if (!ink && !empty && lite) {
       final fill = switch (cargo ?? StorageCargo.tires) {
               StorageCargo.tires => palette.isDark
                   ? const Color(0xFF2A2A2E)
@@ -621,16 +620,23 @@ class WheelCargoIcon extends StatelessWidget {
         ),
       );
     }
-    final child = CustomPaint(
-      painter: WheelCargoPainter(
-        cargo: empty ? null : (cargo ?? StorageCargo.tires),
-        selected: selected,
-        dark: palette.isDark,
-        accent: palette.accent,
-        muted: palette.muted,
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        size: Size.square(size),
+        painter: WheelCargoPainter(
+          cargo: empty ? null : (cargo ?? StorageCargo.tires),
+          selected: selected,
+          dark: palette.isDark,
+          accent: palette.accent,
+          muted: ink
+              ? const Color(0xFF1A1A1E)
+              : (empty && !palette.isDark ? palette.text : palette.muted),
+          ink: ink,
+        ),
       ),
     );
-    return SizedBox(width: size, height: size, child: child);
   }
 }
 
@@ -641,6 +647,7 @@ class WheelCargoPainter extends CustomPainter {
     required this.dark,
     required this.accent,
     required this.muted,
+    this.ink = false,
   });
 
   final StorageCargo? cargo;
@@ -648,12 +655,13 @@ class WheelCargoPainter extends CustomPainter {
   final bool dark;
   final Color accent;
   final Color muted;
+  final bool ink;
 
   @override
   void paint(Canvas canvas, Size size) {
     final c = Offset(size.width / 2, size.height / 2);
-    final r = size.shortestSide / 2 - 1.2;
-    if (r < 4) return;
+    final r = size.shortestSide / 2 - (ink ? 0.4 : 1.2);
+    if (r < (ink ? 0.8 : 4)) return;
 
     if (selected) {
       canvas.drawCircle(
@@ -667,7 +675,11 @@ class WheelCargoPainter extends CustomPainter {
     }
 
     if (cargo == null) {
-      _empty(canvas, c, r);
+      if (ink) {
+        _inkEmpty(canvas, c, r);
+      } else {
+        _empty(canvas, c, r);
+      }
       return;
     }
     switch (cargo!) {
@@ -684,6 +696,29 @@ class WheelCargoPainter extends CustomPainter {
   Color get _rubberHi => dark ? const Color(0xFF2A1E18) : const Color(0xFF3A2A22);
   Color get _metal => dark ? const Color(0xFFD8DCE2) : const Color(0xFF8A9098);
   Color get _metalDeep => dark ? const Color(0xFF9AA0B0) : const Color(0xFF5C6570);
+
+  /// Empty phone slot: solid dark rubber and a metal rim on a light floor.
+  void _inkEmpty(Canvas canvas, Offset c, double r) {
+    canvas.drawCircle(c, r, Paint()..color = const Color(0xFF1A1A1E));
+    canvas.drawCircle(
+      c,
+      r * 0.9,
+      Paint()
+        ..color = const Color(0xFF3A2A22)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = math.max(1.2, r * 0.1),
+    );
+    canvas.drawCircle(c, r * 0.48, Paint()..color = const Color(0xFF8A9098));
+    canvas.drawCircle(c, r * 0.2, Paint()..color = const Color(0xFF2C3138));
+    final spoke = Paint()
+      ..color = const Color(0xFF5C6570)
+      ..strokeWidth = math.max(1.1, r * 0.08)
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i < 5; i++) {
+      final a = -math.pi / 2 + i * 2 * math.pi / 5;
+      canvas.drawLine(c, c + Offset(math.cos(a), math.sin(a)) * (r * 0.4), spoke);
+    }
+  }
 
   void _empty(Canvas canvas, Offset c, double r) {
     final paint = Paint()
@@ -785,7 +820,8 @@ class WheelCargoPainter extends CustomPainter {
     return oldDelegate.cargo != cargo ||
         oldDelegate.selected != selected ||
         oldDelegate.dark != dark ||
-        oldDelegate.accent != accent;
+        oldDelegate.accent != accent ||
+        oldDelegate.ink != ink;
   }
 }
 
