@@ -1,0 +1,6 @@
+# Flutter SPA. /api/* is Pages Functions (D1) — do not 404 it.
+/privacy.html    /privacy.html    200
+/terms.html      /terms.html      200
+/delete-account.html  /delete-account.html  200
+/assets/*        /assets/:splat   200
+/*               /index.html      200

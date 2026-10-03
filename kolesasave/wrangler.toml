@@ -1,0 +1,14 @@
+name = "kolesasave"
+compatibility_date = "2026-10-02"
+pages_build_output_dir = "../build/web"
+
+# D1 is the source of truth for shops + tire ledgers. Laptop can be off.
+[[d1_databases]]
+binding = "DB"
+database_name = "kolesasave"
+database_id = "de0debf7-6530-41fe-bbc3-5e1bc35e170d"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "kolesasave"
+database_id = "de0debf7-6530-41fe-bbc3-5e1bc35e170d"
