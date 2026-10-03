@@ -1677,12 +1677,12 @@ class _DeskActionBar extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             padding: WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: fill ? 2 : 6, vertical: fill ? 6 : 10),
+              EdgeInsets.symmetric(horizontal: fill ? 2 : 6, vertical: fill ? 4 : 10),
             ),
             textStyle: WidgetStatePropertyAll(
               TextStyle(fontSize: fill ? 11 : 12, fontWeight: FontWeight.w700, height: 1.1),
             ),
-            minimumSize: WidgetStatePropertyAll(Size(0, fill ? 30 : 36)),
+            minimumSize: WidgetStatePropertyAll(Size(0, fill ? 28 : 36)),
           );
           final built = switch (kind) {
             _DeskBtnKind.danger => FilledButton(
@@ -1697,24 +1697,40 @@ class _DeskActionBar extends StatelessWidget {
             _DeskBtnKind.plain => OutlinedButton(style: style, onPressed: onPressed, child: child),
           };
           if (!fill) return built;
-          return SizedBox(width: double.infinity, height: 30, child: built);
+          return SizedBox(width: double.infinity, height: fill && landscape && handset ? 28 : (fill ? 28 : 30), child: built);
         }
 
         if (handset) {
-          final cols = landscape ? 6 : (width < 420 ? 3 : 4);
-          final rows = (entries.length / cols).ceil().clamp(1, 4);
+          if (landscape) {
+            return SizedBox(
+              height: 30,
+              child: Row(
+                children: [
+                  for (var i = 0; i < entries.length; i++)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: i == 0 ? 0 : 2),
+                        child: button(entries[i], shrink: true, fill: true),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }
+          final cols = width < 340 ? 3 : 4;
+          final rows = (entries.length / cols).ceil().clamp(1, 3);
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               for (var row = 0; row < rows; row++)
                 Padding(
-                  padding: EdgeInsets.only(top: row == 0 ? 0 : 3),
+                  padding: EdgeInsets.only(top: row == 0 ? 0 : 2),
                   child: Row(
                     children: [
                       for (var col = 0; col < cols; col++)
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.only(left: col == 0 ? 0 : 3),
+                            padding: EdgeInsets.only(left: col == 0 ? 0 : 2),
                             child: (row * cols + col) >= entries.length
                                 ? const SizedBox.shrink()
                                 : button(
