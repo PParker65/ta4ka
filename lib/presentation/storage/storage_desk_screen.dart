@@ -179,11 +179,21 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
     final corner = Align(
       alignment: Alignment.centerRight,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.only(bottom: 4),
         child: _ProfileCornerButton(
           label: l10n.profile,
           onPressed: () => openStorageProfile(context),
         ),
+      ),
+    );
+    final sectors = Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: _SectorControls(
+        l10n: l10n,
+        showAdd: state.sectorCount < kMaxSectors,
+        showRemove: state.sectorCount > kDefaultSectors,
+        onAdd: _addSector,
+        onRemove: () => _removeSector(l10n),
       ),
     );
     final rack = StorageRackView(
@@ -215,6 +225,7 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
       return Column(
         children: [
           corner,
+          sectors,
           rack,
           const SizedBox(height: 8),
           actions,
@@ -284,12 +295,25 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
     }
     return Column(
       children: [
-        corner,
-        if (!widget.embedded)
-          _MobileBrand(
-            l10n: l10n,
-            shopName: shopName,
+        if (widget.embedded)
+          corner
+        else
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: [
+                Expanded(child: _BrandLockup(l10n: l10n, shopName: shopName)),
+                const LanguageSwitcher(),
+                const ThemeSwitcher(),
+                const SizedBox(width: 8),
+                _ProfileCornerButton(
+                  label: l10n.profile,
+                  onPressed: () => openStorageProfile(context),
+                ),
+              ],
+            ),
           ),
+        sectors,
         rack,
         const SizedBox(height: 8),
         actions,
@@ -396,14 +420,25 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
         _openMobileDetail(lot, l10n, activeLots);
       },
     );
-    final profile = _ProfileCornerButton(
-      label: l10n.profile,
-      compact: true,
-      onPressed: () => openStorageProfile(context),
-    );
     final mq = MediaQuery.of(context);
     final scale = landscape ? 0.70 : 0.86;
     final chromeH = landscape ? 30.0 : 34.0;
+    final sectorH = landscape ? 26.0 : 30.0;
+    final profile = _ProfileCornerButton(
+      label: l10n.profile,
+      compact: true,
+      height: chromeH,
+      onPressed: () => openStorageProfile(context),
+    );
+    final sectors = _SectorControls(
+      l10n: l10n,
+      showAdd: state.sectorCount < kMaxSectors,
+      showRemove: state.sectorCount > kDefaultSectors,
+      onAdd: _addSector,
+      onRemove: () => _removeSector(l10n),
+      compact: true,
+      height: sectorH,
+    );
     final child = SizedBox(
       width: maxWidth,
       height: maxHeight,
@@ -435,6 +470,10 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
                 ],
               ),
             ),
+            if (state.sectorCount < kMaxSectors || state.sectorCount > kDefaultSectors) ...[
+              SizedBox(height: landscape ? 2 : 3),
+              sectors,
+            ],
             Expanded(
               flex: landscape ? 6 : 5,
               child: LayoutBuilder(
@@ -530,11 +569,7 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
     final lot = selected;
     return _DeskActionBar(
       l10n: l10n,
-      showAdd: state.sectorCount < kMaxSectors,
-      showRemove: state.sectorCount > kDefaultSectors,
       editLabel: lot != null && lot.isActive && !lot.intakeComplete ? l10n.markPlace : l10n.edit,
-      onAddSector: _addSector,
-      onRemoveSector: () => _removeSector(l10n),
       onDelete: lot == null ? null : () => _deleteLot(lot, l10n, sheetContext: sheetContext),
       onEditPrice: lot == null
           ? null
@@ -884,16 +919,23 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: OutlinedButton(
+                          child: _DeskTextButton(
+                            label: l10n.cancel,
                             onPressed: () => Navigator.pop(context, false),
-                            child: Text(l10n.cancel),
+                            height: 44,
+                            fontSize: 15,
+                            expand: true,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: FilledButton(
+                          child: _DeskTextButton(
+                            label: l10n.confirmRelease,
                             onPressed: () => Navigator.pop(context, true),
-                            child: Text(l10n.confirmRelease),
+                            kind: _DeskBtnKind.filled,
+                            height: 44,
+                            fontSize: 15,
+                            expand: true,
                           ),
                         ),
                       ],
@@ -936,12 +978,13 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
                       pricePerDayGrosze: price,
                     ),
                     const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.done),
-                      ),
+                    _DeskTextButton(
+                      label: l10n.done,
+                      onPressed: () => Navigator.pop(context),
+                      kind: _DeskBtnKind.filled,
+                      height: 44,
+                      fontSize: 15,
+                      expand: true,
                     ),
                   ],
                 ),
@@ -959,30 +1002,54 @@ class _ProfileCornerButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.compact = false,
+    this.height,
   });
 
   final String label;
   final VoidCallback onPressed;
   final bool compact;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.icon(
-      key: const Key('storage-profile-corner'),
-      onPressed: onPressed,
-      icon: Icon(CupertinoIcons.person_crop_circle, size: compact ? 16 : 20),
-      label: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        softWrap: false,
-      ),
-      style: FilledButton.styleFrom(
-        visualDensity: compact ? VisualDensity.compact : VisualDensity.standard,
-        tapTargetSize: compact ? MaterialTapTargetSize.shrinkWrap : MaterialTapTargetSize.padded,
-        minimumSize: compact ? const Size(0, 32) : null,
-        padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 16, vertical: compact ? 4 : 12),
-        textStyle: TextStyle(fontSize: compact ? 13 : 16, fontWeight: FontWeight.w800),
+    final h = height ?? (compact ? 32.0 : 40.0);
+    return SizedBox(
+      height: h,
+      child: FilledButton(
+        key: const Key('storage-profile-corner'),
+        onPressed: onPressed,
+        style: ButtonStyle(
+          alignment: Alignment.center,
+          visualDensity: VisualDensity.standard,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: compact ? 10 : 16),
+          ),
+          minimumSize: WidgetStatePropertyAll(Size(0, h)),
+          maximumSize: WidgetStatePropertyAll(Size(double.infinity, h)),
+          textStyle: WidgetStatePropertyAll(
+            TextStyle(
+              fontSize: compact ? 13 : 15,
+              fontWeight: FontWeight.w800,
+              height: 1,
+            ),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(CupertinoIcons.person_crop_circle, size: compact ? 15 : 18),
+            SizedBox(width: compact ? 4 : 6),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              softWrap: false,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1113,10 +1180,13 @@ class _Rail extends StatelessWidget {
           const SizedBox(height: 18),
           Text(l10n.lotsOnHand(activeCount), style: TextStyle(color: palette.muted, fontSize: 13)),
           const SizedBox(height: 12),
-          FilledButton.icon(
+          _DeskTextButton(
+            label: l10n.accept,
             onPressed: onAccept,
-            icon: const Icon(CupertinoIcons.add, size: 18),
-            label: Text(l10n.accept),
+            kind: _DeskBtnKind.filled,
+            expand: true,
+            height: 44,
+            fontSize: 15,
           ),
           const SizedBox(height: 16),
           _Seg(l10n: l10n, activeOnly: activeOnly, onTab: onTab),
@@ -1140,9 +1210,13 @@ class _Rail extends StatelessWidget {
             keyboard: const TextInputType.numberWithOptions(decimal: true),
           ),
           const SizedBox(height: 8),
-          FilledButton(
+          _DeskTextButton(
+            label: l10n.calculate,
             onPressed: onPrice,
-            child: Text(l10n.calculate),
+            kind: _DeskBtnKind.filled,
+            expand: true,
+            height: 44,
+            fontSize: 15,
           ),
           const SizedBox(height: 8),
           Text(
@@ -1194,16 +1268,23 @@ class _CompactSearch extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            FilledButton(
+            _DeskTextButton(
+              label: l10n.calculate,
               onPressed: onPrice,
-              child: Text(l10n.calculate),
+              kind: _DeskBtnKind.filled,
+              height: 44,
+              fontSize: 14,
             ),
           ],
         ),
         const SizedBox(height: 8),
-        FilledButton(
+        _DeskTextButton(
+          label: l10n.accept,
           onPressed: onAccept,
-          child: Text(l10n.accept),
+          kind: _DeskBtnKind.filled,
+          expand: true,
+          height: 44,
+          fontSize: 15,
         ),
         const SizedBox(height: 8),
         _Seg(l10n: l10n, activeOnly: activeOnly, onTab: onTab),
@@ -1341,21 +1422,14 @@ class _PhoneMiniButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(label, maxLines: 1, softWrap: false),
+    return _DeskTextButton(
+      label: label,
+      onPressed: onPressed,
+      kind: filled ? _DeskBtnKind.filled : _DeskBtnKind.plain,
+      height: 32,
+      fontSize: 12,
+      expand: true,
     );
-    const style = ButtonStyle(
-      visualDensity: VisualDensity.compact,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8, vertical: 8)),
-      minimumSize: WidgetStatePropertyAll(Size(0, 32)),
-      textStyle: WidgetStatePropertyAll(TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
-    );
-    final button = filled
-        ? FilledButton(style: style, onPressed: onPressed, child: child)
-        : OutlinedButton(style: style, onPressed: onPressed, child: child);
-    return SizedBox(width: double.infinity, height: 32, child: button);
   }
 }
 
@@ -1610,14 +1684,139 @@ class _LotList extends StatelessWidget {
   }
 }
 
-class _DeskActionBar extends StatelessWidget {
-  const _DeskActionBar({
+enum _DeskBtnKind { plain, filled, danger }
+
+class _DeskTextButton extends StatelessWidget {
+  const _DeskTextButton({
+    required this.label,
+    required this.onPressed,
+    this.kind = _DeskBtnKind.plain,
+    this.height = 36,
+    this.fontSize = 13,
+    this.expand = false,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final _DeskBtnKind kind;
+  final double height;
+  final double fontSize;
+  final bool expand;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = paletteOf(context);
+    final child = FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.center,
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        softWrap: false,
+      ),
+    );
+    final style = ButtonStyle(
+      alignment: Alignment.center,
+      visualDensity: VisualDensity.standard,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8)),
+      minimumSize: WidgetStatePropertyAll(Size(0, height)),
+      maximumSize: WidgetStatePropertyAll(Size(double.infinity, height)),
+      textStyle: WidgetStatePropertyAll(
+        TextStyle(fontSize: fontSize, fontWeight: FontWeight.w700, height: 1),
+      ),
+    );
+    final button = switch (kind) {
+      _DeskBtnKind.danger => FilledButton(
+          style: style.copyWith(
+            backgroundColor: WidgetStatePropertyAll(palette.danger),
+            foregroundColor: const WidgetStatePropertyAll(Colors.white),
+          ),
+          onPressed: onPressed,
+          child: child,
+        ),
+      _DeskBtnKind.filled => FilledButton(style: style, onPressed: onPressed, child: child),
+      _DeskBtnKind.plain => OutlinedButton(style: style, onPressed: onPressed, child: child),
+    };
+    if (expand) return SizedBox(width: double.infinity, height: height, child: button);
+    return SizedBox(height: height, child: button);
+  }
+}
+
+/// Add / remove sector, right-aligned under Profile and above the wheel grids.
+class _SectorControls extends StatelessWidget {
+  const _SectorControls({
     required this.l10n,
     required this.showAdd,
     required this.showRemove,
+    required this.onAdd,
+    required this.onRemove,
+    this.compact = false,
+    this.height,
+  });
+
+  final StorageL10n l10n;
+  final bool showAdd;
+  final bool showRemove;
+  final VoidCallback onAdd;
+  final VoidCallback onRemove;
+  final bool compact;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!showAdd && !showRemove) return const SizedBox.shrink();
+    final h = height ?? (compact ? 28.0 : 36.0);
+    final font = compact ? 12.0 : 13.0;
+    final gap = compact ? 4.0 : 8.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth.isFinite && constraints.maxWidth > 0
+            ? constraints.maxWidth
+            : 360.0;
+        final count = (showAdd ? 1 : 0) + (showRemove ? 1 : 0);
+        final gaps = count > 1 ? gap : 0.0;
+        final cap = compact ? 176.0 : 210.0;
+        final each = ((maxW - gaps) / count).clamp(0.0, cap);
+        Widget one(String label, VoidCallback onPressed) {
+          return SizedBox(
+            width: each,
+            height: h,
+            child: _DeskTextButton(
+              label: label,
+              onPressed: onPressed,
+              height: h,
+              fontSize: font,
+              expand: true,
+            ),
+          );
+        }
+
+        return SizedBox(
+          height: h,
+          width: double.infinity,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showRemove) one(l10n.removeSector, onRemove),
+                if (showRemove && showAdd) SizedBox(width: gap),
+                if (showAdd) one(l10n.addSector, onAdd),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DeskActionBar extends StatelessWidget {
+  const _DeskActionBar({
+    required this.l10n,
     required this.editLabel,
-    required this.onAddSector,
-    required this.onRemoveSector,
     this.onDelete,
     this.onEdit,
     this.onEditPrice,
@@ -1629,11 +1828,7 @@ class _DeskActionBar extends StatelessWidget {
   });
 
   final StorageL10n l10n;
-  final bool showAdd;
-  final bool showRemove;
   final String editLabel;
-  final VoidCallback onAddSector;
-  final VoidCallback onRemoveSector;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
   final VoidCallback? onEditPrice;
@@ -1645,12 +1840,9 @@ class _DeskActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = paletteOf(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final entries = <(String, VoidCallback, _DeskBtnKind)>[
-          if (showAdd) (l10n.addSector, onAddSector, _DeskBtnKind.plain),
-          if (showRemove) (l10n.removeSector, onRemoveSector, _DeskBtnKind.plain),
           if (onDelete != null) (l10n.deleteLot, onDelete!, _DeskBtnKind.danger),
           if (onEdit != null) (editLabel, onEdit!, _DeskBtnKind.plain),
           if (onEditPrice != null) (l10n.editPrice, onEditPrice!, _DeskBtnKind.plain),
@@ -1660,44 +1852,27 @@ class _DeskActionBar extends StatelessWidget {
           if (onAccrue != null) (l10n.payAccrue, onAccrue!, _DeskBtnKind.plain),
           if (onPartial != null) (l10n.payPartial, onPartial!, _DeskBtnKind.plain),
         ];
+        if (entries.isEmpty) return const SizedBox.shrink();
         final width = constraints.maxWidth.isFinite ? constraints.maxWidth : 360.0;
         final size = MediaQuery.sizeOf(context);
         final handset = size.shortestSide < 600;
         final landscape = size.width > size.height;
         final phone = width < 700;
-        Widget button((String, VoidCallback, _DeskBtnKind) entry, {required bool shrink, bool fill = false}) {
+        Widget button(
+          (String, VoidCallback, _DeskBtnKind) entry, {
+          required double height,
+          required double fontSize,
+          required bool expand,
+        }) {
           final (label, onPressed, kind) = entry;
-          final child = shrink
-              ? FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(label, maxLines: 1, softWrap: false),
-                )
-              : Text(label, maxLines: 1, softWrap: false);
-          final style = ButtonStyle(
-            visualDensity: VisualDensity.compact,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: fill ? 2 : 6, vertical: fill ? 4 : 10),
-            ),
-            textStyle: WidgetStatePropertyAll(
-              TextStyle(fontSize: fill ? 11 : 12, fontWeight: FontWeight.w700, height: 1.1),
-            ),
-            minimumSize: WidgetStatePropertyAll(Size(0, fill ? 28 : 36)),
+          return _DeskTextButton(
+            label: label,
+            onPressed: onPressed,
+            kind: kind,
+            height: height,
+            fontSize: fontSize,
+            expand: expand,
           );
-          final built = switch (kind) {
-            _DeskBtnKind.danger => FilledButton(
-                style: style.copyWith(
-                  backgroundColor: WidgetStatePropertyAll(palette.danger),
-                  foregroundColor: const WidgetStatePropertyAll(Colors.white),
-                ),
-                onPressed: onPressed,
-                child: child,
-              ),
-            _DeskBtnKind.filled => FilledButton(style: style, onPressed: onPressed, child: child),
-            _DeskBtnKind.plain => OutlinedButton(style: style, onPressed: onPressed, child: child),
-          };
-          if (!fill) return built;
-          return SizedBox(width: double.infinity, height: 28, child: built);
         }
 
         if (handset) {
@@ -1710,7 +1885,7 @@ class _DeskActionBar extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(left: i == 0 ? 0 : 2),
-                        child: button(entries[i], shrink: true, fill: true),
+                        child: button(entries[i], height: 30, fontSize: 12, expand: true),
                       ),
                     ),
                 ],
@@ -1718,6 +1893,7 @@ class _DeskActionBar extends StatelessWidget {
             );
           }
           final cols = width < 340 ? 3 : 4;
+          const rowH = 32.0;
           final rows = (entries.length / cols).ceil().clamp(1, 3);
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -1725,22 +1901,26 @@ class _DeskActionBar extends StatelessWidget {
               for (var row = 0; row < rows; row++)
                 Padding(
                   padding: EdgeInsets.only(top: row == 0 ? 0 : 2),
-                  child: Row(
-                    children: [
-                      for (var col = 0; col < cols; col++)
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: col == 0 ? 0 : 2),
-                            child: (row * cols + col) >= entries.length
-                                ? const SizedBox.shrink()
-                                : button(
-                                    entries[row * cols + col],
-                                    shrink: true,
-                                    fill: true,
-                                  ),
+                  child: SizedBox(
+                    height: rowH,
+                    child: Row(
+                      children: [
+                        for (var col = 0; col < cols; col++)
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.only(left: col == 0 ? 0 : 2),
+                              child: (row * cols + col) >= entries.length
+                                  ? const SizedBox.shrink()
+                                  : button(
+                                      entries[row * cols + col],
+                                      height: rowH,
+                                      fontSize: 12,
+                                      expand: true,
+                                    ),
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
             ],
@@ -1753,30 +1933,30 @@ class _DeskActionBar extends StatelessWidget {
               children: [
                 for (var i = 0; i < entries.length; i++) ...[
                   if (i > 0) const SizedBox(width: 6),
-                  button(entries[i], shrink: false),
+                  button(entries[i], height: 36, fontSize: 13, expand: false),
                 ],
               ],
             ),
           );
         }
-        return Row(
-          children: [
-            for (var i = 0; i < entries.length; i++)
-              Flexible(
-                fit: FlexFit.loose,
-                child: Padding(
-                  padding: EdgeInsets.only(left: i == 0 ? 0 : 6),
-                  child: button(entries[i], shrink: true),
+        return SizedBox(
+          height: 40,
+          child: Row(
+            children: [
+              for (var i = 0; i < entries.length; i++)
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: i == 0 ? 0 : 6),
+                    child: button(entries[i], height: 40, fontSize: 13, expand: true),
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         );
       },
     );
   }
 }
-
-enum _DeskBtnKind { plain, filled, danger }
 
 class _EmptyDetail extends StatelessWidget {
   const _EmptyDetail({required this.l10n});
@@ -2297,16 +2477,23 @@ class _LotEditorSheetState extends State<_LotEditorSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: _DeskTextButton(
+                      label: l10n.cancel,
                       onPressed: () => Navigator.pop(context),
-                      child: Text(l10n.cancel),
+                      height: 44,
+                      fontSize: 15,
+                      expand: true,
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: FilledButton(
+                    child: _DeskTextButton(
+                      label: l10n.save,
                       onPressed: () => _save(),
-                      child: Text(l10n.save),
+                      kind: _DeskBtnKind.filled,
+                      height: 44,
+                      fontSize: 15,
+                      expand: true,
                     ),
                   ),
                 ],

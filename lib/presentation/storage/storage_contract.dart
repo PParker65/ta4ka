@@ -104,6 +104,35 @@ class _StorageContractSheetState extends State<StorageContractSheet> {
     Navigator.pop(context, _signedPng);
   }
 
+  Widget _contractBtn(String label, VoidCallback onPressed, {bool filled = false}) {
+    const height = 44.0;
+    final child = FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.center,
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        softWrap: false,
+      ),
+    );
+    final style = ButtonStyle(
+      alignment: Alignment.center,
+      visualDensity: VisualDensity.standard,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8)),
+      minimumSize: const WidgetStatePropertyAll(Size(0, height)),
+      maximumSize: const WidgetStatePropertyAll(Size(double.infinity, height)),
+      textStyle: const WidgetStatePropertyAll(
+        TextStyle(fontSize: 15, fontWeight: FontWeight.w700, height: 1),
+      ),
+    );
+    final button = filled
+        ? FilledButton(style: style, onPressed: onPressed, child: child)
+        : OutlinedButton(style: style, onPressed: onPressed, child: child);
+    return SizedBox(width: double.infinity, height: height, child: button);
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = paletteOf(context);
@@ -246,45 +275,20 @@ class _StorageContractSheetState extends State<StorageContractSheet> {
               child: signed
                   ? Row(
                       children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _print,
-                            child: Text(l10n.contractPrint),
-                          ),
-                        ),
+                        Expanded(child: _contractBtn(l10n.contractPrint, _print)),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _save,
-                            child: Text(l10n.contractSave),
-                          ),
-                        ),
+                        Expanded(child: _contractBtn(l10n.contractSave, _save)),
                         if (!widget.previewOnly) ...[
                           const SizedBox(width: 8),
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: _finish,
-                              child: Text(l10n.contractDone),
-                            ),
-                          ),
+                          Expanded(child: _contractBtn(l10n.contractDone, _finish, filled: true)),
                         ],
                       ],
                     )
                   : Row(
                       children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(l10n.cancel),
-                          ),
-                        ),
+                        Expanded(child: _contractBtn(l10n.cancel, () => Navigator.pop(context))),
                         const SizedBox(width: 10),
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _confirm,
-                            child: Text(l10n.confirmPolicy),
-                          ),
-                        ),
+                        Expanded(child: _contractBtn(l10n.confirmPolicy, _confirm, filled: true)),
                       ],
                     ),
             ),

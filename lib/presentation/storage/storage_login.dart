@@ -337,6 +337,10 @@ class _StorageLoginPanelState extends ConsumerState<StorageLoginPanel> {
                 ],
                 const SizedBox(height: 20),
                 FilledButton(
+                  style: const ButtonStyle(
+                    alignment: Alignment.center,
+                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+                  ),
                   onPressed: _busy ? null : _submit,
                   child: _busy
                       ? const SizedBox(
@@ -344,7 +348,16 @@ class _StorageLoginPanelState extends ConsumerState<StorageLoginPanel> {
                           height: 22,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(_register ? l10n.register : l10n.signIn),
+                      : FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            _register ? l10n.register : l10n.signIn,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
                 ),
               ],
             ),

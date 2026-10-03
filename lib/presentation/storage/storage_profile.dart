@@ -198,6 +198,10 @@ class _StorageProfileSheetState extends ConsumerState<StorageProfileSheet> {
             ],
             const SizedBox(height: 14),
             FilledButton(
+              style: const ButtonStyle(
+                alignment: Alignment.center,
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+              ),
               onPressed: _busy ? null : () => _changePassword(session, l10n),
               child: _busy
                   ? const SizedBox(
@@ -205,16 +209,44 @@ class _StorageProfileSheetState extends ConsumerState<StorageProfileSheet> {
                       height: 22,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(l10n.changePassword),
+                  : FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.changePassword,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                    ),
             ),
             const SizedBox(height: 8),
-            OutlinedButton.icon(
+            OutlinedButton(
+              style: const ButtonStyle(
+                alignment: Alignment.center,
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 12)),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 ref.read(authProvider.notifier).signOut();
               },
-              icon: const Icon(CupertinoIcons.square_arrow_right),
-              label: Text(l10n.logout),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(CupertinoIcons.square_arrow_right, size: 18),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.logout,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

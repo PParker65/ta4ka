@@ -125,8 +125,14 @@ class StorageSignaturePadState extends State<StorageSignaturePad> {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
+            style: const ButtonStyle(alignment: Alignment.center),
             onPressed: clear,
-            child: Text(widget.l10n.clearSign),
+            child: Text(
+              widget.l10n.clearSign,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              softWrap: false,
+            ),
           ),
         ),
       ],
