@@ -1697,7 +1697,7 @@ class _DeskActionBar extends StatelessWidget {
             _DeskBtnKind.plain => OutlinedButton(style: style, onPressed: onPressed, child: child),
           };
           if (!fill) return built;
-          return SizedBox(width: double.infinity, height: fill && landscape && handset ? 28 : (fill ? 28 : 30), child: built);
+          return SizedBox(width: double.infinity, height: 28, child: built);
         }
 
         if (handset) {
