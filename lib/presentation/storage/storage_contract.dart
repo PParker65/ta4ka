@@ -116,7 +116,7 @@ class _StorageContractSheetState extends State<StorageContractSheet> {
         softWrap: false,
       ),
     );
-    final style = ButtonStyle(
+    const style = ButtonStyle(
       alignment: Alignment.center,
       visualDensity: VisualDensity.standard,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,

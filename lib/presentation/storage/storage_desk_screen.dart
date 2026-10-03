@@ -1034,24 +1034,24 @@ class _ProfileCornerButton extends StatelessWidget {
             ),
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(CupertinoIcons.person_crop_circle, size: compact ? 15 : 18),
-            SizedBox(width: compact ? 4 : 6),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              softWrap: false,
-              textHeightBehavior: const TextHeightBehavior(
-                applyHeightToFirstAscent: false,
-                applyHeightToLastDescent: false,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(CupertinoIcons.person_crop_circle, size: compact ? 15 : 18),
+              SizedBox(width: compact ? 4 : 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                softWrap: false,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
