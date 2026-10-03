@@ -268,7 +268,7 @@ class _StorageRackViewState extends State<StorageRackView> {
       duration: _dragging ? Duration.zero : const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
       height: clamped,
-      clipBehavior: Clip.hardEdge,
+      clipBehavior: Clip.none,
       child: GestureDetector(
         behavior: HitTestBehavior.deferToChild,
         onVerticalDragUpdate: _onDragUpdate,
