@@ -1055,30 +1055,6 @@ class _ProfileCornerButton extends StatelessWidget {
   }
 }
 
-class _MobileBrand extends StatelessWidget {
-  const _MobileBrand({
-    required this.l10n,
-    required this.shopName,
-  });
-
-  final StorageL10n l10n;
-  final String shopName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
-      child: Row(
-        children: [
-          Expanded(child: _BrandLockup(l10n: l10n, shopName: shopName)),
-          const LanguageSwitcher(),
-          const ThemeSwitcher(),
-        ],
-      ),
-    );
-  }
-}
-
 class _BrandLockup extends StatelessWidget {
   const _BrandLockup({
     required this.l10n,
