@@ -460,8 +460,7 @@ class _StorageDeskScreenState extends ConsumerState<StorageDeskScreen> {
                     alignment: Alignment.centerLeft,
                     child: const ThemeSwitcher(),
                   ),
-                  const Spacer(),
-                  Flexible(
+                  Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: profile,
@@ -1047,6 +1046,10 @@ class _ProfileCornerButton extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               softWrap: false,
+              textHeightBehavior: const TextHeightBehavior(
+                applyHeightToFirstAscent: false,
+                applyHeightToLastDescent: false,
+              ),
             ),
           ],
         ),
@@ -1682,16 +1685,25 @@ class _DeskTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = paletteOf(context);
-    final child = FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        softWrap: false,
+    final text = Text(
+      label,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      softWrap: false,
+      textHeightBehavior: const TextHeightBehavior(
+        applyHeightToFirstAscent: false,
+        applyHeightToLastDescent: false,
       ),
     );
+    final child = expand
+        ? Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: text,
+            ),
+          )
+        : text;
     final style = ButtonStyle(
       alignment: Alignment.center,
       visualDensity: VisualDensity.standard,
