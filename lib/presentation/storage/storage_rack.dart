@@ -66,6 +66,10 @@ class _StorageRackViewState extends State<StorageRackView> {
   void didUpdateWidget(covariant StorageRackView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedId != oldWidget.selectedId) _followSelection();
+    if (widget.compactChrome && widget.maxHeight != oldWidget.maxHeight) {
+      _expanded = true;
+      _height = widget.maxHeight ?? 0;
+    }
   }
 
   void _followSelection() {
@@ -179,23 +183,24 @@ class _StorageRackViewState extends State<StorageRackView> {
                           color: palette.text,
                           fontWeight: FontWeight.w800,
                           letterSpacing: compact ? 0.4 : 1.4,
-                          fontSize: compact ? 14 : 22,
+                          fontSize: compact ? 12 : 22,
                           height: 1.05,
                         ),
                       ),
-                      Text(
-                        widget.shopName.trim().isEmpty
-                            ? l10n.splashLead
-                            : l10n.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: palette.accent,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: compact ? 0.4 : 1.2,
-                          fontSize: compact ? 9 : 10,
+                      if (!compact)
+                        Text(
+                          widget.shopName.trim().isEmpty
+                              ? l10n.splashLead
+                              : l10n.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: palette.accent,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                            fontSize: 10,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -362,7 +367,7 @@ class _StorageRackViewState extends State<StorageRackView> {
     final gaps = count > 1 ? gap * (count - 1) : 0.0;
     final per = count == 0 ? maxW : (maxW - gaps) / count;
     final wheel = (per - slotGap * (kWheelsPerCell - 1)) / kWheelsPerCell;
-    final page = count > 1 && wheel < 18;
+    final page = count > 1 && wheel < 11;
     if (!page) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
