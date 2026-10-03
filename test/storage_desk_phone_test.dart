@@ -76,11 +76,16 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(MediaQuery.sizeOf(tester.element(find.byType(StorageDeskScreen))), size);
+      final desk = tester.renderObject<RenderBox>(find.byType(StorageDeskScreen));
+      expect(desk.size.width, lessThanOrEqualTo(size.width + 0.5));
+      expect(desk.size.height, lessThanOrEqualTo(size.height + 0.5));
       final rack = tester.renderObject<RenderBox>(find.byType(StorageRackView));
       expect(rack.size.width, lessThanOrEqualTo(size.width));
       expect(rack.size.width, greaterThan(size.width * 0.7));
+      expect(rack.size.height, lessThan(size.height));
       expect(find.byKey(const Key('storage-profile-corner')), findsOneWidget);
       expect(find.byType(WheelCargoIcon), findsWidgets);
+      expect(find.text('TEST SHOP'), findsWidgets);
     }
 
     addTearDown(() {
@@ -90,5 +95,7 @@ void main() {
     });
     await pump(const Size(390, 844));
     await pump(const Size(844, 390));
+    await pump(const Size(320, 568));
+    await pump(const Size(568, 320));
   });
 }
