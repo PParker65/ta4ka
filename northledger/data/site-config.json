@@ -1,0 +1,188 @@
+{
+  "targetUrl": "https://fastbookkeper.com",
+  "bannerText": "⚡️ Looking for a faster, cost-effective accounting solution? Switch to our upgraded portal today.",
+  "brandName": "Northledger",
+  "productBadge": "v2.4 Pro",
+  "signInLabel": "Sign In",
+  "workspaceLabel": "Access Workspace",
+  "nav": {
+    "features": "Features",
+    "comparison": "Comparison",
+    "pricing": "Pricing",
+    "security": "Security"
+  },
+  "heroBadge": "🔥 #1 Rated QuickBooks & Intuit Alternative for Small Business (2026)",
+  "heroHeadline": "Next-Gen Business Accounting & Invoicing Platform",
+  "heroSubheadline": "Streamline your taxes, invoices, and expenses in one unified dashboard. Everything you expect from traditional legacy accounting tools — with zero complex setup and 50% lower fees.",
+  "primaryCtaLabel": "Access Accounting Dashboard",
+  "secondaryCtaLabel": "Open Web App",
+  "trustRating": "4.9/5 stars",
+  "trustCount": "12,000+ businesses",
+  "trustMicro": "Instant setup • No credit card required • 100% Secure SSL",
+  "comparisonTitle": "A clearer ledger than desktop software",
+  "comparisonSubtitle": "The same jobs — invoices, expenses, tax, and access — without the install or the annual lock-in.",
+  "comparisonCapabilityLabel": "Capability",
+  "comparisonLegacyLabel": "Legacy desktop accounting",
+  "comparisonNote": "Teams compare Northledger with tools such as QuickBooks.",
+  "comparisonRows": [
+    {
+      "capability": "Monthly cost",
+      "product": "From $15/month, cancel anytime",
+      "legacy": "Higher license fees and paid upgrades"
+    },
+    {
+      "capability": "Setup time",
+      "product": "Minutes in the browser",
+      "legacy": "Installers, file moves, and IT help"
+    },
+    {
+      "capability": "Invoicing",
+      "product": "Branded invoices and payment links",
+      "legacy": "Desktop templates you send yourself"
+    },
+    {
+      "capability": "Expense tracking",
+      "product": "Receipts and categories in the ledger",
+      "legacy": "Manual entry or a separate add-on"
+    },
+    {
+      "capability": "Bank connections",
+      "product": "Read-only bank sync",
+      "legacy": "CSV imports are the usual path"
+    },
+    {
+      "capability": "Tax-ready reports",
+      "product": "Profit, tax, and cash summaries",
+      "legacy": "Exports assembled at year-end"
+    },
+    {
+      "capability": "Multi-user access",
+      "product": "Bookkeeper and staff roles",
+      "legacy": "Extra seats are often a paid upgrade"
+    },
+    {
+      "capability": "Support",
+      "product": "Chat on business days",
+      "legacy": "Forums or paid phone plans"
+    },
+    {
+      "capability": "Contract lock-in",
+      "product": "Month to month, no annual lock-in",
+      "legacy": "Annual terms are common"
+    }
+  ],
+  "featuresTitle": "Everything the books need",
+  "featuresSubtitle": "Six tools small teams actually use, in one browser workspace.",
+  "features": [
+    {
+      "title": "Invoicing",
+      "description": "Create, send, and track invoices without a desktop install.",
+      "icon": "file-text"
+    },
+    {
+      "title": "Expense capture",
+      "description": "Log receipts and categorize spending as it happens.",
+      "icon": "receipt"
+    },
+    {
+      "title": "Tax-ready reports",
+      "description": "Open profit, tax, and cash summaries when you need them.",
+      "icon": "scroll-text"
+    },
+    {
+      "title": "Bank sync",
+      "description": "Match transactions from connected accounts in one ledger.",
+      "icon": "landmark"
+    },
+    {
+      "title": "Team permissions",
+      "description": "Give a bookkeeper access without sharing a password.",
+      "icon": "users"
+    },
+    {
+      "title": "Client portal",
+      "description": "Let clients view the invoices and documents you share.",
+      "icon": "layout-dashboard"
+    }
+  ],
+  "pricingTitle": "Simple monthly pricing",
+  "pricingSubtitle": "Pick a plan and open the workspace. No setup fee.",
+  "pricingNote": "Prices in USD. Change or cancel monthly.",
+  "pricingTiers": [
+    {
+      "name": "Starter",
+      "price": "$15",
+      "period": "per month",
+      "description": "For solo operators getting the books in one place.",
+      "features": [
+        "1 user",
+        "Invoicing and expenses",
+        "Core reports",
+        "Email support"
+      ],
+      "ctaLabel": "Start Starter",
+      "badge": "",
+      "highlighted": false
+    },
+    {
+      "name": "Growth",
+      "price": "$29",
+      "period": "per month",
+      "description": "For teams that want bank sync and a shared ledger.",
+      "features": [
+        "5 users",
+        "Bank sync",
+        "Tax-ready reports",
+        "Roles for staff"
+      ],
+      "ctaLabel": "Start Growth",
+      "badge": "Most chosen",
+      "highlighted": true
+    },
+    {
+      "name": "Practice",
+      "price": "$59",
+      "period": "per month",
+      "description": "For firms that close books with clients.",
+      "features": [
+        "15 users",
+        "Client portal",
+        "Audit log",
+        "Priority chat"
+      ],
+      "ctaLabel": "Start Practice",
+      "badge": "",
+      "highlighted": false
+    }
+  ],
+  "securityTitle": "Built for careful books",
+  "securitySubtitle": "Access, encryption, and export controls a finance team expects.",
+  "securityItems": [
+    {
+      "title": "SSL in transit",
+      "description": "The workspace is served over HTTPS with modern TLS.",
+      "icon": "lock"
+    },
+    {
+      "title": "Encryption at rest",
+      "description": "Stored books and documents are encrypted on disk.",
+      "icon": "key-round"
+    },
+    {
+      "title": "Role-based access",
+      "description": "Owners, bookkeepers, and staff see only what their role allows.",
+      "icon": "users"
+    },
+    {
+      "title": "Audit log",
+      "description": "Sign-ins and record changes are kept for review.",
+      "icon": "clipboard-list"
+    },
+    {
+      "title": "Data export",
+      "description": "Take a copy of your ledger when you want a backup or a handoff.",
+      "icon": "file-output"
+    }
+  ],
+  "footerDisclaimer": "Northledger is an independent product and is not affiliated with Intuit or QuickBooks."
+}
