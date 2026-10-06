@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PortalButton, VisitBeacon } from "@/components/gateway-client";
 import { readConfig } from "@/lib/config";
 import { ctaHref } from "@/lib/url";
 
@@ -35,13 +36,8 @@ export default async function HomePage() {
         <p className="mt-2 text-base leading-relaxed text-slate-600">
           Click below to authenticate and enter your unified business workspace.
         </p>
-        <a
-          href={href}
-          data-testid="portal-signin"
-          className="mt-6 flex w-full items-center justify-center rounded-xl bg-blue-700 px-4 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-        >
-          Continue to Portal Sign-In →
-        </a>
+        <VisitBeacon />
+        <PortalButton href={href} />
         <p className="mt-6 text-center text-xs leading-relaxed text-slate-500">
           Protected by Enterprise Security • Fast Auto-Redirect
         </p>

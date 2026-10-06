@@ -62,6 +62,8 @@ Every public button is a normal same-tab link to the saved `targetUrl`. Blank an
 
 Local Node saves go to `data/site-config.json`. The Cloudflare Worker saves the same JSON in the `SITE_CONFIG` KV namespace so edits persist at the edge.
 
+Anonymous counters are stored separately, so a config save or a new deploy does not reset them. Locally they are written to `data/site-stats.json` (gitignored). On Cloudflare they are the `site-stats` key in the same `SITE_CONFIG` KV namespace. Each public page load sends a visit beacon, and the sign-in button records a click before it follows `targetUrl`. Signed-in admin sessions are not counted. No personal data is stored.
+
 ## Deploy to Cloudflare
 
 The Worker is prepared with [OpenNext for Cloudflare](https://opennext.js.org/cloudflare) (`@opennextjs/cloudflare`) and Wrangler. `@cloudflare/next-on-pages` is not used; it does not support this Next.js 15 app.

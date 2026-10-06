@@ -15,13 +15,16 @@ import {
   type SiteConfig,
 } from "@/lib/types";
 import { ctaHref, isHttpUrl } from "@/lib/url";
+import type { SiteStats } from "@/lib/stats";
 
 export function AdminApp({
   initialAuthed,
   initialConfig,
+  initialStats,
 }: {
   initialAuthed: boolean;
   initialConfig: SiteConfig | null;
+  initialStats: SiteStats | null;
 }) {
   const [authed, setAuthed] = useState(initialAuthed);
   const [config, setConfig] = useState<SiteConfig | null>(initialConfig);
@@ -40,6 +43,7 @@ export function AdminApp({
   return (
     <Editor
       initial={config}
+      initialStats={initialStats}
       onLogout={() => {
         setAuthed(false);
         setConfig(null);
@@ -147,9 +151,11 @@ function LoginScreen({ onSuccess }: { onSuccess: (config: SiteConfig) => void })
 
 function Editor({
   initial,
+  initialStats,
   onLogout,
 }: {
   initial: SiteConfig;
+  initialStats: SiteStats | null;
   onLogout: () => void;
 }) {
   const [draft, setDraft] = useState(initial);
@@ -232,6 +238,10 @@ function Editor({
           </div>
         </div>
       </header>
+
+      <div className="mx-auto max-w-6xl px-5 pt-8">
+        <StatsPanel initialStats={initialStats} />
+      </div>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <form onSubmit={onSubmit} className="space-y-5">
@@ -663,6 +673,52 @@ function Editor({
   );
 }
 
+function StatsPanel({ initialStats }: { initialStats: SiteStats | null }) {
+  const [stats, setStats] = useState<SiteStats | null>(initialStats);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/stats")
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return res.json() as Promise<unknown>;
+      })
+      .then((data) => {
+        if (!cancelled && isStatsPayload(data)) setStats(data.stats);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const updated = stats?.updatedAt ? new Date(stats.updatedAt) : null;
+  const updatedLabel =
+    updated && !Number.isNaN(updated.getTime()) ? updated.toLocaleString() : null;
+
+  return (
+    <section className="grid gap-4 sm:grid-cols-2" data-testid="stats-panel">
+      <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p className="text-sm font-medium text-slate-500">Visits</p>
+        <p className="text-sm text-slate-400">посещения</p>
+        <p className="mt-2 font-display text-4xl text-slate-950" data-testid="stat-visits">
+          {stats?.visits ?? 0}
+        </p>
+      </article>
+      <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <p className="text-sm font-medium text-slate-500">Link clicks</p>
+        <p className="text-sm text-slate-400">клики по ссылке</p>
+        <p className="mt-2 font-display text-4xl text-slate-950" data-testid="stat-clicks">
+          {stats?.clicks ?? 0}
+        </p>
+      </article>
+      {updatedLabel ? (
+        <p className="text-sm text-slate-500 sm:col-span-2">Updated {updatedLabel}</p>
+      ) : null}
+    </section>
+  );
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -781,6 +837,18 @@ function updateSecurity(
       itemIndex === index ? { ...item, ...partial } : item,
     ),
   }));
+}
+
+function isStatsPayload(value: unknown): value is { stats: SiteStats } {
+  if (typeof value !== "object" || value === null || !("stats" in value)) return false;
+  const stats = value.stats;
+  if (typeof stats !== "object" || stats === null) return false;
+  const record = stats as Record<string, unknown>;
+  return (
+    typeof record.visits === "number" &&
+    typeof record.clicks === "number" &&
+    (record.updatedAt === null || typeof record.updatedAt === "string")
+  );
 }
 
 function isConfigPayload(value: unknown): value is { config: SiteConfig } {
