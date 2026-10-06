@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fastbookkeeper",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "fastbookkeeper"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SITE_CONFIG",
+      // Replace after: npx wrangler kv namespace create SITE_CONFIG
+      "id": "00000000000000000000000000000000"
+    }
+  ],
+  "routes": [
+    { "pattern": "fastbookkeeper.com", "custom_domain": true },
+    { "pattern": "www.fastbookkeeper.com", "custom_domain": true }
+  ]
+}

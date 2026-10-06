@@ -1,0 +1,3 @@
+# Local Workers preview only. Do not put a production password here.
+# Copy to .dev.vars if you need local overrides. .dev.vars is gitignored.
+NEXTJS_ENV=development
