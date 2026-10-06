@@ -1,8 +1,8 @@
-# Northledger landing page
+# FastBookkeeper sign-in gateway
 
-Single-page marketing site for Northledger, an independent accounting and invoicing web app. The public page is one screen of anchor sections. Marketing copy and the call-to-action URL are stored as config and can be edited at `/admin` without a code change.
+Public page at `/` is a single sign-in card for FastBookkeeper. The one button is a normal same-tab link to the saved `targetUrl` (`#` when that value is blank). Edit the destination at `/admin`.
 
-The site is meant to be served at [https://fastbookkeeper.com/](https://fastbookkeeper.com/). That host is the landing page itself. It is not the default destination of the buttons.
+The site is meant to be served at [https://fastbookkeeper.com/](https://fastbookkeeper.com/). That host is this gateway, not the default button destination.
 
 This folder is separate from the Flutter app at the repository root.
 
@@ -99,12 +99,12 @@ Paste the printed id into `wrangler.jsonc` under `kv_namespaces` → `SITE_CONFI
 npm run deploy
 ```
 
-That builds the app and deploys the Worker. After the zone is attached, the landing page is served at [https://fastbookkeeper.com/](https://fastbookkeeper.com/). Open `/admin` there and paste the call-to-action URL.
+That builds the app and deploys the Worker. After the zone is attached, the sign-in page is served at [https://fastbookkeeper.com/](https://fastbookkeeper.com/). Open `/admin` there and paste the call-to-action URL.
 
 ## Constraints
 
 - Every call to action is a normal same-tab link to the saved `targetUrl`.
 - There is no user-agent split, cloaking, delayed redirect, or clipboard rewrite.
-- There is no desktop download. The secondary CTA defaults to “Open Web App”.
+- There is no desktop download and no automatic redirect. The public button is a normal link. The card footer is text only.
 - The only form is the admin username and password gate. The page does not collect leads, end-user passwords, or payment details.
-- QuickBooks and Intuit are named only as a comparison category. The footer states that Northledger is independent and not affiliated with them. No trademark logos are used.
+- The public page does not render stored marketing copy.
