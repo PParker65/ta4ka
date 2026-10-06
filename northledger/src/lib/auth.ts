@@ -1,20 +1,29 @@
 import { createHash, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { workerEnv } from "./runtime-env";
 
 export const SESSION_COOKIE = "nl_sess";
 
 const DEV_ONLY_USER = "admin";
 const DEV_ONLY_PASSWORD = "admin1";
 
+function configuredSecret(
+  name: "ADMIN_USER" | "ADMIN_PASSWORD",
+  fallback: string,
+): string {
+  const fromWorker = workerEnv()?.[name];
+  if (typeof fromWorker === "string" && fromWorker.trim()) return fromWorker.trim();
+  const fromEnv = process.env[name]?.trim();
+  return fromEnv ? fromEnv : fallback;
+}
+
 export function getAdminUser(): string {
-  const fromEnv = process.env.ADMIN_USER?.trim();
-  return fromEnv ? fromEnv : DEV_ONLY_USER;
+  return configuredSecret("ADMIN_USER", DEV_ONLY_USER);
 }
 
 export function getAdminPassword(): string {
-  const fromEnv = process.env.ADMIN_PASSWORD?.trim();
-  return fromEnv ? fromEnv : DEV_ONLY_PASSWORD;
+  return configuredSecret("ADMIN_PASSWORD", DEV_ONLY_PASSWORD);
 }
 
 export function sha256Hex(value: string): string {

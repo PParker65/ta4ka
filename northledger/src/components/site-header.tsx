@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { LogoMark } from "@/components/logo-mark";
 import { ghostCtaClass, solidNavCtaClass } from "@/lib/styles";
+import { ctaHref } from "@/lib/url";
 import type { SiteConfig } from "@/lib/types";
 
 const links = [
@@ -47,14 +48,14 @@ export function SiteHeader({ config }: { config: SiteConfig }) {
 
           <div className="flex items-center justify-end gap-1 sm:gap-2">
             <a
-              href={config.targetUrl}
+              href={ctaHref(config.targetUrl)}
               className={ghostCtaClass}
               data-testid="sign-in"
             >
               {config.signInLabel}
             </a>
             <a
-              href={config.targetUrl}
+              href={ctaHref(config.targetUrl)}
               className={solidNavCtaClass}
               data-testid="workspace"
             >

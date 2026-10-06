@@ -14,7 +14,7 @@ import {
   type SecurityItem,
   type SiteConfig,
 } from "@/lib/types";
-import { isHttpUrl } from "@/lib/url";
+import { ctaHref, isHttpUrl } from "@/lib/url";
 
 export function AdminApp({
   initialAuthed,
@@ -171,8 +171,9 @@ function Editor({
     event.preventDefault();
     setError(null);
     setMessage(null);
-    if (!isHttpUrl(draft.targetUrl)) {
-      setError("Target URL must be an http or https URL.");
+    const trimmedTarget = draft.targetUrl.trim();
+    if (trimmedTarget !== "" && trimmedTarget !== "#" && !isHttpUrl(trimmedTarget)) {
+      setError("Target URL must be blank, #, or an http or https URL.");
       return;
     }
     setSaving(true);
@@ -240,7 +241,8 @@ function Editor({
               value={draft.targetUrl}
               onChange={(targetUrl) => patch({ targetUrl })}
               testId="target-url"
-              hint="Every public button opens this http(s) address in the same tab."
+              optional
+              hint="Paste the destination when you have it. Blank and # keep every button on this page. An http(s) URL opens in the same tab."
             />
             <Field
               label="Banner text"
@@ -626,11 +628,11 @@ function Editor({
           <h2 className="text-sm font-semibold text-slate-900">Target preview</h2>
           <p className="mt-2 break-all text-sm text-indigo-700">
             {previewReady ? (
-              <a href={previewUrl} data-testid="preview-link">
+              <a href={ctaHref(previewUrl)} data-testid="preview-link">
                 {previewUrl}
               </a>
             ) : (
-              "Enter a valid http(s) URL to preview it."
+              "No destination yet. Public buttons stay on this page until you save an http(s) URL."
             )}
           </p>
           {previewReady ? (
@@ -642,14 +644,16 @@ function Editor({
             />
           ) : (
             <div className="mt-3 flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-200 px-4 text-center text-sm text-slate-500">
-              The preview appears when the URL is valid. Some sites refuse to be embedded; the address above is still the live destination.
+              Paste an http(s) URL to preview a destination. Until then, public buttons stay on this page.
             </div>
           )}
           <p className="mt-3 text-xs leading-relaxed text-slate-500">
-            If a site blocks embedding, use the address link. Public calls to action use that same URL.
+            {previewReady
+              ? "If a site blocks embedding, use the address link. Public calls to action use that same URL."
+              : "Public buttons use the saved target. A blank value or # stays on this page."}
           </p>
           {previewReady ? (
-            <a href={previewUrl} className={`${primaryCtaClass} mt-4 w-full text-center`}>
+            <a href={ctaHref(previewUrl)} className={`${primaryCtaClass} mt-4 w-full text-center`}>
               {draft.primaryCtaLabel}
             </a>
           ) : null}
@@ -675,6 +679,7 @@ function Field({
   multiline = false,
   testId,
   hint,
+  optional = false,
 }: {
   label: string;
   value: string;
@@ -682,6 +687,7 @@ function Field({
   multiline?: boolean;
   testId?: string;
   hint?: string;
+  optional?: boolean;
 }) {
   const id = useId();
   return (
@@ -704,7 +710,7 @@ function Field({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className={inputClass}
-          required={label !== "Badge"}
+          required={!optional && label !== "Badge"}
         />
       )}
       {hint ? <span className="mt-1 block text-sm font-normal text-slate-500">{hint}</span> : null}

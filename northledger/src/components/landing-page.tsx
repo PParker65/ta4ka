@@ -3,6 +3,7 @@ import { LogoMark } from "@/components/logo-mark";
 import { SiteHeader } from "@/components/site-header";
 import { featureIconMap, securityIconMap } from "@/lib/icons";
 import { primaryCtaClass, secondaryCtaClass } from "@/lib/styles";
+import { ctaHref } from "@/lib/url";
 import type { SiteConfig } from "@/lib/types";
 
 const sampleRows = [
@@ -20,7 +21,7 @@ export function LandingPage({ config }: { config: SiteConfig }) {
     <div id="top" className="min-h-screen bg-slate-50 text-slate-900">
       <div className="sticky top-0 z-40">
         <a
-          href={config.targetUrl}
+          href={ctaHref(config.targetUrl)}
           data-testid="banner-link"
           className="relative block bg-indigo-50 text-center text-indigo-950 shadow-[0_10px_40px_-18px_rgba(79,70,229,0.65)] ring-1 ring-inset ring-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600"
         >
@@ -48,7 +49,7 @@ export function LandingPage({ config }: { config: SiteConfig }) {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <a
-                  href={config.targetUrl}
+                  href={ctaHref(config.targetUrl)}
                   className={primaryCtaClass}
                   data-testid="hero-primary-cta"
                 >
@@ -56,7 +57,7 @@ export function LandingPage({ config }: { config: SiteConfig }) {
                   <ArrowRight className="h-4 w-4 transition motion-safe:group-hover:translate-x-0.5" />
                 </a>
                 <a
-                  href={config.targetUrl}
+                  href={ctaHref(config.targetUrl)}
                   className={secondaryCtaClass}
                   data-testid="hero-secondary-cta"
                 >
@@ -279,7 +280,7 @@ export function LandingPage({ config }: { config: SiteConfig }) {
                   ))}
                 </ul>
                 <a
-                  href={config.targetUrl}
+                  href={ctaHref(config.targetUrl)}
                   data-testid={`pricing-cta-${index}`}
                   className={
                     tier.highlighted

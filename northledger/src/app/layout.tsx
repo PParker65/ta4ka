@@ -15,6 +15,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://fastbookkeeper.com"),
   title: "Northledger — Accounting and invoicing",
   description:
     "Streamline taxes, invoices, and expenses in one unified dashboard.",

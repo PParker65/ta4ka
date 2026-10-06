@@ -89,9 +89,11 @@ function parseConfig(input: unknown): SiteConfig {
     throw new ConfigError("Config must be an object.");
   }
 
-  const targetUrl = mustString(input.targetUrl, "Target URL", 500);
-  if (!isHttpUrl(targetUrl)) {
-    throw new ConfigError("Target URL must be an http or https URL.");
+  const targetUrl = mustString(input.targetUrl, "Target URL", 500, true);
+  if (targetUrl !== "" && targetUrl !== "#" && !isHttpUrl(targetUrl)) {
+    throw new ConfigError(
+      "Target URL must be blank, #, or an http or https URL.",
+    );
   }
 
   if (!isRecord(input.nav)) {
