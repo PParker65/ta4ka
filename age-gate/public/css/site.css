@@ -1,0 +1,180 @@
+:root {
+  color-scheme: light;
+  --bg: #efece4;
+  --ink: #1c1915;
+  --muted: #6b645a;
+  --line: #ddd6c8;
+  --card: #faf8f4;
+  --btn: #1c1915;
+  --btn-ink: #faf8f4;
+  --danger: #8d2f2f;
+  --ok: #1f6b45;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  color: var(--ink);
+  background: var(--bg);
+}
+
+body.gate {
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+}
+
+body.admin {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #e7e4de;
+}
+
+button, input {
+  font-size: 16px;
+}
+
+.gate-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem 1.25rem 4.5rem;
+  text-align: center;
+}
+
+.age-line {
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.age-btn {
+  appearance: none;
+  border: 0;
+  background: var(--btn);
+  color: var(--btn-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 650;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  padding: 0.95rem 1.5rem;
+  min-width: min(100%, 18rem);
+  min-height: 3.25rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.age-btn:hover { background: #000; }
+.age-btn:disabled { opacity: 0.55; cursor: wait; }
+.age-btn:focus-visible { outline: 3px solid #8a7352; outline-offset: 3px; }
+
+.credit {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0.7rem;
+  margin: 0;
+  text-align: center;
+  font: 12px/1 system-ui, sans-serif;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.admin-wrap {
+  width: min(1080px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 4rem;
+}
+
+.login-card, .panel, .stat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.login-card {
+  width: min(26rem, calc(100% - 2rem));
+  margin: 12vh auto 0;
+  padding: 1.5rem;
+}
+
+.login-card h1, .admin-head h1, .panel h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.35rem;
+}
+
+.hint, .status {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.stack { display: grid; gap: 0.75rem; }
+label { display: grid; gap: 0.3rem; font-size: 0.92rem; }
+
+input[type="text"], input[type="password"], input[type="url"] {
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #cfc6b6;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.btn, .btn-danger, .btn-ghost {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn { background: var(--btn); color: var(--btn-ink); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid #cfc6b6; }
+.btn:focus-visible, .btn-danger:focus-visible, .btn-ghost:focus-visible {
+  outline: 3px solid #8a7352;
+  outline-offset: 2px;
+}
+
+.error { color: var(--danger); min-height: 1.2em; margin: 0; }
+.ok { color: var(--ok); }
+
+.admin-head, .row-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.stat { padding: 0.9rem 1rem; }
+.stat b { display: block; font-size: 1.55rem; line-height: 1.1; }
+.stat span { color: var(--muted); font-size: 0.82rem; }
+
+.panel { padding: 1rem; margin: 0 0 0.9rem; }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { text-align: start; padding: 0.45rem 0.4rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.03em; }
+.ua { max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 0.8rem; }
+.empty { color: var(--muted); margin: 0.4rem 0; }
+
+.admin .credit { position: static; margin-top: 1.5rem; }

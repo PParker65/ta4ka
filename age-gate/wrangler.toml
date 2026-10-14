@@ -1,0 +1,23 @@
+name = "age-gate"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+preview_urls = false
+
+# Global edge. No region placement. Custom domains are proxied by Cloudflare.
+routes = [
+  { pattern = "ilovdady.com", custom_domain = true },
+  { pattern = "www.ilovdady.com", custom_domain = true }
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+
+# Local placeholder. Create a new LEADS namespace for this site before deploying.
+# Do not reuse a namespace id from another project.
+[[kv_namespaces]]
+binding = "LEADS"
+id = "00000000000000000000000000000000"

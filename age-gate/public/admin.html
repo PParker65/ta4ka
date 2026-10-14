@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin</title>
+  <link rel="stylesheet" href="/css/site.css?v=20261014a">
+</head>
+<body class="admin">
+  <main id="login-view" class="login-card">
+    <form id="login-form" class="stack">
+      <h1>Admin</h1>
+      <p class="hint">Sign in to set the 18+ link and read first-party stats.</p>
+      <label>Username
+        <input name="username" type="text" autocomplete="username" autocapitalize="none" required>
+      </label>
+      <label>Password
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn" type="submit">Sign in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </main>
+
+  <div id="app-view" class="admin-wrap" hidden>
+    <header class="admin-head">
+      <div>
+        <h1>Age gate</h1>
+        <p class="hint" id="today-label">First-party stats for this site.</p>
+      </div>
+      <div class="row-actions">
+        <button class="btn-ghost" id="refresh" type="button">Refresh</button>
+        <button class="btn-ghost" id="logout" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>Button destination</h2>
+      <p class="hint">http or https. Clicks are still counted when this is empty, and the visitor stays on the page.</p>
+      <form id="url-form" class="stack">
+        <label>Current URL
+          <input id="current-url" type="url" readonly>
+        </label>
+        <label>Replace with
+          <input id="next-url" name="url" type="url" placeholder="https://example.com/path" inputmode="url" autocomplete="off">
+        </label>
+        <div class="row-actions">
+          <button class="btn" type="submit">Save link</button>
+          <button class="btn-ghost" id="clear-url" type="button">Clear link</button>
+        </div>
+        <p id="url-status" class="status" role="status"></p>
+      </form>
+    </section>
+
+    <section class="stats" id="stat-cards"></section>
+
+    <section class="cols">
+      <article class="panel"><h2>Country</h2><div id="by-country"></div></article>
+      <article class="panel"><h2>Device</h2><div id="by-device"></div></article>
+      <article class="panel"><h2>Browser</h2><div id="by-browser"></div></article>
+      <article class="panel"><h2>OS</h2><div id="by-os"></div></article>
+    </section>
+
+    <section class="panel">
+      <div class="admin-head">
+        <h2>Recent events</h2>
+        <button class="btn-danger" id="clear-all" type="button">Clear all</button>
+      </div>
+      <div id="events"></div>
+    </section>
+    <p class="credit">Coding Teams</p>
+  </div>
+  <script src="/js/admin.js?v=20261014b"></script>
+</body>
+</html>
