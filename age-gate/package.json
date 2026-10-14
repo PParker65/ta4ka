@@ -1,0 +1,13 @@
+{
+  "name": "age-gate",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "node --test test/logic.test.mjs",
+    "check": "node --check src/worker.js && node --check src/i18n.js && node --check src/parse.js && node --check public/js/gate.js && node --check public/js/admin.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.45.0"
+  }
+}
