@@ -3,9 +3,6 @@ import "./styles.css";
 const boot = readJson("sf-boot");
 const extra = readJson("sf-extra");
 const lang = boot.lang || "ru";
-let visitDraft = false;
-let visitTimer = 0;
-const VISIT_KEY = "snelfix_visit";
 
 loadAnalytics();
 
@@ -27,7 +24,6 @@ function panelFromPath(pathname) {
   const bare = pathname.replace(/^\/(nl|en|uk)(?=\/|$)/, "") || "/";
   if (bare === "/" || bare === "") return "home";
   if (bare === "/diensten" || bare.startsWith("/diensten/")) return "services";
-  if (bare === "/boeken") return "book";
   if (bare === "/evacuatie") return "tow";
   if (bare === "/contact" || bare.startsWith("/vestigingen/") || bare === "/faq" || bare === "/voorwaarden" || bare === "/privacy") return "contacts";
   return "home";
@@ -68,10 +64,6 @@ function showPanel(id) {
   for (const link of document.querySelectorAll(".tabs a")) {
     if (link.dataset.panel === id) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
-  }
-  if (id === "book") {
-    visitDraft = false;
-    refreshVisit();
   }
 }
 
@@ -133,13 +125,6 @@ document.addEventListener("click", (event) => {
       showSheet("");
       focusGarage(link.dataset.garage || garageFromPath(link.getAttribute("href") || ""));
     }
-    if (link.dataset.serviceBook) {
-      const select = document.querySelector("#book-form select[name=service]");
-      if (select) {
-        select.value = link.dataset.serviceBook;
-        select.dispatchEvent(new Event("change"));
-      }
-    }
     history.pushState({}, "", link.href);
   }
 });
@@ -153,10 +138,6 @@ window.addEventListener("popstate", () => {
 });
 focusGarage(garageFromPath(location.pathname));
 
-const bookForm = document.getElementById("book-form");
-if (bookForm) initBooking(bookForm);
-initVisit();
-if (panelFromPath(location.pathname) === "book") refreshVisit();
 const towForm = document.getElementById("tow-form");
 if (towForm) initTow(towForm);
 
@@ -196,153 +177,6 @@ function validStep(step) {
     }
   }
   return true;
-}
-
-function initBooking(form) {
-  const strings = extra.strings?.book || {};
-  const slots = document.getElementById("slots");
-  const empty = document.getElementById("slots-empty");
-  const error = document.getElementById("book-error");
-  const date = form.querySelector("[name=date]");
-  let selected = null;
-  date.min = form.dataset.today || "";
-  const max = new Date(`${form.dataset.today}T00:00:00`);
-  max.setDate(max.getDate() + 90);
-  date.max = max.toISOString().slice(0, 10);
-
-  async function load() {
-    selected = null;
-    slots.innerHTML = "";
-    const params = new URLSearchParams({
-      garage: form.garage.value,
-      service: form.service.value,
-      date: form.date.value,
-    });
-    const response = await fetch(`/api/availability?${params}`);
-    const data = await response.json();
-    const list = data.slots || [];
-    empty.hidden = list.length > 0;
-    for (const slot of list) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = slot.label;
-      button.setAttribute("aria-pressed", "false");
-      button.addEventListener("click", () => {
-        selected = slot.start;
-        for (const node of slots.querySelectorAll("button")) node.setAttribute("aria-pressed", "false");
-        button.setAttribute("aria-pressed", "true");
-      });
-      slots.appendChild(button);
-    }
-  }
-  form.garage.forEach?.((node) => node.addEventListener("change", () => { if (!form.querySelector('[data-step="3"]').hidden) load(); }));
-  form.querySelectorAll("[name=garage]").forEach((node) => node.addEventListener("change", () => {
-    if (!form.querySelector('[data-step="3"]').hidden) load().catch(() => {});
-  }));
-  form.service.addEventListener("change", () => {
-    if (!form.querySelector('[data-step="3"]').hidden) load().catch(() => {});
-  });
-  form.date.addEventListener("change", () => load().catch(() => {}));
-
-  function paintLive() {
-    const opt = form.service.selectedOptions[0];
-    const garage = form.querySelector("[name=garage]:checked");
-    const where = document.getElementById("work-where");
-    const title = document.getElementById("work-title");
-    const meta = document.getElementById("work-meta");
-    if (where) where.textContent = garage ? garage.parentElement.textContent.trim() : "";
-    if (title) title.textContent = opt ? opt.textContent : "";
-    if (meta) meta.textContent = `${opt?.dataset?.min || ""} · ${opt?.dataset?.price || ""}`;
-    const id = opt?.value || "";
-    for (const pic of document.querySelectorAll("#panel-book .work-pic")) {
-      pic.classList.toggle("is-on", pic.dataset.art === id);
-    }
-    for (const item of document.querySelectorAll("[data-pick], [data-rock-pick]")) {
-      const pick = item.dataset.pick || item.dataset.rockPick;
-      item.classList.toggle("is-on", pick === id);
-    }
-    const seg = document.querySelector(`[data-rock-pick="${CSS.escape(id)}"]`);
-    const track = document.getElementById("rocker-track");
-    if (seg && track) {
-      const segBox = seg.getBoundingClientRect();
-      const trackBox = track.getBoundingClientRect();
-      track.scrollLeft += segBox.left - trackBox.left - (trackBox.width - segBox.width) / 2;
-    }
-  }
-  function stepService(delta) {
-    const options = [...form.service.options];
-    if (!options.length) return;
-    const index = Math.max(0, options.findIndex((option) => option.value === form.service.value));
-    const next = (index + delta + options.length) % options.length;
-    form.service.value = options[next].value;
-    form.service.dispatchEvent(new Event("change"));
-  }
-  form.service.addEventListener("change", paintLive);
-  form.querySelectorAll("[name=garage]").forEach((node) => node.addEventListener("change", paintLive));
-  paintLive();
-  document.querySelectorAll("[data-rock]").forEach((button) => {
-    button.addEventListener("click", () => stepService(Number(button.dataset.rock)));
-  });
-  document.querySelectorAll("[data-rock-pick]").forEach((button) => {
-    button.addEventListener("click", () => {
-      form.service.value = button.dataset.rockPick;
-      form.service.dispatchEvent(new Event("change"));
-    });
-  });
-  document.getElementById("work-open")?.addEventListener("click", () => {
-    const curtain = document.getElementById("work-curtain");
-    if (curtain) curtain.hidden = false;
-  });
-  document.getElementById("work-curtain")?.addEventListener("click", (event) => {
-    const curtain = document.getElementById("work-curtain");
-    if (event.target.closest("[data-curtain-close]")) {
-      curtain.hidden = true;
-      return;
-    }
-    const pick = event.target.closest("[data-pick]");
-    if (!pick) return;
-    form.service.value = pick.dataset.pick;
-    form.service.dispatchEvent(new Event("change"));
-    curtain.hidden = true;
-  });
-
-  wireSteps(form, (index) => {
-    if (index === 2) load().catch(() => { error.textContent = strings.invalid || "Error"; });
-  });
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    error.textContent = "";
-    if (selected == null) {
-      error.textContent = strings.pickSlot || strings.required || "";
-      form.querySelector('[data-step="4"]').hidden = true;
-      form.querySelector('[data-step="3"]').hidden = false;
-      return;
-    }
-    const data = new FormData(form);
-    data.set("start", String(selected));
-    data.set("lang", lang);
-    const button = form.querySelector("[type=submit]");
-    button.disabled = true;
-    button.textContent = strings.sending || "…";
-    try {
-      const response = await fetch("/api/bookings", { method: "POST", body: data });
-      const body = await response.json();
-      if (!response.ok) {
-        error.textContent = strings[camel(body.error)] || strings.invalid || body.error;
-        button.disabled = false;
-        button.textContent = form.dataset.label || strings.submit || "OK";
-        return;
-      }
-      const c = body.confirmation;
-      visitDraft = false;
-      saveVisit({ code: c.code, cc: String(data.get("cc") || "31"), national: String(data.get("national") || "") });
-      await refreshVisit();
-    } catch {
-      error.textContent = strings.invalid || "Error";
-      button.disabled = false;
-    }
-  });
 }
 
 function project(lat, lng, z) {
@@ -535,143 +369,6 @@ function initTow(form) {
   });
 }
 
-function saveVisit(visit) {
-  try { localStorage.setItem(VISIT_KEY, JSON.stringify(visit)); } catch { /* private mode */ }
-}
-
-function readVisit() {
-  try {
-    const raw = localStorage.getItem(VISIT_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function clearVisit() {
-  try { localStorage.removeItem(VISIT_KEY); } catch { /* private mode */ }
-}
-
-function initVisit() {
-  document.getElementById("visit-find-open")?.addEventListener("click", () => {
-    const box = document.getElementById("visit-find");
-    if (box) box.hidden = !box.hidden;
-  });
-  document.getElementById("visit-find-go")?.addEventListener("click", async () => {
-    const code = document.querySelector("[name=lookup_code]")?.value || "";
-    const national = document.querySelector("[name=lookup_phone]")?.value || "";
-    const err = document.getElementById("visit-find-error");
-    if (err) err.textContent = "";
-    visitDraft = false;
-    saveVisit({ code: code.trim().toUpperCase(), cc: "31", national });
-    const ok = await refreshVisit();
-    if (!ok && err) err.textContent = extra.strings?.book?.visit?.missing || "";
-  });
-  document.getElementById("visit")?.addEventListener("click", (event) => {
-    if (!event.target.closest("#visit-new")) return;
-    visitDraft = true;
-    stopVisitPoll();
-    const card = document.getElementById("visit");
-    const form = document.getElementById("book-form");
-    if (card) card.hidden = true;
-    if (form) form.hidden = false;
-  });
-}
-
-async function refreshVisit() {
-  const card = document.getElementById("visit");
-  const form = document.getElementById("book-form");
-  if (visitDraft) return false;
-  const stored = readVisit();
-  if (!stored?.code) {
-    if (card) card.hidden = true;
-    if (form) form.hidden = false;
-    stopVisitPoll();
-    return false;
-  }
-  try {
-    const response = await fetch("/api/bookings/status", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        code: stored.code,
-        cc: stored.cc || "31",
-        national: stored.national || "",
-        lang,
-      }),
-    });
-    if (response.status === 404) {
-      clearVisit();
-      if (card) card.hidden = true;
-      if (form) form.hidden = false;
-      stopVisitPoll();
-      return false;
-    }
-    if (!response.ok) return false;
-    const body = await response.json();
-    paintVisit(body.visit);
-    if (form) form.hidden = true;
-    if (card) card.hidden = false;
-    startVisitPoll();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function paintVisit(visit) {
-  const card = document.getElementById("visit");
-  if (!card || !visit) return;
-  const book = extra.strings?.book || {};
-  const labels = book.visit || {};
-  const order = ["requested", "confirmed", "in_progress", "completed"];
-  const names = {
-    requested: labels.submitted,
-    confirmed: labels.confirmed,
-    in_progress: labels.progress,
-    completed: labels.done,
-  };
-  const cancelled = visit.status === "cancelled";
-  const index = order.indexOf(visit.status);
-  const steps = order.map((key, i) => {
-    const cls = cancelled ? "" : (i < index ? "is-done" : (i === index ? "is-on" : ""));
-    return `<li class="${cls}">${escapeHtml(names[key] || key)}</li>`;
-  }).join("");
-  const dial = String(visit.garagePhone || "").replace(/[^\d+]/g, "");
-  card.classList.toggle("is-cancelled", cancelled);
-  card.innerHTML = `
-    <p class="visit-code">${escapeHtml(visit.code)}</p>
-    <h2>${escapeHtml(visit.service)}</h2>
-    ${cancelled ? `<p class="visit-badge">${escapeHtml(labels.cancelled || "")}</p>` : ""}
-    <ol class="visit-steps">${steps}</ol>
-    <div class="visit-row"><span>${escapeHtml(book.garage || "")}</span><b>${escapeHtml(visit.address)}</b></div>
-    <div class="visit-row"><span>${escapeHtml(book.name || "")}</span><b>${escapeHtml(visit.name)}</b></div>
-    <div class="visit-row"><span>${escapeHtml(book.phone || "")}</span><b>${escapeHtml(visit.phone)}</b>${dial ? `<a href="tel:${escapeAttr(dial)}">${escapeHtml(labels.call || "")} · ${escapeHtml(visit.garagePhone || "")}</a>` : ""}</div>
-    <div class="visit-row"><span>${escapeHtml(book.date || "")}</span><b>${escapeHtml(visit.date)} · ${escapeHtml(visit.time)}–${escapeHtml(visit.end)}</b></div>
-    <div class="visit-row"><span>${escapeHtml(book.vehicle || "")}</span><b>${escapeHtml(visit.vehicle)}</b></div>
-    ${visit.problem ? `<div class="visit-row"><span>${escapeHtml(book.problem || "")}</span><b>${escapeHtml(visit.problem)}</b></div>` : ""}
-    ${visit.note ? `<div class="visit-row"><b>${escapeHtml(visit.note)}</b></div>` : ""}
-    <button type="button" class="btn btn-ghost" id="visit-new">${escapeHtml(labels.new || "")}</button>`;
-}
-
-function startVisitPoll() {
-  if (visitTimer) return;
-  visitTimer = setInterval(() => {
-    const open = document.querySelector('.panel-slot:not([hidden]) .panel[data-panel="book"]');
-    if (!open || visitDraft) return;
-    refreshVisit();
-  }, 8000);
-}
-
-function stopVisitPoll() {
-  if (!visitTimer) return;
-  clearInterval(visitTimer);
-  visitTimer = 0;
-}
-
-function camel(error) {
-  return ({ slot_taken: "slotTaken", closed: "closed", invalid: "invalid", past: "past" })[error] || "invalid";
-}
 
 function readJson(id) {
   const node = document.getElementById(id);

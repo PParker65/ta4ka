@@ -52,22 +52,31 @@ assert(home.text.includes("по запросу"), "coding on request");
 assert(home.text.includes("зависит от авто"), "depends note");
 assert(home.text.includes('class="carriage"'), "lift carriage");
 assert(home.text.includes('class="tile"'), "service cards");
-assert(home.text.includes('id="visit"'), "visit card");
 for (const job of ["tyre-fit", "discs-pads", "chassis-diag", "oil-filter", "major-service", "e-diag", "timing-chain", "timing-belt", "gearbox", "clutch", "alternator", "starter", "welding", "coding"]) {
   assert(home.text.includes(`/photos/jobs/${job}.jpg`), `job photo ${job}`);
 }
 assert(!home.text.includes('class="price-row"'), "no spreadsheet rows");
-assert(home.text.includes('class="rocker"'), "booking rocker");
-assert(home.text.includes("work-square"), "booking square");
-assert(home.text.includes('id="work-curtain"'), "booking curtain");
+assert(!home.text.includes('data-panel="book"'), "no book tab");
+assert(!home.text.includes('id="panel-book"'), "no book panel");
+assert(!home.text.includes('class="rocker"'), "no booking rocker");
+assert(!home.text.includes("work-square"), "no booking square");
+assert(!home.text.includes('id="visit"'), "no visit card");
+assert(!home.text.includes("/boeken"), "no book links");
+assert(home.text.includes(">Главная<"), "home tab");
+assert(home.text.includes(">Услуги<"), "services tab");
+assert(home.text.includes(">Эвакуатор<"), "tow tab");
+assert(home.text.includes(">Контакты<"), "contacts tab");
+assert(!home.text.includes("<span>Запись</span>"), "no book label");
 assert(home.text.includes("overflow:hidden"), "no page scroll lock");
 
 const nl = await call("/nl/");
 assert(nl.text.includes('lang="nl"'), "dutch lang");
-assert(nl.text.includes("Afspraak"), "dutch tab");
+assert(nl.text.includes(">Diensten<"), "dutch services tab");
+assert(!nl.text.includes('data-panel="book"'), "dutch has no book tab");
 const en = await call("/en/");
 assert(en.text.includes('lang="en"'), "english lang");
-assert(en.text.includes(">Book<") || en.text.includes(">BOOK<") || en.text.includes("Book"), "english");
+assert(en.text.includes(">Services<"), "english services tab");
+assert(!en.text.includes(">Book<"), "english has no book tab");
 
 assert((await call("/vestigingen/waddinxveen")).status === 200, "location w");
 assert((await call("/vestigingen/de-bilt")).status === 200, "location b");
@@ -75,12 +84,18 @@ assert((await call("/evacuatie")).text.includes("Эвакуатор"), "tow page
 assert((await call("/contact")).text.includes("Kromme Esse"), "contacts");
 assert((await call("/diensten/tyre-fit")).status === 200, "service");
 assert((await call("/diensten/tyre-fit")).text.includes("€ 30"), "service price");
+assert((await call("/diensten/tyre-fit")).text.includes("wa.me/31613044422"), "service whatsapp");
+assert(!(await call("/diensten/tyre-fit")).text.includes("/boeken"), "service has no book link");
 assert((await call("/faq")).status === 200, "faq");
 assert((await call("/privacy")).text.includes("13044422"), "privacy");
 assert((await call("/nl/privacy")).text.includes("verwerkingsverantwoordelijke"), "privacy nl");
 assert((await call("/voorwaarden")).status === 200, "terms");
 const cookies = await call("/cookies");
 assert(cookies.status === 301 && cookies.headers.get("location") === "/", "cookies redirect");
+const booked = await call("/boeken");
+assert(booked.status === 301 && booked.headers.get("location") === "/contact", "book redirect");
+const bookedNl = await call("/nl/boeken");
+assert(bookedNl.status === 301 && bookedNl.headers.get("location") === "/nl/contact", "book redirect nl");
 const uk = await call("/uk/");
 assert(uk.text.includes("Головна"), "ukrainian");
 assert(uk.text.includes('lang="uk"'), "uk lang attr");
@@ -92,7 +107,9 @@ assert(uk.text.includes("за запитом"), "ua on request");
 assert(uk.text.includes("залежить від авто"), "ua depends");
 assert(uk.text.includes("ВЕЛИКЕ ТО: ОЛИВА + МАСЛЯНИЙ, ПОВІТРЯНИЙ, САЛОННИЙ І ПАЛИВНИЙ ФІЛЬТР"), "ua major title");
 assert((await call("/nope")).status === 404, "404");
-assert((await call("/sitemap.xml")).text.includes("/vestigingen/de-bilt"), "sitemap");
+const sitemap = await call("/sitemap.xml");
+assert(sitemap.text.includes("/vestigingen/de-bilt"), "sitemap");
+assert(!sitemap.text.includes("/boeken"), "sitemap has no booking");
 assert((await call("/robots.txt")).text.includes("Sitemap:"), "robots");
 
 const today = new Date();

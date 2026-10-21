@@ -26,7 +26,6 @@ import { notifyClient, notifyOwner, runReminders } from "./notify.js";
 import {
   adminAppPage,
   adminLoginPage,
-  bookPage,
   contactPage,
   faqPage,
   homePage,
@@ -187,6 +186,10 @@ export async function handleRequest(request, { db, env = {}, assets }) {
       const dest = rawPath.replace(/\/cookies$/, "") || "/";
       return new Response(null, { status: 301, headers: { location: dest } });
     }
+    if (rawPath === "/boeken" || rawPath.endsWith("/boeken")) {
+      const dest = rawPath.replace(/\/boeken$/, "/contact");
+      return new Response(null, { status: 301, headers: { location: dest } });
+    }
     return page(db, request, env, url);
   } catch (error) {
     console.error(error && error.message ? error.message : "request failed");
@@ -207,7 +210,7 @@ function robots(request, env) {
 async function sitemap(db, request, env) {
   const origin = originOf(request, env);
   const services = await listServices(db, "nl", { activeOnly: true });
-  const paths = ["/", "/diensten", "/evacuatie", "/boeken", "/contact", "/faq", "/voorwaarden", "/privacy", "/vestigingen/waddinxveen", "/vestigingen/de-bilt"];
+  const paths = ["/", "/diensten", "/evacuatie", "/contact", "/faq", "/voorwaarden", "/privacy", "/vestigingen/waddinxveen", "/vestigingen/de-bilt"];
   for (const service of services) paths.push(`/diensten/${service.id}`);
   const urls = [];
   for (const path of paths) {
@@ -258,7 +261,6 @@ async function page(db, request, env, url) {
       status = 404;
     } else body = locationPage(ctx, garage);
   }   else if (normalized === "/evacuatie") body = towPage(ctx);
-  else if (normalized === "/boeken") body = bookPage(ctx);
   else if (normalized === "/contact") body = contactPage(ctx);
   else if (normalized === "/faq") body = faqPage(ctx);
   else if (normalized === "/voorwaarden") body = legalPage(ctx, "terms");

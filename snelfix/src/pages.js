@@ -223,7 +223,6 @@ function tabs(ctx, panel) {
   const items = [
     ["home", "/", copy.tab.home],
     ["services", "/diensten", copy.tab.services],
-    ["book", "/boeken", copy.tab.book],
     ["tow", "/evacuatie", copy.tab.tow],
     ["contacts", "/contact", copy.tab.contacts],
   ];
@@ -257,7 +256,7 @@ function homePanel(ctx) {
 }
 
 function servicesPanel(ctx, serviceId) {
-  const { copy, lang, services } = ctx;
+  const { copy, lang, services, brand } = ctx;
   const workshop = services.filter((service) => service.kind !== "tow");
   const tiles = workshop.map((service, index) => `<a class="tile" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
     <img class="tile-photo" src="/photos/jobs/${esc(service.id)}.jpg" alt="">
@@ -265,131 +264,23 @@ function servicesPanel(ctx, serviceId) {
     <b>${esc(service.title)}</b>
     <span class="mono tile-price">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</span>
   </a>`).join("");
-  const details = workshop.map((service) => `<article class="detail" id="svc-${esc(service.id)}" data-service-detail="${esc(service.id)}"${service.id === serviceId ? "" : " hidden"}>
+  const details = workshop.map((service) => {
+    const wa = `${String(brand.whatsapp || "https://wa.me/31613044422").split("?")[0]}?text=${encodeURIComponent(service.title)}`;
+    return `<article class="detail" id="svc-${esc(service.id)}" data-service-detail="${esc(service.id)}"${service.id === serviceId ? "" : " hidden"}>
     <button type="button" class="text-btn" data-service-back>${esc(copy.svc.back)}</button>
     <h2>${esc(service.title)}</h2>
     <p class="mono">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</p>
     <p class="summary">${esc(service.summary || "")}</p>
     <p class="body-copy">${esc(service.body || "")}</p>
-    <a class="btn btn-primary" href="${esc(href(lang, `/boeken?service=${encodeURIComponent(service.id)}`))}" data-panel="book" data-service-book="${esc(service.id)}">${esc(service.kind === "tow" ? copy.svc.towCta : copy.svc.book)}</a>
-  </article>`).join("");
+    <div class="step-nav">
+      <a class="btn btn-primary" href="${esc(wa)}" target="_blank" rel="noopener">${esc(copy.dock.wa)}</a>
+      <a class="btn btn-ghost" href="tel:${esc(brand.phoneTel)}">${esc(copy.dock.call)}</a>
+    </div>
+  </article>`;
+  }).join("");
   return `<section id="panel-services" class="panel" data-panel="services">
     <div class="svc-grid"${serviceId ? " hidden" : ""}>${tiles}</div>
     ${details}
-  </section>`;
-}
-
-function serviceArt(id) {
-  const paths = {
-    "e-diag": '<rect x="14" y="18" width="52" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 42l8-10 8 6 10-14 8 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 52h16" stroke="currentColor" stroke-width="2"/>',
-    coding: '<rect x="18" y="16" width="44" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M30 32h8M42 32h8M30 42h20M30 50h12" stroke="currentColor" stroke-width="2"/>',
-    "timing-chain": '<circle cx="28" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="52" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 30h24M28 50h24" stroke="currentColor" stroke-width="2"/>',
-    "timing-belt": '<circle cx="26" cy="28" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="54" cy="52" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 24h16l8 22H34z" fill="none" stroke="currentColor" stroke-width="2"/>',
-    gearbox: '<rect x="18" y="28" width="44" height="28" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="42" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="48" cy="42" r="6" fill="none" stroke="currentColor" stroke-width="2"/>',
-    clutch: '<circle cx="40" cy="40" r="16" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="5" fill="currentColor"/>',
-    "oil-filter": '<path d="M40 16c8 10 8 16 0 28-8-12-8-18 0-28z" fill="currentColor"/><rect x="24" y="48" width="32" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "major-service": '<rect x="16" y="22" width="14" height="36" fill="none" stroke="currentColor" stroke-width="2"/><rect x="33" y="30" width="14" height="28" fill="none" stroke="currentColor" stroke-width="2"/><rect x="50" y="18" width="14" height="40" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "chassis-diag": '<path d="M18 28h44" stroke="currentColor" stroke-width="3"/><path d="M28 28c0 14 8 22 16 22s16-8 16-22" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="28" cy="56" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="56" cy="56" r="6" fill="none" stroke="currentColor" stroke-width="2"/>',
-    "discs-pads": '<circle cx="40" cy="40" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="6" fill="currentColor"/><path d="M52 28h12v16H52z" fill="currentColor"/>',
-    "tyre-fit": '<circle cx="40" cy="40" r="20" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="40" cy="40" r="6" fill="currentColor"/>',
-    alternator: '<circle cx="40" cy="40" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M40 24v32M24 40h32" stroke="currentColor" stroke-width="2"/>',
-    starter: '<path d="M34 14l-8 24h14L30 66l22-32H38z" fill="currentColor"/>',
-    welding: '<path d="M22 54l18-28 6 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M44 22l8 6-4 4" fill="currentColor"/><path d="M18 58h28" stroke="currentColor" stroke-width="2"/>',
-  };
-  const body = paths[id] || paths["e-diag"];
-  return `<svg viewBox="0 0 80 80" aria-hidden="true">${body}</svg>`;
-}
-
-function bookPanel(ctx) {
-  const { copy, lang, services, garages, query, today } = ctx;
-  const bookable = services.filter((service) => service.bookable && service.kind !== "tow");
-  const selectedService = query.service || bookable[0]?.id || "";
-  const selectedGarage = query.garage || garages[0]?.id || "";
-  const pics = bookable.map((service) => `<span class="work-pic${service.id === selectedService ? " is-on" : ""}" data-art="${esc(service.id)}" style="background-image:url('/photos/jobs/${esc(service.id)}.jpg')"></span>`).join("");
-  return `<section id="panel-book" class="panel" data-panel="book">
-    <article id="visit" class="visit" hidden></article>
-    <form id="book-form" class="wizard" data-today="${esc(today)}" data-label="${esc(copy.book.submit)}" data-step="1" style="--steps:4">
-      <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span><i class="meter"></i></div>
-      <div class="step" data-step="1">
-        <div class="work-stage">
-          <div class="work-square">
-            <span class="work-art">${pics}</span>
-            <span class="work-caption">
-              <strong id="work-title"></strong>
-              <span class="mono" id="work-meta"></span>
-            </span>
-          </div>
-          <div class="rocker" role="group" aria-label="${esc(copy.book.service)}">
-            <button type="button" class="rocker-btn" data-rock="-1" aria-label="‹">‹</button>
-            <div class="rocker-track" id="rocker-track">
-              ${bookable.map((service) => `<button type="button" class="rocker-seg${service.id === selectedService ? " is-on" : ""}" data-rock-pick="${esc(service.id)}"><span>${String(service.sort).padStart(2, "0")}</span><b>${esc(service.title)}</b></button>`).join("")}
-            </div>
-            <button type="button" class="rocker-btn" data-rock="1" aria-label="›">›</button>
-          </div>
-        </div>
-        <select class="sr" name="service" aria-hidden="true" tabindex="-1">${bookable.map((service) => `<option value="${esc(service.id)}" data-min="${esc(String(service.duration_min))} ${esc(copy.svc.minutes)}" data-price="${esc(priceLabel(copy, service))}"${service.id === selectedService ? " selected" : ""}>${esc(service.title)}</option>`).join("")}</select>
-        <button type="button" class="text-btn" id="work-open">${esc(copy.book.service)}</button>
-        <p class="k">${esc(copy.book.garage)}</p>
-        <div class="choices">${garages.map((garage) => `<label class="choice"><input type="radio" name="garage" value="${esc(garage.id)}"${garage.id === selectedGarage ? " checked" : ""}> ${esc(garage.city)}</label>`).join("")}</div>
-        <p class="hint">${esc(copy.book.lede)}</p>
-        <div class="step-nav"><button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button></div>
-        <button type="button" class="text-btn" id="visit-find-open">${esc(copy.book.visit.find)}</button>
-        <div id="visit-find" class="visit-find" hidden>
-          <label>${esc(copy.book.code)}<input name="lookup_code" maxlength="16" autocapitalize="characters" placeholder="SF-"></label>
-          <label>${esc(copy.book.phone)}<input name="lookup_phone" inputmode="tel" placeholder="6 12345678"></label>
-          <p class="form-error" id="visit-find-error"></p>
-          <button type="button" class="btn btn-ghost" id="visit-find-go">${esc(copy.book.visit.find)}</button>
-        </div>
-      </div>
-      <div class="step" data-step="2" hidden>
-        <p class="k">${esc(copy.book.vehicle)}</p>
-        <div class="two">
-          <label>${esc(copy.book.make)}<input name="make" required maxlength="40" autocomplete="off"></label>
-          <label>${esc(copy.book.model)}<input name="model" required maxlength="40" autocomplete="off"></label>
-        </div>
-        <div class="two">
-          <label>${esc(copy.book.year)}<input name="year" inputmode="numeric" required min="1970" max="2027" placeholder="2016"></label>
-          <label>${esc(copy.book.plate)}<input name="plate" required maxlength="12" autocapitalize="characters" placeholder="AB-123-C"></label>
-        </div>
-        <div class="step-nav">
-          <button class="btn btn-ghost" type="button" data-back>${esc(copy.step.back)}</button>
-          <button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button>
-        </div>
-      </div>
-      <div class="step" data-step="3" hidden>
-        <p class="k">${esc(copy.book.when)}</p>
-        <label>${esc(copy.book.date)}<input type="date" name="date" required value="${esc(today)}"></label>
-        <div id="slots" class="slots" role="listbox" aria-label="${esc(copy.book.slots)}"></div>
-        <p id="slots-empty" class="hint" hidden>${esc(copy.book.noSlots)}</p>
-        <div class="step-nav">
-          <button class="btn" type="button" data-back>${esc(copy.step.back)}</button>
-          <button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button>
-        </div>
-      </div>
-      <div class="step" data-step="4" hidden>
-        <p class="k">${esc(copy.book.contact)}</p>
-        <label>${esc(copy.book.name)}<input name="name" required maxlength="80" autocomplete="name"></label>
-        ${phoneFields(copy)}
-        <label>${esc(copy.book.email)}<input name="email" type="email" maxlength="120" autocomplete="email"></label>
-        <label>${esc(copy.book.problem)}<textarea name="problem" rows="2" maxlength="2000" required></textarea></label>
-        <label>${esc(copy.book.photos)}<input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple></label>
-        <p class="form-error" id="book-error" role="alert"></p>
-        <div class="step-nav">
-          <button class="btn" type="button" data-back>${esc(copy.step.back)}</button>
-          <button class="btn btn-primary" type="submit">${esc(copy.book.submit)}</button>
-        </div>
-      </div>
-    </form>
-    <div id="book-done" hidden></div>
-    <div class="curtain" id="work-curtain" hidden>
-      <button type="button" class="curtain-scrim" data-curtain-close aria-label="${esc(copy.nav.close)}"></button>
-      <div class="curtain-panel" role="dialog" aria-modal="true" aria-label="${esc(copy.book.service)}">
-        <div class="curtain-bar"><span class="k">${esc(copy.book.service)}</span><button type="button" class="text-btn" data-curtain-close>${esc(copy.nav.close)}</button></div>
-        <div class="curtain-list">
-          ${bookable.map((service) => `<button type="button" class="curtain-item${service.id === selectedService ? " is-on" : ""}" data-pick="${esc(service.id)}"><span class="work-art mini">${serviceArt(service.id)}</span><span>${esc(service.title)}</span></button>`).join("")}
-        </div>
-      </div>
-    </div>
   </section>`;
 }
 
@@ -578,7 +469,6 @@ ${splashHtml(copy)}
     ${banner ? `<p class="banner">${esc(banner)}</p>` : ""}
     <div class="panel-slot"${show("home")}>${homePanel(ctx)}</div>
     <div class="panel-slot"${show("services")}>${servicesPanel(ctx, serviceId)}</div>
-    <div class="panel-slot"${show("book")}>${bookPanel(ctx)}</div>
     <div class="panel-slot"${show("tow")}>${towPanel(ctx)}</div>
     <div class="panel-slot"${show("contacts")}>${contactsPanel(ctx, garageId, sheet)}</div>
   </main>
@@ -631,10 +521,6 @@ export function locationPage(ctx, garage) {
 
 export function towPage(ctx) {
   return meta(ctx, "towTitle", "towDesc", "/evacuatie", "tow");
-}
-
-export function bookPage(ctx) {
-  return meta(ctx, "bookTitle", "bookDesc", "/boeken", "book");
 }
 
 export function contactPage(ctx) {
