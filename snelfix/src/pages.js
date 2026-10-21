@@ -122,17 +122,10 @@ function haulScene() {
     <rect width="400" height="168" fill="#07080a"/>
     <rect y="100" width="400" height="68" fill="#10140c"/>
     <g class="haul-poles" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".28">
-      <path d="M8 100V58M62 100V48M116 100V58M170 100V48M224 100V58M278 100V48"/>
+      <path d="M8 100V58M62 100V48M116 100V58M170 100V48M224 100V58M278 100V48M332 100V58M386 100V48M440 100V58M494 100V48M548 100V58M602 100V48"/>
     </g>
     <path d="M0 102h400M0 156h400" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/>
-    <g class="haul-dashes"><path d="M-60 128h520" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="18 16"/></g>
-    <g class="haul-bay">
-      <path d="M308 168V36h86v132" fill="#07080a" stroke="currentColor" stroke-width="2.4"/>
-      <rect class="haul-glow" x="320" y="48" width="62" height="120" fill="currentColor"/>
-      <path class="haul-door" d="M322 168V50h58v118" fill="#0c1204" stroke="currentColor" stroke-width="1.6"/>
-      <path d="M338 168V62M364 168V62" fill="none" stroke="currentColor" stroke-width="2.4" opacity=".7"/>
-      <path class="haul-beam" d="M332 100h40" fill="none" stroke="currentColor" stroke-width="4"/>
-    </g>
+    <g class="haul-dashes"><path d="M-60 128h720" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="18 16"/></g>
     <g class="haul-truck" transform="translate(118 0)">
       <path d="M0 98h102v14H0z" fill="currentColor"/>
       <path d="M98 112V64h26l22 24v24z" fill="currentColor"/>

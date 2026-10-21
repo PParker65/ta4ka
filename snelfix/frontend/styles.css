@@ -267,28 +267,26 @@ p { margin: 0; }
 .haul-cable { animation: haul-cable 10s ease-in-out infinite; }
 .haul-beacon { animation: haul-blink .45s steps(2) infinite; }
 .haul-hazard { animation: haul-blink .55s steps(2) infinite; }
-.haul-door { transform-box: fill-box; transform-origin: center top; animation: haul-door 10s ease-in-out infinite; }
-.haul-glow { opacity: 0; animation: haul-glow 10s ease-in-out infinite; }
 @keyframes haul-spin {
   0% { transform: rotate(0deg); }
   26% { transform: rotate(640deg); }
   64% { transform: rotate(640deg); }
-  92% { transform: rotate(1200deg); }
-  100% { transform: rotate(1200deg); }
+  96% { transform: rotate(1480deg); }
+  100% { transform: rotate(1480deg); }
 }
 @keyframes haul-road {
   0% { transform: translateX(0); }
   26% { transform: translateX(-70px); }
   64% { transform: translateX(-70px); }
-  92% { transform: translateX(-150px); }
-  100% { transform: translateX(-150px); }
+  96% { transform: translateX(-220px); }
+  100% { transform: translateX(-220px); }
 }
 @keyframes haul-truck {
   0% { transform: translate(-210px, 0); opacity: 0; }
   7% { opacity: 1; }
   26%, 64% { transform: translate(118px, 0); opacity: 1; }
-  88% { transform: translate(268px, 0); opacity: 1; }
-  96% { transform: translate(300px, 0); opacity: 0; }
+  92% { transform: translate(430px, 0); opacity: 1; }
+  98% { transform: translate(490px, 0); opacity: 0; }
   100% { transform: translate(-210px, 0); opacity: 0; }
 }
 @keyframes haul-car {
@@ -296,24 +294,14 @@ p { margin: 0; }
   34%, 42% { transform: translate(4px, 10px); opacity: 1; }
   54% { transform: translate(64px, 4px); opacity: 1; }
   64% { transform: translate(118px, 0); opacity: 1; }
-  88% { transform: translate(268px, 0); opacity: 1; }
-  96% { transform: translate(300px, 0); opacity: 0; }
+  92% { transform: translate(430px, 0); opacity: 1; }
+  98% { transform: translate(490px, 0); opacity: 0; }
   100% { transform: translate(4px, 10px); opacity: 0; }
 }
 @keyframes haul-cable {
   0%, 30% { opacity: 0; }
   36%, 58% { opacity: 1; }
   68%, 100% { opacity: 0; }
-}
-@keyframes haul-door {
-  0%, 66% { transform: scaleY(1); }
-  80%, 92% { transform: scaleY(0.06); }
-  100% { transform: scaleY(1); }
-}
-@keyframes haul-glow {
-  0%, 66% { opacity: 0; }
-  80%, 92% { opacity: .28; }
-  100% { opacity: 0; }
 }
 @keyframes haul-blink { 50% { opacity: .2; } }
 .tow-cap {

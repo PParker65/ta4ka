@@ -94,6 +94,8 @@ assert(towPage.text.includes("Эвакуатор"), "tow page");
 assert(towPage.text.includes('class="haul"'), "tow scene");
 assert(towPage.text.includes("haul-truck"), "tow truck");
 assert(towPage.text.includes("haul-car"), "towed car");
+assert(!towPage.text.includes("haul-bay"), "no garage in the tow scene");
+assert(!towPage.text.includes("haul-door"), "no garage door in the tow scene");
 assert((towPage.text.match(/class="sq /g) || []).length === 2, "two tow squares");
 assert(towPage.text.includes("до 4 тонн"), "tow capacity");
 assert(towPage.text.includes('class="tow-rest" hidden'), "tow fields wait for location");
