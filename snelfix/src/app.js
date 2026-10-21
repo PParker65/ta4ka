@@ -181,6 +181,10 @@ export async function handleRequest(request, { db, env = {}, assets }) {
       const dest = rawPath.slice(3) || "/";
       return new Response(null, { status: 301, headers: { location: dest } });
     }
+    if (rawPath === "/cookies" || rawPath.endsWith("/cookies")) {
+      const dest = rawPath.replace(/\/cookies$/, "") || "/";
+      return new Response(null, { status: 301, headers: { location: dest } });
+    }
     return page(db, request, env, url);
   } catch (error) {
     console.error(error && error.message ? error.message : "request failed");
@@ -201,7 +205,7 @@ function robots(request, env) {
 async function sitemap(db, request, env) {
   const origin = originOf(request, env);
   const services = await listServices(db, "nl", { activeOnly: true });
-  const paths = ["/", "/diensten", "/evacuatie", "/boeken", "/contact", "/faq", "/voorwaarden", "/privacy", "/cookies", "/vestigingen/waddinxveen", "/vestigingen/de-bilt"];
+  const paths = ["/", "/diensten", "/evacuatie", "/boeken", "/contact", "/faq", "/voorwaarden", "/privacy", "/vestigingen/waddinxveen", "/vestigingen/de-bilt"];
   for (const service of services) paths.push(`/diensten/${service.id}`);
   const urls = [];
   for (const path of paths) {
@@ -257,7 +261,6 @@ async function page(db, request, env, url) {
   else if (normalized === "/faq") body = faqPage(ctx);
   else if (normalized === "/voorwaarden") body = legalPage(ctx, "terms");
   else if (normalized === "/privacy") body = legalPage(ctx, "privacy");
-  else if (normalized === "/cookies") body = legalPage(ctx, "cookies");
   else {
     body = notFoundPage(ctx);
     status = 404;

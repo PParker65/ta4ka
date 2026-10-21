@@ -4,19 +4,7 @@ const boot = readJson("sf-boot");
 const extra = readJson("sf-extra");
 const lang = boot.lang || "ru";
 
-const cookie = document.getElementById("cookie");
-if (cookie) {
-  const choice = localStorage.getItem("snelfix_cookie");
-  if (!choice) cookie.hidden = false;
-  cookie.addEventListener("click", (event) => {
-    const value = event.target?.dataset?.cookie;
-    if (!value) return;
-    localStorage.setItem("snelfix_cookie", value);
-    cookie.hidden = true;
-    if (value === "yes") loadAnalytics();
-  });
-  if (choice === "yes") loadAnalytics();
-}
+loadAnalytics();
 
 function loadAnalytics() {
   const id = boot.analyticsId;
@@ -38,7 +26,7 @@ function panelFromPath(pathname) {
   if (bare === "/diensten" || bare.startsWith("/diensten/")) return "services";
   if (bare === "/boeken") return "book";
   if (bare === "/evacuatie") return "tow";
-  if (bare === "/contact" || bare.startsWith("/vestigingen/") || bare === "/faq" || bare === "/voorwaarden" || bare === "/privacy" || bare === "/cookies") return "contacts";
+  if (bare === "/contact" || bare.startsWith("/vestigingen/") || bare === "/faq" || bare === "/voorwaarden" || bare === "/privacy") return "contacts";
   return "home";
 }
 
@@ -53,7 +41,6 @@ function sheetFromPath(pathname) {
   if (bare === "/faq") return "faq";
   if (bare === "/voorwaarden") return "terms";
   if (bare === "/privacy") return "privacy";
-  if (bare === "/cookies") return "cookies";
   return "";
 }
 
@@ -82,7 +69,7 @@ function showPanel(id) {
 }
 
 function showService(id) {
-  const grid = document.querySelector(".svc-grid");
+  const grid = document.querySelector(".price-list");
   const details = document.querySelectorAll("[data-service-detail]");
   if (!id) {
     if (grid) grid.hidden = false;
@@ -248,17 +235,42 @@ function initBooking(form) {
   });
   form.date.addEventListener("change", () => load().catch(() => {}));
 
-  const live = document.getElementById("book-live");
   function paintLive() {
-    if (!live) return;
     const opt = form.service.selectedOptions[0];
     const garage = form.querySelector("[name=garage]:checked");
-    const where = garage ? garage.parentElement.textContent.trim() : "";
-    live.innerHTML = `<span class="k">${escapeHtml(where)}</span><strong>${escapeHtml(opt ? opt.textContent : "")}</strong><span class="mono">${escapeHtml(opt?.dataset?.min || "")} · ${escapeHtml(opt?.dataset?.price || "")}</span>`;
+    const where = document.getElementById("work-where");
+    const title = document.getElementById("work-title");
+    const meta = document.getElementById("work-meta");
+    if (where) where.textContent = garage ? garage.parentElement.textContent.trim() : "";
+    if (title) title.textContent = opt ? opt.textContent : "";
+    if (meta) meta.textContent = `${opt?.dataset?.min || ""} · ${opt?.dataset?.price || ""}`;
+    const id = opt?.value || "";
+    for (const pic of document.querySelectorAll("#panel-book .work-pic")) {
+      pic.classList.toggle("is-on", pic.dataset.art === id);
+    }
+    for (const item of document.querySelectorAll("[data-pick]")) {
+      item.classList.toggle("is-on", item.dataset.pick === id);
+    }
   }
   form.service.addEventListener("change", paintLive);
   form.querySelectorAll("[name=garage]").forEach((node) => node.addEventListener("change", paintLive));
   paintLive();
+  document.getElementById("work-open")?.addEventListener("click", () => {
+    const curtain = document.getElementById("work-curtain");
+    if (curtain) curtain.hidden = false;
+  });
+  document.getElementById("work-curtain")?.addEventListener("click", (event) => {
+    const curtain = document.getElementById("work-curtain");
+    if (event.target.closest("[data-curtain-close]")) {
+      curtain.hidden = true;
+      return;
+    }
+    const pick = event.target.closest("[data-pick]");
+    if (!pick) return;
+    form.service.value = pick.dataset.pick;
+    form.service.dispatchEvent(new Event("change"));
+    curtain.hidden = true;
+  });
 
   wireSteps(form, (index) => {
     if (index === 2) load().catch(() => { error.textContent = strings.invalid || "Error"; });

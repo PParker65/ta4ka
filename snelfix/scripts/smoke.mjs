@@ -35,7 +35,23 @@ assert(!home.text.includes("Afspraak maken"), "not dutch first");
 assert(home.text.includes("Kromme Esse"), "waddinxveen");
 assert(home.text.includes("Groenekanseweg"), "de bilt");
 assert(home.text.includes('id="splash"'), "splash");
+assert(home.text.includes("splash-bg"), "splash background");
 assert(home.text.includes("snelfix_splash"), "splash session key");
+assert(!home.text.includes('id="cookie"'), "no cookie bar");
+assert(!home.text.includes("Begrepen"), "no cookie consent");
+assert(home.text.includes("Шиномонтаж + балансировка"), "ru tyre title");
+assert(home.text.includes("€ 30"), "tyre price");
+assert(home.text.includes("€ 100"), "brakes price");
+assert(home.text.includes("€ 50"), "oil price");
+assert(home.text.includes("€ 80"), "major service price");
+assert(home.text.includes("от € 500"), "chain from price");
+assert(home.text.includes("от € 300"), "belt from price");
+assert(home.text.includes("от € 400"), "gearbox from price");
+assert(home.text.includes("€ 35 / час"), "welding hourly");
+assert(home.text.includes("по запросу"), "coding on request");
+assert(home.text.includes("зависит от авто"), "depends note");
+assert(home.text.includes('class="carriage"'), "lift carriage");
+assert(home.text.includes('id="work-curtain"'), "booking curtain");
 assert(home.text.includes("overflow:hidden"), "no page scroll lock");
 
 const nl = await call("/nl/");
@@ -44,21 +60,30 @@ assert(nl.text.includes("Afspraak"), "dutch tab");
 const en = await call("/en/");
 assert(en.text.includes('lang="en"'), "english lang");
 assert(en.text.includes(">Book<") || en.text.includes(">BOOK<") || en.text.includes("Book"), "english");
-const uk = await call("/uk/");
-assert(uk.text.includes("Головна"), "ukrainian");
-assert(uk.text.includes('lang="uk"'), "uk lang attr");
-assert(uk.text.includes('hreflang="ru"'), "hreflang");
 
 assert((await call("/vestigingen/waddinxveen")).status === 200, "location w");
 assert((await call("/vestigingen/de-bilt")).status === 200, "location b");
 assert((await call("/evacuatie")).text.includes("Эвакуатор"), "tow page");
 assert((await call("/contact")).text.includes("Kromme Esse"), "contacts");
-assert((await call("/diensten/computerdiagnose")).status === 200, "service");
+assert((await call("/diensten/tyre-fit")).status === 200, "service");
+assert((await call("/diensten/tyre-fit")).text.includes("€ 30"), "service price");
 assert((await call("/faq")).status === 200, "faq");
 assert((await call("/privacy")).text.includes("13044422"), "privacy");
 assert((await call("/nl/privacy")).text.includes("verwerkingsverantwoordelijke"), "privacy nl");
 assert((await call("/voorwaarden")).status === 200, "terms");
-assert((await call("/cookies")).status === 200, "cookies");
+const cookies = await call("/cookies");
+assert(cookies.status === 301 && cookies.headers.get("location") === "/", "cookies redirect");
+const uk = await call("/uk/");
+assert(uk.text.includes("Головна"), "ukrainian");
+assert(uk.text.includes('lang="uk"'), "uk lang attr");
+assert(uk.text.includes('hreflang="ru"'), "hreflang");
+assert(uk.text.includes("ШИНОМОНТАЖ + БАЛАНСУВАННЯ"), "ua tyre title");
+assert(uk.text.includes("від € 500"), "ua from price");
+assert(uk.text.includes("€ 35 / год"), "ua hourly");
+assert(uk.text.includes("за запитом"), "ua on request");
+assert(uk.text.includes("залежить від авто"), "ua depends");
+assert(uk.text.includes("ШИНИ ТА ГАЛЬМА"), "ua section");
+assert(uk.text.includes("ВЕЛИКЕ ТО: ОЛИВА + МАСЛЯНИЙ, ПОВІТРЯНИЙ, САЛОННИЙ І ПАЛИВНИЙ ФІЛЬТР"), "ua major title");
 assert((await call("/nope")).status === 404, "404");
 assert((await call("/sitemap.xml")).text.includes("/vestigingen/de-bilt"), "sitemap");
 assert((await call("/robots.txt")).text.includes("Sitemap:"), "robots");
@@ -71,14 +96,14 @@ for (let i = 1; i < 14; i++) {
   const weekday = new Date(`${iso}T00:00:00Z`).getUTCDay();
   if (weekday >= 1 && weekday <= 5) { date = iso; break; }
 }
-const slots = await call(`/api/availability?garage=waddinxveen&service=olie-filter&date=${date}`);
+const slots = await call(`/api/availability?garage=waddinxveen&service=oil-filter&date=${date}`);
 const slotJson = JSON.parse(slots.text);
 assert(slots.status === 200 && slotJson.slots.length > 0, "slots");
 const start = slotJson.slots[0].start;
 
 function booking(startMin) {
   const data = new FormData();
-  data.set("service", "olie-filter");
+  data.set("service", "oil-filter");
   data.set("garage", "waddinxveen");
   data.set("make", "Volkswagen");
   data.set("model", "Golf");
@@ -162,7 +187,7 @@ const fresh = await call("/api/auth/login", {
 });
 assert(fresh.status === 200, "new password works");
 
-const sunday = await call(`/api/availability?garage=de-bilt&service=olie-filter&date=${nextWeekday(0)}`);
+const sunday = await call(`/api/availability?garage=de-bilt&service=oil-filter&date=${nextWeekday(0)}`);
 assert(JSON.parse(sunday.text).closed === true || (JSON.parse(sunday.text).slots || []).length === 0, "sunday closed");
 
 console.log("smoke ok");

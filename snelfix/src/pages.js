@@ -1,5 +1,6 @@
+import { SECTIONS } from "./catalog.js";
 import { asset, siteConfig } from "./site.config.js";
-import { esc, localizePath, minLabel, money } from "./util.js";
+import { esc, localizePath, minLabel } from "./util.js";
 
 const LOCALE = { nl: "nl_NL", en: "en_GB", ru: "ru_RU", uk: "uk_UA" };
 const LANG_ORDER = ["ru", "nl", "en", "uk"];
@@ -41,10 +42,18 @@ function seq(node) {
     .map((key) => node[key]);
 }
 
-function priceLabel(copy, service, lang) {
-  const amount = money(service.price_cents, lang);
-  if (!amount) return copy.svc.onRequest;
-  return `${copy.svc.from} ${amount}`;
+function euro(cents) {
+  if (cents == null || cents === "") return "";
+  return `€ ${Math.round(Number(cents) / 100)}`;
+}
+
+function priceLabel(copy, service) {
+  if (service.kind === "ask") return copy.price.ask;
+  const amount = euro(service.price_cents);
+  if (!amount) return copy.price.ask;
+  if (service.kind === "hour") return `${amount} / ${copy.price.hour}`;
+  if (service.kind === "from") return `${copy.price.from} ${amount}`;
+  return amount;
 }
 
 function weekdayFromIso(iso) {
@@ -98,31 +107,16 @@ function langs(ctx, path) {
 }
 
 function baySvg(kind) {
-  if (kind === "b") {
-    return `<svg class="bay bay-b" viewBox="0 0 120 148" aria-hidden="true">
-      <path d="M18 14v118M102 14v118M18 132h84" fill="none" stroke="currentColor" stroke-width="3"/>
-      <path class="lamp" d="M44 20h32" stroke="currentColor" stroke-width="3"/>
-      <g class="lift">
-        <path d="M34 98h52v12H34z" fill="currentColor"/>
-        <path class="hood" d="M34 98l12-18h20" fill="none" stroke="currentColor" stroke-width="2"/>
-        <path d="M66 80h16l8 18" fill="none" stroke="currentColor" stroke-width="2"/>
-        <circle cx="46" cy="114" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
-        <circle cx="78" cy="114" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
-      </g>
-      <path class="arm" d="M26 58h20l8 16" fill="none" stroke="currentColor" stroke-width="2"/>
-    </svg>`;
-  }
-  return `<svg class="bay bay-a" viewBox="0 0 120 148" aria-hidden="true">
-    <path class="lamp" d="M50 8h20v4H50z" fill="currentColor"/>
-    <g class="shutter"><path d="M22 18h76M22 26h76M22 34h76" fill="none" stroke="currentColor" stroke-width="2"/></g>
-    <path d="M18 14v118M102 14v118M18 132h84" fill="none" stroke="currentColor" stroke-width="3"/>
-    <g class="lift">
-      <path d="M30 72h60v5H30z" fill="currentColor"/>
-      <path d="M36 77v16M84 77v16" stroke="currentColor" stroke-width="2"/>
-      <path d="M32 93h56v14H32z" fill="currentColor"/>
-      <path d="M40 93l6-12h28l6 12" fill="none" stroke="currentColor" stroke-width="2"/>
-      <circle cx="44" cy="112" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
-      <circle cx="76" cy="112" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+  return `<svg class="bay bay-${kind}" viewBox="0 0 140 180" aria-hidden="true">
+    <path d="M34 6v166M106 6v166" fill="none" stroke="currentColor" stroke-width="5"/>
+    <path d="M26 8h88M18 172h104" fill="none" stroke="currentColor" stroke-width="3"/>
+    <g class="carriage">
+      <path d="M34 98h72" fill="none" stroke="currentColor" stroke-width="6"/>
+      <path d="M42 98v7h10v-7M88 98v7h10v-7" fill="currentColor"/>
+      <path d="M40 86h16l6-18h20l8 18h14v12H40z" fill="currentColor"/>
+      <path d="M62 70h20l4 12H58z" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
+      <circle cx="54" cy="100" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <circle cx="90" cy="100" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/>
     </g>
   </svg>`;
 }
@@ -142,29 +136,17 @@ function towSvg(cls) {
 
 function splashHtml(copy) {
   return `<div id="splash" class="splash">
-    <div class="nl-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="splash-frame">
-      <div class="splash-mark">
-        ${wordmark()}
-        <i class="splash-rule"></i>
-      </div>
+    <div class="splash-bg" aria-hidden="true">
+      <i class="wash wash-r"></i>
+      <i class="wash wash-w"></i>
+      <i class="wash wash-b"></i>
+      <i class="sweep"></i>
+      <i class="splash-grain"></i>
+    </div>
+    <div class="splash-stage">
+      ${wordmark()}
+      <span class="flag-rule" aria-hidden="true"><i></i><i></i><i></i></span>
       <p class="splash-copy">${esc(copy.splash.line)}</p>
-      <div class="splash-fleet" aria-hidden="true">
-        <svg class="fleet-car" viewBox="0 0 128 64">
-          <path d="M8 40h16l12-18h40l16 18h28v12H8z" fill="currentColor"/>
-          <path d="M40 24h32l10 14H36z" fill="#07080a"/>
-          <g class="wheel" transform="translate(36 50)"><circle r="8" fill="#07080a" stroke="currentColor" stroke-width="3"/><path d="M0-4v8M-4 0h8" stroke="currentColor"/></g>
-          <g class="wheel" transform="translate(96 50)"><circle r="8" fill="#07080a" stroke="currentColor" stroke-width="3"/><path d="M0-4v8M-4 0h8" stroke="currentColor"/></g>
-        </svg>
-        <svg class="fleet-flag" viewBox="0 0 48 58">
-          <rect x="2" y="2" width="44" height="54" fill="none" stroke="currentColor" stroke-width="2"/>
-          <rect x="8" y="12" width="32" height="9" fill="#AE1C28"/>
-          <rect x="8" y="21" width="32" height="9" fill="#fff"/>
-          <rect x="8" y="30" width="32" height="9" fill="#21468B"/>
-        </svg>
-        ${towSvg("fleet-tow")}
-      </div>
-      <p class="splash-meta">${esc(copy.splash.meta)}</p>
     </div>
     <button type="button" id="splash-skip" class="splash-skip">${esc(copy.splash.skip)}</button>
   </div>
@@ -278,23 +260,55 @@ function homePanel(ctx) {
 function servicesPanel(ctx, serviceId) {
   const { copy, lang, services } = ctx;
   const workshop = services.filter((service) => service.kind !== "tow");
-  const tiles = workshop.map((service, index) => `<a class="tile" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
-    <span class="idx">${String(index + 1).padStart(2, "0")}</span>
-    <b>${esc(service.title)}</b>
-    <span class="mono">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service, lang))}</span>
-  </a>`).join("");
+  const byId = Object.fromEntries(workshop.map((service) => [service.id, service]));
+  const list = SECTIONS.map((section) => {
+    const items = section.ids.map((id) => byId[id]).filter(Boolean);
+    if (!items.length) return "";
+    const rows = items.map((service) => {
+      const note = service.kind === "from" && service.summary
+        ? `<small class="price-note">${esc(service.summary)}</small>`
+        : "";
+      return `<a class="price-row" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
+        <span class="price-idx">${String(service.sort).padStart(2, "0")}/</span>
+        <span class="price-name">${esc(service.title)}</span>
+        <span class="price-side">${note}<b class="price-eur">${esc(priceLabel(copy, service))}</b></span>
+      </a>`;
+    }).join("");
+    return `<h2 class="price-section">${esc(section.title[lang] || section.title.ru)}</h2>${rows}`;
+  }).join("");
   const details = workshop.map((service) => `<article class="detail" id="svc-${esc(service.id)}" data-service-detail="${esc(service.id)}"${service.id === serviceId ? "" : " hidden"}>
     <button type="button" class="text-btn" data-service-back>${esc(copy.svc.back)}</button>
     <h2>${esc(service.title)}</h2>
-    <p class="mono">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service, lang))}</p>
+    <p class="mono price-eur">${esc(priceLabel(copy, service))}</p>
     <p class="summary">${esc(service.summary || "")}</p>
     <p class="body-copy">${esc(service.body || "")}</p>
     <a class="btn btn-primary" href="${esc(href(lang, `/boeken?service=${encodeURIComponent(service.id)}`))}" data-panel="book" data-service-book="${esc(service.id)}">${esc(service.kind === "tow" ? copy.svc.towCta : copy.svc.book)}</a>
   </article>`).join("");
   return `<section id="panel-services" class="panel" data-panel="services">
-    <div class="svc-grid"${serviceId ? " hidden" : ""}>${tiles}</div>
+    <div class="price-list"${serviceId ? " hidden" : ""}>${list}</div>
     ${details}
   </section>`;
+}
+
+function serviceArt(id) {
+  const paths = {
+    "e-diag": '<rect x="14" y="18" width="52" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 42l8-10 8 6 10-14 8 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 52h16" stroke="currentColor" stroke-width="2"/>',
+    coding: '<rect x="18" y="16" width="44" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M30 32h8M42 32h8M30 42h20M30 50h12" stroke="currentColor" stroke-width="2"/>',
+    "timing-chain": '<circle cx="28" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="52" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 30h24M28 50h24" stroke="currentColor" stroke-width="2"/>',
+    "timing-belt": '<circle cx="26" cy="28" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="54" cy="52" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 24h16l8 22H34z" fill="none" stroke="currentColor" stroke-width="2"/>',
+    gearbox: '<rect x="18" y="28" width="44" height="28" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="42" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="48" cy="42" r="6" fill="none" stroke="currentColor" stroke-width="2"/>',
+    clutch: '<circle cx="40" cy="40" r="16" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="5" fill="currentColor"/>',
+    "oil-filter": '<path d="M40 16c8 10 8 16 0 28-8-12-8-18 0-28z" fill="currentColor"/><rect x="24" y="48" width="32" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>',
+    "major-service": '<rect x="16" y="22" width="14" height="36" fill="none" stroke="currentColor" stroke-width="2"/><rect x="33" y="30" width="14" height="28" fill="none" stroke="currentColor" stroke-width="2"/><rect x="50" y="18" width="14" height="40" fill="none" stroke="currentColor" stroke-width="2"/>',
+    "chassis-diag": '<path d="M18 28h44" stroke="currentColor" stroke-width="3"/><path d="M28 28c0 14 8 22 16 22s16-8 16-22" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="28" cy="56" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="56" cy="56" r="6" fill="none" stroke="currentColor" stroke-width="2"/>',
+    "discs-pads": '<circle cx="40" cy="40" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="40" cy="40" r="6" fill="currentColor"/><path d="M52 28h12v16H52z" fill="currentColor"/>',
+    "tyre-fit": '<circle cx="40" cy="40" r="20" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="40" cy="40" r="6" fill="currentColor"/>',
+    alternator: '<circle cx="40" cy="40" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M40 24v32M24 40h32" stroke="currentColor" stroke-width="2"/>',
+    starter: '<path d="M34 14l-8 24h14L30 66l22-32H38z" fill="currentColor"/>',
+    welding: '<path d="M22 54l18-28 6 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M44 22l8 6-4 4" fill="currentColor"/><path d="M18 58h28" stroke="currentColor" stroke-width="2"/>',
+  };
+  const body = paths[id] || paths["e-diag"];
+  return `<svg viewBox="0 0 80 80" aria-hidden="true">${body}</svg>`;
 }
 
 function bookPanel(ctx) {
@@ -302,17 +316,22 @@ function bookPanel(ctx) {
   const bookable = services.filter((service) => service.bookable && service.kind !== "tow");
   const selectedService = query.service || bookable[0]?.id || "";
   const selectedGarage = query.garage || garages[0]?.id || "";
+  const pics = bookable.map((service) => `<span class="work-pic${service.id === selectedService ? " is-on" : ""}" data-art="${esc(service.id)}">${serviceArt(service.id)}</span>`).join("");
   return `<section id="panel-book" class="panel" data-panel="book">
     <form id="book-form" class="wizard" data-today="${esc(today)}" data-label="${esc(copy.book.submit)}" data-step="1" style="--steps:4">
       <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span><i class="meter"></i></div>
       <div class="step" data-step="1">
-        <p class="k">${esc(copy.book.service)}</p>
-        <label>${esc(copy.book.service)}
-          <select name="service">${bookable.map((service) => `<option value="${esc(service.id)}" data-min="${esc(String(service.duration_min))} ${esc(copy.svc.minutes)}" data-price="${esc(priceLabel(copy, service, lang))}"${service.id === selectedService ? " selected" : ""}>${esc(service.title)}</option>`).join("")}</select>
-        </label>
+        <button type="button" class="work-face" id="work-open">
+          <span class="work-copy">
+            <span class="k" id="work-where"></span>
+            <strong id="work-title"></strong>
+            <span class="mono" id="work-meta"></span>
+          </span>
+          <span class="work-art">${pics}</span>
+        </button>
+        <select class="sr" name="service" aria-hidden="true" tabindex="-1">${bookable.map((service) => `<option value="${esc(service.id)}" data-min="${esc(String(service.duration_min))} ${esc(copy.svc.minutes)}" data-price="${esc(priceLabel(copy, service))}"${service.id === selectedService ? " selected" : ""}>${esc(service.title)}</option>`).join("")}</select>
         <p class="k">${esc(copy.book.garage)}</p>
         <div class="choices">${garages.map((garage) => `<label class="choice"><input type="radio" name="garage" value="${esc(garage.id)}"${garage.id === selectedGarage ? " checked" : ""}> ${esc(garage.city)}</label>`).join("")}</div>
-        <div class="live" id="book-live"></div>
         <p class="hint">${esc(copy.book.lede)}</p>
         <div class="step-nav"><button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button></div>
       </div>
@@ -356,6 +375,15 @@ function bookPanel(ctx) {
       </div>
     </form>
     <div id="book-done" hidden></div>
+    <div class="curtain" id="work-curtain" hidden>
+      <button type="button" class="curtain-scrim" data-curtain-close aria-label="${esc(copy.nav.close)}"></button>
+      <div class="curtain-panel" role="dialog" aria-modal="true" aria-label="${esc(copy.book.service)}">
+        <div class="curtain-bar"><span class="k">${esc(copy.book.service)}</span><button type="button" class="text-btn" data-curtain-close>${esc(copy.nav.close)}</button></div>
+        <div class="curtain-list">
+          ${bookable.map((service) => `<button type="button" class="curtain-item${service.id === selectedService ? " is-on" : ""}" data-pick="${esc(service.id)}"><span class="work-art mini">${serviceArt(service.id)}</span><span>${esc(service.title)}</span></button>`).join("")}
+        </div>
+      </div>
+    </div>
   </section>`;
 }
 
@@ -459,7 +487,6 @@ function contactsPanel(ctx, garageId, sheet) {
     ["faq", copy.faq.title, seq(copy.faq).map((item) => `<h3>${esc(item.q)}</h3><p>${esc(item.a)}</p>`).join("")],
     ["terms", copy.meta.termsTitle.replace(" — SnelFix Auto", ""), seq(copy.terms).map((block) => `<h3>${esc(block.h)}</h3>${seq(block.p).map((p) => `<p>${esc(p)}</p>`).join("")}`).join("")],
     ["privacy", copy.meta.privacyTitle.replace(" — SnelFix Auto", ""), seq(copy.privacy).map((block) => `<h3>${esc(block.h)}</h3>${seq(block.p).map((p) => `<p>${esc(p)}</p>`).join("")}`).join("")],
-    ["cookies", copy.meta.cookiesTitle.replace(" — SnelFix Auto", ""), seq(copy.cookies).map((block) => `<h3>${esc(block.h)}</h3>${seq(block.p).map((p) => `<p>${esc(p)}</p>`).join("")}`).join("")],
   ];
   return `<section id="panel-contacts" class="panel" data-panel="contacts">
     <div class="contact-fit"${sheet ? " hidden" : ""}>
@@ -477,7 +504,6 @@ function contactsPanel(ctx, garageId, sheet) {
         <a href="${esc(href(lang, "/faq"))}" data-sheet="faq">${esc(copy.nav.faq)}</a>
         <a href="${esc(href(lang, "/voorwaarden"))}" data-sheet="terms">${esc(copy.footer.terms)}</a>
         <a href="${esc(href(lang, "/privacy"))}" data-sheet="privacy">${esc(copy.footer.privacy)}</a>
-        <a href="${esc(href(lang, "/cookies"))}" data-sheet="cookies">${esc(copy.footer.cookies)}</a>
       </p>
     </div>
     ${sheets.map(([id, title, body]) => `<article class="sheet" id="sheet-${id}" data-sheet-panel="${id}"${sheet === id ? "" : " hidden"}>
@@ -551,11 +577,6 @@ ${splashHtml(copy)}
     <div class="panel-slot"${show("contacts")}>${contactsPanel(ctx, garageId, sheet)}</div>
   </main>
   ${tabs(ctx, panel)}
-  <div class="cookie" id="cookie" hidden>
-    <p>${esc(copy.cookiebar.text)} <a href="${esc(href(lang, "/cookies"))}" data-sheet="cookies">${esc(copy.cookiebar.more)}</a></p>
-    <button type="button" data-cookie="no">${esc(copy.cookiebar.reject)}</button>
-    <button type="button" data-cookie="yes">${esc(copy.cookiebar.accept)}</button>
-  </div>
 </div>
 <script type="application/json" id="sf-extra">${safeJson({ strings })}</script>
 <script type="application/json" id="sf-boot">${safeJson(boot)}</script>
@@ -633,7 +654,6 @@ export function legalPage(ctx, kind) {
   const map = {
     terms: { path: "/voorwaarden", title: "termsTitle", desc: "termsDesc", sheet: "terms" },
     privacy: { path: "/privacy", title: "privacyTitle", desc: "privacyDesc", sheet: "privacy" },
-    cookies: { path: "/cookies", title: "cookiesTitle", desc: "cookiesDesc", sheet: "cookies" },
   };
   const page = map[kind];
   return shell(ctx, {

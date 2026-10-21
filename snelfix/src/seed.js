@@ -13,9 +13,15 @@ export function ensureSeed(db, env) {
   return ready;
 }
 
+const CATALOG_VERSION = "prices-20261021b";
+
 async function seedIfNeeded(db, env) {
   const flag = await db.prepare("SELECT value FROM settings WHERE key = 'seeded'").first();
-  if (flag) return;
+  if (!flag) await seedBase(db, env);
+  await syncCatalog(db);
+}
+
+async function seedBase(db, env) {
   const password = await hashPassword(env.ADMIN_PASSWORD || "admin");
   await db.prepare(
     "INSERT INTO settings (key, value) VALUES ('admin_username', 'admin') ON CONFLICT(key) DO NOTHING"
@@ -57,20 +63,6 @@ async function seedIfNeeded(db, env) {
       ).bind(garage.id, weekday, open, close).run();
     }
   }
-  for (const service of SERVICES) {
-    await db.prepare(
-      `INSERT INTO services (id, duration_min, price_cents, sort, active, bookable, kind, image)
-       VALUES (?, ?, ?, ?, 1, ?, ?, ?)
-       ON CONFLICT(id) DO NOTHING`
-    ).bind(service.id, service.duration, service.price, service.sort, service.bookable, service.kind, service.image).run();
-    for (const lang of ["nl", "en", "ru", "uk"]) {
-      await db.prepare(
-        `INSERT INTO service_i18n (service_id, lang, title, summary, body)
-         VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(service_id, lang) DO NOTHING`
-      ).bind(service.id, lang, service.title[lang], service.summary[lang], service.body[lang]).run();
-    }
-  }
   const existingPosts = await db.prepare("SELECT COUNT(*) AS n FROM posts").first();
   if (!existingPosts || !existingPosts.n) {
     const now = new Date().toISOString();
@@ -89,4 +81,43 @@ async function seedIfNeeded(db, env) {
   await db.prepare(
     "INSERT INTO settings (key, value) VALUES ('seeded', '1') ON CONFLICT(key) DO NOTHING"
   ).run();
+}
+
+async function syncCatalog(db) {
+  const current = await db.prepare("SELECT value FROM settings WHERE key = 'catalog_version'").first();
+  if (current && current.value === CATALOG_VERSION) return;
+  const ids = new Set(SERVICES.map((service) => service.id));
+  const existing = await db.prepare("SELECT id FROM services").all();
+  for (const row of existing.results || []) {
+    if (!ids.has(row.id)) {
+      await db.prepare("UPDATE services SET active = 0, bookable = 0 WHERE id = ?").bind(row.id).run();
+    }
+  }
+  for (const service of SERVICES) {
+    await db.prepare(
+      `INSERT INTO services (id, duration_min, price_cents, sort, active, bookable, kind, image)
+       VALUES (?, ?, ?, ?, 1, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         duration_min = excluded.duration_min,
+         price_cents = excluded.price_cents,
+         sort = excluded.sort,
+         active = 1,
+         bookable = excluded.bookable,
+         kind = excluded.kind,
+         image = excluded.image`
+    ).bind(service.id, service.duration, service.price, service.sort, service.bookable, service.kind, service.image).run();
+    for (const lang of ["nl", "en", "ru", "uk"]) {
+      await db.prepare(
+        `INSERT INTO service_i18n (service_id, lang, title, summary, body)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT(service_id, lang) DO UPDATE SET
+           title = excluded.title,
+           summary = excluded.summary,
+           body = excluded.body`
+      ).bind(service.id, lang, service.title[lang], service.summary[lang], service.body[lang]).run();
+    }
+  }
+  await db.prepare(
+    "INSERT INTO settings (key, value) VALUES ('catalog_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+  ).bind(CATALOG_VERSION).run();
 }
