@@ -13,7 +13,7 @@ export function ensureSeed(db, env) {
   return ready;
 }
 
-const CATALOG_VERSION = "prices-20261021b";
+const CATALOG_VERSION = "prices-20261021c";
 
 async function seedIfNeeded(db, env) {
   const flag = await db.prepare("SELECT value FROM settings WHERE key = 'seeded'").first();

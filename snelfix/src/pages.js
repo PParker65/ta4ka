@@ -260,6 +260,7 @@ function servicesPanel(ctx, serviceId) {
   const { copy, lang, services } = ctx;
   const workshop = services.filter((service) => service.kind !== "tow");
   const tiles = workshop.map((service, index) => `<a class="tile" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
+    <img class="tile-photo" src="/photos/jobs/${esc(service.id)}.jpg" alt="">
     <span class="idx">${String(index + 1).padStart(2, "0")}</span>
     <b>${esc(service.title)}</b>
     <span class="mono tile-price">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</span>
@@ -304,8 +305,9 @@ function bookPanel(ctx) {
   const bookable = services.filter((service) => service.bookable && service.kind !== "tow");
   const selectedService = query.service || bookable[0]?.id || "";
   const selectedGarage = query.garage || garages[0]?.id || "";
-  const pics = bookable.map((service) => `<span class="work-pic${service.id === selectedService ? " is-on" : ""}" data-art="${esc(service.id)}">${serviceArt(service.id)}</span>`).join("");
+  const pics = bookable.map((service) => `<span class="work-pic${service.id === selectedService ? " is-on" : ""}" data-art="${esc(service.id)}" style="background-image:url('/photos/jobs/${esc(service.id)}.jpg')"></span>`).join("");
   return `<section id="panel-book" class="panel" data-panel="book">
+    <article id="visit" class="visit" hidden></article>
     <form id="book-form" class="wizard" data-today="${esc(today)}" data-label="${esc(copy.book.submit)}" data-step="1" style="--steps:4">
       <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span><i class="meter"></i></div>
       <div class="step" data-step="1">
@@ -331,6 +333,13 @@ function bookPanel(ctx) {
         <div class="choices">${garages.map((garage) => `<label class="choice"><input type="radio" name="garage" value="${esc(garage.id)}"${garage.id === selectedGarage ? " checked" : ""}> ${esc(garage.city)}</label>`).join("")}</div>
         <p class="hint">${esc(copy.book.lede)}</p>
         <div class="step-nav"><button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button></div>
+        <button type="button" class="text-btn" id="visit-find-open">${esc(copy.book.visit.find)}</button>
+        <div id="visit-find" class="visit-find" hidden>
+          <label>${esc(copy.book.code)}<input name="lookup_code" maxlength="16" autocapitalize="characters" placeholder="SF-"></label>
+          <label>${esc(copy.book.phone)}<input name="lookup_phone" inputmode="tel" placeholder="6 12345678"></label>
+          <p class="form-error" id="visit-find-error"></p>
+          <button type="button" class="btn btn-ghost" id="visit-find-go">${esc(copy.book.visit.find)}</button>
+        </div>
       </div>
       <div class="step" data-step="2" hidden>
         <p class="k">${esc(copy.book.vehicle)}</p>

@@ -52,6 +52,10 @@ assert(home.text.includes("по запросу"), "coding on request");
 assert(home.text.includes("зависит от авто"), "depends note");
 assert(home.text.includes('class="carriage"'), "lift carriage");
 assert(home.text.includes('class="tile"'), "service cards");
+assert(home.text.includes('id="visit"'), "visit card");
+for (const job of ["tyre-fit", "discs-pads", "chassis-diag", "oil-filter", "major-service", "e-diag", "timing-chain", "timing-belt", "gearbox", "clutch", "alternator", "starter", "welding", "coding"]) {
+  assert(home.text.includes(`/photos/jobs/${job}.jpg`), `job photo ${job}`);
+}
 assert(!home.text.includes('class="price-row"'), "no spreadsheet rows");
 assert(home.text.includes('class="rocker"'), "booking rocker");
 assert(home.text.includes("work-square"), "booking square");
@@ -128,6 +132,23 @@ assert(first.status === 200, `book ${first.status} ${first.text}`);
 const confirmation = JSON.parse(first.text).confirmation;
 assert(confirmation.code.startsWith("SF-"), "code");
 
+async function lookup(national) {
+  return call("/api/bookings/status", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ code: confirmation.code, cc: "31", national, lang: "ru" }),
+  });
+}
+const looked = await lookup("612345678");
+assert(looked.status === 200, `status ${looked.status} ${looked.text}`);
+const visit0 = JSON.parse(looked.text).visit;
+assert(visit0.status === "requested", `requested ${visit0.status}`);
+assert(String(visit0.address).includes("Kromme Esse"), `address ${visit0.address}`);
+assert(visit0.phone === "+31612345678", `phone ${visit0.phone}`);
+assert(String(visit0.vehicle).includes("Golf"), "vehicle");
+const wrong = await lookup("600000000");
+assert(wrong.status === 404, `wrong phone ${wrong.status}`);
+
 const second = await call("/api/bookings", { method: "POST", body: booking(start) });
 assert(second.status === 409, `double book should fail, got ${second.status} ${second.text}`);
 
@@ -168,8 +189,24 @@ assert(bookings.status === 200, "admin bookings");
 const id = JSON.parse(bookings.text).bookings[0].id;
 const confirmed = await call(`/api/admin/bookings/${id}/confirm`, { method: "POST", headers: { cookie: token } });
 assert(confirmed.status === 200, "confirm");
+const afterConfirm = await lookup("612345678");
+assert(JSON.parse(afterConfirm.text).visit.status === "confirmed", "client confirmed");
+const progressed = await call(`/api/admin/bookings/${id}/progress`, { method: "POST", headers: { cookie: token } });
+assert(progressed.status === 200, "progress");
+const afterProgress = await lookup("612345678");
+assert(JSON.parse(afterProgress.text).visit.status === "in_progress", "client in progress");
+const corrected = await call(`/api/admin/bookings/${id}/correct`, {
+  method: "POST",
+  headers: { "content-type": "application/json", cookie: token },
+  body: JSON.stringify({ problem: "Фильтр и масло" }),
+});
+assert(corrected.status === 200, `correct ${corrected.status} ${corrected.text}`);
+const afterCorrect = await lookup("612345678");
+assert(JSON.parse(afterCorrect.text).visit.problem.includes("Фильтр"), "client problem");
 const cancelled = await call(`/api/admin/bookings/${id}/cancel`, { method: "POST", headers: { cookie: token } });
 assert(cancelled.status === 200, "cancel");
+const afterCancel = await lookup("612345678");
+assert(JSON.parse(afterCancel.text).visit.status === "cancelled", "client cancelled");
 
 const changed = await call("/api/admin/password", {
   method: "POST",

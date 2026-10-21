@@ -3,6 +3,9 @@ import "./styles.css";
 const boot = readJson("sf-boot");
 const extra = readJson("sf-extra");
 const lang = boot.lang || "ru";
+let visitDraft = false;
+let visitTimer = 0;
+const VISIT_KEY = "snelfix_visit";
 
 loadAnalytics();
 
@@ -65,6 +68,10 @@ function showPanel(id) {
   for (const link of document.querySelectorAll(".tabs a")) {
     if (link.dataset.panel === id) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
+  }
+  if (id === "book") {
+    visitDraft = false;
+    refreshVisit();
   }
 }
 
@@ -148,6 +155,8 @@ focusGarage(garageFromPath(location.pathname));
 
 const bookForm = document.getElementById("book-form");
 if (bookForm) initBooking(bookForm);
+initVisit();
+if (panelFromPath(location.pathname) === "book") refreshVisit();
 const towForm = document.getElementById("tow-form");
 if (towForm) initTow(towForm);
 
@@ -325,11 +334,10 @@ function initBooking(form) {
         button.textContent = form.dataset.label || strings.submit || "OK";
         return;
       }
-      form.hidden = true;
-      const done = document.getElementById("book-done");
-      done.hidden = false;
       const c = body.confirmation;
-      done.innerHTML = `<div class="confirm-card"><h2>${escapeHtml(strings.confirmTitle || "")}</h2><p>${escapeHtml(strings.confirmBody || "")}</p><p class="k">${escapeHtml(strings.code || "Code")}</p><code>${escapeHtml(c.code)}</code><p>${escapeHtml(c.service)} · ${escapeHtml(c.garage)}<br>${escapeHtml(c.date)} ${escapeHtml(c.time)}<br>${escapeHtml(c.vehicle)}</p></div>`;
+      visitDraft = false;
+      saveVisit({ code: c.code, cc: String(data.get("cc") || "31"), national: String(data.get("national") || "") });
+      await refreshVisit();
     } catch {
       error.textContent = strings.invalid || "Error";
       button.disabled = false;
@@ -525,6 +533,140 @@ function initTow(form) {
       button.disabled = false;
     }
   });
+}
+
+function saveVisit(visit) {
+  try { localStorage.setItem(VISIT_KEY, JSON.stringify(visit)); } catch { /* private mode */ }
+}
+
+function readVisit() {
+  try {
+    const raw = localStorage.getItem(VISIT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearVisit() {
+  try { localStorage.removeItem(VISIT_KEY); } catch { /* private mode */ }
+}
+
+function initVisit() {
+  document.getElementById("visit-find-open")?.addEventListener("click", () => {
+    const box = document.getElementById("visit-find");
+    if (box) box.hidden = !box.hidden;
+  });
+  document.getElementById("visit-find-go")?.addEventListener("click", async () => {
+    const code = document.querySelector("[name=lookup_code]")?.value || "";
+    const national = document.querySelector("[name=lookup_phone]")?.value || "";
+    const err = document.getElementById("visit-find-error");
+    if (err) err.textContent = "";
+    visitDraft = false;
+    saveVisit({ code: code.trim().toUpperCase(), cc: "31", national });
+    const ok = await refreshVisit();
+    if (!ok && err) err.textContent = extra.strings?.book?.visit?.missing || "";
+  });
+  document.getElementById("visit")?.addEventListener("click", (event) => {
+    if (!event.target.closest("#visit-new")) return;
+    visitDraft = true;
+    stopVisitPoll();
+    const card = document.getElementById("visit");
+    const form = document.getElementById("book-form");
+    if (card) card.hidden = true;
+    if (form) form.hidden = false;
+  });
+}
+
+async function refreshVisit() {
+  const card = document.getElementById("visit");
+  const form = document.getElementById("book-form");
+  if (visitDraft) return false;
+  const stored = readVisit();
+  if (!stored?.code) {
+    if (card) card.hidden = true;
+    if (form) form.hidden = false;
+    stopVisitPoll();
+    return false;
+  }
+  try {
+    const response = await fetch("/api/bookings/status", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        code: stored.code,
+        cc: stored.cc || "31",
+        national: stored.national || "",
+        lang,
+      }),
+    });
+    if (response.status === 404) {
+      clearVisit();
+      if (card) card.hidden = true;
+      if (form) form.hidden = false;
+      stopVisitPoll();
+      return false;
+    }
+    if (!response.ok) return false;
+    const body = await response.json();
+    paintVisit(body.visit);
+    if (form) form.hidden = true;
+    if (card) card.hidden = false;
+    startVisitPoll();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function paintVisit(visit) {
+  const card = document.getElementById("visit");
+  if (!card || !visit) return;
+  const book = extra.strings?.book || {};
+  const labels = book.visit || {};
+  const order = ["requested", "confirmed", "in_progress", "completed"];
+  const names = {
+    requested: labels.submitted,
+    confirmed: labels.confirmed,
+    in_progress: labels.progress,
+    completed: labels.done,
+  };
+  const cancelled = visit.status === "cancelled";
+  const index = order.indexOf(visit.status);
+  const steps = order.map((key, i) => {
+    const cls = cancelled ? "" : (i < index ? "is-done" : (i === index ? "is-on" : ""));
+    return `<li class="${cls}">${escapeHtml(names[key] || key)}</li>`;
+  }).join("");
+  const dial = String(visit.garagePhone || "").replace(/[^\d+]/g, "");
+  card.classList.toggle("is-cancelled", cancelled);
+  card.innerHTML = `
+    <p class="visit-code">${escapeHtml(visit.code)}</p>
+    <h2>${escapeHtml(visit.service)}</h2>
+    ${cancelled ? `<p class="visit-badge">${escapeHtml(labels.cancelled || "")}</p>` : ""}
+    <ol class="visit-steps">${steps}</ol>
+    <div class="visit-row"><span>${escapeHtml(book.garage || "")}</span><b>${escapeHtml(visit.address)}</b></div>
+    <div class="visit-row"><span>${escapeHtml(book.name || "")}</span><b>${escapeHtml(visit.name)}</b></div>
+    <div class="visit-row"><span>${escapeHtml(book.phone || "")}</span><b>${escapeHtml(visit.phone)}</b>${dial ? `<a href="tel:${escapeAttr(dial)}">${escapeHtml(labels.call || "")} · ${escapeHtml(visit.garagePhone || "")}</a>` : ""}</div>
+    <div class="visit-row"><span>${escapeHtml(book.date || "")}</span><b>${escapeHtml(visit.date)} · ${escapeHtml(visit.time)}–${escapeHtml(visit.end)}</b></div>
+    <div class="visit-row"><span>${escapeHtml(book.vehicle || "")}</span><b>${escapeHtml(visit.vehicle)}</b></div>
+    ${visit.problem ? `<div class="visit-row"><span>${escapeHtml(book.problem || "")}</span><b>${escapeHtml(visit.problem)}</b></div>` : ""}
+    ${visit.note ? `<div class="visit-row"><b>${escapeHtml(visit.note)}</b></div>` : ""}
+    <button type="button" class="btn btn-ghost" id="visit-new">${escapeHtml(labels.new || "")}</button>`;
+}
+
+function startVisitPoll() {
+  if (visitTimer) return;
+  visitTimer = setInterval(() => {
+    const open = document.querySelector('.panel-slot:not([hidden]) .panel[data-panel="book"]');
+    if (!open || visitDraft) return;
+    refreshVisit();
+  }, 8000);
+}
+
+function stopVisitPoll() {
+  if (!visitTimer) return;
+  clearInterval(visitTimer);
+  visitTimer = 0;
 }
 
 function camel(error) {

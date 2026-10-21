@@ -96,11 +96,20 @@ function bookingCard(booking, reload) {
   }
   const actions = el("div", { className: "actions" });
   if (booking.status === "requested") actions.append(button(copy.confirm, () => post(`/api/admin/bookings/${booking.id}/confirm`).then(reload)));
+  if (booking.status === "requested" || booking.status === "confirmed") {
+    actions.append(button(copy.progress, () => post(`/api/admin/bookings/${booking.id}/progress`).then(reload)));
+  }
   if (booking.status !== "cancelled") actions.append(button(copy.cancel, () => post(`/api/admin/bookings/${booking.id}/cancel`).then(reload)));
   if (booking.status !== "completed" && booking.status !== "cancelled") actions.append(button(copy.done, () => post(`/api/admin/bookings/${booking.id}/done`).then(reload)));
   const move = button(copy.reschedule, () => openMove(card, booking, reload));
   actions.append(move);
   card.append(actions);
+  const fix = el("textarea", { rows: "2" });
+  fix.value = booking.problem || "";
+  card.append(field(copy.booking.problem, fix), button(copy.correct, async () => {
+    await post(`/api/admin/bookings/${booking.id}/correct`, { problem: fix.value });
+    reload();
+  }));
   const note = el("div", { className: "two" });
   const next = el("input", { type: "date", value: booking.next_service_on || "" });
   const text = el("input", { value: booking.next_service_note || "", placeholder: copy.booking.note });

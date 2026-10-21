@@ -289,6 +289,22 @@ export async function saveUpload(db, file) {
   return row.id;
 }
 
+export async function bookingByCode(db, code, lang = "ru") {
+  return db.prepare(
+    `SELECT b.code, b.status, b.date, b.start_min, b.end_min, b.problem, b.next_service_note,
+            c.name AS name, c.phone AS phone,
+            v.make, v.model, v.year, v.plate,
+            g.city, g.street, g.postal, g.phone AS garage_phone,
+            i.title AS service
+     FROM bookings b
+     JOIN customers c ON c.id = b.customer_id
+     JOIN vehicles v ON v.id = b.vehicle_id
+     JOIN garages g ON g.id = b.garage_id
+     LEFT JOIN service_i18n i ON i.service_id = b.service_id AND i.lang = ?
+     WHERE b.code = ?`
+  ).bind(lang, code).first();
+}
+
 export async function listBookings(db, { q = "", status = "", lang = "nl" } = {}) {
   const like = `%${q.replace(/[%_]/g, "")}%`;
   const { results } = await db.prepare(

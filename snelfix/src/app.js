@@ -7,6 +7,7 @@ import {
   dayWindow,
   garageNotes,
   getSettings,
+  bookingByCode,
   listBookings,
   listCustomers,
   listGarages,
@@ -54,6 +55,7 @@ import {
   parseMinutes,
   randomHex,
   rateLimit,
+  safeEqual,
   sessionCookie,
   sha256Hex,
   text,
@@ -273,6 +275,7 @@ async function api(db, request, env, url) {
   if (path === "/api/health") return json({ ok: true });
   if (path === "/api/availability" && request.method === "GET") return availabilityApi(db, request, url);
   if (path === "/api/bookings" && request.method === "POST") return bookingApi(db, request, env);
+  if (path === "/api/bookings/status" && request.method === "POST") return statusApi(db, request);
   if (path === "/api/tow" && request.method === "POST") return towApi(db, request, env);
   if (path === "/api/auth/login" && request.method === "POST") return login(db, request);
   if (path === "/api/auth/logout" && request.method === "POST") return logout(request);
@@ -363,6 +366,37 @@ async function bookingApi(db, request, env) {
   return json({ ok: true, confirmation: payload });
 }
 
+async function statusApi(db, request) {
+  if (!rateLimit(`visit:${clientIp(request)}`, 20, 10 * 60 * 1000)) return json({ error: "limited" }, 429);
+  let body = {};
+  try { body = await request.json(); } catch { return json({ error: "invalid" }, 400); }
+  const code = String(body.code || "").trim().toUpperCase();
+  const phone = e164(body.cc, body.national) || (String(body.phone || "").startsWith("+") ? String(body.phone) : "");
+  const lang = ["nl", "en", "ru", "uk"].includes(body.lang) ? body.lang : "ru";
+  if (!code || !phone) return json({ error: "not_found" }, 404);
+  const row = await bookingByCode(db, code, lang);
+  if (!row || !safeEqual(row.phone, phone)) return json({ error: "not_found" }, 404);
+  return json({
+    ok: true,
+    visit: {
+      code: row.code,
+      status: row.status,
+      service: row.service || "",
+      date: row.date,
+      time: minLabel(row.start_min),
+      end: minLabel(row.end_min),
+      address: `${row.street}, ${row.postal} ${row.city}`,
+      city: row.city,
+      phone: row.phone,
+      garagePhone: row.garage_phone,
+      name: row.name,
+      vehicle: [row.make, row.model, row.year, row.plate].filter(Boolean).join(" "),
+      problem: row.problem || "",
+      note: row.next_service_note || "",
+    },
+  });
+}
+
 async function towApi(db, request, env) {
   const form = await request.formData();
   const phone = e164(form.get("cc"), form.get("national"));
@@ -450,7 +484,7 @@ async function adminApi(db, request, env, url, path) {
   if (path === "/api/admin/bookings" && request.method === "GET") {
     return json({ bookings: await listBookings(db, { q: url.searchParams.get("q") || "", status: url.searchParams.get("status") || "", lang }) });
   }
-  const bookingAction = path.match(/^\/api\/admin\/bookings\/(\d+)\/(confirm|cancel|done|reschedule|note)$/);
+  const bookingAction = path.match(/^\/api\/admin\/bookings\/(\d+)\/(confirm|cancel|done|progress|reschedule|note|correct)$/);
   if (bookingAction) return bookingActionApi(db, request, bookingAction);
   if (path === "/api/admin/tows" && request.method === "GET") return json({ tows: await listTows(db) });
   const towAction = path.match(/^\/api\/admin\/tows\/(\d+)\/(confirm|cancel|done)$/);
@@ -532,9 +566,16 @@ async function bookingActionApi(db, request, match) {
   const id = Number(match[1]);
   const action = match[2];
   if (request.method !== "POST") return json({ error: "method" }, 405);
-  if (action === "confirm" || action === "cancel" || action === "done") {
-    const status = { confirm: "confirmed", cancel: "cancelled", done: "completed" }[action];
+  if (action === "confirm" || action === "cancel" || action === "done" || action === "progress") {
+    const status = { confirm: "confirmed", cancel: "cancelled", done: "completed", progress: "in_progress" }[action];
     await db.prepare("UPDATE bookings SET status = ?, updated_at = ? WHERE id = ?").bind(status, new Date().toISOString(), id).run();
+    return json({ ok: true });
+  }
+  if (action === "correct") {
+    const body = await request.json();
+    const problem = String(body.problem || "").trim().slice(0, 2000);
+    if (!problem) return json({ error: "invalid" }, 400);
+    await db.prepare("UPDATE bookings SET problem = ?, updated_at = ? WHERE id = ?").bind(problem, new Date().toISOString(), id).run();
     return json({ ok: true });
   }
   if (action === "reschedule") {
