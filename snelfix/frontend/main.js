@@ -268,11 +268,11 @@ function wirePinMap(el) {
 
 function commitPoint(point) {
   const field = point.querySelector("[data-value]");
-  const mode = point.querySelector('input[type="radio"]:checked')?.value;
   const map = point.querySelector(".pinmap");
   const err = point.querySelector(".point-error");
+  if (!field) return true;
   field.setCustomValidity("");
-  if (mode !== "map") {
+  if (!point.classList.contains("is-map")) {
     if (err) err.hidden = true;
     return true;
   }
@@ -291,12 +291,14 @@ function initTow(form) {
   const book = extra.strings?.book || {};
   const error = document.getElementById("tow-error");
   for (const point of form.querySelectorAll("[data-point]")) {
-    point.addEventListener("change", (event) => {
-      if (!event.target.name?.endsWith("_mode")) return;
-      const mapMode = event.target.value === "map";
+    const modeBtn = point.querySelector("[data-mode]");
+    modeBtn?.addEventListener("click", () => {
+      const mapMode = !point.classList.contains("is-map");
       point.classList.toggle("is-map", mapMode);
-      point.querySelector(".point-map").hidden = !mapMode;
+      const mapWrap = point.querySelector(".sq-map");
+      if (mapWrap) mapWrap.hidden = !mapMode;
       const field = point.querySelector("[data-value]");
+      modeBtn.textContent = mapMode ? (strings.byAddress || "Address") : (strings.byMap || "Map");
       if (mapMode) {
         field.dataset.draft = field.value;
         const map = point.querySelector(".pinmap");
@@ -325,18 +327,6 @@ function initTow(form) {
       });
     });
   }
-  form.addEventListener("click", (event) => {
-    if (!event.target.closest("[data-next]")) return;
-    let ok = true;
-    for (const point of form.querySelectorAll("[data-point]")) {
-      if (!commitPoint(point)) ok = false;
-    }
-    if (!ok) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }, true);
-  wireSteps(form);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     error.textContent = "";
@@ -344,7 +334,19 @@ function initTow(form) {
     for (const point of form.querySelectorAll("[data-point]")) {
       if (!commitPoint(point)) pointsOk = false;
     }
-    if (!pointsOk) return;
+    for (const field of form.querySelectorAll("input, textarea, select")) {
+      if (field.closest(".sq.is-map")) continue;
+      if (field.type === "radio" || field.type === "checkbox" || field.type === "file" || field.type === "date" || field.type === "time") continue;
+      if (field.required && !String(field.value || "").trim()) {
+        pointsOk = false;
+        field.focus();
+        break;
+      }
+    }
+    if (!pointsOk) {
+      error.textContent = book.invalid || "";
+      return;
+    }
     const data = new FormData(form);
     data.set("lang", lang);
     const button = form.querySelector("[type=submit]");

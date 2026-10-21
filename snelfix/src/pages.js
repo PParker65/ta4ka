@@ -90,10 +90,6 @@ function gDestination(garage) {
   return `https://www.google.com/maps/dir/?api=1&destination=${q}`;
 }
 
-function osmPoint(garage) {
-  return `https://www.openstreetmap.org/?mlat=${garage.lat}&mlon=${garage.lng}#map=16/${garage.lat}/${garage.lng}`;
-}
-
 function appleDestination(garage) {
   return `https://maps.apple.com/?daddr=${garage.lat},${garage.lng}&dirflg=d`;
 }
@@ -120,15 +116,41 @@ function baySvg(kind) {
   </svg>`;
 }
 
-function towSvg(cls) {
-  return `<svg class="${cls}" viewBox="0 0 240 72" aria-hidden="true">
-    <g class="tow-bob">
-      <path class="boom" d="M68 34 L128 14" fill="none" stroke="currentColor" stroke-width="3"/>
-      <path d="M128 14v16" fill="none" stroke="currentColor" stroke-width="2"/>
-      <path d="M24 48h82v-14H88L74 22H24z" fill="currentColor"/>
-      <path d="M112 48h84v-12h-20l-14-14h-22z" fill="none" stroke="currentColor" stroke-width="3"/>
-      <g transform="translate(52 52)"><g class="wheel"><circle r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M0-5v10M-5 0h10" stroke="currentColor"/></g></g>
-      <g transform="translate(170 52)"><g class="wheel"><circle r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M0-5v10M-5 0h10" stroke="currentColor"/></g></g>
+function haulScene() {
+  const wheel = (x, y) => `<g transform="translate(${x} ${y})"><g class="haul-wheel"><circle r="11" fill="#07080a" stroke="currentColor" stroke-width="2.6"/><path d="M0-7v14M-7 0h14" stroke="currentColor" stroke-width="1.6"/></g></g>`;
+  return `<svg class="haul-svg" viewBox="0 0 400 168" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="400" height="168" fill="#07080a"/>
+    <rect y="100" width="400" height="68" fill="#10140c"/>
+    <g class="haul-poles" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".28">
+      <path d="M8 100V58M62 100V48M116 100V58M170 100V48M224 100V58M278 100V48"/>
+    </g>
+    <path d="M0 102h400M0 156h400" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"/>
+    <g class="haul-dashes"><path d="M-60 128h520" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="18 16"/></g>
+    <g class="haul-bay">
+      <path d="M308 168V36h86v132" fill="#07080a" stroke="currentColor" stroke-width="2.4"/>
+      <rect class="haul-glow" x="320" y="48" width="62" height="120" fill="currentColor"/>
+      <path class="haul-door" d="M322 168V50h58v118" fill="#0c1204" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M338 168V62M364 168V62" fill="none" stroke="currentColor" stroke-width="2.4" opacity=".7"/>
+      <path class="haul-beam" d="M332 100h40" fill="none" stroke="currentColor" stroke-width="4"/>
+    </g>
+    <g class="haul-truck" transform="translate(118 0)">
+      <path d="M0 98h102v14H0z" fill="currentColor"/>
+      <path d="M98 112V64h26l22 24v24z" fill="currentColor"/>
+      <path d="M108 86h14V68h-10z" fill="#07080a"/>
+      <rect class="haul-beacon" x="116" y="54" width="16" height="8" fill="currentColor"/>
+      <g class="haul-cable" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M6 98H-18V112"/>
+        <circle cx="-18" cy="112" r="3.4"/>
+      </g>
+      ${wheel(22, 112)}
+      ${wheel(116, 112)}
+    </g>
+    <g class="haul-car" transform="translate(4 10)">
+      <path d="M4 100h90v-16H74L58 66H30L16 84H4z" fill="#07080a" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M32 84l8-14h18l8 14z" fill="currentColor"/>
+      <circle class="haul-hazard" cx="14" cy="88" r="3" fill="currentColor"/>
+      ${wheel(22, 100)}
+      ${wheel(72, 100)}
     </g>
   </svg>`;
 }
@@ -284,47 +306,37 @@ function servicesPanel(ctx, serviceId) {
   </section>`;
 }
 
-function pointBlock(copy, name, label) {
+function towSquare(copy, name, label, tone) {
   const auto = name === "pickup" ? ` autocomplete="street-address"` : "";
-  return `<div class="point" data-point="${name}">
-    <p class="k">${esc(label)}</p>
-    <div class="seg" role="radiogroup" aria-label="${esc(label)}">
-      <i class="seg-glider"></i>
-      <label><input type="radio" name="${name}_mode" value="address" checked><span>${esc(copy.tow.byAddress)}</span></label>
-      <label><input type="radio" name="${name}_mode" value="map"><span>${esc(copy.tow.byMap)}</span></label>
-    </div>
-    <label class="point-address">${esc(label)}
-      <input data-value name="${name}" required maxlength="180"${auto}>
-    </label>
-    <div class="point-map" hidden>
+  return `<div class="sq sq-${tone}" data-point="${name}">
+    <span class="sq-k">${esc(label)}</span>
+    <textarea class="sq-field" data-value name="${name}" required maxlength="180" rows="3" placeholder="${esc(copy.tow.byAddress)}"${auto}></textarea>
+    <button type="button" class="sq-mode" data-mode>${esc(copy.tow.byMap)}</button>
+    <div class="sq-map" hidden>
       <div class="pinmap" data-lat="52.0900" data-lng="4.9200" data-set="0">
         <div class="pinmap-world"></div>
         <i class="pinmap-pin" aria-hidden="true"><i></i></i>
       </div>
-      <div class="point-actions">
-        <button type="button" class="btn btn-ghost" data-geo>${esc(copy.tow.here)}</button>
-        <a class="mono" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OSM</a>
-      </div>
-      <p class="point-error hint" hidden>${esc(copy.tow.pointNeed)}</p>
+      <button type="button" class="sq-here" data-geo>${esc(copy.tow.here)}</button>
     </div>
+    <p class="point-error" hidden>${esc(copy.tow.pointNeed)}</p>
   </div>`;
 }
 
 function towPanel(ctx) {
-  const { copy, brand } = ctx;
+  const { copy } = ctx;
   return `<section id="panel-tow" class="panel panel-tow" data-panel="tow">
-    <form id="tow-form" class="wizard" data-step="1" style="--steps:3">
-      <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><i class="meter"></i></div>
-      <div class="step" data-step="1">
-        <div class="tow-hero">${towSvg("tow-svg")}<p class="k">${esc(copy.tow.kicker)}</p></div>
-        ${pointBlock(copy, "pickup", copy.tow.pickup)}
-        ${pointBlock(copy, "delivery", copy.tow.delivery)}
-        <label>${esc(copy.tow.problem)}<textarea name="problem" rows="2" maxlength="400"></textarea></label>
-        <a class="text-btn" href="tel:${esc(brand.phoneTel)}">${esc(copy.tow.call)}</a>
-        <div class="step-nav"><button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button></div>
+    <div class="haul">
+      ${haulScene()}
+      <p class="haul-kicker">${esc(copy.tow.kicker)}</p>
+    </div>
+    <form id="tow-form" class="tow-sheet" novalidate>
+      <div class="tow-squares">
+        ${towSquare(copy, "pickup", copy.tow.pickup, "pick")}
+        ${towSquare(copy, "delivery", copy.tow.delivery, "drop")}
       </div>
-      <div class="step" data-step="2" hidden>
-        <p class="k">${esc(copy.tow.vclass)}</p>
+      <div class="tow-rest">
+        <label class="tow-problem">${esc(copy.tow.problem)}<textarea name="problem" rows="2" maxlength="400"></textarea></label>
         <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.vclass)}">
           <i class="seg-glider"></i>
           <label><input type="radio" name="vclass" value="car" checked><span>${esc(copy.tow.vcar)}</span></label>
@@ -334,17 +346,11 @@ function towPanel(ctx) {
           <label>${esc(copy.tow.make)}<input name="make" required maxlength="40"></label>
           <label>${esc(copy.tow.model)}<input name="model" required maxlength="40"></label>
         </div>
-        <p class="k">${esc(copy.tow.running)}</p>
-        <div class="choices">
-          <label class="choice"><input type="radio" name="running" value="1" checked> ${esc(copy.tow.runningYes)}</label>
-          <label class="choice"><input type="radio" name="running" value="0"> ${esc(copy.tow.runningNo)}</label>
+        <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.running)}">
+          <i class="seg-glider"></i>
+          <label><input type="radio" name="running" value="1" checked><span>${esc(copy.tow.runningYes)}</span></label>
+          <label><input type="radio" name="running" value="0"><span>${esc(copy.tow.runningNo)}</span></label>
         </div>
-        <div class="step-nav">
-          <button class="btn btn-ghost" type="button" data-back>${esc(copy.step.back)}</button>
-          <button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button>
-        </div>
-      </div>
-      <div class="step" data-step="3" hidden>
         <div class="two">
           <label>${esc(copy.tow.date)}<input type="date" name="date"></label>
           <label>${esc(copy.tow.time)}<input type="time" name="time"></label>
@@ -355,10 +361,7 @@ function towPanel(ctx) {
         <label>${esc(copy.tow.notes)}<textarea name="notes" rows="2" maxlength="2000"></textarea></label>
         <label>${esc(copy.tow.photos)}<input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple></label>
         <p class="form-error" id="tow-error" role="alert"></p>
-        <div class="step-nav">
-          <button class="btn" type="button" data-back>${esc(copy.step.back)}</button>
-          <button class="btn btn-primary" type="submit">${esc(copy.tow.submit)}</button>
-        </div>
+        <button class="btn btn-primary" type="submit">${esc(copy.tow.submit)}</button>
       </div>
     </form>
     <div id="tow-done" hidden></div>
@@ -374,9 +377,8 @@ function contactsPanel(ctx, garageId, sheet) {
       <span class="idx">${String(index + 1).padStart(2, "0")}</span>
       <span class="loc-copy"><b>${esc(garage.city)}</b><small>${esc(garage.street)}, ${esc(garage.postal)}</small><small class="hint">${esc(note)}</small></span>
       <span class="routes">
-        <a href="${esc(gDestination(garage))}">${esc(copy.loc.directions)}</a>
-        <a href="${esc(appleDestination(garage))}">Apple</a>
-        <a href="${esc(osmPoint(garage))}">OSM</a>
+        <a class="route route-google" href="${esc(gDestination(garage))}">Google Maps</a>
+        <a class="route route-apple" href="${esc(appleDestination(garage))}">Apple Maps</a>
       </span>
     </article>`;
   }).join("");
