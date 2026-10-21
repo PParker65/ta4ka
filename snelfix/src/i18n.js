@@ -179,6 +179,7 @@ const rows = [
   ["book.required", "Vul de verplichte velden in.", "Fill in the required fields.", "Заполните обязательные поля.", "Заповніть обов'язкові поля."],
 
   ["tow.kicker", "Эвакуатор 24/7", "Recovery 24/7", "Эвакуатор 24/7", "Евакуатор 24/7"],
+  ["tow.capacity", "Tot 4 ton", "Up to 4 tons", "до 4 тонн", "до 4 тонн"],
   ["tow.title", "Sleepdienst 24/7", "Recovery service 24/7", "Служба эвакуации 24/7", "Служба евакуації 24/7"],
   ["tow.lede", "Nederland en heel Europa, op afspraak. Ook 's nachts, in het weekend en op feestdagen. Dit formulier belegt geen brug. De prijs volgt nadat de route is bekeken.", "The Netherlands and all of Europe, by arrangement. Including nights, weekends and public holidays. This form does not book a lift. The price follows once the route has been looked at.", "Нидерланды и вся Европа, по договорённости. Включая ночь, выходные и праздники. Эта форма не занимает подъёмник. Цена следует, когда маршрут посмотрели.", "Нідерланди і вся Європа, за домовленістю. Включно з ніччю, вихідними й святами. Ця форма не займає підйомник. Ціна йде слідом, коли маршрут подивились."],
   ["tow.call", "Bel de sleepdienst", "Call recovery", "Позвонить эвакуатору", "Подзвонити евакуатору"],

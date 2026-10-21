@@ -251,7 +251,7 @@ function tabs(ctx, panel) {
   return `<nav class="tabs" aria-label="${esc(copy.nav.menu)}">${items.map(([id, path, label]) => {
     const on = id === panel ? ` aria-current="page"` : "";
     return `<a href="${esc(href(lang, path))}" data-panel="${id}"${on}><span>${esc(label)}</span></a>`;
-  }).join("")}<i class="tab-mark"></i></nav>`;
+  }).join("")}</nav>`;
 }
 
 function homePanel(ctx) {
@@ -330,12 +330,13 @@ function towPanel(ctx) {
       ${haulScene()}
       <p class="haul-kicker">${esc(copy.tow.kicker)}</p>
     </div>
+    <p class="tow-cap">${esc(copy.tow.capacity)}</p>
     <form id="tow-form" class="tow-sheet" novalidate>
       <div class="tow-squares">
         ${towSquare(copy, "pickup", copy.tow.pickup, "pick")}
         ${towSquare(copy, "delivery", copy.tow.delivery, "drop")}
       </div>
-      <div class="tow-rest">
+      <div class="tow-rest" hidden>
         <label class="tow-problem">${esc(copy.tow.problem)}<textarea name="problem" rows="2" maxlength="400"></textarea></label>
         <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.vclass)}">
           <i class="seg-glider"></i>

@@ -286,11 +286,21 @@ function commitPoint(point) {
   return true;
 }
 
+function openTowStep(form, point) {
+  point.classList.add("is-go");
+  if (form.classList.contains("is-open")) return;
+  form.classList.add("is-open");
+  const rest = form.querySelector(".tow-rest");
+  if (rest) rest.hidden = false;
+}
+
 function initTow(form) {
   const strings = extra.strings?.tow || {};
   const book = extra.strings?.book || {};
   const error = document.getElementById("tow-error");
   for (const point of form.querySelectorAll("[data-point]")) {
+    point.addEventListener("pointerdown", () => openTowStep(form, point));
+    point.addEventListener("focusin", () => openTowStep(form, point));
     const modeBtn = point.querySelector("[data-mode]");
     modeBtn?.addEventListener("click", () => {
       const mapMode = !point.classList.contains("is-map");
