@@ -329,7 +329,7 @@ const rows = [
   ["tab.contacts", "Contact", "Contacts", "Контакты", "Контакти"],
   ["step.next", "Volgende", "Next", "Дальше", "Далі"],
   ["step.back", "Terug", "Back", "Назад", "Назад"],
-  ["home.line", "Twee garages in Nederland wachten op de auto.", "Two garages in the Netherlands are waiting for the car.", "Две мастерские в Нидерландах ждут машину.", "Дві майстерні в Нідерландах чекають на авто."],
+  ["home.line", "Netwerk van autoservices in Nederland", "A network of auto services in the Netherlands", "Сеть автосервисов в Нидерландах", "Мережа автосервісів у Нідерландах"],
   ["home.bay", "Brug", "Lift", "Подъёмник", "Підйомник"],
   ["home.wd", "ma–vr", "Mon–Fri", "пн–пт", "пн–пт"],
   ["home.sat", "za", "Sat", "сб", "сб"],
