@@ -97,12 +97,74 @@ function langs(ctx, path) {
   }).join("")}</nav>`;
 }
 
+function baySvg(kind) {
+  if (kind === "b") {
+    return `<svg class="bay bay-b" viewBox="0 0 120 148" aria-hidden="true">
+      <path d="M18 14v118M102 14v118M18 132h84" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path class="lamp" d="M44 20h32" stroke="currentColor" stroke-width="3"/>
+      <g class="lift">
+        <path d="M34 98h52v12H34z" fill="currentColor"/>
+        <path class="hood" d="M34 98l12-18h20" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M66 80h16l8 18" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="46" cy="114" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="78" cy="114" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+      </g>
+      <path class="arm" d="M26 58h20l8 16" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>`;
+  }
+  return `<svg class="bay bay-a" viewBox="0 0 120 148" aria-hidden="true">
+    <path class="lamp" d="M50 8h20v4H50z" fill="currentColor"/>
+    <g class="shutter"><path d="M22 18h76M22 26h76M22 34h76" fill="none" stroke="currentColor" stroke-width="2"/></g>
+    <path d="M18 14v118M102 14v118M18 132h84" fill="none" stroke="currentColor" stroke-width="3"/>
+    <g class="lift">
+      <path d="M30 72h60v5H30z" fill="currentColor"/>
+      <path d="M36 77v16M84 77v16" stroke="currentColor" stroke-width="2"/>
+      <path d="M32 93h56v14H32z" fill="currentColor"/>
+      <path d="M40 93l6-12h28l6 12" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="44" cy="112" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="76" cy="112" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    </g>
+  </svg>`;
+}
+
+function towSvg(cls) {
+  return `<svg class="${cls}" viewBox="0 0 240 72" aria-hidden="true">
+    <g class="tow-bob">
+      <path class="boom" d="M68 34 L128 14" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path d="M128 14v16" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M24 48h82v-14H88L74 22H24z" fill="currentColor"/>
+      <path d="M112 48h84v-12h-20l-14-14h-22z" fill="none" stroke="currentColor" stroke-width="3"/>
+      <g transform="translate(52 52)"><g class="wheel"><circle r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M0-5v10M-5 0h10" stroke="currentColor"/></g></g>
+      <g transform="translate(170 52)"><g class="wheel"><circle r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M0-5v10M-5 0h10" stroke="currentColor"/></g></g>
+    </g>
+  </svg>`;
+}
+
 function splashHtml(copy) {
   return `<div id="splash" class="splash">
-    <div class="splash-inner">
-      ${wordmark()}
-      <i class="splash-rule"></i>
-      <p>${esc(copy.splash.line)}</p>
+    <div class="nl-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="splash-frame">
+      <div class="splash-mark">
+        ${wordmark()}
+        <i class="splash-rule"></i>
+      </div>
+      <p class="splash-copy">${esc(copy.splash.line)}</p>
+      <div class="splash-fleet" aria-hidden="true">
+        <svg class="fleet-car" viewBox="0 0 128 64">
+          <path d="M8 40h16l12-18h40l16 18h28v12H8z" fill="currentColor"/>
+          <path d="M40 24h32l10 14H36z" fill="#07080a"/>
+          <g class="wheel" transform="translate(36 50)"><circle r="8" fill="#07080a" stroke="currentColor" stroke-width="3"/><path d="M0-4v8M-4 0h8" stroke="currentColor"/></g>
+          <g class="wheel" transform="translate(96 50)"><circle r="8" fill="#07080a" stroke="currentColor" stroke-width="3"/><path d="M0-4v8M-4 0h8" stroke="currentColor"/></g>
+        </svg>
+        <svg class="fleet-flag" viewBox="0 0 48 58">
+          <rect x="2" y="2" width="44" height="54" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="8" y="12" width="32" height="9" fill="#AE1C28"/>
+          <rect x="8" y="21" width="32" height="9" fill="#fff"/>
+          <rect x="8" y="30" width="32" height="9" fill="#21468B"/>
+        </svg>
+        ${towSvg("fleet-tow")}
+      </div>
+      <p class="splash-meta">${esc(copy.splash.meta)}</p>
     </div>
     <button type="button" id="splash-skip" class="splash-skip">${esc(copy.splash.skip)}</button>
   </div>
@@ -113,7 +175,7 @@ function splashHtml(copy) {
     if(document.documentElement.classList.contains("no-splash")){el.remove();return;}
     var reduce=false;
     try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
-    var ms=reduce?450:2000;
+    var ms=reduce?450:3200;
     var done=false;
     function finish(){
       if(done)return; done=true;
@@ -191,38 +253,25 @@ function tabs(ctx, panel) {
 }
 
 function homePanel(ctx) {
-  const { copy, lang, brand, garages, hours, today, services } = ctx;
-  const sample = garages[0];
-  const rows = sample ? hours[sample.id] : [];
-  const plates = garages.map((garage, index) => `<a class="loc-row" href="${esc(href(lang, `/vestigingen/${garage.id}`))}" data-panel="contacts" data-garage="${esc(garage.id)}">
-    <span class="idx">${String(index + 1).padStart(2, "0")}</span>
-    <span class="loc-copy"><b>${esc(garage.city)}</b><small>${esc(garage.street)}</small></span>
-    <span class="mono">${esc(todayLine(copy, hours[garage.id], today))}</span>
-    ${ico("chev")}
-  </a>`).join("");
-  const preview = services.filter((service) => service.kind !== "tow").slice(0, 6);
-  const tiles = preview.map((service, index) => `<a class="tile" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
-    <span class="idx">${String(index + 1).padStart(2, "0")}</span>
-    <b>${esc(service.title)}</b>
-    <span class="mono">${esc(priceLabel(copy, service, lang))}</span>
-  </a>`).join("");
+  const { copy, lang, garages, hours, today } = ctx;
+  const byId = Object.fromEntries((garages || []).map((garage) => [garage.id, garage]));
+  const door = (garage, kind) => {
+    if (!garage) return "";
+    return `<a class="door door-${kind}" href="${esc(href(lang, `/vestigingen/${garage.id}`))}" data-panel="contacts" data-garage="${esc(garage.id)}">
+      ${baySvg(kind)}
+      <span class="door-copy">
+        <b>${esc(garage.city)}</b>
+        <small>${esc(garage.street)}</small>
+        <small class="door-hours">${esc(todayLine(copy, hours[garage.id], today))}</small>
+      </span>
+    </a>`;
+  };
   return `<section id="panel-home" class="panel panel-home" data-panel="home">
-    <div class="pitch">
-      <p class="k">${esc(copy.hero.kicker)}</p>
-      <p class="pitch-line">${esc(copy.intro.title)}</p>
+    <p class="home-line">${esc(copy.home.line)}</p>
+    <div class="doors">
+      ${door(byId.waddinxveen, "a")}
+      ${door(byId["de-bilt"], "b")}
     </div>
-    <div class="status-row">
-      <span class="pill"><i class="led"></i><span class="mono">${esc(weekLine(copy, rows))}</span></span>
-      <span class="pill pill-hot"><i class="led"></i>${esc(copy.tab.tow)} 24/7</span>
-    </div>
-    <div class="loc-list">${plates}</div>
-    <div class="qa">
-      <a class="qa-btn qa-primary" href="${esc(href(lang, "/boeken"))}" data-panel="book">${ico("book")}<span>${esc(copy.tab.book)}</span></a>
-      <a class="qa-btn" href="${esc(href(lang, "/evacuatie"))}" data-panel="tow">${ico("tow")}<span>${esc(copy.tab.tow)}</span></a>
-      <a class="qa-btn" href="tel:${esc(brand.phoneTel)}">${ico("phone")}<span>${esc(copy.loc.call)}</span></a>
-      <a class="qa-btn" href="${esc(brand.whatsapp)}">${ico("wa")}<span>${esc(copy.dock.wa)}</span></a>
-    </div>
-    <div class="svc-preview">${tiles}</div>
   </section>`;
 }
 
@@ -310,21 +359,52 @@ function bookPanel(ctx) {
   </section>`;
 }
 
+function pointBlock(copy, name, label) {
+  const auto = name === "pickup" ? ` autocomplete="street-address"` : "";
+  return `<div class="point" data-point="${name}">
+    <p class="k">${esc(label)}</p>
+    <div class="seg" role="radiogroup" aria-label="${esc(label)}">
+      <i class="seg-glider"></i>
+      <label><input type="radio" name="${name}_mode" value="address" checked><span>${esc(copy.tow.byAddress)}</span></label>
+      <label><input type="radio" name="${name}_mode" value="map"><span>${esc(copy.tow.byMap)}</span></label>
+    </div>
+    <label class="point-address">${esc(label)}
+      <input data-value name="${name}" required maxlength="180"${auto}>
+    </label>
+    <div class="point-map" hidden>
+      <div class="pinmap" data-lat="52.0900" data-lng="4.9200" data-set="0">
+        <div class="pinmap-world"></div>
+        <i class="pinmap-pin" aria-hidden="true"><i></i></i>
+      </div>
+      <div class="point-actions">
+        <button type="button" class="btn btn-ghost" data-geo>${esc(copy.tow.here)}</button>
+        <a class="mono" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OSM</a>
+      </div>
+      <p class="point-error hint" hidden>${esc(copy.tow.pointNeed)}</p>
+    </div>
+  </div>`;
+}
+
 function towPanel(ctx) {
   const { copy, brand } = ctx;
-  return `<section id="panel-tow" class="panel" data-panel="tow">
+  return `<section id="panel-tow" class="panel panel-tow" data-panel="tow">
     <form id="tow-form" class="wizard" data-step="1" style="--steps:3">
       <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><i class="meter"></i></div>
       <div class="step" data-step="1">
-        <p class="k">${esc(copy.tow.kicker)}</p>
-        <div class="live"><span class="k">24/7</span><strong>NL · EU</strong><p class="hint">${esc(copy.tow.lede)}</p></div>
-        <label>${esc(copy.tow.pickup)}<input name="pickup" required maxlength="180" autocomplete="street-address"></label>
-        <label>${esc(copy.tow.delivery)}<input name="delivery" required maxlength="180"></label>
-        <a class="btn" href="tel:${esc(brand.phoneTel)}">${esc(copy.tow.call)}</a>
+        <div class="tow-hero">${towSvg("tow-svg")}<p class="k">${esc(copy.tow.kicker)}</p></div>
+        ${pointBlock(copy, "pickup", copy.tow.pickup)}
+        ${pointBlock(copy, "delivery", copy.tow.delivery)}
+        <label>${esc(copy.tow.problem)}<textarea name="problem" rows="2" maxlength="400"></textarea></label>
+        <a class="text-btn" href="tel:${esc(brand.phoneTel)}">${esc(copy.tow.call)}</a>
         <div class="step-nav"><button class="btn btn-primary" type="button" data-next>${esc(copy.step.next)}</button></div>
       </div>
       <div class="step" data-step="2" hidden>
-        <p class="k">${esc(copy.book.vehicle)}</p>
+        <p class="k">${esc(copy.tow.vclass)}</p>
+        <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.vclass)}">
+          <i class="seg-glider"></i>
+          <label><input type="radio" name="vclass" value="car" checked><span>${esc(copy.tow.vcar)}</span></label>
+          <label><input type="radio" name="vclass" value="suv"><span>${esc(copy.tow.vsuv)}</span></label>
+        </div>
         <div class="two">
           <label>${esc(copy.tow.make)}<input name="make" required maxlength="40"></label>
           <label>${esc(copy.tow.model)}<input name="model" required maxlength="40"></label>
@@ -348,6 +428,7 @@ function towPanel(ctx) {
         <label>${esc(copy.tow.name)}<input name="name" required maxlength="80" autocomplete="name"></label>
         ${phoneFields(copy)}
         <label>${esc(copy.tow.notes)}<textarea name="notes" rows="2" maxlength="2000"></textarea></label>
+        <label>${esc(copy.tow.photos)}<input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple></label>
         <p class="form-error" id="tow-error" role="alert"></p>
         <div class="step-nav">
           <button class="btn" type="button" data-back>${esc(copy.step.back)}</button>

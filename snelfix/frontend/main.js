@@ -57,6 +57,18 @@ function sheetFromPath(pathname) {
   return "";
 }
 
+function garageFromPath(pathname) {
+  const bare = pathname.replace(/^\/(nl|en|uk)(?=\/|$)/, "") || "/";
+  const match = bare.match(/^\/vestigingen\/([^/]+)$/);
+  return match ? decodeURIComponent(match[1]) : "";
+}
+
+function focusGarage(id) {
+  for (const row of document.querySelectorAll("#panel-contacts .loc-row")) {
+    row.classList.toggle("is-on", Boolean(id) && row.id === `garage-${id}`);
+  }
+}
+
 function showPanel(id) {
   for (const slot of document.querySelectorAll(".panel-slot")) {
     const panel = slot.querySelector(".panel");
@@ -123,7 +135,10 @@ document.addEventListener("click", (event) => {
     event.preventDefault();
     showPanel(link.dataset.panel);
     if (link.dataset.panel === "services") showService("");
-    if (link.dataset.panel === "contacts") showSheet("");
+    if (link.dataset.panel === "contacts") {
+      showSheet("");
+      focusGarage(link.dataset.garage || garageFromPath(link.getAttribute("href") || ""));
+    }
     if (link.dataset.serviceBook) {
       const select = document.querySelector("#book-form select[name=service]");
       if (select) {
@@ -140,7 +155,9 @@ window.addEventListener("popstate", () => {
   showPanel(panel);
   showService(panel === "services" ? serviceFromPath(location.pathname) : "");
   showSheet(panel === "contacts" ? sheetFromPath(location.pathname) : "");
+  if (panel === "contacts") focusGarage(garageFromPath(location.pathname));
 });
+focusGarage(garageFromPath(location.pathname));
 
 const bookForm = document.getElementById("book-form");
 if (bookForm) initBooking(bookForm);
@@ -283,14 +300,172 @@ function initBooking(form) {
   });
 }
 
+function project(lat, lng, z) {
+  const n = 256 * 2 ** z;
+  const x = ((lng + 180) / 360) * n;
+  const s = Math.sin((lat * Math.PI) / 180);
+  const y = (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * n;
+  return { x, y };
+}
+
+function unproject(x, y, z) {
+  const n = 256 * 2 ** z;
+  const lng = (x / n) * 360 - 180;
+  const lat = (180 / Math.PI) * Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / n)));
+  return { lat, lng };
+}
+
+function paintMap(el) {
+  if (!el) return;
+  const z = 14;
+  const lat = Number(el.dataset.lat);
+  const lng = Number(el.dataset.lng);
+  const w = el.clientWidth;
+  const h = el.clientHeight;
+  if (!w || !h) return;
+  const { x: cx, y: cy } = project(lat, lng, z);
+  const world = el.querySelector(".pinmap-world");
+  const max = 2 ** z;
+  const x0 = Math.floor((cx - w / 2) / 256);
+  const x1 = Math.floor((cx + w / 2) / 256);
+  const y0 = Math.floor((cy - h / 2) / 256);
+  const y1 = Math.floor((cy + h / 2) / 256);
+  world.replaceChildren();
+  world.style.transform = "";
+  for (let tx = x0; tx <= x1; tx += 1) {
+    for (let ty = y0; ty <= y1; ty += 1) {
+      if (ty < 0 || ty >= max) continue;
+      const img = document.createElement("img");
+      img.alt = "";
+      img.draggable = false;
+      const wrap = ((tx % max) + max) % max;
+      img.src = `https://tile.openstreetmap.org/${z}/${wrap}/${ty}.png`;
+      img.style.left = `${tx * 256 - (cx - w / 2)}px`;
+      img.style.top = `${ty * 256 - (cy - h / 2)}px`;
+      img.addEventListener("error", () => img.remove());
+      world.appendChild(img);
+    }
+  }
+}
+
+function wirePinMap(el) {
+  if (!el || el.dataset.wired) return;
+  el.dataset.wired = "1";
+  const world = el.querySelector(".pinmap-world");
+  const z = 14;
+  let drag = null;
+  el.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("a, button")) return;
+    el.setPointerCapture(event.pointerId);
+    drag = { x: event.clientX, y: event.clientY, lat: Number(el.dataset.lat), lng: Number(el.dataset.lng) };
+  });
+  el.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+    world.style.transform = `translate(${event.clientX - drag.x}px, ${event.clientY - drag.y}px)`;
+  });
+  function end(event) {
+    if (!drag) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    const start = project(drag.lat, drag.lng, z);
+    let point;
+    if (Math.hypot(dx, dy) < 6) {
+      const rect = el.getBoundingClientRect();
+      point = unproject(start.x + (event.clientX - rect.left - rect.width / 2), start.y + (event.clientY - rect.top - rect.height / 2), z);
+    } else {
+      point = unproject(start.x - dx, start.y - dy, z);
+    }
+    el.dataset.lat = String(point.lat);
+    el.dataset.lng = String(point.lng);
+    el.dataset.set = "1";
+    drag = null;
+    paintMap(el);
+    const err = el.closest(".point")?.querySelector(".point-error");
+    if (err) err.hidden = true;
+  }
+  el.addEventListener("pointerup", end);
+  el.addEventListener("pointercancel", () => { drag = null; world.style.transform = ""; });
+}
+
+function commitPoint(point) {
+  const field = point.querySelector("[data-value]");
+  const mode = point.querySelector('input[type="radio"]:checked')?.value;
+  const map = point.querySelector(".pinmap");
+  const err = point.querySelector(".point-error");
+  field.setCustomValidity("");
+  if (mode !== "map") {
+    if (err) err.hidden = true;
+    return true;
+  }
+  if (!map || map.dataset.set !== "1") {
+    field.value = "";
+    if (err) err.hidden = false;
+    return false;
+  }
+  field.value = `${Number(map.dataset.lat).toFixed(5)}, ${Number(map.dataset.lng).toFixed(5)}`;
+  if (err) err.hidden = true;
+  return true;
+}
+
 function initTow(form) {
   const strings = extra.strings?.tow || {};
   const book = extra.strings?.book || {};
   const error = document.getElementById("tow-error");
+  for (const point of form.querySelectorAll("[data-point]")) {
+    point.addEventListener("change", (event) => {
+      if (!event.target.name?.endsWith("_mode")) return;
+      const mapMode = event.target.value === "map";
+      point.classList.toggle("is-map", mapMode);
+      point.querySelector(".point-map").hidden = !mapMode;
+      const field = point.querySelector("[data-value]");
+      if (mapMode) {
+        field.dataset.draft = field.value;
+        const map = point.querySelector(".pinmap");
+        wirePinMap(map);
+        requestAnimationFrame(() => paintMap(map));
+      } else if (field.dataset.draft != null) {
+        field.value = field.dataset.draft;
+      }
+    });
+    const geo = point.querySelector("[data-geo]");
+    geo?.addEventListener("click", () => {
+      const map = point.querySelector(".pinmap");
+      const err = point.querySelector(".point-error");
+      if (!navigator.geolocation) {
+        if (err) { err.hidden = false; err.textContent = strings.geoNo || ""; }
+        return;
+      }
+      navigator.geolocation.getCurrentPosition((pos) => {
+        map.dataset.lat = String(pos.coords.latitude);
+        map.dataset.lng = String(pos.coords.longitude);
+        map.dataset.set = "1";
+        paintMap(map);
+        if (err) err.hidden = true;
+      }, () => {
+        if (err) { err.hidden = false; err.textContent = strings.geoNo || ""; }
+      });
+    });
+  }
+  form.addEventListener("click", (event) => {
+    if (!event.target.closest("[data-next]")) return;
+    let ok = true;
+    for (const point of form.querySelectorAll("[data-point]")) {
+      if (!commitPoint(point)) ok = false;
+    }
+    if (!ok) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
   wireSteps(form);
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     error.textContent = "";
+    let pointsOk = true;
+    for (const point of form.querySelectorAll("[data-point]")) {
+      if (!commitPoint(point)) pointsOk = false;
+    }
+    if (!pointsOk) return;
     const data = new FormData(form);
     data.set("lang", lang);
     const button = form.querySelector("[type=submit]");

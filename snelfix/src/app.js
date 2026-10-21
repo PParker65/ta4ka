@@ -387,7 +387,11 @@ async function towApi(db, request, env) {
     phone,
     email,
     urgent: form.get("urgent") === "1",
-    notes: String(form.get("notes") || "").trim(),
+    notes: [
+      form.get("vclass") === "suv" ? "type: SUV" : form.get("vclass") === "car" ? "type: car" : "",
+      String(form.get("problem") || "").trim().slice(0, 400),
+      String(form.get("notes") || "").trim(),
+    ].filter(Boolean).join("\n"),
     lang,
   });
   for (const file of photos.files) await saveUpload(db, { ...file, towId: created.id });
