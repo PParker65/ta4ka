@@ -210,6 +210,8 @@ const rows = [
   ["tow.urgentHint", "Spoed komt bovenaan in het paneel van de zaak.", "Urgent requests sit at the top of the workshop panel.", "Срочные заявки встают наверх в панели мастерской.", "Термінові заявки стають зверху в панелі майстерні."],
   ["tow.photos", "Foto's van de situatie", "Photos of the situation", "Фото ситуации", "Фото ситуації"],
   ["tow.submit", "Aanvraag versturen", "Send the request", "Отправить заявку", "Надіслати заявку"],
+  ["tow.ready", "We staan al klaar om te rijden.", "We are already ready to go.", "Мы уже готовы выехать.", "Ми вже готові виїхати."],
+  ["tow.callBack", "We bellen u binnen 15 minuten terug.", "We will call you back within 15 minutes.", "Перезвоним в течение 15 минут.", "Передзвонимо протягом 15 хвилин."],
   ["tow.sentTitle", "Aanvraag staat.", "Request received.", "Заявка принята.", "Заявку прийнято."],
   ["tow.sentBody", "We bellen of appen om de rit te bevestigen. Hieronder staan de adressen en een route. De kilometers zijn geen factuur.", "We call or message to confirm the run. The addresses and a route are below. The kilometres are not an invoice.", "Позвоним или напишем, чтобы подтвердить рейс. Ниже адреса и маршрут. Километры — это не счёт.", "Подзвонимо або напишемо, щоб підтвердити рейс. Нижче адреси і маршрут. Кілометри — це не рахунок."],
   ["tow.route", "Route openen", "Open the route", "Открыть маршрут", "Відкрити маршрут"],

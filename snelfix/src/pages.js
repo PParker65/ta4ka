@@ -158,16 +158,12 @@ function haulScene() {
 function splashHtml(copy) {
   return `<div id="splash" class="splash">
     <div class="splash-bg" aria-hidden="true">
-      <i class="wash wash-r"></i>
-      <i class="wash wash-w"></i>
-      <i class="wash wash-b"></i>
-      <i class="sweep"></i>
-      <i class="splash-grain"></i>
+      <i class="splash-glow"></i>
+      <i class="splash-sheen"></i>
     </div>
     <div class="splash-stage">
       ${wordmark()}
-      <span class="flag-rule" aria-hidden="true"><i></i><i></i><i></i></span>
-      <p class="splash-copy">${esc(copy.splash.line)}</p>
+      <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
     </div>
     <button type="button" id="splash-skip" class="splash-skip">${esc(copy.splash.skip)}</button>
   </div>
@@ -178,18 +174,17 @@ function splashHtml(copy) {
     if(document.documentElement.classList.contains("no-splash")){el.remove();return;}
     var reduce=false;
     try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
-    var ms=reduce?450:3200;
+    var ms=reduce?320:1500;
     var done=false;
     function finish(){
       if(done)return; done=true;
       try{sessionStorage.setItem("snelfix_splash","1");}catch(e){}
       el.classList.add("is-out");
-      setTimeout(function(){ if(el.parentNode) el.remove(); }, 420);
+      setTimeout(function(){ if(el.parentNode) el.remove(); }, 280);
     }
     var skip=document.getElementById("splash-skip");
     if(skip) skip.addEventListener("click", finish);
     setTimeout(finish, ms);
-    setTimeout(finish, ms+900);
   })();
   </script>`;
 }
@@ -338,29 +333,12 @@ function towPanel(ctx) {
       </div>
       <div class="tow-rest" hidden>
         <label class="tow-problem">${esc(copy.tow.problem)}<textarea name="problem" rows="2" maxlength="400"></textarea></label>
-        <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.vclass)}">
-          <i class="seg-glider"></i>
-          <label><input type="radio" name="vclass" value="car" checked><span>${esc(copy.tow.vcar)}</span></label>
-          <label><input type="radio" name="vclass" value="suv"><span>${esc(copy.tow.vsuv)}</span></label>
-        </div>
+        <label>${esc(copy.tow.name)}<input name="name" required maxlength="80" autocomplete="name"></label>
+        ${phoneFields(copy)}
         <div class="two">
           <label>${esc(copy.tow.make)}<input name="make" required maxlength="40"></label>
           <label>${esc(copy.tow.model)}<input name="model" required maxlength="40"></label>
         </div>
-        <div class="seg" role="radiogroup" aria-label="${esc(copy.tow.running)}">
-          <i class="seg-glider"></i>
-          <label><input type="radio" name="running" value="1" checked><span>${esc(copy.tow.runningYes)}</span></label>
-          <label><input type="radio" name="running" value="0"><span>${esc(copy.tow.runningNo)}</span></label>
-        </div>
-        <div class="two">
-          <label>${esc(copy.tow.date)}<input type="date" name="date"></label>
-          <label>${esc(copy.tow.time)}<input type="time" name="time"></label>
-        </div>
-        <label class="choice urgent"><input type="checkbox" name="urgent" value="1"> ${esc(copy.tow.urgent)}</label>
-        <label>${esc(copy.tow.name)}<input name="name" required maxlength="80" autocomplete="name"></label>
-        ${phoneFields(copy)}
-        <label>${esc(copy.tow.notes)}<textarea name="notes" rows="2" maxlength="2000"></textarea></label>
-        <label>${esc(copy.tow.photos)}<input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple></label>
         <p class="form-error" id="tow-error" role="alert"></p>
         <button class="btn btn-primary" type="submit">${esc(copy.tow.submit)}</button>
       </div>
@@ -400,11 +378,6 @@ function contactsPanel(ctx, garageId, sheet) {
         <a class="qa-btn" href="${esc(brand.telegram)}"><span>Telegram</span></a>
         <a class="qa-btn" href="${esc(brand.instagram)}"><span>Instagram</span></a>
       </div>
-      <p class="legal-links">
-        <a href="${esc(href(lang, "/faq"))}" data-sheet="faq">${esc(copy.nav.faq)}</a>
-        <a href="${esc(href(lang, "/voorwaarden"))}" data-sheet="terms">${esc(copy.footer.terms)}</a>
-        <a href="${esc(href(lang, "/privacy"))}" data-sheet="privacy">${esc(copy.footer.privacy)}</a>
-      </p>
     </div>
     ${sheets.map(([id, title, body]) => `<article class="sheet" id="sheet-${id}" data-sheet-panel="${id}"${sheet === id ? "" : " hidden"}>
       <a class="text-btn" href="${esc(href(lang, "/contact"))}" data-sheet-close>${esc(copy.step.back)}</a>

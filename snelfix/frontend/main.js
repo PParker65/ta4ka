@@ -286,12 +286,40 @@ function commitPoint(point) {
   return true;
 }
 
-function openTowStep(form, point) {
-  point.classList.add("is-go");
-  if (form.classList.contains("is-open")) return;
-  form.classList.add("is-open");
+function pointReady(point) {
+  if (point.classList.contains("is-map")) {
+    const map = point.querySelector(".pinmap");
+    return Boolean(map && map.dataset.set === "1");
+  }
+  const field = point.querySelector("[data-value]");
+  return Boolean(field && field.value.trim());
+}
+
+function syncTowStep(form) {
+  const points = [...form.querySelectorAll("[data-point]")];
+  let ready = 0;
+  for (const point of points) {
+    const on = pointReady(point);
+    point.classList.toggle("is-go", on);
+    if (on) ready += 1;
+  }
+  const open = points.length > 0 && ready === points.length;
+  form.classList.toggle("is-open", open);
   const rest = form.querySelector(".tow-rest");
-  if (rest) rest.hidden = false;
+  if (rest) rest.hidden = !open;
+}
+
+function startTowCount(node) {
+  const end = Date.now() + 15 * 60 * 1000;
+  const tick = () => {
+    const left = Math.max(0, end - Date.now());
+    const total = Math.ceil(left / 1000);
+    const minutes = String(Math.floor(total / 60)).padStart(2, "0");
+    const seconds = String(total % 60).padStart(2, "0");
+    node.textContent = `${minutes}:${seconds}`;
+    if (left > 0) window.setTimeout(tick, 250);
+  };
+  tick();
 }
 
 function initTow(form) {
@@ -299,8 +327,10 @@ function initTow(form) {
   const book = extra.strings?.book || {};
   const error = document.getElementById("tow-error");
   for (const point of form.querySelectorAll("[data-point]")) {
-    point.addEventListener("pointerdown", () => openTowStep(form, point));
-    point.addEventListener("focusin", () => openTowStep(form, point));
+    point.querySelector("[data-value]")?.addEventListener("input", () => syncTowStep(form));
+    point.querySelector(".pinmap")?.addEventListener("pointerup", () => {
+      window.requestAnimationFrame(() => syncTowStep(form));
+    });
     const modeBtn = point.querySelector("[data-mode]");
     modeBtn?.addEventListener("click", () => {
       const mapMode = !point.classList.contains("is-map");
@@ -317,6 +347,7 @@ function initTow(form) {
       } else if (field.dataset.draft != null) {
         field.value = field.dataset.draft;
       }
+      syncTowStep(form);
     });
     const geo = point.querySelector("[data-geo]");
     geo?.addEventListener("click", () => {
@@ -332,6 +363,7 @@ function initTow(form) {
         map.dataset.set = "1";
         paintMap(map);
         if (err) err.hidden = true;
+        syncTowStep(form);
       }, () => {
         if (err) { err.hidden = false; err.textContent = strings.geoNo || ""; }
       });
@@ -373,7 +405,16 @@ function initTow(form) {
       const done = document.getElementById("tow-done");
       const c = body.confirmation;
       done.hidden = false;
-      done.innerHTML = `<div class="confirm-card"><h2>${escapeHtml(strings.sentTitle || "")}</h2><p>${escapeHtml(strings.sentBody || "")}</p><code>${escapeHtml(c.code)}</code><p><strong>${escapeHtml(c.pickup)}</strong><br>→ ${escapeHtml(c.delivery)}</p><p><a href="${escapeAttr(c.route)}">${escapeHtml(strings.route || "Route")}</a></p><p>${escapeHtml(strings.quote || "")}</p></div>`;
+      done.innerHTML = `<div class="tow-confirm">
+        <h2>${escapeHtml(strings.ready || "")}</h2>
+        <button type="button" class="tow-count">
+          <span class="tow-count-num">15:00</span>
+          <span class="tow-count-label">${escapeHtml(strings.callBack || "")}</span>
+        </button>
+        <p class="tow-confirm-route"><strong>${escapeHtml(c.pickup)}</strong> → ${escapeHtml(c.delivery)}</p>
+        <code>${escapeHtml(c.code)}</code>
+      </div>`;
+      startTowCount(done.querySelector(".tow-count-num"));
     } catch {
       error.textContent = book.invalid || "Error";
       button.disabled = false;
