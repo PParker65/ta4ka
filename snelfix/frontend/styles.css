@@ -1058,17 +1058,16 @@ select {
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;
-  align-items: stretch;
-  gap: 8px;
-  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px calc(5px + env(safe-area-inset-bottom));
   background: #07080a;
 }
 .tabs a {
-  flex: 1 1 0;
-  max-width: 88px;
-  aspect-ratio: 1;
-  min-height: 64px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1076,20 +1075,29 @@ select {
   text-decoration: none;
   background: var(--accent);
   color: var(--ink);
-  border: 2px solid var(--accent);
-  font-size: 12px;
+  border: 1px solid var(--accent);
+  font-size: 6px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.06em;
   line-height: 1.05;
-  padding: 6px 4px;
-  transition: transform .15s;
+  padding: 1px;
+  overflow: hidden;
+  animation: tab-breathe 3.6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
+.tabs a:nth-child(2) { animation-delay: .45s; }
+.tabs a:nth-child(3) { animation-delay: .9s; }
+.tabs a:nth-child(4) { animation-delay: 1.35s; }
 .tabs a[aria-current="page"] {
   background: var(--accent);
   color: var(--ink);
-  box-shadow: inset 0 0 0 3px var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
 }
-.tabs a:active { transform: scale(0.96); }
+.tabs a:active { animation: none; transform: scale(0.92); }
+@keyframes tab-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
 
 .price-list {
   flex: 1;
@@ -1441,7 +1449,7 @@ select {
   .langs { grid-template-columns: repeat(4, 36px); }
   .panel { padding: 16px 18px; gap: 10px; }
   .pitch-line { font-size: 34px; }
-  .tabs a { font-size: 13px; }
+  .tabs a { font-size: 6px; }
   .svc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .qa-btn { min-height: 64px; font-size: 13px; }
   .tile b { font-size: 15px; }
@@ -1450,7 +1458,7 @@ select {
   .mark-name { font-size: 13px; }
   .mark-auto { font-size: 9px; letter-spacing: 0.1em; }
   .langs { grid-template-columns: repeat(4, 28px); }
-  .tabs a { font-size: 11px; }
+  .tabs a { font-size: 6px; }
   .qa-btn span { font-size: 10px; }
   .pitch-line { font-size: 18px; }
 }
