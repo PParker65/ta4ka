@@ -15,7 +15,41 @@ function href(lang, path) {
 }
 
 function wordmark() {
-  return `<img class="wordmark" src="${asset.wordmark}" alt="SnelFix Auto" width="380" height="66">`;
+  return `<span class="mark" aria-label="SnelFix Auto"><span class="mark-name">SNELFIX</span><span class="mark-auto">AUTO</span></span>`;
+}
+
+function themeToggle(copy) {
+  return `<button type="button" class="rocker" id="theme-toggle" role="switch" aria-checked="false" aria-label="${esc(copy.theme.toLight)}" data-to-light="${esc(copy.theme.toLight)}" data-to-dark="${esc(copy.theme.toDark)}"><span class="rocker-thumb"></span></button>`;
+}
+
+function themeHead() {
+  return `<script>try{if(localStorage.getItem("snelfix_theme")==="light"){document.documentElement.setAttribute("data-theme","light");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content","#ffc2e4")}}catch(e){}</script>
+<style>html,body{margin:0;background:#07080a;color:#f7f7f5;height:100svh;height:100dvh;max-height:100svh;overflow:hidden}html[data-theme="light"],html[data-theme="light"] body{background:#ffc2e4;color:#140208}</style>`;
+}
+
+function themeBoot() {
+  return `<script>
+(function(){
+  var btn=document.getElementById("theme-toggle");
+  var meta=document.querySelector('meta[name="theme-color"]');
+  function paint(light){
+    if(light) document.documentElement.setAttribute("data-theme","light");
+    else document.documentElement.removeAttribute("data-theme");
+    if(meta) meta.setAttribute("content", light?"#ffc2e4":"#07080a");
+    if(btn){
+      btn.setAttribute("aria-checked", light?"true":"false");
+      btn.setAttribute("aria-label", light?btn.getAttribute("data-to-dark"):btn.getAttribute("data-to-light"));
+    }
+  }
+  if(!btn) return;
+  paint(document.documentElement.getAttribute("data-theme")==="light");
+  btn.addEventListener("click", function(){
+    var light=document.documentElement.getAttribute("data-theme")!=="light";
+    try{localStorage.setItem("snelfix_theme", light?"light":"dark");}catch(e){}
+    paint(light);
+  });
+})();
+</script>`;
 }
 
 function ico(name) {
@@ -442,11 +476,11 @@ ${alternates}
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:locale" content="${LOCALE[lang] || "ru_RU"}">
-<meta name="theme-color" content="#0c0d0f">
+<meta name="theme-color" content="#07080a">
+${themeHead()}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 ${gsc ? `<meta name="google-site-verification" content="${esc(gsc)}">` : ""}
 <link rel="stylesheet" href="${asset.css}">
-<style>html,body{margin:0;background:#0c0d0f;color:#f3f0e8;height:100svh;height:100dvh;max-height:100svh;overflow:hidden}</style>
 <script>try{if(sessionStorage.getItem("snelfix_splash")==="1")document.documentElement.classList.add("no-splash")}catch(e){}</script>
 <script type="application/ld+json">${safeJson(jsonLd(ctx))}</script>
 </head>
@@ -455,7 +489,7 @@ ${splashHtml(copy)}
 <div class="app">
   <header class="bar">
     <a class="brand" href="${esc(href(lang, "/"))}" data-panel="home">${wordmark()}</a>
-    ${langs(ctx, path)}
+    <div class="tools">${themeToggle(copy)}${langs(ctx, path)}</div>
   </header>
   <main id="content" class="stage">
     ${banner ? `<p class="banner">${esc(banner)}</p>` : ""}
@@ -475,6 +509,7 @@ ${splashHtml(copy)}
 <script type="application/json" id="sf-extra">${safeJson({ strings })}</script>
 <script type="application/json" id="sf-boot">${safeJson(boot)}</script>
 <script type="module" src="${asset.main}"></script>
+${themeBoot()}
 </body>
 </html>`;
 }
@@ -585,12 +620,14 @@ export function adminLoginPage(copy, lang = "ru") {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>${esc(copy.admin.loginTitle)} — SnelFix</title>
+<meta name="theme-color" content="#07080a">
+${themeHead()}
 <link rel="stylesheet" href="${asset.css}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body class="page-admin">
 <main class="admin-login">
-  ${adminLangs(lang)}
+  <div class="tools">${themeToggle(copy)}${adminLangs(lang)}</div>
   <a class="brand" href="${esc(href(lang, "/"))}">${wordmark()}</a>
   <h1>${esc(copy.admin.loginTitle)}</h1>
   <form id="login-form" class="form">
@@ -602,6 +639,7 @@ export function adminLoginPage(copy, lang = "ru") {
 </main>
 <script type="application/json" id="sf-admin">${safeJson(copy.admin)}</script>
 <script type="module" src="${asset.admin}"></script>
+${themeBoot()}
 </body></html>`;
 }
 
@@ -614,13 +652,15 @@ export function adminAppPage(copy, lang = "ru") {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>${esc(copy.admin.loginTitle)} — SnelFix</title>
+<meta name="theme-color" content="#07080a">
+${themeHead()}
 <link rel="stylesheet" href="${asset.css}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body class="page-admin" data-mode="app">
 <header class="admin-bar">
   <a class="brand" href="${esc(href(lang, "/"))}">${wordmark()}</a>
-  ${adminLangs(lang)}
+  <div class="tools">${themeToggle(copy)}${adminLangs(lang)}</div>
   <strong>${esc(copy.admin.loginTitle)}</strong>
   <button type="button" id="logout" class="btn btn-ghost">${esc(copy.admin.logout)}</button>
 </header>
@@ -633,5 +673,6 @@ export function adminAppPage(copy, lang = "ru") {
 <p class="form-error" id="admin-error" role="alert"></p>
 <script type="application/json" id="sf-admin">${safeJson({ admin: copy.admin, hours: copy.hours, hoursClosed: copy.hours.closed })}</script>
 <script type="module" src="${asset.admin}"></script>
+${themeBoot()}
 </body></html>`;
 }

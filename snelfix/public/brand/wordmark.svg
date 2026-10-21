@@ -11,6 +11,6 @@
     .name { font-family: "SnelFix Wordmark", "Arial Narrow", Impact, sans-serif; font-weight: 600; }
   </style>
   <text class="name" x="0" y="78" fill="#f4f1ea" font-size="92" letter-spacing="-1.5">SNELFIX</text>
-  <rect x="0" y="96" width="86" height="7" fill="#e6a117"/>
-  <text class="name" x="98" y="108" fill="#e6a117" font-size="22" letter-spacing="6">AUTO</text>
+  <rect x="0" y="96" width="86" height="7" fill="#b6ff3c"/>
+  <text class="name" x="98" y="108" fill="#b6ff3c" font-size="22" letter-spacing="6">AUTO</text>
 </svg>

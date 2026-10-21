@@ -26,6 +26,8 @@ const rows = [
   ["nav.menu", "Menu", "Menu", "Меню", "Меню"],
   ["nav.close", "Sluiten", "Close", "Закрыть", "Закрити"],
   ["nav.lang", "Taal", "Language", "Язык", "Мова"],
+  ["theme.toLight", "Lichte thema", "Light theme", "Светлая тема", "Світла тема"],
+  ["theme.toDark", "Donker thema", "Dark theme", "Тёмная тема", "Темна тема"],
 
   ["splash.skip", "Overslaan", "Skip", "Пропустить", "Пропустити"],
   ["splash.line", "Waddinxveen · De Bilt · Europa", "Waddinxveen · De Bilt · Europe", "Ваддинксвен · Де-Билт · Европа", "Ваддінксвен · Де-Білт · Європа"],
