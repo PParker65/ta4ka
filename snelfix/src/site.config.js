@@ -1,7 +1,7 @@
 export const siteConfig = {
   origin: "https://snelfixauto.com",
   name: "SnelFix Auto",
-  assetVersion: "20261021e",
+  assetVersion: "20261021f",
   phoneDisplay: "+31 6 13044422",
   phoneTel: "+31613044422",
   whatsapp: "https://wa.me/31613044422",

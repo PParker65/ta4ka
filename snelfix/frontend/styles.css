@@ -39,30 +39,6 @@
   --mono: "IBM Plex Mono", ui-monospace, monospace;
   --tabs: 62px;
 }
-html[data-theme="light"] {
-  color-scheme: light;
-  --bg: #ffc2e4;
-  --bg-2: #ff9ed4;
-  --bg-3: #ff84c8;
-  --text: #140208;
-  --muted: #4e142c;
-  --line: rgba(20, 2, 8, 0.16);
-  --line-strong: rgba(20, 2, 8, 0.34);
-  --accent: #ff146e;
-  --accent-2: #ff4d94;
-  --accent-deep: #c40054;
-  --ink: #140208;
-  --accent-soft: rgba(255, 20, 110, 0.2);
-  --glow: rgba(255, 20, 110, 0.5);
-  --bar: rgba(255, 194, 228, 0.94);
-  --field: #fff4f9;
-  --tile-a: #ffd4ec;
-  --tile-b: #ffabd8;
-  --map: #ffb3da;
-  --grain: rgba(20, 2, 8, 0.14);
-  --danger: #9d1028;
-  --danger-text: #6e0618;
-}
 
 * { box-sizing: border-box; }
 html, body {
@@ -121,7 +97,6 @@ p { margin: 0; }
   z-index: 2;
 }
 .brand { display: flex; margin-right: auto; min-width: 0; }
-.tools { display: flex; align-items: center; gap: 8px; flex: none; }
 .mark {
   display: inline-flex;
   align-items: baseline;
@@ -143,26 +118,6 @@ p { margin: 0; }
   letter-spacing: 0.14em;
   color: var(--accent);
 }
-.rocker {
-  width: 52px;
-  height: 28px;
-  padding: 3px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: var(--bg-3);
-  flex: none;
-}
-.rocker-thumb {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--glow);
-  transform: translateX(0);
-  transition: transform .28s cubic-bezier(.16, .84, .32, 1);
-}
-html[data-theme="light"] .rocker-thumb { transform: translateX(24px); }
 .langs {
   display: grid;
   grid-template-columns: repeat(4, 30px);
@@ -744,7 +699,6 @@ html:has(.page-admin), html:has(.page-admin) body {
 }
 .admin-bar .btn-ghost, .admin-bar .btn { margin-left: auto; background: transparent; color: var(--text); border-color: var(--line); }
 .admin-login { max-width: 420px; margin: 8vh auto; display: grid; gap: 12px; }
-.admin-login .tools { justify-self: end; }
 .admin-jump { display: block; padding: 12px 16px; }
 .admin-root { width: min(980px, calc(100% - 24px)); margin: 0 auto 32px; display: grid; gap: 12px; }
 .page-admin .form { display: grid; gap: 12px; }
