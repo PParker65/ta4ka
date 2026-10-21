@@ -69,7 +69,7 @@ function showPanel(id) {
 }
 
 function showService(id) {
-  const grid = document.querySelector(".price-list");
+  const grid = document.querySelector(".svc-grid");
   const details = document.querySelectorAll("[data-service-detail]");
   if (!id) {
     if (grid) grid.hidden = false;
@@ -248,13 +248,38 @@ function initBooking(form) {
     for (const pic of document.querySelectorAll("#panel-book .work-pic")) {
       pic.classList.toggle("is-on", pic.dataset.art === id);
     }
-    for (const item of document.querySelectorAll("[data-pick]")) {
-      item.classList.toggle("is-on", item.dataset.pick === id);
+    for (const item of document.querySelectorAll("[data-pick], [data-rock-pick]")) {
+      const pick = item.dataset.pick || item.dataset.rockPick;
+      item.classList.toggle("is-on", pick === id);
     }
+    const seg = document.querySelector(`[data-rock-pick="${CSS.escape(id)}"]`);
+    const track = document.getElementById("rocker-track");
+    if (seg && track) {
+      const segBox = seg.getBoundingClientRect();
+      const trackBox = track.getBoundingClientRect();
+      track.scrollLeft += segBox.left - trackBox.left - (trackBox.width - segBox.width) / 2;
+    }
+  }
+  function stepService(delta) {
+    const options = [...form.service.options];
+    if (!options.length) return;
+    const index = Math.max(0, options.findIndex((option) => option.value === form.service.value));
+    const next = (index + delta + options.length) % options.length;
+    form.service.value = options[next].value;
+    form.service.dispatchEvent(new Event("change"));
   }
   form.service.addEventListener("change", paintLive);
   form.querySelectorAll("[name=garage]").forEach((node) => node.addEventListener("change", paintLive));
   paintLive();
+  document.querySelectorAll("[data-rock]").forEach((button) => {
+    button.addEventListener("click", () => stepService(Number(button.dataset.rock)));
+  });
+  document.querySelectorAll("[data-rock-pick]").forEach((button) => {
+    button.addEventListener("click", () => {
+      form.service.value = button.dataset.rockPick;
+      form.service.dispatchEvent(new Event("change"));
+    });
+  });
   document.getElementById("work-open")?.addEventListener("click", () => {
     const curtain = document.getElementById("work-curtain");
     if (curtain) curtain.hidden = false;

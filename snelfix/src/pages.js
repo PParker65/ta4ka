@@ -1,4 +1,3 @@
-import { SECTIONS } from "./catalog.js";
 import { asset, siteConfig } from "./site.config.js";
 import { esc, localizePath, minLabel } from "./util.js";
 
@@ -260,32 +259,21 @@ function homePanel(ctx) {
 function servicesPanel(ctx, serviceId) {
   const { copy, lang, services } = ctx;
   const workshop = services.filter((service) => service.kind !== "tow");
-  const byId = Object.fromEntries(workshop.map((service) => [service.id, service]));
-  const list = SECTIONS.map((section) => {
-    const items = section.ids.map((id) => byId[id]).filter(Boolean);
-    if (!items.length) return "";
-    const rows = items.map((service) => {
-      const note = service.kind === "from" && service.summary
-        ? `<small class="price-note">${esc(service.summary)}</small>`
-        : "";
-      return `<a class="price-row" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
-        <span class="price-idx">${String(service.sort).padStart(2, "0")}/</span>
-        <span class="price-name">${esc(service.title)}</span>
-        <span class="price-side">${note}<b class="price-eur">${esc(priceLabel(copy, service))}</b></span>
-      </a>`;
-    }).join("");
-    return `<h2 class="price-section">${esc(section.title[lang] || section.title.ru)}</h2>${rows}`;
-  }).join("");
+  const tiles = workshop.map((service, index) => `<a class="tile" href="${esc(href(lang, `/diensten/${service.id}`))}" data-service="${esc(service.id)}">
+    <span class="idx">${String(index + 1).padStart(2, "0")}</span>
+    <b>${esc(service.title)}</b>
+    <span class="mono tile-price">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</span>
+  </a>`).join("");
   const details = workshop.map((service) => `<article class="detail" id="svc-${esc(service.id)}" data-service-detail="${esc(service.id)}"${service.id === serviceId ? "" : " hidden"}>
     <button type="button" class="text-btn" data-service-back>${esc(copy.svc.back)}</button>
     <h2>${esc(service.title)}</h2>
-    <p class="mono price-eur">${esc(priceLabel(copy, service))}</p>
+    <p class="mono">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</p>
     <p class="summary">${esc(service.summary || "")}</p>
     <p class="body-copy">${esc(service.body || "")}</p>
     <a class="btn btn-primary" href="${esc(href(lang, `/boeken?service=${encodeURIComponent(service.id)}`))}" data-panel="book" data-service-book="${esc(service.id)}">${esc(service.kind === "tow" ? copy.svc.towCta : copy.svc.book)}</a>
   </article>`).join("");
   return `<section id="panel-services" class="panel" data-panel="services">
-    <div class="price-list"${serviceId ? " hidden" : ""}>${list}</div>
+    <div class="svc-grid"${serviceId ? " hidden" : ""}>${tiles}</div>
     ${details}
   </section>`;
 }
@@ -321,15 +309,24 @@ function bookPanel(ctx) {
     <form id="book-form" class="wizard" data-today="${esc(today)}" data-label="${esc(copy.book.submit)}" data-step="1" style="--steps:4">
       <div class="stepper" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span><i class="meter"></i></div>
       <div class="step" data-step="1">
-        <button type="button" class="work-face" id="work-open">
-          <span class="work-copy">
-            <span class="k" id="work-where"></span>
-            <strong id="work-title"></strong>
-            <span class="mono" id="work-meta"></span>
-          </span>
-          <span class="work-art">${pics}</span>
-        </button>
+        <div class="work-stage">
+          <div class="work-square">
+            <span class="work-art">${pics}</span>
+            <span class="work-caption">
+              <strong id="work-title"></strong>
+              <span class="mono" id="work-meta"></span>
+            </span>
+          </div>
+          <div class="rocker" role="group" aria-label="${esc(copy.book.service)}">
+            <button type="button" class="rocker-btn" data-rock="-1" aria-label="‹">‹</button>
+            <div class="rocker-track" id="rocker-track">
+              ${bookable.map((service) => `<button type="button" class="rocker-seg${service.id === selectedService ? " is-on" : ""}" data-rock-pick="${esc(service.id)}"><span>${String(service.sort).padStart(2, "0")}</span><b>${esc(service.title)}</b></button>`).join("")}
+            </div>
+            <button type="button" class="rocker-btn" data-rock="1" aria-label="›">›</button>
+          </div>
+        </div>
         <select class="sr" name="service" aria-hidden="true" tabindex="-1">${bookable.map((service) => `<option value="${esc(service.id)}" data-min="${esc(String(service.duration_min))} ${esc(copy.svc.minutes)}" data-price="${esc(priceLabel(copy, service))}"${service.id === selectedService ? " selected" : ""}>${esc(service.title)}</option>`).join("")}</select>
+        <button type="button" class="text-btn" id="work-open">${esc(copy.book.service)}</button>
         <p class="k">${esc(copy.book.garage)}</p>
         <div class="choices">${garages.map((garage) => `<label class="choice"><input type="radio" name="garage" value="${esc(garage.id)}"${garage.id === selectedGarage ? " checked" : ""}> ${esc(garage.city)}</label>`).join("")}</div>
         <p class="hint">${esc(copy.book.lede)}</p>

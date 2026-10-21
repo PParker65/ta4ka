@@ -51,6 +51,10 @@ assert(home.text.includes("€ 35 / час"), "welding hourly");
 assert(home.text.includes("по запросу"), "coding on request");
 assert(home.text.includes("зависит от авто"), "depends note");
 assert(home.text.includes('class="carriage"'), "lift carriage");
+assert(home.text.includes('class="tile"'), "service cards");
+assert(!home.text.includes('class="price-row"'), "no spreadsheet rows");
+assert(home.text.includes('class="rocker"'), "booking rocker");
+assert(home.text.includes("work-square"), "booking square");
 assert(home.text.includes('id="work-curtain"'), "booking curtain");
 assert(home.text.includes("overflow:hidden"), "no page scroll lock");
 
@@ -82,7 +86,6 @@ assert(uk.text.includes("від € 500"), "ua from price");
 assert(uk.text.includes("€ 35 / год"), "ua hourly");
 assert(uk.text.includes("за запитом"), "ua on request");
 assert(uk.text.includes("залежить від авто"), "ua depends");
-assert(uk.text.includes("ШИНИ ТА ГАЛЬМА"), "ua section");
 assert(uk.text.includes("ВЕЛИКЕ ТО: ОЛИВА + МАСЛЯНИЙ, ПОВІТРЯНИЙ, САЛОННИЙ І ПАЛИВНИЙ ФІЛЬТР"), "ua major title");
 assert((await call("/nope")).status === 404, "404");
 assert((await call("/sitemap.xml")).text.includes("/vestigingen/de-bilt"), "sitemap");
