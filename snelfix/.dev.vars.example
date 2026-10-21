@@ -1,0 +1,14 @@
+# Copy to .dev.vars for local overrides. Never commit .dev.vars.
+# Leave values empty unless you are wiring a real account.
+# ADMIN_PASSWORD is read only when the database is first created.
+
+SITE_ORIGIN=https://snelfixauto.com
+ADMIN_PASSWORD=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+EMAIL_WEBHOOK_URL=
+SMS_WEBHOOK_URL=
+EMAIL_TO=
+CRON_SECRET=
+ANALYTICS_ID=
+GSC_VERIFICATION=
