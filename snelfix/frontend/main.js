@@ -55,6 +55,25 @@ function focusGarage(id) {
   }
 }
 
+function noteView(panel) {
+  if (!panel || document.body.classList.contains("page-admin")) return;
+  let vid = "";
+  try {
+    vid = sessionStorage.getItem("snelfix_vid") || "";
+    if (!vid) {
+      vid = (crypto.randomUUID && crypto.randomUUID()) || `v${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem("snelfix_vid", vid);
+    }
+  } catch { return; }
+  const body = JSON.stringify({ vid, path: location.pathname, panel });
+  fetch("/api/visit", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body,
+    keepalive: true,
+  }).catch(() => {});
+}
+
 function showPanel(id) {
   for (const slot of document.querySelectorAll(".panel-slot")) {
     const panel = slot.querySelector(".panel");
@@ -94,6 +113,7 @@ document.addEventListener("click", (event) => {
     showService("");
     const base = document.querySelector('.tabs a[data-panel="services"]');
     if (base) history.pushState({}, "", base.href);
+    noteView("services");
     return;
   }
   if (link.dataset.sheetClose != null) {
@@ -101,6 +121,7 @@ document.addEventListener("click", (event) => {
     showSheet("");
     const base = document.querySelector('.tabs a[data-panel="contacts"]');
     if (base) history.pushState({}, "", base.href);
+    noteView("contacts");
     return;
   }
   if (link.dataset.service) {
@@ -108,6 +129,7 @@ document.addEventListener("click", (event) => {
     showPanel("services");
     showService(link.dataset.service);
     history.pushState({}, "", link.href);
+    noteView("services");
     return;
   }
   if (link.dataset.sheet) {
@@ -115,6 +137,7 @@ document.addEventListener("click", (event) => {
     showPanel("contacts");
     showSheet(link.dataset.sheet);
     history.pushState({}, "", link.href);
+    noteView("contacts");
     return;
   }
   if (link.dataset.panel && document.querySelector(`[data-panel="${link.dataset.panel}"].panel`)) {
@@ -126,6 +149,7 @@ document.addEventListener("click", (event) => {
       focusGarage(link.dataset.garage || garageFromPath(link.getAttribute("href") || ""));
     }
     history.pushState({}, "", link.href);
+    noteView(link.dataset.panel);
   }
 });
 
@@ -135,7 +159,14 @@ window.addEventListener("popstate", () => {
   showService(panel === "services" ? serviceFromPath(location.pathname) : "");
   showSheet(panel === "contacts" ? sheetFromPath(location.pathname) : "");
   if (panel === "contacts") focusGarage(garageFromPath(location.pathname));
+  noteView(panel);
 });
+const bootPanel = panelFromPath(location.pathname);
+showPanel(bootPanel);
+showService(bootPanel === "services" ? serviceFromPath(location.pathname) : "");
+showSheet(bootPanel === "contacts" ? sheetFromPath(location.pathname) : "");
+if (bootPanel === "contacts") focusGarage(garageFromPath(location.pathname));
+noteView(bootPanel);
 focusGarage(garageFromPath(location.pathname));
 
 const towForm = document.getElementById("tow-form");
@@ -422,6 +453,67 @@ function initTow(form) {
   });
 }
 
+
+document.addEventListener("click", (event) => {
+  const lead = event.target.closest("[data-lead-open]");
+  const talk = event.target.closest("[data-contact-open]");
+  if (!lead && !talk) return;
+  const detail = event.target.closest("[data-service-detail]");
+  if (!detail) return;
+  const form = detail.querySelector("[data-lead-form]");
+  const contact = detail.querySelector("[data-svc-talk]");
+  const done = detail.querySelector("[data-lead-done]");
+  if (lead) {
+    if (contact) contact.hidden = true;
+    if (done) done.hidden = true;
+    if (form) {
+      form.hidden = false;
+      const field = form.querySelector("input[name=name]");
+      if (field) field.focus();
+    }
+  } else {
+    if (form) form.hidden = true;
+    if (contact) contact.hidden = false;
+  }
+});
+
+document.addEventListener("submit", async (event) => {
+  const form = event.target;
+  if (!form.matches || !form.matches("[data-lead-form]")) return;
+  event.preventDefault();
+  const error = form.querySelector("[data-lead-error]");
+  const button = form.querySelector("button[type=submit]");
+  const detail = form.closest("[data-service-detail]");
+  const strings = (extra.strings && extra.strings.book) || {};
+  const invalid = strings.invalid || "Error";
+  if (error) error.textContent = "";
+  const name = form.querySelector("input[name=name]");
+  const national = form.querySelector("input[name=national]");
+  if (!name.value.trim() || !national.value.trim()) {
+    if (error) error.textContent = invalid;
+    return;
+  }
+  if (button) button.disabled = true;
+  try {
+    const response = await fetch("/api/leads", { method: "POST", body: new FormData(form) });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (error) error.textContent = invalid;
+      if (button) button.disabled = false;
+      return;
+    }
+    form.hidden = true;
+    const done = detail && detail.querySelector("[data-lead-done]");
+    if (done) {
+      const copy = (extra.strings && extra.strings.svc) || {};
+      done.hidden = false;
+      done.innerHTML = `<h2>${escapeHtml(copy.leadDone || "")}</h2><p>${escapeHtml(copy.leadBack || "")}</p><code>${escapeHtml(body.code || "")}</code>`;
+    }
+  } catch {
+    if (error) error.textContent = "Error";
+    if (button) button.disabled = false;
+  }
+});
 
 function readJson(id) {
   const node = document.getElementById(id);

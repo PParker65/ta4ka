@@ -402,3 +402,100 @@ export async function rescheduleBooking(db, id, date, startMin) {
   if (!updated.meta || !updated.meta.changes) return { error: "slot_taken" };
   return { ok: true };
 }
+
+export async function createLead(db, input) {
+  const customerId = await upsertCustomer(db, {
+    name: input.name,
+    phone: input.phone,
+    email: "",
+  });
+  const now = new Date().toISOString();
+  const inserted = await db.prepare(
+    `INSERT INTO service_leads (
+      code, service_id, service_title, contact_name, contact_phone, note, status, lang, customer_id, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, ?, ?)
+    RETURNING id`
+  ).bind(
+    input.code,
+    input.serviceId,
+    input.serviceTitle || "",
+    input.name,
+    input.phone,
+    input.note || "",
+    input.lang || "ru",
+    customerId,
+    now,
+    now
+  ).first();
+  return { id: inserted.id };
+}
+
+export async function listLeads(db) {
+  const { results } = await db.prepare(
+    `SELECT * FROM service_leads
+     ORDER BY CASE status WHEN 'new' THEN 0 WHEN 'done' THEN 1 ELSE 2 END, created_at DESC
+     LIMIT 200`
+  ).all();
+  return results || [];
+}
+
+export async function setLeadStatus(db, id, status) {
+  const updated = await db.prepare(
+    "UPDATE service_leads SET status = ?, updated_at = ? WHERE id = ?"
+  ).bind(status, new Date().toISOString(), id).run();
+  return Boolean(updated.meta && updated.meta.changes);
+}
+
+export async function recordVisit(db, input) {
+  const now = new Date().toISOString();
+  await db.prepare(
+    `INSERT INTO visits (day, visitor, country, city, created_at)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(day, visitor) DO UPDATE SET
+       country = CASE WHEN excluded.country != '' THEN excluded.country ELSE visits.country END,
+       city = CASE WHEN excluded.city != '' THEN excluded.city ELSE visits.city END`
+  ).bind(input.day, input.visitor, input.country || "", input.city || "", now).run();
+  await db.prepare(
+    "INSERT INTO page_views (day, path, panel, country, created_at) VALUES (?, ?, ?, ?, ?)"
+  ).bind(input.day, input.path, input.panel || "", input.country || "", now).run();
+}
+
+function shiftDay(iso, delta) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + delta);
+  return dt.toISOString().slice(0, 10);
+}
+
+export async function statsSummary(db, days = 14) {
+  const today = amsterdamNow().date;
+  const start = shiftDay(today, -(days - 1));
+  const uniqRows = (await db.prepare("SELECT day, COUNT(*) AS n FROM visits WHERE day >= ? GROUP BY day").bind(start).all()).results || [];
+  const viewRows = (await db.prepare("SELECT day, COUNT(*) AS n FROM page_views WHERE day >= ? GROUP BY day").bind(start).all()).results || [];
+  const countries = (await db.prepare(
+    `SELECT country, city, COUNT(*) AS uniques
+     FROM visits WHERE day >= ?
+     GROUP BY country, city
+     ORDER BY uniques DESC
+     LIMIT 16`
+  ).bind(start).all()).results || [];
+  const panels = (await db.prepare(
+    "SELECT panel, COUNT(*) AS views FROM page_views WHERE day >= ? GROUP BY panel ORDER BY views DESC"
+  ).bind(start).all()).results || [];
+  const uniqTotal = await db.prepare("SELECT COUNT(*) AS n FROM visits WHERE day >= ?").bind(start).first();
+  const viewTotal = await db.prepare("SELECT COUNT(*) AS n FROM page_views WHERE day >= ?").bind(start).first();
+  const uniqMap = Object.fromEntries(uniqRows.map((row) => [row.day, Number(row.n)]));
+  const viewMap = Object.fromEntries(viewRows.map((row) => [row.day, Number(row.n)]));
+  const series = [];
+  for (let i = 0; i < days; i += 1) {
+    const day = shiftDay(start, i);
+    series.push({ day, uniques: uniqMap[day] || 0, views: viewMap[day] || 0 });
+  }
+  return {
+    uniques: Number(uniqTotal?.n || 0),
+    views: Number(viewTotal?.n || 0),
+    days: series,
+    countries,
+    panels,
+  };
+}

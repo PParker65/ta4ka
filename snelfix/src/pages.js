@@ -282,12 +282,28 @@ function servicesPanel(ctx, serviceId) {
     <button type="button" class="text-btn" data-service-back>${esc(copy.svc.back)}</button>
     <h2>${esc(service.title)}</h2>
     <p class="mono">${esc(String(service.duration_min))} ${esc(copy.svc.minutes)} · ${esc(priceLabel(copy, service))}</p>
+    <div class="svc-choice">
+      <button type="button" class="svc-act svc-act-lead" data-lead-open>${esc(copy.svc.lead)}</button>
+      <button type="button" class="svc-act svc-act-talk" data-contact-open>${esc(copy.svc.talk)}</button>
+    </div>
+    <form class="lead-form" data-lead-form hidden novalidate>
+      <p class="lead-job">${esc(service.title)}</p>
+      <input type="hidden" name="service" value="${esc(service.id)}">
+      <input type="hidden" name="lang" value="${esc(lang)}">
+      <label>${esc(copy.tow.name)}<input name="name" required maxlength="80" autocomplete="name"></label>
+      ${phoneFields(copy)}
+      <label>${esc(copy.svc.note)}<textarea name="note" rows="2" maxlength="400"></textarea></label>
+      <p class="form-error" data-lead-error role="alert"></p>
+      <button class="btn btn-primary" type="submit">${esc(copy.svc.leadSend)}</button>
+    </form>
+    <div class="svc-talk" data-svc-talk hidden>
+      <a class="btn btn-ghost" href="tel:${esc(brand.phoneTel)}">${esc(copy.dock.call)}</a>
+      <a class="btn btn-primary" href="${esc(wa)}" target="_blank" rel="noopener">${esc(copy.dock.wa)}</a>
+      <a class="btn btn-ghost" href="${esc(href(lang, "/contact"))}" data-panel="contacts">${esc(copy.tab.contacts)}</a>
+    </div>
+    <div class="lead-done" data-lead-done hidden></div>
     <p class="summary">${esc(service.summary || "")}</p>
     <p class="body-copy">${esc(service.body || "")}</p>
-    <div class="step-nav">
-      <a class="btn btn-primary" href="${esc(wa)}" target="_blank" rel="noopener">${esc(copy.dock.wa)}</a>
-      <a class="btn btn-ghost" href="tel:${esc(brand.phoneTel)}">${esc(copy.dock.call)}</a>
-    </div>
   </article>`;
   }).join("");
   return `<section id="panel-services" class="panel" data-panel="services">
@@ -404,6 +420,7 @@ function shell(ctx, { panel, title, description, path, serviceId = "", garageId 
   const strings = {
     book: copy.book,
     tow: copy.tow,
+    svc: copy.svc,
   };
   const show = (id) => (id === panel ? "" : " hidden");
   return `<!doctype html>
@@ -576,7 +593,7 @@ ${criticalCss()}
 }
 
 export function adminAppPage(copy, lang = "ru") {
-  const tabsAdmin = ["bookings", "tows", "services", "garages", "customers", "news", "password"];
+  const tabsAdmin = ["leads", "stats", "bookings", "tows", "services", "garages", "customers", "news", "password"];
   return `<!doctype html>
 <html lang="${lang}">
 <head>

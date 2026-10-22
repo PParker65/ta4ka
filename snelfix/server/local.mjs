@@ -13,8 +13,9 @@ loadDevVars(join(root, ".dev.vars"));
 
 const dbFile = process.env.DB_PATH || join(dataDir, "snelfix.sqlite");
 const db = openSqlite(dbFile);
-const migration = readFileSync(join(root, "migrations/0001_init.sql"), "utf8");
-db.exec(migration);
+for (const file of ["migrations/0001_init.sql", "migrations/0002_leads_stats.sql"]) {
+  db.exec(readFileSync(join(root, file), "utf8"));
+}
 
 const mime = {
   ".css": "text/css; charset=utf-8",

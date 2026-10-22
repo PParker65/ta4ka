@@ -2,6 +2,7 @@ import { siteConfig } from "./site.config.js";
 import {
   availability,
   createBooking,
+  createLead,
   createTow,
   customerDetail,
   dayWindow,
@@ -10,12 +11,16 @@ import {
   bookingByCode,
   listBookings,
   listCustomers,
+  listLeads,
   listGarages,
   listPosts,
   listServices,
   listTows,
+  recordVisit,
   rescheduleBooking,
   saveUpload,
+  setLeadStatus,
+  statsSummary,
   serviceById,
   serviceI18n,
   setSetting,
@@ -279,6 +284,8 @@ async function api(db, request, env, url) {
   if (path === "/api/bookings" && request.method === "POST") return bookingApi(db, request, env);
   if (path === "/api/bookings/status" && request.method === "POST") return statusApi(db, request);
   if (path === "/api/tow" && request.method === "POST") return towApi(db, request, env);
+  if (path === "/api/leads" && request.method === "POST") return leadApi(db, request, env);
+  if (path === "/api/visit" && request.method === "POST") return visitApi(db, request);
   if (path === "/api/auth/login" && request.method === "POST") return login(db, request);
   if (path === "/api/auth/logout" && request.method === "POST") return logout(request);
   if (path === "/api/auth/me" && request.method === "GET") {
@@ -458,6 +465,65 @@ async function towApi(db, request, env) {
   return json({ ok: true, confirmation: payload });
 }
 
+function placeFrom(request) {
+  const cf = request.cf || {};
+  let country = String(request.headers.get("cf-ipcountry") || cf.country || "").trim().toUpperCase();
+  let city = String(request.headers.get("cf-ipcity") || cf.city || "").replace(/[\u0000-\u001f]/g, "").trim();
+  if (!/^[A-Z]{2}$/.test(country) || country === "XX" || country === "T1") country = "";
+  return { country, city: city.slice(0, 80) };
+}
+
+async function leadApi(db, request, env) {
+  if (!rateLimit(`lead:${clientIp(request)}`, 6, 10 * 60 * 1000)) return json({ error: "limited" }, 429);
+  const form = await request.formData();
+  const phone = e164(form.get("cc"), form.get("national"));
+  const name = String(form.get("name") || "").trim().slice(0, 80);
+  const note = String(form.get("note") || "").trim().slice(0, 400);
+  const serviceId = String(form.get("service") || "").trim();
+  const lang = ["nl", "en", "ru", "uk"].includes(form.get("lang")) ? form.get("lang") : "ru";
+  if (!phone || !name || !/^[a-z0-9-]{2,40}$/.test(serviceId)) return json({ error: "invalid" }, 400);
+  const service = await serviceById(db, serviceId, lang);
+  if (!service || !service.active || service.kind === "tow") return json({ error: "invalid" }, 400);
+  const ref = code("LD");
+  const created = await createLead(db, {
+    code: ref,
+    serviceId,
+    serviceTitle: service.title || serviceId,
+    name,
+    phone,
+    note,
+    lang,
+  });
+  await notifyOwner(db, env, {
+    kind: "lead",
+    refType: "lead",
+    refId: created.id,
+    payload: { code: ref, summary: `${ref} ${service.title || serviceId} ${name} ${phone}` },
+  });
+  return json({ ok: true, code: ref });
+}
+
+async function visitApi(db, request) {
+  if (!rateLimit(`visit:${clientIp(request)}`, 80, 10 * 60 * 1000)) return json({ ok: true });
+  let body = {};
+  try { body = await request.json(); } catch { return json({ error: "invalid" }, 400); }
+  const vid = String(body.vid || "");
+  if (!/^[A-Za-z0-9-]{8,80}$/.test(vid)) return json({ error: "invalid" }, 400);
+  const panel = ["home", "services", "tow", "contacts"].includes(body.panel) ? body.panel : "";
+  const path = String(body.path || "/").slice(0, 120);
+  if (path.startsWith("/admin") || path.startsWith("/api")) return json({ ok: true });
+  const place = placeFrom(request);
+  await recordVisit(db, {
+    day: amsterdamNow().date,
+    visitor: await sha256Hex(vid),
+    country: place.country,
+    city: place.city,
+    path,
+    panel,
+  });
+  return json({ ok: true });
+}
+
 async function login(db, request) {
   if (!rateLimit(`login:${clientIp(request)}`)) return json({ error: "limited" }, 429);
   let body = {};
@@ -488,6 +554,13 @@ async function adminApi(db, request, env, url, path) {
   }
   const bookingAction = path.match(/^\/api\/admin\/bookings\/(\d+)\/(confirm|cancel|done|progress|reschedule|note|correct)$/);
   if (bookingAction) return bookingActionApi(db, request, bookingAction);
+  if (path === "/api/admin/leads" && request.method === "GET") return json({ leads: await listLeads(db) });
+  const leadAction = path.match(/^\/api\/admin\/leads\/(\d+)\/(new|done|closed)$/);
+  if (leadAction && request.method === "POST") {
+    const ok = await setLeadStatus(db, Number(leadAction[1]), leadAction[2]);
+    return ok ? json({ ok: true }) : json({ error: "missing" }, 404);
+  }
+  if (path === "/api/admin/stats" && request.method === "GET") return json(await statsSummary(db, 14));
   if (path === "/api/admin/tows" && request.method === "GET") return json({ tows: await listTows(db) });
   const towAction = path.match(/^\/api\/admin\/tows\/(\d+)\/(confirm|cancel|done)$/);
   if (towAction && request.method === "POST") {

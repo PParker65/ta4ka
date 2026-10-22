@@ -31,7 +31,7 @@ if (root) {
     location.reload();
   });
   section.addEventListener("change", () => show(section.value));
-  show("bookings");
+  show(section.value || "leads");
 }
 
 async function show(name) {
@@ -39,7 +39,9 @@ async function show(name) {
   error.textContent = "";
   root.innerHTML = "";
   try {
-    if (name === "bookings") await renderBookings();
+    if (name === "leads") await renderLeads();
+    else if (name === "stats") await renderStats();
+    else if (name === "bookings") await renderBookings();
     else if (name === "tows") await renderTows();
     else if (name === "services") await renderServices();
     else if (name === "garages") await renderGarages();
@@ -148,6 +150,69 @@ function openMove(card, booking, reload) {
   }));
   card.append(box);
   load();
+}
+
+async function renderLeads() {
+  const data = await api("/api/admin/leads");
+  if (!data.leads.length) {
+    root.append(el("p", { text: copy.empty }));
+    return;
+  }
+  for (const lead of data.leads) {
+    const card = el("article", { className: "card" });
+    card.innerHTML = `<span class="badge">${esc(copy.status[lead.status] || lead.status)}</span>
+      <h3>${esc(lead.code)}</h3>
+      <p><strong>${esc(lead.service_title || lead.service_id)}</strong></p>
+      <p>${esc(lead.contact_name)} · ${esc(lead.contact_phone)}</p>
+      <p>${esc(lead.note || "")}</p>
+      <p class="hint">${esc(String(lead.created_at || "").replace("T", " ").slice(0, 16))}</p>`;
+    const actions = el("div", { className: "actions" });
+    actions.append(
+      button(copy.status.new, () => post(`/api/admin/leads/${lead.id}/new`).then(() => show("leads"))),
+      button(copy.done, () => post(`/api/admin/leads/${lead.id}/done`).then(() => show("leads"))),
+      button(copy.status.closed, () => post(`/api/admin/leads/${lead.id}/closed`).then(() => show("leads")))
+    );
+    card.append(actions);
+    root.append(card);
+  }
+}
+
+async function renderStats() {
+  const data = await api("/api/admin/stats");
+  const grid = el("div", { className: "stat-grid" });
+  grid.append(statNum(copy.stats.uniques, data.uniques), statNum(copy.stats.views, data.views));
+  root.append(grid);
+  root.append(el("h3", { text: copy.stats.days }));
+  const maxDay = Math.max(1, ...(data.days || []).map((day) => Number(day.uniques) || 0));
+  for (const day of data.days || []) {
+    root.append(statRow(String(day.day).slice(5), Number(day.uniques) || 0, maxDay));
+  }
+  root.append(el("h3", { text: copy.stats.country }));
+  if (!(data.countries || []).length) root.append(el("p", { text: copy.stats.none }));
+  const maxCountry = Math.max(1, ...(data.countries || []).map((row) => Number(row.uniques) || 0));
+  for (const row of data.countries || []) {
+    const label = [row.country || "—", row.city].filter(Boolean).join(" · ");
+    root.append(statRow(label, Number(row.uniques) || 0, maxCountry));
+  }
+  root.append(el("h3", { text: copy.stats.panels }));
+  const maxPanel = Math.max(1, ...(data.panels || []).map((row) => Number(row.views) || 0));
+  for (const row of data.panels || []) {
+    const label = (copy.panel && copy.panel[row.panel]) || row.panel || "—";
+    root.append(statRow(label, Number(row.views) || 0, maxPanel));
+  }
+}
+
+function statNum(label, value) {
+  const node = el("div", { className: "stat-num" });
+  node.innerHTML = `<b>${esc(value ?? 0)}</b><span>${esc(label)}</span>`;
+  return node;
+}
+
+function statRow(label, value, max) {
+  const node = el("div", { className: "stat-row" });
+  const width = Math.max(0, Math.round((Number(value) / max) * 100));
+  node.innerHTML = `<b>${esc(label)}</b><i style="width:${width}%"></i><span>${esc(value)}</span>`;
+  return node;
 }
 
 async function renderTows() {

@@ -14,6 +14,7 @@ if (gaps.length) {
 const dir = mkdtempSync(join(tmpdir(), "snelfix-"));
 const db = openSqlite(join(dir, "test.sqlite"));
 db.exec(readFileSync(new URL("../migrations/0001_init.sql", import.meta.url), "utf8"));
+db.exec(readFileSync(new URL("../migrations/0002_leads_stats.sql", import.meta.url), "utf8"));
 const env = {};
 const assets = { async fetch() { return new Response("ok", { status: 200, headers: { "content-type": "text/plain" } }); } };
 
@@ -123,7 +124,12 @@ assert(!contact.text.includes(">OSM<"), "no osm label");
 assert((contact.text.match(/class="route /g) || []).length === 4, "two route buttons per garage");
 assert((await call("/diensten/tyre-fit")).status === 200, "service");
 assert((await call("/diensten/tyre-fit")).text.includes("€ 30"), "service price");
-assert((await call("/diensten/tyre-fit")).text.includes("wa.me/31613044422"), "service whatsapp");
+const tyre = await call("/diensten/tyre-fit");
+assert(tyre.text.includes("wa.me/31613044422"), "service whatsapp");
+assert(tyre.text.includes("Оставить заявку"), "service lead action");
+assert(tyre.text.includes("Связаться"), "service contact action");
+assert(tyre.text.includes("data-lead-form"), "service lead form");
+assert(!tyre.text.includes('data-panel="book"'), "service has no book panel");
 assert(!(await call("/diensten/tyre-fit")).text.includes("/boeken"), "service has no book link");
 assert((await call("/faq")).status === 200, "faq");
 assert((await call("/privacy")).text.includes("13044422"), "privacy");
@@ -264,6 +270,50 @@ const cancelled = await call(`/api/admin/bookings/${id}/cancel`, { method: "POST
 assert(cancelled.status === 200, "cancel");
 const afterCancel = await lookup("612345678");
 assert(JSON.parse(afterCancel.text).visit.status === "cancelled", "client cancelled");
+
+const lead = new FormData();
+lead.set("service", "tyre-fit");
+lead.set("name", "Олег");
+lead.set("cc", "31");
+lead.set("national", "612345670");
+lead.set("note", "Зимняя резина");
+lead.set("lang", "ru");
+const leadRes = await call("/api/leads", { method: "POST", body: lead });
+assert(leadRes.status === 200, `lead ${leadRes.status} ${leadRes.text}`);
+const leadCode = JSON.parse(leadRes.text).code;
+assert(String(leadCode).startsWith("LD-"), "lead code");
+const leads = await call("/api/admin/leads", { headers: { cookie: token } });
+assert(leads.status === 200, "admin leads");
+const leadRow = JSON.parse(leads.text).leads.find((row) => row.code === leadCode);
+assert(leadRow && leadRow.contact_name === "Олег", "lead stored");
+assert(leadRow.service_id === "tyre-fit", "lead service");
+assert(leadRow.status === "new", "lead is new");
+const leadDone = await call(`/api/admin/leads/${leadRow.id}/done`, { method: "POST", headers: { cookie: token } });
+assert(leadDone.status === 200, "lead done");
+const leadsAfter = await call("/api/admin/leads", { headers: { cookie: token } });
+assert(JSON.parse(leadsAfter.text).leads.find((row) => row.id === leadRow.id).status === "done", "lead status done");
+
+const visit = await call("/api/visit", {
+  method: "POST",
+  headers: { "content-type": "application/json", "cf-ipcountry": "NL", "cf-ipcity": "Rotterdam" },
+  body: JSON.stringify({ vid: "session-visit-1", path: "/diensten/tyre-fit", panel: "services" }),
+});
+assert(visit.status === 200, `visit ${visit.status}`);
+await call("/api/visit", {
+  method: "POST",
+  headers: { "content-type": "application/json", "cf-ipcountry": "NL", "cf-ipcity": "Rotterdam" },
+  body: JSON.stringify({ vid: "session-visit-1", path: "/", panel: "home" }),
+});
+const stats = await call("/api/admin/stats", { headers: { cookie: token } });
+assert(stats.status === 200, "admin stats");
+const statsBody = JSON.parse(stats.text);
+assert(statsBody.uniques >= 1, "unique visits");
+assert(statsBody.views >= 2, "page views");
+assert(statsBody.countries.some((row) => row.country === "NL" && String(row.city).includes("Rotterdam")), "country from CF header");
+const adminPage = await call("/admin", { headers: { cookie: token } });
+assert(adminPage.text.includes("Статистика"), "stats section label");
+assert(adminPage.text.includes("Заявки"), "leads section label");
+assert(!adminPage.text.includes('data-panel="book"'), "admin has no public book panel");
 
 const changed = await call("/api/admin/password", {
   method: "POST",
