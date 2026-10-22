@@ -148,7 +148,7 @@ function haulScene() {
   </svg>`;
 }
 
-function splashHtml(copy) {
+function splashHtml() {
   return `<div id="splash" class="splash">
     <div class="splash-bg" aria-hidden="true">
       <i class="splash-glow"></i>
@@ -158,7 +158,6 @@ function splashHtml(copy) {
       ${wordmark()}
       <span class="flag" aria-hidden="true"><i></i><i></i><i></i></span>
     </div>
-    <button type="button" id="splash-skip" class="splash-skip">${esc(copy.splash.skip)}</button>
   </div>
   <script>
   (function(){
@@ -175,8 +174,6 @@ function splashHtml(copy) {
       el.classList.add("is-out");
       setTimeout(function(){ if(el.parentNode) el.remove(); }, 280);
     }
-    var skip=document.getElementById("splash-skip");
-    if(skip) skip.addEventListener("click", finish);
     setTimeout(finish, ms);
   })();
   </script>`;
@@ -447,7 +444,7 @@ ${gsc ? `<meta name="google-site-verification" content="${esc(gsc)}">` : ""}
 <script type="application/ld+json">${safeJson(jsonLd(ctx))}</script>
 </head>
 <body class="app-body">
-${splashHtml(copy)}
+${splashHtml()}
 <div class="app">
   <header class="bar">
     <a class="brand" href="${esc(href(lang, "/"))}" data-panel="home">${wordmark()}</a>

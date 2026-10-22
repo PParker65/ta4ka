@@ -25,7 +25,6 @@ const rows = [
   ["nav.close", "Sluiten", "Close", "Закрыть", "Закрити"],
   ["nav.lang", "Taal", "Language", "Язык", "Мова"],
 
-  ["splash.skip", "Overslaan", "Skip", "Пропустить", "Пропустити"],
   ["splash.line", "Een auto onderhouden in Nederland doen we op niveau. Twee werkplaatsen. Diagnose, reparatie, berging door Europa.", "Servicing a car in the Netherlands, done properly. Two workshops. Diagnostics, repair, recovery across Europe.", "Нужно обслужить машину в Нидерландах — сделаем на уровне. Два автосервиса. Диагностика, ремонт, эвакуатор по Европе.", "Потрібно обслужити авто в Нідерландах — зробимо на рівні. Два автосервіси. Діагностика, ремонт, евакуатор Європою."],
   ["splash.meta", "Waddinxveen · De Bilt", "Waddinxveen · De Bilt", "Ваддинксвен · Де-Билт", "Ваддінксвен · Де-Білт"],
 

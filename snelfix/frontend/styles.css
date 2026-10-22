@@ -1505,7 +1505,7 @@ select {
   flex-direction: column;
   align-items: center;
   width: min(100%, 420px);
-  padding: 24px 20px 72px;
+  padding: 24px 20px;
   text-align: center;
 }
 .splash-stage .mark {
@@ -1537,17 +1537,6 @@ select {
 .flag i:nth-child(1) { background: #AE1C28; animation-delay: .18s; }
 .flag i:nth-child(2) { background: #fff; animation-delay: .28s; }
 .flag i:nth-child(3) { background: #21468B; animation-delay: .38s; }
-.splash-skip {
-  position: absolute;
-  right: 16px;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  z-index: 3;
-  min-height: 40px;
-  padding: 0 14px;
-  color: var(--accent);
-  background: #07080a;
-  border: 1px solid var(--accent);
-}
 @keyframes splash-glow {
   from { opacity: .45; transform: translate(-50%, -50%) scale(.94); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
