@@ -1,0 +1,26 @@
+name = "snelfix-auto"
+main = "src/worker.js"
+compatibility_date = "2026-10-20"
+workers_dev = true
+
+# This worker is only for snelfixauto.com. Do not add other zones here.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "snelfix-auto"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Apex and www. SSL is issued by Cloudflare when the custom domains attach.
+routes = [
+  { pattern = "snelfixauto.com", custom_domain = true },
+  { pattern = "www.snelfixauto.com", custom_domain = true }
+]
+
+[triggers]
+crons = ["15 6 * * *"]
