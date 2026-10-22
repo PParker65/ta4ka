@@ -66,6 +66,7 @@ assert(!home.text.includes("splash-copy"), "splash has no pitch");
 assert(home.text.includes('class="flag"'), "splash flag");
 assert(home.text.includes("SNELFIX"), "splash wordmark");
 assert(home.text.includes("Сеть автосервисов в Нидерландах"), "home network line");
+assert(home.text.includes('class="home-line"'), "home line can take the sheen");
 assert(home.text.includes('class="door-name">SnelFix Auto<br>Waddinxveen'), "waddinxveen name above lift");
 assert(home.text.includes('class="door-name">SnelFix Auto<br>De Bilt'), "de bilt name above lift");
 assert(home.text.includes('class="door-name"'), "door name label");

@@ -257,7 +257,7 @@ function homePanel(ctx) {
     </a>`;
   };
   return `<section id="panel-home" class="panel panel-home" data-panel="home">
-    <p class="home-line">${esc(copy.home.line)}</p>
+    <p class="home-line"><span>${esc(copy.home.line)}</span></p>
     <div class="doors">
       ${door(byId.waddinxveen, "a")}
       ${door(byId["de-bilt"], "b")}
