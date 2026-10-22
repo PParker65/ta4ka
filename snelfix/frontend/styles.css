@@ -219,9 +219,9 @@ p { margin: 0; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
-  padding: 10px 8px 12px;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 10px 14px;
   text-align: center;
   text-decoration: none;
   overflow: hidden;
@@ -234,20 +234,29 @@ p { margin: 0; }
 .door-b { background: #050605; color: var(--accent); border-color: var(--accent); }
 .door:active { transform: scale(0.97); }
 .bay-wrap {
+  --name-block: 42px;
+  --name-gap: 12px;
   position: relative;
   flex: 1;
   min-height: 0;
   width: 100%;
   container-type: size;
 }
+.door-name,
+.door .bay {
+  --art-h: max(0px, min(100cqh - var(--name-block) - var(--name-gap), 100cqw * 180 / 140));
+  --group-top: max(0px, calc((100cqh - (var(--name-block) + var(--name-gap) + var(--art-h))) / 2));
+}
 .door-name {
   position: absolute;
   z-index: 1;
   left: 4px;
   right: 4px;
-  top: max(2.6em, calc(50% - min(50cqh, 50cqw * 180 / 140) - 10px));
-  transform: translateY(-100%);
-  max-width: 100%;
+  top: var(--group-top);
+  height: var(--name-block);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   font-family: var(--display);
   font-weight: 600;
   font-size: 13px;
@@ -257,7 +266,16 @@ p { margin: 0; }
 }
 .door-a .door-name { color: #0c1204; }
 .door-b .door-name { color: var(--accent); }
-.door .bay { width: 100%; height: 100%; display: block; }
+.door .bay {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--group-top) + var(--name-block) + var(--name-gap));
+  width: calc(var(--art-h) * 140 / 180);
+  height: var(--art-h);
+  display: block;
+  overflow: hidden;
+  transform: translateX(-50%);
+}
 .door-copy { display: flex; flex-direction: column; gap: 3px; max-width: 100%; flex: none; }
 .door-copy b {
   font-family: var(--display);
@@ -1514,6 +1532,11 @@ select {
   100% { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 
+@media (min-width: 700px) {
+  .bay-wrap { --name-block: 46px; }
+  .door-name { font-size: 15px; }
+  .door-copy small { font-size: 14px; }
+}
 @media (min-width: 900px) {
   .app { width: min(1180px, 100%); margin: 0 auto; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
   .mark-name { font-size: 20px; }
@@ -1521,6 +1544,9 @@ select {
   .langs { grid-template-columns: repeat(4, 36px); }
   .panel { padding: 16px 18px; gap: 10px; }
   .pitch-line { font-size: 34px; }
+  .bay-wrap { --name-block: 52px; }
+  .door-name { font-size: 18px; }
+  .door-copy small { font-size: 16px; }
   .tabs a { font-size: 12px; }
   .svc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .qa-btn { min-height: 64px; font-size: 13px; }
