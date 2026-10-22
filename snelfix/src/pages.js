@@ -248,8 +248,10 @@ function homePanel(ctx) {
   const door = (garage, kind) => {
     if (!garage) return "";
     return `<a class="door door-${kind}" href="${esc(href(lang, `/vestigingen/${garage.id}`))}" data-panel="contacts" data-garage="${esc(garage.id)}">
-      <span class="door-name">SnelFix Auto<br>${esc(garage.city)}</span>
-      ${baySvg(kind)}
+      <span class="bay-wrap">
+        <span class="door-name">SnelFix Auto<br>${esc(garage.city)}</span>
+        ${baySvg(kind)}
+      </span>
       <span class="door-copy">
         <small>${esc(garage.street)}</small>
         <small class="door-hours">${esc(todayLine(copy, hours[garage.id], today))}</small>
