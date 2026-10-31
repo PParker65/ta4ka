@@ -8,12 +8,12 @@ Edit only `public/js/site.js`, the `siteConfig` object at the top:
 
 ```js
 const siteConfig = {
-  gameUrl: "#",
-  telegramUrl: "#",
+  gameUrl: "https://rmr.global",
+  telegramUrl: "https://t.me/dykyiboss1",
 };
 ```
 
-`#` keeps **Игра** and **Телеграм канал** on this page. When the real addresses arrive, put full `https://` URLs there and bump `?v=` on the script tag in `public/index.html`. Do not invent a channel or a game address. Links stay in the same tab.
+**Игра** opens `gameUrl`. **Телеграм канал** opens `telegramUrl`. Both open in a new tab. A value of `#` keeps that button on this page. Bump `?v=` on the script tag in `public/index.html` when the addresses change.
 
 ## Publish
 

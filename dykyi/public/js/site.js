@@ -1,6 +1,6 @@
 const siteConfig = {
-  gameUrl: "#",
-  telegramUrl: "#",
+  gameUrl: "https://rmr.global",
+  telegramUrl: "https://t.me/dykyiboss1",
 };
 
 const BOOT_MS = 4200;
@@ -23,9 +23,16 @@ function allowedUrl(value) {
 function bindLink(anchor, raw) {
   const href = allowedUrl(raw);
   anchor.setAttribute("href", href);
-  anchor.addEventListener("click", (event) => {
-    if (anchor.getAttribute("href") === "#") event.preventDefault();
-  });
+  if (href === "#") {
+    anchor.removeAttribute("target");
+    anchor.removeAttribute("rel");
+    anchor.addEventListener("click", (event) => {
+      event.preventDefault();
+    });
+    return;
+  }
+  anchor.setAttribute("target", "_blank");
+  anchor.setAttribute("rel", "noopener noreferrer");
 }
 
 function renderClock() {
