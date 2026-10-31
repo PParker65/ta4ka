@@ -1,0 +1,22 @@
+name = "timetocross"
+main = "src/worker.js"
+compatibility_date = "2026-10-30"
+workers_dev = false
+preview_urls = false
+
+# This worker is only for timetocrosswroclaw.com. Do not add other zones or reuse a KV id.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+html_handling = "none"
+
+# Local placeholder. Create a new LEADS namespace for this site before deploying.
+[[kv_namespaces]]
+binding = "LEADS"
+id = "00000000000000000000000000000000"
+
+routes = [
+  { pattern = "timetocrosswroclaw.com", custom_domain = true },
+  { pattern = "www.timetocrosswroclaw.com", custom_domain = true }
+]

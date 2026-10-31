@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c0b09">
+  <meta name="description" id="meta-desc" content="Оренда кросового мото і квадроциклів у Вроцлаві. Одна година, місця обмежені. Залиш заявку — передзвонимо.">
+  <meta property="og:title" content="Time to Cross — Вроцлав">
+  <meta property="og:description" id="og-desc" content="Мотокрос і квадроцикли. Бронюй свою годину.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://timetocrosswroclaw.com/">
+  <meta property="og:locale" content="uk_UA">
+  <title>Time to Cross — мотокрос і квадроцикли у Вроцлаві</title>
+  <link rel="canonical" href="https://timetocrosswroclaw.com/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/site.css?v=20261031b">
+</head>
+<body>
+  <a class="skip" href="#lead-form">Заявка</a>
+  <header class="bar wrap">
+    <a class="brand" href="#top">
+      <span class="mark" aria-hidden="true"><span>TTC</span></span>
+      <span class="brand-name">Time to Cross</span>
+    </a>
+    <time id="clock" aria-label="Час у Вроцлаві">--:--</time>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" data-lang="uk" aria-pressed="true">UA</button>
+      <button type="button" data-lang="pl" aria-pressed="false">PL</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="top wrap">
+      <section class="hero">
+        <p class="eyebrow"><span>START</span> · <span data-i18n="area">Вроцлав і околиці</span></p>
+        <h1>
+          <span data-i18n="hero1">Час</span>
+          <span data-i18n="hero2">для</span>
+          <span class="hot" data-i18n="hero3">адреналіну</span>
+        </h1>
+        <p class="lead" data-i18n="lead">Мотокрос і квадроцикли у Вроцлаві. Бронюй свою годину — місця обмежені.</p>
+        <ul class="facts">
+          <li id="price-range">__RANGE__</li>
+          <li data-i18n="oneHour">1 година</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="btn btn-hot" href="#lead-form" data-i18n="book">Забронювати</a>
+          <a class="btn btn-ghost" data-phone data-track="call" href="tel:__PHONE__" data-i18n="call">Зателефонувати</a>
+        </div>
+      </section>
+
+      <section class="fleet" id="fleet">
+        <div class="section-head">
+          <h2 id="fleet-title" data-i18n="fleetTitle">Техніка</h2>
+          <p data-i18n="fleetNote">Ціна за одну годину. Бронь дійсна після дзвінка.</p>
+        </div>
+        <div class="plates" role="radiogroup" aria-labelledby="fleet-title">
+          <label class="plate" data-id="moto250" data-kind="moto" data-cc="250">
+            <input form="lead-form" type="radio" name="machine" value="moto250" required>
+            <span class="plate-no">01</span>
+            <span class="plate-kind" data-i18n="kindMoto">Мото</span>
+            <span class="plate-cc">250<small>cc</small></span>
+            <span class="plate-price"><b data-price="moto250">__P_moto250__</b> <small>zł</small></span>
+            <span class="plate-meta"><span data-i18n="perHour">година</span> · <span data-i18n="seat1">1 місце</span></span>
+          </label>
+          <label class="plate" data-id="moto300" data-kind="moto" data-cc="300">
+            <input form="lead-form" type="radio" name="machine" value="moto300">
+            <span class="plate-no">02</span>
+            <span class="plate-kind" data-i18n="kindMoto">Мото</span>
+            <span class="plate-cc">300<small>cc</small></span>
+            <span class="plate-price"><b data-price="moto300">__P_moto300__</b> <small>zł</small></span>
+            <span class="plate-meta"><span data-i18n="perHour">година</span> · <span data-i18n="seat1">1 місце</span></span>
+          </label>
+          <label class="plate" data-id="quad250" data-kind="quad" data-cc="250">
+            <input form="lead-form" type="radio" name="machine" value="quad250">
+            <span class="plate-no">03</span>
+            <span class="plate-kind" data-i18n="kindQuad">Квадро</span>
+            <span class="plate-cc">250<small>cc</small></span>
+            <span class="plate-price"><b data-price="quad250">__P_quad250__</b> <small>zł</small></span>
+            <span class="plate-meta"><span data-i18n="perHour">година</span> · <span data-i18n="seat1">1 місце</span></span>
+          </label>
+          <label class="plate" data-id="quad500" data-kind="quad" data-cc="500">
+            <input form="lead-form" type="radio" name="machine" value="quad500">
+            <span class="plate-no">04</span>
+            <span class="plate-kind" data-i18n="kindQuad">Квадро</span>
+            <span class="plate-cc">500<small>cc</small></span>
+            <span class="plate-price"><b data-price="quad500">__P_quad500__</b> <small>zł</small></span>
+            <span class="plate-meta"><span data-i18n="perHour">година</span> · <span data-i18n="seat2">2 місця</span></span>
+          </label>
+        </div>
+      </section>
+
+      <form id="lead-form" class="ticket" action="/panel/leads" method="post" novalidate>
+        <div id="fields">
+          <h2 data-i18n="ticketTitle">Заявка на годину</h2>
+          <p class="picked" id="picked" data-i18n="pickFirst">Спочатку обери техніку</p>
+          <label class="field">
+            <span data-i18n="name">Ім’я</span>
+            <input name="name" autocomplete="name" maxlength="60" required>
+          </label>
+          <label class="field">
+            <span data-i18n="phone">Телефон</span>
+            <span class="phone-row">
+              <select name="dial" id="dial" aria-label="Код країни">
+                <option value="+48" selected>PL +48</option>
+                <option value="+380">UA +380</option>
+                <option value="+49">DE +49</option>
+                <option value="+420">CZ +420</option>
+                <option value="+421">SK +421</option>
+                <option value="+370">LT +370</option>
+                <option value="+375">BY +375</option>
+              </select>
+              <input name="phone" inputmode="tel" autocomplete="tel-national" maxlength="20" placeholder="501 234 567" required>
+            </span>
+          </label>
+          <label class="field">
+            <span data-i18n="date">День</span>
+            <input name="date" type="date" required>
+          </label>
+          <fieldset class="field hours-field">
+            <legend data-i18n="hour">Година</legend>
+            <div class="hours">
+              <label class="hour"><input type="radio" name="hour" value="9" required><span>09</span></label>
+              <label class="hour"><input type="radio" name="hour" value="10"><span>10</span></label>
+              <label class="hour"><input type="radio" name="hour" value="11"><span>11</span></label>
+              <label class="hour"><input type="radio" name="hour" value="12"><span>12</span></label>
+              <label class="hour"><input type="radio" name="hour" value="13"><span>13</span></label>
+              <label class="hour"><input type="radio" name="hour" value="14"><span>14</span></label>
+              <label class="hour"><input type="radio" name="hour" value="15"><span>15</span></label>
+              <label class="hour"><input type="radio" name="hour" value="16"><span>16</span></label>
+              <label class="hour"><input type="radio" name="hour" value="17"><span>17</span></label>
+              <label class="hour"><input type="radio" name="hour" value="18"><span>18</span></label>
+            </div>
+          </fieldset>
+          <label class="field">
+            <span data-i18n="note">Коментар</span>
+            <textarea name="note" maxlength="400" data-i18n-placeholder="notePh" placeholder="Скільки вас, звідки їдете"></textarea>
+          </label>
+          <input type="hidden" name="lang" id="lang-field" value="uk">
+          <div class="hp" aria-hidden="true">
+            <input type="checkbox" name="hp_field" value="1" tabindex="-1" autocomplete="off">
+          </div>
+          <p class="form-error" id="form-error" role="alert"></p>
+          <button class="btn btn-hot btn-block" id="send" type="submit" data-i18n="send">Надіслати заявку</button>
+          <a class="text-link" data-phone data-track="call" href="tel:__PHONE__" data-i18n="orCall">Або подзвони — так швидше</a>
+        </div>
+        <div class="success" id="success" hidden>
+          <h2 class="success-title" data-i18n="successTitle">Заявку прийнято</h2>
+          <p data-i18n="successText">Передзвонимо на цей номер і підтвердимо годину.</p>
+          <a class="btn btn-hot" data-phone data-track="call" href="tel:__PHONE__" data-i18n="call">Зателефонувати</a>
+          <button class="btn btn-ghost" id="again" type="button" data-i18n="again">Ще одна заявка</button>
+        </div>
+      </form>
+    </div>
+
+    <section class="how wrap">
+      <h2 data-i18n="howTitle">Як це працює</h2>
+      <ol class="steps">
+        <li class="step"><i>01</i><b data-i18n="step1t">Обери техніку</b><span data-i18n="step1d">Мото або квадроцикл.</span></li>
+        <li class="step"><i>02</i><b data-i18n="step2t">День і година</b><span data-i18n="step2d">Напиши, коли зручно.</span></li>
+        <li class="step"><i>03</i><b data-i18n="step3t">Підтвердження</b><span data-i18n="step3d">Передзвонимо і зафіксуємо годину.</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap contacts">
+      <a class="show-phone" data-phone data-track="call" href="tel:__PHONE__">__PHONE_PRETTY__</a>
+      <a data-instagram data-track="instagram" href="__INSTAGRAM__">__IG_LABEL__</a>
+      <a data-telegram data-track="telegram" __TG_ATTR__ href="__TELEGRAM__">__TG_LABEL__</a>
+      <p class="credit">Coding Teams</p>
+    </div>
+  </footer>
+
+  <div class="dock">
+    <a class="btn btn-ghost" data-phone data-track="call" href="tel:__PHONE__" data-i18n="call">Зателефонувати</a>
+    <a class="btn btn-hot" href="#lead-form" data-i18n="book">Забронювати</a>
+  </div>
+  <script type="module" src="/js/site.js?v=20261031b"></script>
+</body>
+</html>

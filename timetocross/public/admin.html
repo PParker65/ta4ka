@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0c0b09">
+  <title>Time to Cross — admin</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/site.css?v=20261031b">
+  <link rel="stylesheet" href="/css/admin.css?v=20261031b">
+</head>
+<body>
+  <header class="bar wrap">
+    <a class="brand" href="/">
+      <span class="mark" aria-hidden="true"><span>TTC</span></span>
+      <span class="brand-name">Admin</span>
+    </a>
+    <button class="btn btn-ghost" id="logout" type="button" hidden>Выйти</button>
+  </header>
+  <main class="wrap admin">
+    <form class="ticket login" id="login-form">
+      <h1>Вход</h1>
+      <label class="field">
+        <span>Логин</span>
+        <input name="user" autocomplete="username" autocapitalize="off" required>
+      </label>
+      <label class="field">
+        <span>Пароль</span>
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="form-error" id="login-error" role="alert"></p>
+      <button class="btn btn-hot btn-block" type="submit">Войти</button>
+    </form>
+
+    <section class="app" id="app" hidden>
+      <div class="tabs" role="tablist">
+        <button type="button" id="tab-leads" role="tab" aria-selected="true">Заявки</button>
+        <button type="button" id="tab-stats" role="tab" aria-selected="false">Стата</button>
+        <button type="button" id="tab-contacts" role="tab" aria-selected="false">Контакты</button>
+      </div>
+
+      <div id="panel-leads" role="tabpanel">
+        <div class="filters">
+          <button type="button" data-filter="all" aria-pressed="true">Все</button>
+          <button type="button" data-filter="new" aria-pressed="false">Новые</button>
+          <button type="button" data-filter="done" aria-pressed="false">Готово</button>
+        </div>
+        <div id="leads"></div>
+      </div>
+
+      <div id="panel-stats" role="tabpanel" hidden>
+        <div class="stats" id="stat-cards"></div>
+        <h2>14 дней</h2>
+        <div class="chart" id="chart"></div>
+      </div>
+
+      <form id="panel-contacts" class="ticket contacts-form" hidden>
+        <h2>Контакты и цены</h2>
+        <p class="hint">Телефон и Instagram уже с профиля. Telegram пустой — кнопки на сайте нет, пока не вставишь ссылку.</p>
+        <label class="field">
+          <span>Телефон</span>
+          <input name="phone" inputmode="tel" autocomplete="tel" required>
+        </label>
+        <label class="field">
+          <span>Instagram</span>
+          <input name="instagram" autocapitalize="off" required>
+        </label>
+        <label class="field">
+          <span>Telegram</span>
+          <input name="telegram" autocapitalize="off" placeholder="https://t.me/…">
+        </label>
+        <div class="price-grid">
+          <label class="field"><span>Мото 250, zł</span><input name="moto250" inputmode="numeric" required></label>
+          <label class="field"><span>Мото 300, zł</span><input name="moto300" inputmode="numeric" required></label>
+          <label class="field"><span>Квадро 250, zł</span><input name="quad250" inputmode="numeric" required></label>
+          <label class="field"><span>Квадро 500, zł</span><input name="quad500" inputmode="numeric" required></label>
+        </div>
+        <p class="form-error" id="save-error" role="alert"></p>
+        <button class="btn btn-hot" type="submit">Сохранить</button>
+      </form>
+    </section>
+  </main>
+  <script type="module" src="/js/admin.js?v=20261031b"></script>
+</body>
+</html>
