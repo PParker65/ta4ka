@@ -1,0 +1,5 @@
+# Cloudflare Pages. Static output only — no Worker, no KV, no routes.
+# Hostnames to attach later: dykyiboss.com and www.dykyiboss.com
+# (proxied, HTTPS, no country block). See README.md for the token scopes.
+name = "dykyiboss"
+pages_build_output_dir = "./public"
