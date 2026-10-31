@@ -4,8 +4,6 @@ const siteConfig = {
 };
 
 const BOOT_MS = 4200;
-const LINE_MS = 1500;
-const lines = ["Шконка остыла.", "Лента уже тёплая."];
 
 function allowedUrl(value) {
   if (typeof value !== "string") return "#";
@@ -53,26 +51,8 @@ function showCard() {
 }
 
 function boot() {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const wait = BOOT_MS;
   document.documentElement.style.setProperty("--boot", wait + "ms");
-  const line = document.getElementById("splash-line");
-
-  if (!reduce) {
-    let step = 0;
-    const timer = window.setInterval(() => {
-      step += 1;
-      if (step >= lines.length) {
-        window.clearInterval(timer);
-        return;
-      }
-      line.textContent = lines[step];
-      line.classList.remove("is-in");
-      void line.offsetWidth;
-      line.classList.add("is-in");
-    }, LINE_MS);
-  }
-
   window.setTimeout(showCard, wait);
 }
 
