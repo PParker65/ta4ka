@@ -240,51 +240,94 @@ html.js.is-ready .stage {
 
 .actions {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .pill {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 700;
+  min-height: 58px;
+  padding: 0 22px;
+  border-radius: 4px;
+  color: inherit;
+  font-size: 17px;
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.06em;
   text-decoration: none;
   white-space: nowrap;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s ease;
+}
+
+.pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  clip-path: polygon(
+    16px 0,
+    100% 0,
+    100% calc(100% - 16px),
+    calc(100% - 16px) 100%,
+    0 100%,
+    0 16px
+  );
+  transition: filter 0.16s ease, background 0.16s ease;
 }
 
 .pill:focus-visible {
-  outline: 2px solid var(--copper);
-  outline-offset: 3px;
+  outline: 2px solid #f3efe6;
+  outline-offset: 4px;
 }
 
-.pill:active { transform: translateY(1px); }
+.pill:active { transform: translateY(3px) scale(0.985); }
 
-.pill-game {
-  color: #24160c;
-  background: linear-gradient(180deg, #f6d7a2 0%, #e2a45a 46%, #b8742e 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
-    0 10px 20px rgba(168, 107, 46, 0.28);
+.pill-game { color: #1a0e06; }
+
+.pill-game::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 42%),
+    linear-gradient(180deg, #ffe1a3 0%, #f0a03a 40%, #c45e0a 100%);
+  filter: drop-shadow(0 10px 12px rgba(226, 120, 24, 0.55));
 }
 
-.pill-telegram {
-  color: var(--paper);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(243, 239, 230, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+.pill-telegram { color: #f5fbff; }
+
+.pill-telegram::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), transparent 40%),
+    linear-gradient(180deg, #8fd4ff 0%, #2f86f0 46%, #184a9e 100%);
+  filter: drop-shadow(0 10px 12px rgba(36, 112, 210, 0.5));
 }
 
 @media (hover: hover) {
-  .pill-game:hover { filter: brightness(1.06); }
-  .pill-telegram:hover { border-color: rgba(243, 239, 230, 0.5); }
+  .pill:hover { transform: translateY(-3px); }
+
+  .pill-game:hover::before {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent 42%),
+      linear-gradient(180deg, #fff0cc 0%, #ffb347 38%, #d46a10 100%);
+    filter: drop-shadow(0 16px 16px rgba(255, 150, 40, 0.7));
+  }
+
+  .pill-telegram:hover::before {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 40%),
+      linear-gradient(180deg, #c6ecff 0%, #4aa2ff 44%, #1d5ec4 100%);
+    filter: drop-shadow(0 16px 16px rgba(80, 170, 255, 0.7));
+  }
+
+  .pill:active:hover { transform: translateY(3px) scale(0.985); }
+}
+
+.pill-game:active::before,
+.pill-telegram:active::before {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
 }
 
 @media (max-height: 700px) {
