@@ -46,6 +46,100 @@ body {
   transform-origin: center center;
 }
 
+.viewport.live {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  box-shadow: none;
+  display: block;
+  background: #120e0a;
+}
+.viewport.live .stage {
+  position: absolute;
+  inset: 0;
+  height: auto;
+}
+.viewport.live .hud,
+.viewport.live .nav,
+.viewport.live .dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  background: linear-gradient(180deg, rgba(80, 50, 18, 0.92), rgba(60, 36, 12, 0.88));
+}
+.viewport.live .hud { top: 0; }
+.viewport.live .nav { bottom: 66px; }
+.viewport.live .dock { bottom: 0; }
+#world-root {
+  position: absolute;
+  inset: 0;
+}
+#world-root canvas { width: 100%; height: 100%; display: block; }
+.crosshair {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 14px;
+  height: 14px;
+  margin: -7px;
+  border: 2px solid rgba(230, 195, 106, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.4);
+}
+.look-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 180px;
+  transform: translateX(-50%);
+  z-index: 8;
+  background: rgba(20, 12, 6, 0.72);
+  color: #f3e2a1;
+  border: 1px solid #c9a227;
+  padding: 8px 14px;
+  font-size: 14px;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90%;
+}
+.overlay-3d {
+  display: none;
+  position: absolute;
+  inset: 64px 12px 160px 12px;
+  z-index: 7;
+  overflow: auto;
+}
+.overlay-3d.open { display: block; }
+.overlay-3d .panel { position: relative; inset: 0; min-height: 100%; }
+.stick {
+  display: none;
+  position: absolute;
+  left: 24px;
+  bottom: 170px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(40, 24, 10, 0.45);
+  border: 2px solid rgba(201, 162, 39, 0.5);
+  z-index: 5;
+  touch-action: none;
+}
+.stick i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  margin: -18px;
+  border-radius: 50%;
+  background: rgba(243, 226, 161, 0.85);
+}
+@media (pointer: coarse) {
+  .stick { display: block; }
+}
+
 .viewport::after {
   content: "";
   pointer-events: none;

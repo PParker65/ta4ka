@@ -24,6 +24,7 @@ import {
 import { bizReady, bossLocked, escapeProgress, holderOf, nightOpen, phoneProgress, unarmedDmg, zoneUnlocked } from "./engine";
 import { energyMax, levelOf, nextEnergyIn } from "./state";
 import type { GameState, Screen, TattooCat } from "./types";
+import { mountWorld, releaseLook, syncWorld, WORLD_REV, worldReady } from "./world";
 
 export function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -52,17 +53,43 @@ const NAV: { id: Screen; glyph: string; label: string }[] = [
   { id: "gifts", glyph: "❤", label: "Передачи" },
 ];
 
+const WALK: Screen[] = ["cell", "yard", "map", "friend", "raids"];
+
+function overlayScreen(s: GameState): boolean {
+  return !WALK.includes(s.screen) && s.screen !== "boot" && s.screen !== "gate" && s.screen !== "create";
+}
+
 export function render(app: HTMLElement, s: GameState, now: number): void {
   if (s.screen === "boot" || s.screen === "gate" || s.screen === "create") {
     app.innerHTML = `<div class="viewport wood-dark">${renderBoot(s)}</div>`;
     return;
   }
+  if (!app.querySelector(".viewport.live")) {
+    app.innerHTML = `
+      <div class="viewport live">
+        <div class="stage" id="stage">
+          <div id="world-root"></div>
+          <div class="crosshair"></div>
+          <div id="look-prompt" class="look-prompt"></div>
+          <div id="overlay" class="overlay-3d"></div>
+          <div id="stick" class="stick" aria-hidden="true"><i></i></div>
+        </div>
+        <div id="hud" class="hud wood"></div>
+        <div id="nav" class="nav wood"></div>
+        <div id="dock" class="dock wood-dark"></div>
+        <div class="toast-stack" id="toasts"></div>
+      </div>`;
+    mountWorld(app.querySelector("#world-root") as HTMLElement, app.querySelector("#look-prompt") as HTMLElement);
+  } else {
+    const wr = app.querySelector("#world-root") as HTMLElement | null;
+    const pr = app.querySelector("#look-prompt") as HTMLElement | null;
+    if (wr && pr && wr.dataset.rev !== WORLD_REV) mountWorld(wr, pr);
+  }
   const cap = energyMax(s);
   const eta = nextEnergyIn(s, now);
   const mailN = s.mail.length > 12 ? s.mail.length - 12 : 0;
-  app.innerHTML = `
-    <div class="viewport">
-      <div class="hud wood">
+  const hud = app.querySelector("#hud")!;
+  hud.innerHTML = `
         <div class="hud-side">
           <div class="pill" title="папиросы"><span class="ico">🚬</span><b>${money(s.pap)}</b></div>
           <div class="pill" title="деревянные"><span class="ico">🪙</span><b>${money(s.rub)}</b></div>
@@ -78,10 +105,8 @@ export function render(app: HTMLElement, s: GameState, now: number): void {
           <div class="pill" title="авторитет"><span class="ico">✊</span><b>${money(s.authority)}</b></div>
           <div class="pill" title="уровень"><span class="ico">Lv</span><b>${levelOf(s)}</b></div>
           <div class="pill" title="мыло"><span class="ico">🧼</span><b>${money(s.soap)}</b></div>
-        </div>
-      </div>
-      <div class="stage" id="stage">${renderStage(s, now)}</div>
-      <div class="nav wood">
+        </div>`;
+  app.querySelector("#nav")!.innerHTML = `
         <div class="icons">
           ${NAV.map(
             (n) => `<button class="ico-btn ${s.screen === n.id ? "on" : ""}" data-act="nav" data-id="${n.id}">
@@ -95,9 +120,8 @@ export function render(app: HTMLElement, s: GameState, now: number): void {
           <b>РОЗЫСК</b>
           <span>Позови корешей — вместе срок короче</span>
           <span class="btn btn-gold" style="margin-top:4px;padding:2px 8px">Позвать</span>
-        </div>
-      </div>
-      <div class="dock wood-dark">
+        </div>`;
+  app.querySelector("#dock")!.innerHTML = `
         ${s.friends
           .slice(0, 12)
           .map(
@@ -110,10 +134,18 @@ export function render(app: HTMLElement, s: GameState, now: number): void {
           <button class="btn btn-wood" data-act="nav" data-id="rank">ТОП</button>
           <button class="btn btn-wood" data-act="nav" data-id="map">Проходная</button>
           <button class="btn btn-wood" data-act="nav" data-id="yard">Двор</button>
-        </div>
-      </div>
-      <div class="toast-stack">${s.toasts.map((t) => `<div class="toast">${esc(t.text)}</div>`).join("")}</div>
-    </div>`;
+        </div>`;
+  app.querySelector("#toasts")!.innerHTML = s.toasts.map((t) => `<div class="toast">${esc(t.text)}</div>`).join("");
+  const overlay = app.querySelector("#overlay") as HTMLElement;
+  if (overlayScreen(s)) {
+    overlay.classList.add("open");
+    overlay.innerHTML = `<button class="x" data-act="nav" data-id="cell">×</button>${renderStage(s, now)}`;
+    releaseLook();
+  } else {
+    overlay.classList.remove("open");
+    overlay.innerHTML = "";
+  }
+  if (worldReady()) syncWorld(s);
 }
 
 function renderBoot(s: GameState): string {

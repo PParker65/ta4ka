@@ -712,7 +712,7 @@ export function createChar(s: GameState, nick: string): void {
   s.screen = "cell";
   s.energy = ENERGY_CAP_BASE;
   pushMail(s, `Шило: ну здарова, ${n}. Камера пустая — сам забьёшь.`);
-  toast(s, "Камера твоя. Дверь — во двор.");
+  toast(s, "Ты внутри хаты. WASD ходить, мышь смотреть, E дверь и нары.");
 }
 
 export function phoneProgress(s: GameState): { have: number; need: number } {

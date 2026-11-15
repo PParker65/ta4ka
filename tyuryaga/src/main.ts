@@ -36,6 +36,7 @@ import {
 import { go, loadState, saveState, tickEnergy, tickRaid, toast } from "./state";
 import type { FightMode, GameState, Screen, TattooCat } from "./types";
 import { render } from "./ui";
+import { setStick, setWorldHandler } from "./world";
 import "./styles.css";
 
 assertEnergyTables();
@@ -46,6 +47,10 @@ const app = document.getElementById("app")!;
 function scaleViewport(): void {
   const vp = app.querySelector(".viewport") as HTMLElement | null;
   if (!vp) return;
+  if (vp.classList.contains("live")) {
+    vp.style.transform = "";
+    return;
+  }
   const sx = (window.innerWidth - 16) / 780;
   const sy = (window.innerHeight - 16) / 640;
   const s = Math.min(sx, sy);
@@ -255,6 +260,13 @@ function handleAct(el: HTMLElement): void {
       setScale(state, Number(el.dataset.n || "60"));
       commit();
       break;
+    case "sit":
+      break;
+    case "walk-hall":
+    case "walk-cell":
+    case "walk-yard":
+    case "look-window":
+      break;
     case "reset":
       if (window.confirm("Снести хату и начать с нуля?")) {
         localStorage.removeItem("srok-v1");
@@ -326,6 +338,46 @@ setInterval(() => {
 
 if (state.nick && (state.screen === "boot" || state.screen === "gate" || state.screen === "create")) {
   state.screen = "cell";
+}
+
+setWorldHandler((a) => {
+  const el = document.createElement("button");
+  el.dataset.act = a.act;
+  if (a.id) el.dataset.id = a.id;
+  if (a.mode) el.dataset.mode = a.mode;
+  if (a.kind) el.dataset.kind = a.kind;
+  handleAct(el);
+});
+
+let stickDown = false;
+app.addEventListener("pointerdown", (e) => {
+  const st = (e.target as HTMLElement).closest("#stick");
+  if (!st) return;
+  stickDown = true;
+  (st as HTMLElement).setPointerCapture(e.pointerId);
+  moveStick(st as HTMLElement, e);
+});
+app.addEventListener("pointermove", (e) => {
+  if (!stickDown) return;
+  const st = app.querySelector("#stick") as HTMLElement | null;
+  if (st) moveStick(st, e);
+});
+app.addEventListener("pointerup", () => {
+  stickDown = false;
+  setStick(0, 0);
+  const i = app.querySelector("#stick i") as HTMLElement | null;
+  if (i) i.style.transform = "";
+});
+
+function moveStick(st: HTMLElement, e: PointerEvent): void {
+  const r = st.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width * 2 - 1;
+  const y = (e.clientY - r.top) / r.height * 2 - 1;
+  const nx = Math.max(-1, Math.min(1, x));
+  const ny = Math.max(-1, Math.min(1, y));
+  setStick(nx, ny);
+  const i = st.querySelector("i") as HTMLElement | null;
+  if (i) i.style.transform = `translate(${nx * 22}px, ${ny * 22}px)`;
 }
 
 paint();
