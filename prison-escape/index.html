@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#07080a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Побег / Prison Escape</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="m-0 overflow-hidden bg-black text-zinc-100 antialiased">
+    <div id="app" class="relative h-[100dvh] w-full touch-none">
+      <canvas id="game" class="block h-full w-full touch-none"></canvas>
+
+      <div id="hud" class="pointer-events-none absolute inset-0">
+        <div
+          id="alarm"
+          class="alarm-overlay pointer-events-none absolute inset-0 hidden"
+          aria-hidden="true"
+        ></div>
+
+        <div
+          class="absolute left-3 top-3 rounded border border-emerald-700/50 bg-black/60 px-2 py-1 font-mono text-[16px] leading-tight text-emerald-400"
+        >
+          <div id="clock">00:00</div>
+          <div id="status" class="text-zinc-300">СИЗО · Катенька</div>
+        </div>
+
+        <div
+          class="absolute right-3 top-3 overflow-hidden rounded border border-emerald-800/80 bg-black/80 shadow-[0_0_12px_#053] [position:absolute]"
+        >
+          <div
+            class="flex items-center justify-between bg-emerald-950/80 px-2 py-0.5 font-mono text-[16px] text-emerald-400"
+          >
+            <span>CCTV</span>
+            <span id="cctv-label">CAM-01</span>
+          </div>
+          <canvas id="cctv-hud" width="176" height="120" class="block h-[120px] w-[176px]"></canvas>
+          <div class="crt-scan pointer-events-none absolute inset-0"></div>
+        </div>
+
+        <div
+          id="prompt"
+          class="absolute left-1/2 top-[18%] hidden -translate-x-1/2 rounded bg-black/70 px-3 py-1 text-center text-[16px] text-amber-200"
+        ></div>
+
+        <div
+          id="toast"
+          class="absolute left-1/2 top-1/3 hidden -translate-x-1/2 rounded border border-red-700 bg-red-950/80 px-4 py-2 text-center text-[16px] text-red-100"
+        ></div>
+
+        <div
+          id="stick-root"
+          class="pointer-events-none absolute bottom-[22px] left-[18px] h-[128px] w-[128px]"
+        >
+          <div
+            class="absolute inset-0 rounded-full border border-white/25 bg-black/25"
+          ></div>
+          <div
+            id="stick-knob"
+            class="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-white/35"
+          ></div>
+        </div>
+
+        <div class="pointer-events-auto absolute bottom-[22px] right-[14px] flex flex-col gap-3">
+          <button
+            id="btn-interact"
+            type="button"
+            class="min-h-[52px] min-w-[118px] rounded-full border border-amber-500/70 bg-black/55 px-4 text-[16px] font-semibold uppercase tracking-wide text-amber-100 active:bg-amber-700/50"
+          >
+            Действие
+          </button>
+          <button
+            id="btn-crouch"
+            type="button"
+            class="min-h-[52px] min-w-[118px] rounded-full border border-zinc-400/60 bg-black/55 px-4 text-[16px] font-semibold uppercase tracking-wide text-zinc-100 active:bg-zinc-600/50"
+          >
+            Присесть
+          </button>
+        </div>
+
+        <div
+          class="absolute bottom-[188px] left-3 hidden font-mono text-[16px] text-zinc-500 sm:block"
+        >
+          WASD · мышь · C присесть · E действие · Shift бег
+        </div>
+      </div>
+
+      <div
+        id="boot"
+        class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#07080a] px-6 text-center"
+      >
+        <p class="mb-2 font-mono text-[16px] tracking-[0.35em] text-amber-500">СИЗО · КАТЕНЬКА</p>
+        <h1 class="mb-3 text-3xl font-semibold text-zinc-100">Побег</h1>
+        <p class="mb-8 max-w-sm text-[16px] leading-relaxed text-zinc-400">
+          Постсоветский следственный изолятор. Джойстик слева — ходьба. Свайп справа — камера.
+          Зелёные двери, синяя плитка, красный пол. Не попадай в фонарь охраны и конусы камер.
+        </p>
+        <button
+          id="btn-start"
+          type="button"
+          class="min-h-[52px] min-w-[200px] rounded-full bg-amber-600 px-6 text-[16px] font-semibold uppercase tracking-wider text-black"
+        >
+          Начать / Start
+        </button>
+      </div>
+
+      <div
+        id="win"
+        class="absolute inset-0 z-30 hidden flex-col items-center justify-center bg-black/80 px-6 text-center"
+      >
+        <h2 class="mb-2 text-3xl font-semibold text-emerald-300">Свобода</h2>
+        <p id="win-time" class="mb-6 text-[16px] text-zinc-300"></p>
+        <button
+          id="btn-again"
+          type="button"
+          class="min-h-[52px] rounded-full bg-emerald-600 px-6 text-[16px] font-semibold text-black"
+        >
+          Ещё раз
+        </button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

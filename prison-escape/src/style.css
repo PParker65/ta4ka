@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+.alarm-overlay {
+  background: radial-gradient(circle at 50% 40%, rgba(180, 0, 0, 0.08), rgba(140, 0, 0, 0.42));
+  animation: alarmPulse 0.45s steps(2, end) infinite;
+}
+
+@keyframes alarmPulse {
+  0% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0.85;
+  }
+}
+
+.crt-scan {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 70, 0.07) 0px,
+    rgba(0, 255, 70, 0.07) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+#cctv-hud {
+  filter: grayscale(0.2) sepia(0.4) hue-rotate(70deg) contrast(1.25) brightness(0.9);
+}

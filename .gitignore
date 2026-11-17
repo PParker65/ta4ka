@@ -42,3 +42,7 @@ agent-transcripts/
 # Python
 __pycache__/
 *.pyc
+
+# Isolated web game (prison-escape/)
+node_modules/
+prison-escape/dist/
