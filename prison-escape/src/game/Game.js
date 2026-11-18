@@ -18,6 +18,7 @@ import { makeHands } from './Hands.js';
 import { Chat } from './Chat.js';
 import { storyLine, wayFor } from './Story.js';
 import { lifeTick } from './Life.js';
+import { CellLife } from './CellLife.js';
 
 export class Game {
   constructor(canvas) {
@@ -111,6 +112,7 @@ export class Game {
     this.cctv.setup();
 
     this.input = new Input({ mobile: this.mobile, canvas: this.canvas });
+    this.cellLife = new CellLife(this);
     this.input.yaw = 0;
     this.input.pitch = 0.06;
     this.camera.fov = 48;
@@ -130,6 +132,50 @@ export class Game {
     this.audio.siren();
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
+    if (new URLSearchParams(location.search).has('cell')) this.skipToCell();
+  }
+
+  skipToCell() {
+    this.sim.docs = true;
+    this.sim.pending = [];
+    this.sim.photo = true;
+    this.sim.med = true;
+    this.sim.haircut = true;
+    this.sim.robe = 'kazenka';
+    this.player.shave();
+    this.player.applyKazenka();
+    this.hands.userData.setKazenka?.();
+    this.hands.visible = true;
+    this.introT = 22;
+    this._introHud = true;
+    this._introControl = true;
+    this._introOut = true;
+    this._introDoors = true;
+    this._introLook = true;
+    this.renderer.toneMappingExposure = 1.18;
+    this.camera.fov = 62;
+    this.camera.updateProjectionMatrix();
+    const fade = document.getElementById('fade');
+    if (fade) {
+      fade.style.opacity = '0';
+      fade.style.display = 'none';
+    }
+    document.getElementById('hud')?.classList.remove('hud-quiet');
+    document.getElementById('quest')?.classList.remove('hidden');
+    document.getElementById('look-hint')?.classList.add('hidden');
+    this.scene.fog.near = 9;
+    this.scene.fog.far = 34;
+    this.scene.fog.color.set(0x161410);
+    this.scene.background.set(0x161410);
+    this.player.position.copy(this.prison.cellSpawn);
+    this.npcs.list.forEach((n) => {
+      n.root.traverse((c) => {
+        if (c.userData.billboard) c.visible = true;
+      });
+    });
+    const door = this.prison.interactables.find((it) => it.type === 'cell-door');
+    if (door) this.prison.openDoor(door);
+    this.finishEscort();
   }
 
   setupComposer() {
@@ -206,6 +252,9 @@ export class Game {
     this.input.yaw += this.input.turnRate() * dt;
     if (this.overlaysOpen()) {
       this.updateCamera(this.input.crouchHeld, dt);
+      this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
+      this.cellLife?.tick(dt);
+      this.syncHud();
       return;
     }
 
@@ -215,7 +264,7 @@ export class Game {
 
     this.stepIntro(dt);
     this.stepRain(dt);
-    if (this.introT >= 8 || this._hold) {
+    if (this.introT >= 8) {
       if (this.escort) this.stepEscort(dt);
       else this.stepWalk(dt, move, crouch, yaw);
     }
@@ -229,7 +278,11 @@ export class Game {
     this.sun.intensity = outside ? 1.35 : 0.1;
     this.hemi.intensity = outside ? 1.05 : 0.4;
     this.hemi.color.set(outside ? 0xd8e4ee : 0xc4b8a8);
-    this.fill.intensity = outside ? 0.05 : 0.5;
+    this.fill.intensity = outside
+      ? 0.05
+      : this.sim.stage === 'life' && this.sim.phase.id === 'evening'
+        ? 0.22
+        : 0.5;
     if (!outside) this.fill.position.set(this.player.position.x, 2.15, this.player.position.z);
     this.alarmLight.position.set(this.player.position.x, 2.15, this.player.position.z);
     this.scene.fog.near = outside ? 42 : 9;
@@ -243,6 +296,7 @@ export class Game {
     }
 
     this.hands.userData.step?.(this.clock.elapsedTime, move.mag, move.run, this.sim.cuffed);
+    this.cellLife?.tick(dt);
     lifeTick(this, dt);
 
     this.guards.update(dt);
@@ -266,9 +320,20 @@ export class Game {
 
     if (this.input.consumeTalk()) this.openTalk();
 
-    const near = this.prison.nearestInteractable(this.player.position);
+    const npc = this.npcs.nearestPerson(this.player.position, 1.9);
+    const near = this.nearestUsable();
     const prompt = document.getElementById('prompt');
-    if (near && this.canUse(near)) {
+    const npcD = npc
+      ? Math.hypot(this.player.position.x - npc.root.position.x, this.player.position.z - npc.root.position.z)
+      : 99;
+    const itemD = near
+      ? Math.hypot(this.player.position.x - near.position.x, this.player.position.z - near.position.z)
+      : 99;
+    if (npc && npcD <= itemD && (this.sim.stage === 'propiska' || this.sim.stage === 'life')) {
+      prompt.classList.remove('hidden');
+      prompt.textContent = `${npc.name} · говорить`;
+      if (this.input.consumeInteract()) this.cellLife.talkTo(npc.id);
+    } else if (near && this.canUse(near)) {
       prompt.classList.remove('hidden');
       prompt.textContent = this.label(near);
       if (this.input.consumeInteract()) this.interact(near);
@@ -280,23 +345,7 @@ export class Game {
 
   stepWalk(dt, move, crouch, yaw) {
     if (this.sim.locked) return;
-    if (this._hold) {
-      move = {
-        x: this._hold.code === 'KeyA' ? -1 : this._hold.code === 'KeyD' ? 1 : 0,
-        z: this._hold.code === 'KeyS' ? 1 : this._hold.code === 'KeyW' ? -1 : 0,
-        mag: 1,
-        run: false,
-      };
-    }
-    const speed = this.sim.cuffed
-      ? move.run
-        ? 2.2
-        : 1.2
-      : crouch
-        ? 1.25
-        : move.run
-          ? 4.2
-          : 2.3;
+    const speed = crouch ? 1.25 : move.run ? 4.2 : this.sim.cuffed ? 1.45 : 2.3;
     const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
     const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
     const wish = new THREE.Vector3();
@@ -304,21 +353,21 @@ export class Game {
     wish.addScaledVector(forward, -move.z);
     if (wish.lengthSq() > 0) wish.normalize();
     if (!this.wishVel) this.wishVel = new THREE.Vector3();
-    const target = wish.clone().multiplyScalar(speed);
-    const k = wish.lengthSq() > 0 ? 9 : 6;
-    this.wishVel.lerp(target, 1 - Math.exp(-k * dt));
+    if (move.mag < 0.05) {
+      this.wishVel.set(0, 0, 0);
+      return;
+    }
+    this.wishVel.copy(wish).multiplyScalar(speed);
     const next = this.player.position.clone();
-    next.x += this.wishVel.x * dt;
-    next.z += this.wishVel.z * dt;
+    next.x += wish.x * speed * dt;
+    next.z += wish.z * speed * dt;
     const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
-    if (wish.lengthSq() > 0) {
-      this._footT = (this._footT || 0) + dt;
-      if (this._footT > (move.run ? 0.3 : 0.48)) {
-        this._footT = 0;
-        this.audio.foot();
-      }
+    this._footT = (this._footT || 0) + dt;
+    if (this._footT > (move.run ? 0.3 : 0.48)) {
+      this._footT = 0;
+      this.audio.foot();
     }
     if (!this.sim.docs) {
       if (this.player.position.z < -88) {
@@ -362,11 +411,13 @@ export class Game {
     const resolved = this.prison.resolve(next, 0.2);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
-    const want = Math.atan2(dir.x, dir.z);
-    let d = want - this.input.yaw;
-    while (d > Math.PI) d -= Math.PI * 2;
-    while (d < -Math.PI) d += Math.PI * 2;
-    this.input.yaw += d * Math.min(1, dt * 3.2);
+    if (!this.escort.freeLook) {
+      const want = Math.atan2(dir.x, dir.z);
+      let d = want - this.input.yaw;
+      while (d > Math.PI) d -= Math.PI * 2;
+      while (d < -Math.PI) d += Math.PI * 2;
+      this.input.yaw += d * Math.min(1, dt * 3.2);
+    }
     this.npcs.followEscort(this.player.position, this.input.yaw);
   }
 
@@ -386,6 +437,7 @@ export class Game {
       if (col) col.active = false;
       this.audio.clang();
       this.subtitle('Конвой: «Четвёртая. Заходи в дверь. Не боком — через порог.»');
+      if (this.escort) this.escort.freeLook = true;
     }
   }
 
@@ -416,19 +468,17 @@ export class Game {
 
   finishEscort() {
     this.escort = null;
+    if (this.wishVel) this.wishVel.set(0, 0, 0);
     if (this.player.position.x < LAYOUT.corridorHalf + 0.9) {
       this.player.position.copy(this.prison.cellSpawn);
     }
     this.sim.cuffed = false;
-    this.sim.locked = true;
+    this.sim.locked = false;
     this.sim.stage = 'propiska';
     this.input.yaw = Math.PI / 2;
     this.subtitle('Ты зашёл через дверь. Теперь хата — не конвой.');
     this.audio.clang();
-    clearTimeout(this._ragAuto);
-    this._ragAuto = setTimeout(() => {
-      if (this.sim.stage === 'propiska' && !this.dialog.open) this.greetingMenu();
-    }, 700);
+    this.cellLife.begin();
   }
 
   stepIntro(dt) {
@@ -582,7 +632,7 @@ export class Game {
     );
     this.camera.lookAt(look);
     if (this.introT > 11) {
-      const running = this._lastMove?.run && !crouch && !this.sim.cuffed;
+      const running = this._lastMove?.run && !crouch;
       const want = running ? 70 : 62;
       this.camera.fov += (want - this.camera.fov) * 0.1;
       this.camera.updateProjectionMatrix();
@@ -591,6 +641,21 @@ export class Game {
 
   updateStages() {
     if (this.sim.stage === 'bath' && this.sim.robe === 'kazenka' && !this.escort) this.startEscort();
+  }
+
+  nearestUsable() {
+    const pos = this.player.position;
+    let best = null;
+    let bestD = Infinity;
+    for (const it of this.prison.interactables) {
+      if (!this.canUse(it)) continue;
+      const d = Math.hypot(pos.x - it.position.x, pos.z - it.position.z);
+      if (d < it.radius && d < bestD) {
+        best = it;
+        bestD = d;
+      }
+    }
+    return best;
   }
 
   canUse(item) {
@@ -603,9 +668,11 @@ export class Game {
     if (item.type === 'block-door') return false;
     if (item.type === 'rag')
       return !this.sim.ragChoice && (this.sim.stage === 'propiska' || this.sim.stage === 'life');
-    if (item.type === 'starosta') return this.sim.ragChoice && !this.sim.propiska;
+    if (item.type === 'starosta') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
+    if (['window', 'kettle', 'hatch', 'calendar'].includes(item.type))
+      return this.sim.stage === 'propiska' || this.sim.stage === 'life';
     if (['bunk', 'bunk-other', 'wash', 'cards', 'malyava', 'obshak', 'food', 'admin'].includes(item.type))
-      return this.sim.stage === 'life';
+      return this.sim.stage === 'life' || this.sim.stage === 'propiska';
     return true;
   }
 
@@ -628,6 +695,10 @@ export class Game {
       obshak: 'Общак',
       food: 'Баландежка',
       admin: 'К администрации',
+      window: 'Окно · решётка',
+      kettle: 'Чайник · чифир',
+      hatch: 'Кормушка',
+      calendar: 'Календарь хаты',
       'cell-door': item.open ? 'Дверь открыта' : 'Дверь хаты',
       'locked-door': `Дверь ${item.num} · заперто. За решёткой — чужая хата.`,
       monitor: 'Монитор',
@@ -698,7 +769,24 @@ export class Game {
       return;
     }
     if (item.type === 'starosta') {
-      this.starostaTalk();
+      this.cellLife.talkTo('starosta');
+      return;
+    }
+    if (item.type === 'window') {
+      this.cellLife.useWindow();
+      return;
+    }
+    if (item.type === 'kettle') {
+      this.cellLife.useKettle();
+      return;
+    }
+    if (item.type === 'hatch') {
+      this.cellLife.useHatch();
+      return;
+    }
+    if (item.type === 'calendar') {
+      this.sim.hope = Math.min(100, this.sim.hope + 3);
+      this.toast(`День ${this.sim.day}. Чёрточка на стене ещё не стала стеной.`);
       return;
     }
     if (item.type === 'bunk') {
@@ -709,6 +797,7 @@ export class Game {
       this.sim.rest();
       this.sim.heat = Math.max(0, this.sim.heat - 6);
       this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Своя шконка. Чужую не занимай.');
+      this.cellLife.completeTask('bunk');
       return;
     }
     if (item.type === 'bunk-other') {
@@ -906,6 +995,7 @@ export class Game {
       this.subtitle(
         'Нижняя у окна — твоя. Чужую не занимай. В сортир, пока едят — не ходи. Подъём, шмон, баландежка, прогулка, отбой.',
       );
+      this.cellLife.onPropiskaDone();
     };
   }
 
@@ -937,21 +1027,6 @@ export class Game {
     el.classList.remove('hidden');
     clearTimeout(this._toast);
     this._toast = setTimeout(() => el.classList.add('hidden'), 2400);
-  }
-
-  holdWalk(code, seconds = 1.6) {
-    this.input.keys.add(code);
-    this.input.keys.add(code === 'KeyW' ? 'w' : code === 'KeyS' ? 's' : code === 'KeyA' ? 'a' : 'd');
-    this._hold = { code, t: seconds };
-    clearTimeout(this._walkHold);
-    this._walkHold = setTimeout(() => {
-      this.input.keys.delete(code);
-      this.input.keys.delete('w');
-      this.input.keys.delete('s');
-      this.input.keys.delete('a');
-      this.input.keys.delete('d');
-      this._hold = null;
-    }, seconds * 1000);
   }
 
   syncHud() {

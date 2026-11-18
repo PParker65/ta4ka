@@ -306,6 +306,15 @@ export class Prison {
     item.hinge.position.x += item.side * 0.85;
   }
 
+  closeDoor(item) {
+    if (!item || !item.open || !item.hinge) return;
+    item.open = false;
+    const col = this.colliders.find((c) => c.id === item.colliderId);
+    if (col) col.active = true;
+    item.hinge.rotation.y -= item.side > 0 ? -Math.PI / 2 : Math.PI / 2;
+    item.hinge.position.x -= item.side * 0.85;
+  }
+
   addPlayerCell() {
     const ox = LAYOUT.corridorHalf + LAYOUT.cellW / 2 + 0.08;
     const oz = 5.2;
@@ -436,6 +445,30 @@ export class Prison {
       type: 'food',
       position: new THREE.Vector3(ox - w / 2 + 0.8, 1, oz),
       radius: 1.5,
+    });
+    this.interactables.push({
+      id: 'window',
+      type: 'window',
+      position: new THREE.Vector3(ox, 1, oz + d / 2 - 0.45),
+      radius: 1.7,
+    });
+    this.interactables.push({
+      id: 'kettle',
+      type: 'kettle',
+      position: new THREE.Vector3(ox + 0.2, 1, oz + 0.2),
+      radius: 1.35,
+    });
+    this.interactables.push({
+      id: 'hatch',
+      type: 'hatch',
+      position: new THREE.Vector3(ox - w / 2 + 0.55, 1, 3.42),
+      radius: 1.5,
+    });
+    this.interactables.push({
+      id: 'calendar',
+      type: 'calendar',
+      position: new THREE.Vector3(ox - w / 2 + 0.35, 1, oz),
+      radius: 1.3,
     });
   }
 

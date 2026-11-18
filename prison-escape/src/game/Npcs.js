@@ -111,16 +111,81 @@ export class Npcs {
   }
 
   nearestKind(pos, max = 2.4) {
-    let best = 'default';
+    const n = this.nearestPerson(pos, max);
+    return n ? (n.id === 'convoy' ? 'convoy' : n.id) : 'default';
+  }
+
+  byId(id) {
+    return this.list.find((n) => n.id === id);
+  }
+
+  nearestPerson(pos, max = 1.85) {
+    let best = null;
     let bestD = max;
     for (const n of this.list) {
+      if (!n.name || n.kind === 'dog' || n.id === 'hatch' || n.id === 'fresh') continue;
+      if (n.gone) continue;
       const d = Math.hypot(pos.x - n.root.position.x, pos.z - n.root.position.z);
       if (d < bestD) {
         bestD = d;
-        best = n.id === 'convoy' ? 'convoy' : n.id;
+        best = n;
       }
     }
     return best;
+  }
+
+  dismissConvoy() {
+    for (const n of this.list) {
+      if (n.follow == null) continue;
+      n.follow = null;
+      n.walkPath = [
+        { x: 1.5, z: 3.4 },
+        { x: 0, z: 3.35 },
+        { x: 0, z: -1.2 },
+        { x: 0, z: -14 },
+      ];
+    }
+  }
+
+  sitAt(n, x, z) {
+    if (!n) return;
+    n.walkTo = null;
+    n.walkPath = null;
+    n.root.position.x += (x - n.root.position.x) * 0.08;
+    n.root.position.z += (z - n.root.position.z) * 0.08;
+    this.pose(n, 'sit');
+  }
+
+  standAt(n, x, z, yaw) {
+    if (!n) return;
+    n.walkTo = null;
+    const dx = x - n.root.position.x;
+    const dz = z - n.root.position.z;
+    if (Math.hypot(dx, dz) > 0.12) n.walkTo = { x, y: 0, z };
+    else {
+      n.root.rotation.y = yaw;
+      this.pose(n, 'stand');
+    }
+  }
+
+  pose(n, kind) {
+    const limbs = n.root.userData.limbs;
+    if (!limbs) return;
+    n.pose = kind;
+    if (kind === 'sit') {
+      limbs.hips.position.y = 0.58;
+      limbs.legs[0].rotation.x = -1.15;
+      limbs.legs[1].rotation.x = -1.05;
+      limbs.arms[0].rotation.x = 0.4;
+      limbs.arms[1].rotation.x = 0.35;
+    } else if (kind === 'lean') {
+      limbs.hips.position.y = 0.92;
+      limbs.hips.rotation.x = 0.12;
+      limbs.arms[0].rotation.x = -0.4;
+    } else {
+      limbs.hips.position.y = 0.92;
+      limbs.hips.rotation.x = 0;
+    }
   }
 
   followEscort(player, yaw, t) {
@@ -138,14 +203,31 @@ export class Npcs {
 
   update(t, player, camera, dt = 0.016) {
     for (const n of this.list) {
-      if (n.walkTo) {
+      if (n.walkPath?.length) {
+        n.walkTo = n.walkPath[0];
+        const dx = n.walkTo.x - n.root.position.x;
+        const dz = n.walkTo.z - n.root.position.z;
+        if (Math.hypot(dx, dz) < 0.28) {
+          n.walkPath.shift();
+          if (!n.walkPath.length) {
+            n.walkTo = null;
+            if (n.id === 'convoy') {
+              n.gone = true;
+              n.root.visible = false;
+            }
+          }
+        }
+      }
+      if (n.walkTo && !n.gone) {
         const dx = n.walkTo.x - n.root.position.x;
         const dz = n.walkTo.z - n.root.position.z;
         const d = Math.hypot(dx, dz) || 1;
         if (d > 0.2) {
-          n.root.position.x += (dx / d) * dt * 1.25;
-          n.root.position.z += (dz / d) * dt * 1.25;
+          n.root.position.x += (dx / d) * dt * 1.55;
+          n.root.position.z += (dz / d) * dt * 1.55;
           n.root.rotation.y = Math.atan2(dx, dz);
+        } else {
+          n.walkTo = null;
         }
       }
       if (camera) {
@@ -172,19 +254,19 @@ export class Npcs {
         continue;
       }
       const limbs = n.root.userData.limbs;
-      const walking = !!n.walkTo || n.kind === 'inmate';
+      const walking = !!n.walkTo;
       if (limbs && walking) {
-        const spd = n.walkTo ? 8 : 2.2;
-        const amp = n.walkTo ? 0.55 : 0.12;
-        const s = Math.sin(t * spd);
-        limbs.arms[0].rotation.x = s * amp;
-        limbs.arms[1].rotation.x = -s * amp;
-        limbs.legs[0].rotation.x = -s * amp * 1.1;
-        limbs.legs[1].rotation.x = s * amp * 1.1;
-        limbs.hips.position.y = 0.92 + Math.abs(s) * (n.walkTo ? 0.03 : 0.008);
+        const s = Math.sin(t * 8);
+        limbs.arms[0].rotation.x = s * 0.55;
+        limbs.arms[1].rotation.x = -s * 0.55;
+        limbs.legs[0].rotation.x = -s * 0.6;
+        limbs.legs[1].rotation.x = s * 0.6;
+        limbs.hips.position.y = 0.92 + Math.abs(s) * 0.03;
+      } else if (limbs && n.pose === 'sit') {
+        this.pose(n, 'sit');
       }
-      if (n.bob !== false) n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
-      if (player && n.kind === 'inmate' && n.id !== 'hatch') {
+      if (n.bob !== false && n.pose !== 'sit') n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
+      if (player && n.kind === 'inmate' && n.id !== 'hatch' && !n.walkTo && n.pose !== 'sit') {
         const dx = player.x - n.root.position.x;
         const dz = player.z - n.root.position.z;
         if (dx * dx + dz * dz < 16) {

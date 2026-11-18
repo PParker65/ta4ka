@@ -1,8 +1,8 @@
 import { Joystick } from './Joystick.js';
 
 /**
- * Desktop: pointer-lock / drag-to-look, Q/E or arrows to turn, WASD to walk.
- * Mobile: left stick move, right-half swipe look.
+ * Desktop: pointer-lock look (mouse right = look right). A/D and arrows turn.
+ * W/S walk, Shift run. Mobile: left stick move, right-half swipe look.
  */
 export class Input {
   constructor({ mobile, canvas }) {
@@ -126,7 +126,7 @@ export class Input {
   }
 
   applyLook(dx, dy, sens) {
-    this.yaw -= dx * sens;
+    this.yaw += dx * sens;
     this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
   }
 
@@ -153,11 +153,11 @@ export class Input {
     this.keys.delete((e.key || '').toLowerCase());
   }
 
-  /** Radians/sec. Left looks left, right looks right. */
+  /** A/D, Q, arrows: left looks left, right looks right. */
   turnRate() {
     let t = 0;
-    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t += 2.4;
-    if (this.keys.has('KeyR') || this.keys.has('ArrowRight')) t -= 2.4;
+    if (this.keys.has('KeyA') || this.keys.has('a') || this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t -= 2.6;
+    if (this.keys.has('KeyD') || this.keys.has('d') || this.keys.has('ArrowRight')) t += 2.6;
     return t;
   }
 
@@ -176,8 +176,6 @@ export class Input {
   moveVector() {
     let x = this.joystick.enabled ? this.joystick.moveX : 0;
     let z = this.joystick.enabled ? this.joystick.moveZ : 0;
-    if (this.keys.has('KeyA') || this.keys.has('a')) x -= 1;
-    if (this.keys.has('KeyD') || this.keys.has('d')) x += 1;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp') || this.keys.has('w') || this.keys.has('arrowup')) z -= 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown') || this.keys.has('s') || this.keys.has('arrowdown')) z += 1;
     const mag = Math.hypot(x, z);

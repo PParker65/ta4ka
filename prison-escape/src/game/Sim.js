@@ -43,6 +43,7 @@ export class Sim {
     this.hope = 26;
     this.attended = false;
     this._lifePhase = null;
+    this.task = null;
   }
 
   objective() {
@@ -53,6 +54,7 @@ export class Sim {
     if (!this.haircut) return 'Санитарная: стрижка под машинку и помывка. Так встречают всех.';
     if (this.robe !== 'kazenka') return 'Казёнка и бельё. Свою одежду уже сдал.';
     if (this.stage === 'escort') return 'Конвой ведёт по коряку. В хату — только через дверь, когда откроют.';
+    if (this.task?.label) return this.task.label;
     if (!this.propiska) return 'Прописка. Хатка проверяет, кто ты. Не шарься, пока не скажут.';
     if (this.phase.id === 'food') return 'Баландежка. Возьми пайку, не лезь без очереди.';
     if (this.phase.id === 'walk') return 'Прогулка. Круг по дворику, без болтовни через стену.';
