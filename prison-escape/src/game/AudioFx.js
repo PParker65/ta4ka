@@ -12,6 +12,13 @@ export class AudioFx {
     if (this.ctx.state === 'suspended') this.ctx.resume();
   }
 
+  voiceOnce(id, text, who = '') {
+    if (!this._once) this._once = new Set();
+    if (this._once.has(id)) return;
+    this._once.add(id);
+    this.voice(text, who);
+  }
+
   voice(text, who = '') {
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
     const clean = String(text)
@@ -101,12 +108,10 @@ export class AudioFx {
     f.type = 'lowpass';
     f.frequency.value = 420;
     const g = ctx.createGain();
-    g.gain.value = 0.08;
+    g.gain.value = 0.025;
     src.connect(f).connect(g).connect(ctx.destination);
     src.start();
     this._amb = src;
-    this.drip();
-    this.murmur();
   }
 
   drip() {

@@ -127,7 +127,7 @@ export class Input {
   }
 
   applyLook(dx, dy, sens) {
-    this.yaw += dx * sens;
+    this.yaw -= dx * sens;
     this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
   }
 
@@ -173,10 +173,10 @@ export class Input {
   }
 
   moveVector() {
-    let x = this.joystick.enabled ? this.joystick.moveX : 0;
+    let x = this.joystick.enabled ? -this.joystick.moveX : 0;
     let z = this.joystick.enabled ? this.joystick.moveZ : 0;
-    if (this.keys.has('KeyA') || this.keys.has('a')) x -= 1;
-    if (this.keys.has('KeyD') || this.keys.has('d')) x += 1;
+    if (this.keys.has('KeyA') || this.keys.has('a')) x += 1;
+    if (this.keys.has('KeyD') || this.keys.has('d')) x -= 1;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp') || this.keys.has('w') || this.keys.has('arrowup')) z -= 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown') || this.keys.has('s') || this.keys.has('arrowdown')) z += 1;
     const mag = Math.hypot(x, z);

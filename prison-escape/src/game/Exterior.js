@@ -363,6 +363,7 @@ function addProcessing(prison) {
     }
   }
   prison.box(hw * 2 + 0.4, 0.12, L, new THREE.MeshStandardMaterial({ color: 0xcfc8bc }), 0, h, z0);
+  addVestibule(prison);
 
   // Rooms as alcoves so it is not the cell corridor.
   alcove(prison, -hw - 2.1, -36.2, 'ШМОН');
@@ -435,6 +436,59 @@ function addProcessing(prison) {
     lamp.position.set(0, 2.7, z);
     prison.group.add(lamp);
   }
+}
+
+/** Fill the black 2m hole between сборник (ends ~z=-2) and коряк (starts z=0). */
+function addVestibule(prison) {
+  const z = -1.05;
+  const len = 2.5;
+  const W = 5.35;
+  const h = 3.1;
+  const floor = prison.mat(prison.tex.plaster, { roughness: 0.85, metalness: 0, env: 0.08, repeat: [2, 1] });
+  floor.color.set(0x7a7872);
+  prison.box(W, 0.08, len, floor, 0, 0.03, z);
+  prison.box(W, 0.16, len, new THREE.MeshStandardMaterial({ color: 0xc4beb2, roughness: 0.88 }), 0, h, z);
+  const wall = new THREE.MeshStandardMaterial({ color: 0xd2ccbe, roughness: 0.9 });
+  const dado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
+  const steel = new THREE.MeshStandardMaterial({ color: 0x3a3e44, metalness: 0.55, roughness: 0.4 });
+  for (const side of [-1, 1]) {
+    const x = side * (W / 2);
+    prison.box(0.22, 1.15, len, dado, x, 0.57, z).userData.camCollide = true;
+    prison.box(0.22, h - 1.15, len, wall, x, 1.15 + (h - 1.15) / 2, z).userData.camCollide = true;
+    prison.addCollider(
+      side > 0 ? W / 2 - 0.2 : -W / 2 - 0.12,
+      side > 0 ? W / 2 + 0.12 : -W / 2 + 0.2,
+      z - len / 2,
+      z + len / 2,
+      `vest-${side}`,
+    );
+  }
+  const hw = 1.42;
+  for (const side of [-1, 1]) {
+    const inner = side * hw;
+    const outer = side * (W / 2);
+    const mid = (inner + outer) / 2;
+    const thick = Math.abs(outer - inner);
+    prison.box(thick, h, 0.28, steel, mid, h / 2, 0.08).userData.camCollide = true;
+    prison.addCollider(
+      Math.min(inner, outer),
+      Math.max(inner, outer),
+      -0.12,
+      0.22,
+      `vest-bulk-${side}`,
+    );
+  }
+  prison.box(hw * 2 + 0.2, 0.35, 0.28, steel, 0, 2.75, 0.08);
+  const lamp = new THREE.PointLight(0xf0ead0, 0.7, 9, 1.7);
+  lamp.position.set(0, 2.65, -1.05);
+  prison.group.add(lamp);
+  const tube = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.035, 0.035, 0.7, 8),
+    new THREE.MeshStandardMaterial({ color: 0xf0eed8, emissive: 0xd8d4b8, emissiveIntensity: 0.55 }),
+  );
+  tube.rotation.x = Math.PI / 2;
+  tube.position.set(0, 2.88, -1.05);
+  prison.group.add(tube);
 }
 
 function alcove(prison, x, z, title) {

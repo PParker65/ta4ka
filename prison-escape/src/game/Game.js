@@ -38,6 +38,7 @@ export class Game {
 
   async start() {
     this.audio.unlock();
+    window.speechSynthesis?.cancel();
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: !this.mobile,
@@ -126,7 +127,6 @@ export class Game {
     if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
     else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
-    this.dialog.onSpeak = (who, text) => this.audio.voice(`${who}. ${text}`, who);
     this.chat = new Chat();
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
     this.setupComposer();
@@ -468,6 +468,7 @@ export class Game {
       ],
     };
     this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
+    this.audio.voiceOnce('cell', 'Хату четыре. Шагом.', 'Конвой');
     this.audio.clang();
   }
 
@@ -518,6 +519,7 @@ export class Game {
     if (!this._introOut && t > 7.2) {
       this._introOut = true;
       this.subtitle('Конвой: «Выходи.»');
+      this.audio.voiceOnce('out', 'Выходи.', 'Конвой');
       this.audio.bark();
       this.pullFresh();
     }
@@ -1025,7 +1027,6 @@ export class Game {
     el.classList.remove('hidden');
     clearTimeout(this._sub);
     this._sub = setTimeout(() => el.classList.add('hidden'), 7200);
-    this.audio.voice(t);
   }
 
   toast(t) {
