@@ -41,8 +41,8 @@ export class Npcs {
   }
 
   async spawnConvoy() {
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.55, z: -16.1, yaw: 0, follow: 0 });
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.55, z: -15.4, yaw: 0, follow: 1 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.55, z: -31.0, yaw: 0, follow: 0 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.55, z: -30.4, yaw: 0, follow: 1 });
   }
 
   async spawnHatches(doors) {
@@ -145,12 +145,28 @@ function human(kind, spec) {
   torso.castShadow = true;
   hips.add(torso);
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.125, 12, 10), skin);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.125, 16, 12), skin);
   head.position.y = 0.48;
   hips.add(head);
-  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 4), skin);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), skin);
   nose.position.set(0, 0.46, 0.12);
   hips.add(nose);
+  const white = new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.4 });
+  const iris = new THREE.MeshStandardMaterial({ color: 0x2a241c });
+  for (const x of [-0.038, 0.038]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), white);
+    eye.position.set(x, 0.5, 0.1);
+    hips.add(eye);
+    const p = new THREE.Mesh(new THREE.SphereGeometry(0.008, 6, 4), iris);
+    p.position.set(x, 0.5, 0.115);
+    hips.add(p);
+  }
+  const mouth = new THREE.Mesh(
+    new THREE.BoxGeometry(0.05, 0.012, 0.01),
+    new THREE.MeshStandardMaterial({ color: 0x6a3a38 }),
+  );
+  mouth.position.set(0, 0.415, 0.112);
+  hips.add(mouth);
 
   if (kind === 'guard') {
     const cap = new THREE.Mesh(

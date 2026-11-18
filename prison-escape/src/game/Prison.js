@@ -72,6 +72,11 @@ export class Prison {
 
   mat(map, opts = {}) {
     const tex = map.clone();
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = 8;
+    tex.generateMipmaps = true;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
     if (opts.repeat) tex.repeat.set(opts.repeat[0], opts.repeat[1]);
     return new THREE.MeshStandardMaterial({
@@ -118,7 +123,7 @@ export class Prison {
     const tileH = 1.22;
     for (const side of [-1, 1]) {
       const x = side * (hw + 0.08);
-      const tiles = this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [L / 0.22, tileH / 0.22] }), x, tileH / 2, L / 2);
+      const tiles = this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [L / 0.55, tileH / 0.4] }), x, tileH / 2, L / 2);
       tiles.userData.camCollide = true;
       const plaster = this.box(
         0.16,
@@ -133,8 +138,83 @@ export class Prison {
     }
 
     this.box(hw * 2 + 0.4, 0.5, 0.2, this.mat(this.tex.cPlaster), 0, 1.4, 0.05);
-    this.addCollider(-hw - 1, -0.55, -0.25, 0.2, 'start-l');
-    this.addCollider(0.55, hw + 1, -0.25, 0.2, 'start-r');
+    this.addCollider(-hw - 1, -0.55, -0.25, 0.22, 'start-l');
+    this.addCollider(0.55, hw + 1, -0.25, 0.22, 'start-r');
+    this.addBlockDoor();
+  }
+
+  addBlockDoor() {
+    const steel = new THREE.MeshStandardMaterial({ color: 0x3a3e44, metalness: 0.65, roughness: 0.38 });
+    const door = new THREE.Group();
+    door.position.set(-0.52, 0, 0.02);
+    this.group.add(door);
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(1.12, 2.15, 0.1), steel);
+    panel.position.set(0.52, 1.08, 0);
+    door.add(panel);
+    const bar = new THREE.Mesh(
+      new THREE.BoxGeometry(1.05, 0.08, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x8a9096, metalness: 0.8, roughness: 0.3 }),
+    );
+    bar.position.set(0.52, 1.05, 0.04);
+    door.add(bar);
+    const sign = makeDoorNumber('СБ');
+    sign.position.set(0.52, 1.72, 0.06);
+    door.add(sign);
+    this.addCollider(-0.55, 0.55, -0.16, 0.18, 'block-door');
+    this.blockDoor = {
+      id: 'block-door',
+      type: 'block-door',
+      position: new THREE.Vector3(0, 1, 0),
+      radius: 1.8,
+      door,
+      hinge: door,
+      open: false,
+      side: 1,
+      colliderId: 'block-door',
+    };
+    this.interactables.push(this.blockDoor);
+  }
+
+  addYardGate() {
+    const asphalt = new THREE.MeshStandardMaterial({ color: 0x2a2c2e, roughness: 0.92 });
+    this.box(14, 0.05, 14, asphalt, 0, 0.02, -38);
+    const fence = new THREE.MeshStandardMaterial({ color: 0x4a5056, metalness: 0.45, roughness: 0.5 });
+    this.box(14, 2.4, 0.08, fence, 0, 1.2, -44.8);
+    this.box(0.08, 2.4, 14, fence, -7, 1.2, -38);
+    this.box(0.08, 2.4, 14, fence, 7, 1.2, -38);
+    this.addCollider(-7.2, 7.2, -45.1, -44.6, 'yard-back');
+    this.addCollider(-7.3, -6.8, -45, -32, 'yard-l');
+    this.addCollider(6.8, 7.3, -45, -32, 'yard-r');
+
+    const van = new THREE.Group();
+    van.position.set(-3.4, 0, -38.5);
+    this.group.add(van);
+    this.box(1.8, 1.35, 4.2, new THREE.MeshStandardMaterial({ color: 0x3a3f36, roughness: 0.7 }), 0, 0.85, 0, van);
+    this.box(1.85, 0.35, 1.2, new THREE.MeshStandardMaterial({ color: 0x1a1c18 }), 0, 1.6, 1.4, van);
+    for (const z of [-1.3, 1.3]) {
+      const wheel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.32, 0.32, 0.22, 10),
+        new THREE.MeshStandardMaterial({ color: 0x111 }),
+      );
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(0.95, 0.32, z);
+      van.add(wheel);
+      const w2 = wheel.clone();
+      w2.position.x = -0.95;
+      van.add(w2);
+    }
+    const flood = new THREE.SpotLight(0xe8d8b0, 6, 22, 0.55, 0.4, 1.4);
+    flood.position.set(2.5, 5.2, -36);
+    flood.target.position.set(0, 0, -32);
+    this.group.add(flood);
+    this.group.add(flood.target);
+    const pole = this.box(0.12, 5.2, 0.12, new THREE.MeshStandardMaterial({ color: 0x2a2c30 }), 2.5, 2.6, -36);
+    const sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.4, 0.45),
+      new THREE.MeshStandardMaterial({ color: 0x1a3a22, roughness: 0.6 }),
+    );
+    sign.position.set(0, 2.35, -32.15);
+    this.group.add(sign);
   }
 
   addVault() {
@@ -243,10 +323,14 @@ export class Prison {
   }
 
   openDoor(item) {
-    if (item.open) return;
+    if (!item || item.open) return;
     item.open = true;
     const col = this.colliders.find((c) => c.id === item.colliderId);
     if (col) col.active = false;
+    if (item.type === 'block-door') {
+      item.hinge.rotation.y -= Math.PI / 2;
+      return;
+    }
     item.hinge.rotation.y += item.side > 0 ? -Math.PI / 2 : Math.PI / 2;
     item.hinge.position.x += item.side * 0.85;
   }
@@ -316,7 +400,8 @@ export class Prison {
 
     this.cellOrigin = new THREE.Vector3(ox, 0, oz);
     this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.15, 0, 3.55);
-    this.playerSpawn = new THREE.Vector3(0, 0, -16.4);
+    this.doorThreshold = new THREE.Vector3(LAYOUT.corridorHalf + 0.35, 0, 3.4);
+    this.playerSpawn = new THREE.Vector3(0, 0, -31.2);
 
     const rag = new THREE.Mesh(
       new THREE.BoxGeometry(0.55, 0.03, 0.38),
@@ -341,8 +426,15 @@ export class Prison {
     this.interactables.push({
       id: 'bunk',
       type: 'bunk',
+      own: true,
       position: new THREE.Vector3(ox + 1.85, 1, oz - 2.35),
       radius: 1.6,
+    });
+    this.interactables.push({
+      id: 'bunk-other',
+      type: 'bunk-other',
+      position: new THREE.Vector3(ox + 1.85, 1, oz + 2.15),
+      radius: 1.4,
     });
     this.interactables.push({
       id: 'wash',
@@ -735,13 +827,13 @@ export class Prison {
   addIntake() {
     const hw = LAYOUT.corridorHalf;
     const h = LAYOUT.wallH;
-    const z0 = -9;
-    const L = 18;
+    const z0 = -16;
+    const L = 32;
     this.box(
       hw * 2,
       0.06,
       L,
-      this.mat(this.tex.red, { roughness: 0.28, metalness: 0.1, repeat: [6, 16] }),
+      this.mat(this.tex.red, { roughness: 0.34, metalness: 0.08, repeat: [5, 10] }),
       0,
       0.03,
       z0,
@@ -749,44 +841,62 @@ export class Prison {
     const tileH = 1.22;
     for (const side of [-1, 1]) {
       const x = side * (hw + 0.08);
-      this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [L / 0.22, 5] }), x, tileH / 2, z0).userData.camCollide = true;
-      this.box(0.16, h - tileH, L, this.mat(this.tex.cPlaster, { repeat: [8, 1.2] }), x, tileH + (h - tileH) / 2, z0).userData.camCollide = true;
-      this.addCollider(side > 0 ? hw - 0.06 : -hw - 0.16, side > 0 ? hw + 0.16 : -hw + 0.06, -18, -0.3, `intake-${side}`);
+      this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [L / 0.55, 4] }), x, tileH / 2, z0).userData.camCollide = true;
+      this.box(0.16, h - tileH, L, this.mat(this.tex.cPlaster, { repeat: [6, 1.2] }), x, tileH + (h - tileH) / 2, z0).userData.camCollide = true;
+      this.addCollider(side > 0 ? hw - 0.06 : -hw - 0.16, side > 0 ? hw + 0.16 : -hw + 0.06, -32.2, -0.3, `intake-${side}`);
     }
     this.box(hw * 2, 0.08, L, this.mat(this.tex.ceil), 0, h + 0.2, z0);
-    this.addCollider(-hw, hw, -18.4, -17.9, 'kpp-back');
 
-    const desk = this.box(1.4, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x4a4030 }), 0, 0.9, -12.2);
+    this.addYardGate();
+
+    this.interactables.push({
+      id: 'kpp',
+      type: 'kpp',
+      position: new THREE.Vector3(0, 1, -24.5),
+      radius: 2.2,
+    });
+    this.box(1.5, 0.08, 0.6, new THREE.MeshStandardMaterial({ color: 0x3a3530, roughness: 0.7 }), 0, 0.92, -24.6);
+
     this.interactables.push({
       id: 'shmon',
       type: 'shmon',
-      position: new THREE.Vector3(0, 1, -12.2),
+      position: new THREE.Vector3(0, 1, -18.4),
+      radius: 1.8,
+    });
+    this.box(1.4, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x4a4030 }), 0, 0.9, -18.4);
+
+    this.interactables.push({
+      id: 'photo',
+      type: 'photo',
+      position: new THREE.Vector3(0, 1, -13.6),
       radius: 1.7,
     });
+    this.box(0.4, 0.5, 0.2, new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.4 }), 0.55, 1.4, -13.6);
 
-    const stall = this.box(1.6, 1.2, 0.08, this.mat(this.tex.white), 0.2, 0.6, -8.4);
+    this.interactables.push({
+      id: 'med',
+      type: 'med',
+      position: new THREE.Vector3(0, 1, -10.8),
+      radius: 1.6,
+    });
+
     this.interactables.push({
       id: 'bath',
       type: 'bath',
       position: new THREE.Vector3(0.2, 1, -8.2),
       radius: 2.2,
     });
-    const robeBox = this.box(0.5, 0.2, 0.4, new THREE.MeshStandardMaterial({ color: 0x5a5a58 }), -0.6, 0.2, -7.6);
+    this.box(1.6, 1.2, 0.08, this.mat(this.tex.white), 0.2, 0.6, -8.4);
+
     this.interactables.push({
       id: 'robe',
       type: 'robe',
       position: new THREE.Vector3(-0.6, 1, -7.6),
       radius: 2.0,
     });
+    this.box(0.5, 0.2, 0.4, new THREE.MeshStandardMaterial({ color: 0x5a5a58 }), -0.6, 0.2, -7.6);
 
-    this.interactables.push({
-      id: 'kpp',
-      type: 'kpp',
-      position: new THREE.Vector3(0, 1, -15.4),
-      radius: 2.2,
-    });
-
-    for (let z = -16; z < 0; z += 4.2) {
+    for (let z = -30; z < 0; z += 4.2) {
       const mat = createFlickerMaterial(this.flickerMats.length);
       this.flickerMats.push(mat);
       const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 8), mat);

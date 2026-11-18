@@ -2,17 +2,16 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Input } from '../controls/Input.js';
 import { Character } from './Character.js';
-import { Prison } from './Prison.js';
+import { Prison, LAYOUT } from './Prison.js';
 import { Guards } from './Guards.js';
 import { CCTV } from './CCTV.js';
 import { updateFlickerMaterials } from '../shaders/environment.js';
 import { Sim } from './Sim.js';
-import { Dialogue, STAROSTA_INTRO } from './Dialogue.js';
+import { Dialogue, KPP_DOCS, GREETING, ARTICLE_Q, TEA_Q } from './Dialogue.js';
 import { Npcs } from './Npcs.js';
 import { Minigames } from './Minigames.js';
 import { AudioFx } from './AudioFx.js';
@@ -50,10 +49,10 @@ export class Game {
     if (this.renderer.shadowMap.enabled) this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0c0d10);
-    this.scene.fog = new THREE.FogExp2(0x1c1814, 0.038);
+    this.scene.background = new THREE.Color(0x141820);
+    this.scene.fog = new THREE.Fog(0x141820, 12, 46);
 
-    this.camera = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.07, 70);
+    this.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.16, 80);
     this.hands = makeHands();
     this.camera.add(this.hands);
     this.scene.add(this.camera);
@@ -98,7 +97,7 @@ export class Game {
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
     this.setupComposer();
     this.bindUi();
-    this.subtitle('Конвой. Наручники. Сейчас будет приёмка — как у всех, кто сюда попадает.');
+    this.subtitle('Ночь. Автозак. В камеру сразу не ведут — сначала сборник: документы, шмон, фото, врач, баня.');
     this.audio.clang();
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
@@ -109,19 +108,9 @@ export class Game {
     const h = window.innerHeight;
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    if (!this.lowEnd) {
-      try {
-        const ssao = new SSAOPass(this.scene, this.camera, w, h);
-        ssao.kernelRadius = 8;
-        this.composer.addPass(ssao);
-        this.ssaoPass = ssao;
-      } catch {
-        /* skip */
-      }
-    }
     if (!this.mobile) {
       try {
-        this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.28, 0.4, 0.82));
+        this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.1, 0.25, 0.9));
       } catch {
         /* skip */
       }
@@ -175,7 +164,6 @@ export class Game {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
     this.composer.setSize(w, h);
-    this.ssaoPass?.setSize(w, h);
   }
 
   loop() {
@@ -255,6 +243,7 @@ export class Game {
   }
 
   stepWalk(dt, move, crouch, yaw) {
+    if (this.sim.locked) return;
     const speed = this.sim.cuffed ? 1.15 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
     const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
     const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
@@ -285,40 +274,60 @@ export class Game {
     const b = pts[i + 1];
     const dir = new THREE.Vector3(b.x - this.player.position.x, 0, b.z - this.player.position.z);
     const dist = dir.length();
-    if (dist < 0.2) {
+    if (dist < 0.22) {
       this.escort.i += 1;
+      this.escortEvent(b.event);
       return;
     }
     dir.multiplyScalar(1 / dist);
     const next = this.player.position.clone();
-    const step = Math.min(1.55 * dt, dist);
+    const step = Math.min(1.45 * dt, dist);
     next.x += dir.x * step;
     next.z += dir.z * step;
-    const resolved = this.prison.resolve(next, 0.22);
+    const resolved = this.prison.resolve(next, 0.2);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
     const want = Math.atan2(dir.x, dir.z);
     let d = want - this.input.yaw;
     while (d > Math.PI) d -= Math.PI * 2;
     while (d < -Math.PI) d += Math.PI * 2;
-    this.input.yaw += d * Math.min(1, dt * 4);
+    this.input.yaw += d * Math.min(1, dt * 3.2);
     this.npcs.followEscort(this.player.position, this.input.yaw);
+  }
+
+  escortEvent(ev) {
+    if (ev === 'block') {
+      this.prison.openDoor(this.prison.blockDoor);
+      this.audio.clang();
+      this.subtitle('Дверь из сборника. Дальше коряк — зелёные двери, за ними хаты.');
+    }
+    if (ev === 'voice') {
+      this.subtitle('Из кормушки: «Свежак! Масть какая? Не здоровайся за руку вслепую.»');
+    }
+    if (ev === 'cell') {
+      const door = this.prison.interactables.find((it) => it.type === 'cell-door');
+      if (door) this.prison.openDoor(door);
+      this.audio.clang();
+      this.subtitle('Конвой: «Четвёртая. Заходи в дверь. Не боком — через порог.»');
+    }
   }
 
   startEscort() {
     if (this.escort) return;
-    const door = this.prison.interactables.find((it) => it.type === 'cell-door');
-    if (door) this.prison.openDoor(door);
     this.sim.stage = 'escort';
     this.sim.cuffed = true;
     this.guide = null;
+    const spawn = this.prison.cellSpawn;
     this.escort = {
       i: 0,
       pts: [
-        this.player.position.clone(),
-        new THREE.Vector3(0, 0, -0.4),
-        new THREE.Vector3(0.05, 0, 3.35),
-        this.prison.cellSpawn.clone(),
+        { x: this.player.position.x, z: this.player.position.z },
+        { x: 0, z: -0.85, event: 'block' },
+        { x: 0, z: 1.2 },
+        { x: 0, z: 2.45, event: 'voice' },
+        { x: 0.05, z: 3.38, event: 'cell' },
+        { x: LAYOUT.corridorHalf + 0.5, z: 3.42 },
+        { x: spawn.x, z: spawn.z },
       ],
     };
     this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
@@ -328,15 +337,15 @@ export class Game {
   finishEscort() {
     this.escort = null;
     this.sim.cuffed = false;
+    this.sim.locked = true;
     this.sim.stage = 'propiska';
-    this.player.position.copy(this.prison.cellSpawn);
     this.input.yaw = Math.PI / 2;
-    this.subtitle('На полу тряпка. Это прописка — так проверяют, понял ли ты правила хаты.');
+    this.subtitle('Ты зашёл через дверь. Теперь хата — не конвой.');
     this.audio.clang();
     clearTimeout(this._ragAuto);
     this._ragAuto = setTimeout(() => {
-      if (this.sim.stage === 'propiska' && !this.sim.ragChoice && !this.dialog.open) this.ragMenu();
-    }, 900);
+      if (this.sim.stage === 'propiska' && !this.dialog.open) this.greetingMenu();
+    }, 700);
   }
 
   autoGuide(dt, mag) {
@@ -364,39 +373,34 @@ export class Game {
   }
 
   updateStages() {
-    const z = this.player.position.z;
-    if (this.sim.stage === 'kpp' && z > -13.5) {
-      this.sim.stage = 'shmon';
-      this.subtitle('Кабинет досмотра. Сдай вещи — без этого дальше не пустят.');
-      this.audio.clang();
-    }
     if (this.sim.stage === 'bath' && this.sim.robe === 'kazenka' && !this.escort) this.startEscort();
-    if (this.sim.stage === 'escort' && z > 3.1 && this.player.position.x > 1.5 && !this.escort) {
-      this.sim.stage = 'propiska';
-      this.subtitle('На полу тряпка. Не наступи вслепую — это прописка.');
-    }
   }
 
   canUse(item) {
     if (this.escort) return false;
-    if (item.type === 'kpp')
-      return (this.sim.stage === 'kpp' || this.sim.stage === 'shmon') && this.sim.pending.length > 0;
-    if (item.type === 'shmon')
-      return this.sim.pending.length > 0 && (this.sim.stage === 'shmon' || this.sim.stage === 'kpp');
-    if (item.type === 'bath' || item.type === 'robe') return this.sim.stage === 'bath' || this.sim.pending.length === 0;
+    if (item.type === 'kpp') return !this.sim.docs;
+    if (item.type === 'shmon') return this.sim.docs && this.sim.pending.length > 0;
+    if (item.type === 'photo') return this.sim.pending.length === 0 && !this.sim.photo;
+    if (item.type === 'med') return this.sim.photo && !this.sim.med;
+    if (item.type === 'bath' || item.type === 'robe') return this.sim.med;
+    if (item.type === 'block-door') return false;
     if (item.type === 'rag')
       return !this.sim.ragChoice && (this.sim.stage === 'propiska' || this.sim.stage === 'life');
     if (item.type === 'starosta') return this.sim.ragChoice && !this.sim.propiska;
-    if (['bunk', 'wash', 'cards', 'malyava', 'obshak', 'food', 'admin'].includes(item.type))
+    if (['bunk', 'bunk-other', 'wash', 'cards', 'malyava', 'obshak', 'food', 'admin'].includes(item.type))
       return this.sim.stage === 'life';
     return true;
   }
 
   label(item) {
     const map = {
-      kpp: 'Дальше, на шмон',
-      shmon: 'Сдать вещи',
+      kpp: 'Сверка документов · КПП',
+      shmon: 'Сдать вещи на опись',
+      photo: 'Фото и дактилоскопия',
+      med: 'Осмотр фельдшера',
       bath: 'Стрижка под машинку',
+      'block-door': 'Дверь на коряк',
+      'bunk-other': 'Чужая шконка',
       robe: 'Казёнка и галоши',
       rag: 'Тряпка на полу',
       starosta: 'Говорить со смотрящим',
@@ -417,8 +421,38 @@ export class Game {
 
   interact(item) {
     if (!item) return;
-    if (item.type === 'kpp' || item.type === 'shmon') {
+    if (item.type === 'kpp') {
+      this.unlockLook();
+      this.dialog.show(KPP_DOCS.who, KPP_DOCS.text, KPP_DOCS.options);
+      this.dialog.onPick = (opt) => {
+        this.sim.docs = true;
+        this.sim.stage = 'shmon';
+        this.sim.shift(opt.black, opt.red, opt.men);
+        this.toast(opt.reply);
+        this.subtitle('Сборник. Полный обыск. Камеры ещё нет — сначала статут администрации.');
+        this.guide = new THREE.Vector3(0, 0, -18.4);
+      };
+      return;
+    }
+    if (item.type === 'shmon') {
       this.openShmon();
+      return;
+    }
+    if (item.type === 'photo') {
+      this.sim.photo = true;
+      this.sim.stage = 'med';
+      this.toast('Анфас, профиль. Отпечатки. Ты теперь номер, не имя.');
+      this.subtitle('Дальше фельдшер. Ищут вшей, побои, заразу.');
+      this.guide = new THREE.Vector3(0, 0, -10.8);
+      this.audio.buzz();
+      return;
+    }
+    if (item.type === 'med') {
+      this.sim.med = true;
+      this.sim.stage = 'bath';
+      this.toast('Температура норма. Наружных ран нет. В баню.');
+      this.subtitle('Санитарная обработка: машинка и помывка. Как в кино — с тебя делают зэка.');
+      this.guide = new THREE.Vector3(0.2, 0, -8.2);
       return;
     }
     if (item.type === 'bath') {
@@ -447,9 +481,19 @@ export class Game {
       return;
     }
     if (item.type === 'bunk') {
+      if (!this.sim.propiska) {
+        this.toast('Пока смотрящий не укажет койку — не садись.');
+        return;
+      }
       this.sim.rest();
       this.sim.heat = Math.max(0, this.sim.heat - 6);
-      this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Своя койка. Чужую не занимай.');
+      this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Своя шконка. Чужую не занимай.');
+      return;
+    }
+    if (item.type === 'bunk-other') {
+      this.sim.stress = Math.min(100, this.sim.stress + 18);
+      this.sim.shift(0, 1, 0);
+      this.toast('Чужая шконка. Хатка косится. Так опускают за глупость, не за статью.');
       return;
     }
     if (item.type === 'wash') {
@@ -564,11 +608,22 @@ export class Game {
     }
     document.getElementById('shmon-ui').classList.add('hidden');
     document.getElementById('shmon-ui').classList.remove('flex');
-    this.sim.stage = 'bath';
+    this.sim.stage = 'photo';
     this.sim.stress = Math.min(100, this.sim.stress + 12);
-    this.guide = new THREE.Vector3(0.2, 0, -8.2);
-    this.subtitle('Досмотр окончен. Баня и стрижка — санитарная, не наказание. Иди к машинке.');
+    this.guide = new THREE.Vector3(0, 0, -13.6);
+    this.subtitle('Опись закрыта. Теперь фото и пальцы — как в фильмах: с тебя делают номер.');
     this.audio.buzz();
+  }
+
+  greetingMenu() {
+    this.unlockLook();
+    this.dialog.show(GREETING.who, GREETING.text, GREETING.options);
+    this.dialog.onPick = (opt) => {
+      this.sim.greeting = opt.label;
+      this.sim.shift(opt.black, opt.red, opt.men);
+      this.toast(opt.reply);
+      this.ragMenu();
+    };
   }
 
   ragMenu() {
@@ -606,15 +661,30 @@ export class Game {
   }
 
   starostaTalk() {
-    this.dialog.show(STAROSTA_INTRO.who, STAROSTA_INTRO.text, STAROSTA_INTRO.options);
+    this.unlockLook();
+    this.dialog.show(ARTICLE_Q.who, ARTICLE_Q.text, ARTICLE_Q.options);
     this.dialog.onPick = (opt) => {
       this.sim.shift(opt.black, opt.red, opt.men);
+      this.toast(opt.reply);
+      this.teaTalk();
+    };
+  }
+
+  teaTalk() {
+    this.dialog.show(TEA_Q.who, TEA_Q.text, TEA_Q.options);
+    this.dialog.onPick = (opt) => {
+      this.sim.shift(opt.black, opt.red, opt.men);
+      this.sim.tea = true;
       this.sim.propiska = true;
+      this.sim.locked = false;
+      this.sim.bunkAssigned = true;
       this.sim.stage = 'life';
       this.sim.cuffed = false;
       this.sim.rep += 2;
       this.toast(opt.reply);
-      this.subtitle('Ты в хате. Распорядок: подъём, шмон, баландежка, прогулка, отбой. Говори с людьми — кнопка «Говорить».');
+      this.subtitle(
+        'Нижняя у окна — твоя. Чужую не занимай. В сортир, пока едят — не ходи. Подъём, шмон, баландежка, прогулка, отбой.',
+      );
     };
   }
 

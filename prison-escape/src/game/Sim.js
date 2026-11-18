@@ -24,6 +24,13 @@ export class Sim {
     this.cuffed = true;
     this.haircut = false;
     this.robe = 'street';
+    this.docs = false;
+    this.photo = false;
+    this.med = false;
+    this.locked = false;
+    this.greeting = null;
+    this.bunkAssigned = false;
+    this.tea = false;
     this.surrendered = [];
     this.pending = ['телефон', 'деньги', 'ремень', 'шнурки', 'часы'];
     this.inv = { tea: 0, cigs: 1, food: 0, phone: 0, notes: 0 };
@@ -36,11 +43,14 @@ export class Sim {
   }
 
   objective() {
-    if (this.pending.length) return 'Сдай вещи на опись. Шнурки, ремень, телефон — всё.';
-    if (!this.haircut) return 'Санитарная: стрижка под машинку. Так делают всем новичкам.';
-    if (this.robe !== 'kazenka') return 'Надень казёнку и тапочки. Свою одежду уже сдал.';
-    if (this.stage === 'escort') return 'Конвой ведёт в хату. Иди за ними, не отставай.';
-    if (!this.propiska) return 'Прописка: тряпка на полу, потом разговор со смотрящим.';
+    if (!this.docs) return 'Двор. Автозак сзади. Сначала КПП и документы — в камеру сразу не ведут.';
+    if (this.pending.length) return 'Сборник. Сдай вещи на опись. Шнурки, ремень, телефон — всё.';
+    if (!this.photo) return 'Фото и дактилоскопия. Тебе дадут номер, как всем.';
+    if (!this.med) return 'Медосмотр. Фельдшер смотрит, нет ли заразы и побоев.';
+    if (!this.haircut) return 'Санитарная: стрижка под машинку и помывка. Так встречают всех.';
+    if (this.robe !== 'kazenka') return 'Казёнка и бельё. Свою одежду уже сдал.';
+    if (this.stage === 'escort') return 'Конвой ведёт по коряку. В хату — только через дверь, когда откроют.';
+    if (!this.propiska) return 'Прописка. Хатка проверяет, кто ты. Не шарься, пока не скажут.';
     if (this.phase.id === 'food') return 'Баландежка. Возьми пайку, не лезь без очереди.';
     if (this.phase.id === 'walk') return 'Прогулка. Круг по дворику, без болтовни через стену.';
     if (this.phase.id === 'shmon') return 'Шмон камеры. Стой, пока смотрят койки.';
