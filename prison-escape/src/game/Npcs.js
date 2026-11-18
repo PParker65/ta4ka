@@ -41,8 +41,18 @@ export class Npcs {
   }
 
   async spawnConvoy() {
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.55, z: -31.0, yaw: 0, follow: 0 });
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.55, z: -30.4, yaw: 0, follow: 1 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.85, z: -78.6, yaw: Math.PI, follow: 0 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.85, z: -78.4, yaw: Math.PI, follow: 1 });
+    await this.add('guard', { id: 'kpp-officer', name: 'Дежурный', x: 4.2, z: -55.4, yaw: Math.PI, follow: null });
+    this.dogs = [makeDog(-3.6, -73.2, 0.4), makeDog(2.4, -71.4, -0.3), makeDog(-1.2, -75.5, 0.9)];
+    for (const d of this.dogs) {
+      this.scene.add(d.root);
+      this.list.push(d);
+    }
+  }
+
+  dogsAlert(on) {
+    this._dogsOn = on;
   }
 
   async spawnHatches(doors) {
@@ -110,8 +120,27 @@ export class Npcs {
     }
   }
 
-  update(t, player) {
+  update(t, player, camera) {
     for (const n of this.list) {
+      if (camera) {
+        n.root.traverse((c) => {
+          if (c.userData.billboard) c.quaternion.copy(camera.quaternion);
+        });
+      }
+      if (n.kind === 'dog') {
+        const pace = Math.sin(t * 1.1 + n.phase) * 0.55;
+        n.root.position.x = n.home.x + Math.cos(n.phase) * pace;
+        n.root.position.z = n.home.z + Math.sin(n.phase) * pace * 0.4;
+        if (this._dogsOn && player) {
+          const dx = player.x - n.root.position.x;
+          const dz = player.z - n.root.position.z;
+          n.root.position.x += dx * 0.02;
+          n.root.position.z += dz * 0.02;
+          n.root.rotation.y = Math.atan2(dx, dz);
+        }
+        n.root.position.y = 0;
+        continue;
+      }
       if (n.bob !== false) n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
       if (player && n.kind === 'inmate' && n.id !== 'hatch') {
         const dx = player.x - n.root.position.x;
@@ -122,6 +151,51 @@ export class Npcs {
       }
     }
   }
+}
+
+function makeDog(x, z, phase) {
+  const root = new THREE.Group();
+  root.position.set(x, 0, z);
+  const fur = new THREE.MeshStandardMaterial({ color: 0x5a3a22, roughness: 0.85 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x1a120e, roughness: 0.8 });
+  const tan = new THREE.MeshStandardMaterial({ color: 0x8a6a44, roughness: 0.85 });
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 0.42, 4, 8), fur);
+  body.rotation.z = Math.PI / 2;
+  body.position.set(0, 0.38, 0);
+  root.add(body);
+  const chest = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), tan);
+  chest.position.set(0, 0.36, 0.22);
+  root.add(chest);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), dark);
+  head.position.set(0, 0.48, 0.38);
+  root.add(head);
+  const snout = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.05, 0.12), dark);
+  snout.position.set(0, 0.44, 0.48);
+  root.add(snout);
+  for (const s of [-1, 1]) {
+    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.1, 5), dark);
+    ear.position.set(s * 0.06, 0.58, 0.34);
+    root.add(ear);
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.028, 0.32, 6), fur);
+    leg.position.set(s * 0.08, 0.16, 0.14);
+    root.add(leg);
+    const hind = leg.clone();
+    hind.position.z = -0.16;
+    root.add(hind);
+  }
+  const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.01, 0.28, 5), dark);
+  tail.rotation.x = 0.7;
+  tail.position.set(0, 0.48, -0.32);
+  root.add(tail);
+  return {
+    root,
+    id: 'dog',
+    kind: 'dog',
+    name: 'овчарка',
+    bob: false,
+    home: new THREE.Vector3(x, 0, z),
+    phase,
+  };
 }
 
 function human(kind, spec) {

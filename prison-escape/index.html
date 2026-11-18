@@ -16,11 +16,13 @@
   <body class="m-0 overflow-hidden bg-black text-zinc-100 antialiased">
     <div id="app" class="relative h-[100dvh] w-full touch-none">
       <canvas id="game" class="block h-full w-full touch-none"></canvas>
+      <div id="fade" class="pointer-events-none absolute inset-0 z-20 bg-black"></div>
 
       <div id="hud" class="pointer-events-none absolute inset-0">
         <div id="alarm" class="alarm-overlay pointer-events-none absolute inset-0 hidden"></div>
 
         <div
+          id="hud-left"
           class="absolute left-2 top-2 max-w-[58%] rounded border border-zinc-700/80 bg-black/70 px-2 py-1 font-mono text-[16px] leading-tight"
         >
           <div id="clock" class="text-amber-400">День 1 · КПП</div>
@@ -44,7 +46,7 @@
 
         <div class="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70"></div>
 
-        <div class="absolute right-2 top-2 w-[42%] space-y-1 rounded border border-zinc-800 bg-black/70 p-2">
+        <div id="hud-right" class="absolute right-2 top-2 w-[42%] space-y-1 rounded border border-zinc-800 bg-black/70 p-2">
           <div class="stat"><span>Голод</span><i id="bar-hunger"></i></div>
           <div class="stat"><span>Гигиена</span><i id="bar-hygiene"></i></div>
           <div class="stat"><span>Стресс</span><i id="bar-stress"></i></div>
@@ -193,7 +195,7 @@
         <p class="mb-2 font-mono text-[16px] tracking-[0.3em] text-amber-500">СИЗО · КАТЕНЬКА</p>
         <h1 class="mb-3 text-3xl font-semibold">Хатка</h1>
         <p class="mb-8 max-w-md text-[16px] leading-relaxed text-zinc-400">
-          Сначала двор и автозак, потом сборник: документы, шмон, фото, врач, стрижка. В хату — только через дверь. Кликни — взгляд мышкой, WASD — шаг.
+          Киев, СІЗО №13. Автозак, собаки, КПП. В хату не ведут с порога — сначала статут администрации, потом понятия. Первый шаг решает, кто ты.
         </p>
         <button
           id="btn-start"

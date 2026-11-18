@@ -149,21 +149,15 @@ export function whiteTileTex() {
   return toTex(c, 3, 3);
 }
 
-/** Terracotta / red-painted corridor floor, slightly glossy. */
+/** Terracotta corridor floor — painted, not a high-frequency checker (that swam). */
 export function redFloorTex() {
   const { c, ctx } = canvas(256);
-  ctx.fillStyle = '#b24a32';
+  ctx.fillStyle = '#a24a34';
   ctx.fillRect(0, 0, 256, 256);
-  ctx.fillStyle = '#9a3d28';
-  for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      if ((x + y) % 2 === 0) ctx.fillRect(x * 32, y * 32, 32, 32);
-    }
-  }
-  ctx.fillStyle = 'rgba(0,0,0,0.12)';
-  for (let i = 0; i < 30; i++) ctx.fillRect(Math.random() * 256, Math.random() * 256, 40, 6);
-  noise(ctx, 256, 0.18);
-  return toTex(c, 6, 18);
+  ctx.fillStyle = 'rgba(70,25,16,0.18)';
+  for (let i = 0; i < 10; i++) ctx.fillRect(0, Math.random() * 256, 256, 10 + Math.random() * 18);
+  noise(ctx, 256, 0.08);
+  return toTex(c, 1.6, 4);
 }
 
 /** Broken beige cell floor with missing tiles → grey screed. */
@@ -180,8 +174,8 @@ export function brokenFloorTex() {
       }
     }
   }
-  noise(ctx, 256, 0.12);
-  return toTex(c, 5, 5);
+  noise(ctx, 256, 0.08);
+  return toTex(c, 2.2, 2.2);
 }
 
 /** Rusty lattice for bunk decks (photo 02 / 10). */
@@ -299,9 +293,9 @@ export const FlickerLampShader = {
     uniform float uId;
     varying vec3 vN;
     void main() {
-      float t = uTime * mix(6.5, 28.0, uAlarm) + uId * 13.7;
-      float f = 0.78 + 0.22 * sin(t) * sin(t * 1.73 + 0.4);
-      f *= 0.7 + 0.3 * abs(vN.y);
+      float t = uTime * mix(1.1, 10.0, uAlarm) + uId * 13.7;
+      float f = 0.94 + 0.06 * sin(t) * sin(t * 0.73 + 0.4);
+      f *= 0.82 + 0.18 * abs(vN.y);
       vec3 col = uColor;
       if (uAlarm > 0.5) {
         float strobe = step(0.42, fract(uTime * 7.5 + uId));
@@ -312,6 +306,71 @@ export const FlickerLampShader = {
     }
   `,
 };
+
+/** Cream plaster facade with barred windows — Лукʼянівка blocks. */
+export function facadeTex() {
+  const { c, ctx } = canvas(512);
+  ctx.fillStyle = '#d4cec0';
+  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillStyle = '#c4b8a6';
+  ctx.fillRect(0, 0, 512, 28);
+  ctx.fillRect(0, 490, 512, 22);
+  const floors = 5;
+  const bays = 9;
+  const ww = 28;
+  const wh = 42;
+  for (let f = 0; f < floors; f++) {
+    for (let b = 0; b < bays; b++) {
+      const x = 28 + b * 54;
+      const y = 48 + f * 86;
+      ctx.fillStyle = '#1a222c';
+      ctx.fillRect(x, y, ww, wh);
+      ctx.fillStyle = 'rgba(180, 200, 210, 0.12)';
+      ctx.fillRect(x + 2, y + 2, ww - 4, 8);
+      ctx.strokeStyle = 'rgba(20,20,22,0.7)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x + (ww * i) / 4, y);
+        ctx.lineTo(x + (ww * i) / 4, y + wh);
+        ctx.stroke();
+      }
+    }
+  }
+  noise(ctx, 512, 0.06);
+  return toTex(c, 1, 1);
+}
+
+export function asphaltTex() {
+  const { c, ctx } = canvas(256);
+  ctx.fillStyle = '#3a3c40';
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillStyle = '#2e3034';
+  for (let i = 0; i < 18; i++) ctx.fillRect(Math.random() * 256, Math.random() * 256, 40, 3);
+  noise(ctx, 256, 0.1);
+  return toTex(c, 1, 1);
+}
+
+export function skyTex() {
+  const { c, ctx } = canvas(256);
+  const g = ctx.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, '#8ea8bc');
+  g.addColorStop(0.45, '#b7c4ce');
+  g.addColorStop(0.72, '#c9c2b4');
+  g.addColorStop(1, '#d8cbb8');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  for (let i = 0; i < 6; i++) {
+    ctx.beginPath();
+    ctx.ellipse(40 + i * 40, 70 + (i % 3) * 12, 50, 10, 0, 0, 6.28);
+    ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.needsUpdate = true;
+  return tex;
+}
 
 export function createFlickerMaterial(id = 0) {
   const mat = new THREE.ShaderMaterial({

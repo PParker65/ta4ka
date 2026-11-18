@@ -78,6 +78,21 @@ textarea {
 .chat-row {
   margin: 0 0 6px;
 }
+
+#fade {
+  opacity: 1;
+  transition: none;
+}
+
+.hud-quiet #hud-left,
+.hud-quiet #hud-right,
+.hud-quiet #quest,
+.hud-quiet #look-hint,
+.hud-quiet button,
+.hud-quiet #stick-root {
+  opacity: 0;
+  pointer-events: none;
+}
 .chat-row b {
   color: #fbbf24;
 }

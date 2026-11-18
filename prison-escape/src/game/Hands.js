@@ -5,7 +5,9 @@ export function makeHands() {
   const g = new THREE.Group();
   g.name = 'FPHands';
   const skin = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.7 });
-  const sleeve = stripedMat();
+  const sleeve = streetMat();
+  g.userData.street = sleeve;
+  g.userData.kaz = stripedMat();
   for (const side of [-1, 1]) {
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.28), sleeve);
     arm.position.set(side * 0.22, -0.22, -0.38);
@@ -23,7 +25,16 @@ export function makeHands() {
   cuff.position.set(0, -0.26, -0.5);
   cuff.rotation.y = Math.PI / 2;
   g.add(cuff);
+  g.userData.setKazenka = () => {
+    g.traverse((c) => {
+      if (c.isMesh && c.material === g.userData.street) c.material = g.userData.kaz;
+    });
+  };
   return g;
+}
+
+function streetMat() {
+  return new THREE.MeshStandardMaterial({ color: 0x2a2e34, roughness: 0.78 });
 }
 
 function stripedMat() {

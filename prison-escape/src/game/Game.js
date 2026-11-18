@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Input } from '../controls/Input.js';
@@ -31,6 +30,7 @@ export class Game {
     this.escort = null;
     this.guide = null;
     this.idle = 0;
+    this.introT = 0;
   }
 
   async start() {
@@ -39,36 +39,49 @@ export class Game {
       canvas: this.canvas,
       antialias: !this.mobile,
       powerPreference: 'high-performance',
+      logarithmicDepthBuffer: true,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.mobile ? 1.25 : 1.6));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.mobile ? 1.15 : 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.88;
+    this.renderer.toneMappingExposure = 1.18;
     this.renderer.shadowMap.enabled = !this.lowEnd;
     if (this.renderer.shadowMap.enabled) this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x141820);
-    this.scene.fog = new THREE.Fog(0x141820, 12, 46);
+    this.scene.background = new THREE.Color(0x8ea8bc);
+    this.scene.fog = new THREE.Fog(0x9aadb8, 55, 170);
 
-    this.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.16, 80);
+    this.camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.32, 260);
     this.hands = makeHands();
     this.camera.add(this.hands);
     this.scene.add(this.camera);
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+    if ('environmentIntensity' in this.scene) this.scene.environmentIntensity = 0.22;
 
-    this.hemi = new THREE.HemisphereLight(0xc4b8a8, 0x2a2018, 0.42);
+    this.hemi = new THREE.HemisphereLight(0xd8e4ee, 0x6a6050, 0.9);
     this.scene.add(this.hemi);
-    this.fill = new THREE.PointLight(0xffe6c0, 1.45, 11, 1.4);
+    this.fill = new THREE.PointLight(0xffe6c0, 0.35, 9, 1.6);
     this.scene.add(this.fill);
     this.alarmLight = new THREE.PointLight(0xff1a12, 0, 14, 1.2);
     this.scene.add(this.alarmLight);
-    const rim = new THREE.DirectionalLight(0x8899aa, 0.18);
-    rim.position.set(-4, 6, -2);
-    this.scene.add(rim);
+    this.sun = new THREE.DirectionalLight(0xfff1d6, 1.35);
+    this.sun.position.set(36, 54, -28);
+    this.sun.castShadow = !this.lowEnd;
+    if (this.sun.castShadow) {
+      this.sun.shadow.mapSize.set(1024, 1024);
+      this.sun.shadow.camera.near = 4;
+      this.sun.shadow.camera.far = 140;
+      this.sun.shadow.camera.left = -50;
+      this.sun.shadow.camera.right = 50;
+      this.sun.shadow.camera.top = 50;
+      this.sun.shadow.camera.bottom = -50;
+      this.sun.shadow.bias = -0.0008;
+    }
+    this.scene.add(this.sun);
 
     this.prison = new Prison(this.scene);
     this.prison.build();
@@ -90,6 +103,7 @@ export class Game {
 
     this.input = new Input({ mobile: this.mobile, canvas: this.canvas });
     this.input.yaw = 0;
+    this.input.pitch = -0.04;
     if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
     else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
@@ -97,24 +111,18 @@ export class Game {
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
     this.setupComposer();
     this.bindUi();
-    this.subtitle('Ночь. Автозак. В камеру сразу не ведут — сначала сборник: документы, шмон, фото, врач, баня.');
+    document.getElementById('hud')?.classList.add('hud-quiet');
+    this.audio.ambient();
     this.audio.clang();
+    this.audio.bark();
+    this.subtitle('Двери автозака. Свет бьёт в глаза. Это уже не воля.');
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
   }
 
   setupComposer() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    if (!this.mobile) {
-      try {
-        this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.1, 0.25, 0.9));
-      } catch {
-        /* skip */
-      }
-    }
     this.composer.addPass(new OutputPass());
   }
 
@@ -193,16 +201,33 @@ export class Game {
     const crouch = this.input.crouchHeld;
     const yaw = this.input.yaw;
 
-    if (this.escort) this.stepEscort(dt);
-    else this.stepWalk(dt, move, crouch, yaw);
+    this.stepIntro(dt);
+    if (this.introT >= 2.8 || this._hold) {
+      if (this.escort) this.stepEscort(dt);
+      else this.stepWalk(dt, move, crouch, yaw);
+    }
 
     this.player.setLocomotion(this.escort ? 0.6 : move.mag, false, crouch);
     this.player.update(dt);
     this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera);
 
     this.updateCamera(crouch);
-    this.fill.position.set(this.player.position.x, 2.2, this.player.position.z);
-    this.alarmLight.position.copy(this.fill.position);
+    const outside = this.player.position.z < -53;
+    this.sun.intensity = outside ? 1.35 : 0.1;
+    this.hemi.intensity = outside ? 1.05 : 0.4;
+    this.hemi.color.set(outside ? 0xd8e4ee : 0xc4b8a8);
+    this.fill.intensity = outside ? 0.05 : 0.5;
+    if (!outside) this.fill.position.set(this.player.position.x, 2.15, this.player.position.z);
+    this.alarmLight.position.set(this.player.position.x, 2.15, this.player.position.z);
+    this.scene.fog.near = outside ? 42 : 9;
+    this.scene.fog.far = outside ? 155 : 34;
+    this.scene.fog.color.set(outside ? 0x9aadb8 : 0x161410);
+    this.scene.background.set(outside ? 0x9aadb8 : 0x161410);
+    const lights = this.prison.searchlights;
+    if (lights) {
+      const t = this.clock.elapsedTime;
+      for (const p of lights) p.rotation.y = t * 0.18 + (p.userData.phase || 0);
+    }
 
     this.hands.children.forEach((c, i) => {
       if (c.name === 'Cuffs') {
@@ -244,7 +269,16 @@ export class Game {
 
   stepWalk(dt, move, crouch, yaw) {
     if (this.sim.locked) return;
-    const speed = this.sim.cuffed ? 1.15 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
+    if (this._hold) {
+      move = {
+        x: this._hold.code === 'KeyA' ? -1 : this._hold.code === 'KeyD' ? 1 : 0,
+        z: this._hold.code === 'KeyS' ? 1 : this._hold.code === 'KeyW' ? -1 : 0,
+        mag: 1,
+        run: false,
+      };
+    }
+    if (!this.sim.docs) move.run = false;
+    const speed = this.sim.cuffed ? 1.05 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
     const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
     const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
     const wish = new THREE.Vector3();
@@ -262,6 +296,17 @@ export class Game {
     const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
+    if (!this.sim.docs) {
+      if (this.player.position.z < -88) {
+        this.player.position.z = -88;
+        this.audio.bark();
+        this.toast('Конвой: «Стой. КПП впереди, не к забору.»');
+        this.sim.stress = Math.min(100, this.sim.stress + 6);
+      }
+      if (move.run || move.mag > 0.85) {
+        this.npcs.dogsAlert?.(true);
+      }
+    }
   }
 
   stepEscort(dt) {
@@ -348,8 +393,33 @@ export class Game {
     }, 700);
   }
 
+  stepIntro(dt) {
+    if (this.introDone) return;
+    this.introT += dt;
+    const fade = document.getElementById('fade');
+    if (fade) {
+      const o = Math.max(0, 1 - this.introT / 1.6);
+      fade.style.opacity = String(o);
+      if (o <= 0) fade.style.display = 'none';
+    }
+    if (!this._introBark && this.introT > 2.15) {
+      this._introBark = true;
+      this.subtitle('Конвой: «Выходи. Руки. Собака не игрушка.»');
+      this.audio.bark();
+    }
+    if (this.introT > 2.8) {
+      document.getElementById('hud')?.classList.remove('hud-quiet');
+      this.introDone = true;
+    }
+  }
+
   autoGuide(dt, mag) {
-    this.idle = mag > 0.12 || this.escort ? 0 : this.idle + dt;
+    this.idle = mag > 0.12 || this.escort || this.introT < 2.8 ? 0 : this.idle + dt;
+    if (this.sim.stage === 'kpp' && !this.sim.docs && this.idle > 6 && !this._kppNudge) {
+      this._kppNudge = true;
+      this.guide = new THREE.Vector3(3.4, 0, -56.2);
+      this.subtitle('КПП справа от ворот. Документы. В камеру сразу не ведут.');
+    }
     if (this.sim.stage === 'bath' && !this.sim.haircut && this.idle > 7) {
       this.interact(this.prison.interactables.find((x) => x.type === 'bath'));
       this.idle = 0;
@@ -362,8 +432,15 @@ export class Game {
   updateCamera(crouch) {
     const yaw = this.input.yaw;
     const pitch = this.input.pitch;
-    const eye = crouch ? 1.05 : 1.62;
-    this.camera.position.set(this.player.position.x, eye, this.player.position.z);
+    const eye = crouch ? 1.08 : 1.64;
+    let x = this.player.position.x;
+    let z = this.player.position.z;
+    if (z > -1.2 && z < LAYOUT.corridorLen) {
+      const limit = LAYOUT.corridorHalf - 0.42;
+      if (x > limit) x = limit;
+      if (x < -limit) x = -limit;
+    }
+    this.camera.position.set(x, eye, z);
     const look = new THREE.Vector3(
       this.camera.position.x + Math.sin(yaw) * Math.cos(pitch),
       this.camera.position.y + Math.sin(pitch),
@@ -429,8 +506,10 @@ export class Game {
         this.sim.stage = 'shmon';
         this.sim.shift(opt.black, opt.red, opt.men);
         this.toast(opt.reply);
-        this.subtitle('Сборник. Полный обыск. Камеры ещё нет — сначала статут администрации.');
-        this.guide = new THREE.Vector3(0, 0, -18.4);
+        this.prison.openKpp();
+        this.audio.clang();
+        this.subtitle('Ворота. Дальше сборник: шмон, фото, врач, стрижка. В хату — потом.');
+        this.guide = new THREE.Vector3(-1.2, 0, -36.2);
       };
       return;
     }
@@ -443,7 +522,7 @@ export class Game {
       this.sim.stage = 'med';
       this.toast('Анфас, профиль. Отпечатки. Ты теперь номер, не имя.');
       this.subtitle('Дальше фельдшер. Ищут вшей, побои, заразу.');
-      this.guide = new THREE.Vector3(0, 0, -10.8);
+      this.guide = new THREE.Vector3(-1.0, 0, -22.2);
       this.audio.buzz();
       return;
     }
@@ -452,7 +531,7 @@ export class Game {
       this.sim.stage = 'bath';
       this.toast('Температура норма. Наружных ран нет. В баню.');
       this.subtitle('Санитарная обработка: машинка и помывка. Как в кино — с тебя делают зэка.');
-      this.guide = new THREE.Vector3(0.2, 0, -8.2);
+      this.guide = new THREE.Vector3(1.2, 0, -15.4);
       return;
     }
     if (item.type === 'bath') {
@@ -461,11 +540,13 @@ export class Game {
       this.sim.hygiene = Math.min(100, this.sim.hygiene + 25);
       this.toast('Машинка. Волосы на пол. Так встречают всех.');
       this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
-      this.guide = new THREE.Vector3(-0.6, 0, -7.6);
+      this.audio.clippers();
+      this.guide = new THREE.Vector3(-0.9, 0, -13.6);
       return;
     }
     if (item.type === 'robe') {
       this.player.applyKazenka();
+      this.hands.userData.setKazenka?.();
       this.sim.robe = 'kazenka';
       this.toast('Серая полосатая роба, тапочки. Теперь ты как все.');
       this.audio.clang();
@@ -610,7 +691,7 @@ export class Game {
     document.getElementById('shmon-ui').classList.remove('flex');
     this.sim.stage = 'photo';
     this.sim.stress = Math.min(100, this.sim.stress + 12);
-    this.guide = new THREE.Vector3(0, 0, -13.6);
+    this.guide = new THREE.Vector3(1.1, 0, -28.2);
     this.subtitle('Опись закрыта. Теперь фото и пальцы — как в фильмах: с тебя делают номер.');
     this.audio.buzz();
   }
@@ -721,6 +802,7 @@ export class Game {
   holdWalk(code, seconds = 1.6) {
     this.input.keys.add(code);
     this.input.keys.add(code === 'KeyW' ? 'w' : code === 'KeyS' ? 's' : code === 'KeyA' ? 'a' : 'd');
+    this._hold = { code, t: seconds };
     clearTimeout(this._walkHold);
     this._walkHold = setTimeout(() => {
       this.input.keys.delete(code);
@@ -728,6 +810,7 @@ export class Game {
       this.input.keys.delete('s');
       this.input.keys.delete('a');
       this.input.keys.delete('d');
+      this._hold = null;
     }, seconds * 1000);
   }
 
