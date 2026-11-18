@@ -66,6 +66,7 @@ export class Prison {
     this.addPipesAndProps();
     this.addLamps();
     this.addCctvBodies();
+    this.addIntake();
     this.addBoundaryColliders();
   }
 
@@ -132,7 +133,8 @@ export class Prison {
     }
 
     this.box(hw * 2 + 0.4, 0.5, 0.2, this.mat(this.tex.cPlaster), 0, 1.4, 0.05);
-    this.addCollider(-hw - 1, hw + 1, -0.4, 0.18, 'start-wall');
+    this.addCollider(-hw - 1, -0.55, -0.25, 0.2, 'start-l');
+    this.addCollider(0.55, hw + 1, -0.25, 0.2, 'start-r');
   }
 
   addVault() {
@@ -312,7 +314,66 @@ export class Prison {
     this.addCollider(ox - w / 2 - 0.12, ox - w / 2 + 0.16, oz - d / 2, 3.4 - doorGap, 'cell-inner-a');
     this.addCollider(ox - w / 2 - 0.12, ox - w / 2 + 0.16, 3.4 + doorGap, oz + d / 2, 'cell-inner-b');
 
-    this.playerSpawn = new THREE.Vector3(ox - w / 2 + 1.15, 0, 3.55);
+    this.cellOrigin = new THREE.Vector3(ox, 0, oz);
+    this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.15, 0, 3.55);
+    this.playerSpawn = new THREE.Vector3(0, 0, -16.4);
+
+    const rag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.55, 0.03, 0.38),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95 }),
+    );
+    rag.position.set(ox - w / 2 + 0.55, 0.04, 3.42);
+    rag.name = 'Rag';
+    this.group.add(rag);
+    this.ragMesh = rag;
+    this.interactables.push({
+      id: 'rag',
+      type: 'rag',
+      position: rag.position.clone(),
+      radius: 1.4,
+    });
+    this.interactables.push({
+      id: 'starosta',
+      type: 'starosta',
+      position: new THREE.Vector3(ox + 0.3, 1, oz + 0.4),
+      radius: 1.8,
+    });
+    this.interactables.push({
+      id: 'bunk',
+      type: 'bunk',
+      position: new THREE.Vector3(ox + 1.85, 1, oz - 2.35),
+      radius: 1.6,
+    });
+    this.interactables.push({
+      id: 'wash',
+      type: 'wash',
+      position: new THREE.Vector3(ox + 2.2, 1, oz + 2.4),
+      radius: 1.5,
+    });
+    this.interactables.push({
+      id: 'cards',
+      type: 'cards',
+      position: new THREE.Vector3(ox + 0.2, 1, oz + 0.2),
+      radius: 1.5,
+    });
+    this.interactables.push({
+      id: 'malyava',
+      type: 'malyava',
+      position: new THREE.Vector3(ox - 1.8, 1, oz + 2.4),
+      radius: 1.4,
+    });
+    this.interactables.push({
+      id: 'obshak',
+      type: 'obshak',
+      position: new THREE.Vector3(ox + 1.4, 1, oz + 0.2),
+      radius: 1.3,
+    });
+    this.interactables.push({
+      id: 'food',
+      type: 'food',
+      position: new THREE.Vector3(ox - w / 2 + 0.8, 1, oz),
+      radius: 1.5,
+    });
   }
 
   addWindows(cell, w, d, h) {
@@ -515,6 +576,12 @@ export class Prison {
       radius: 1.2,
       num: 'Д',
     });
+    this.interactables.push({
+      id: 'admin',
+      type: 'admin',
+      position: new THREE.Vector3(0.2, 1, z),
+      radius: 1.8,
+    });
 
     this.makeGreenDoor(1, z, 9, false);
   }
@@ -636,6 +703,70 @@ export class Prison {
         angle: 0.42,
       });
     });
+  }
+
+  addIntake() {
+    const hw = LAYOUT.corridorHalf;
+    const h = LAYOUT.wallH;
+    const z0 = -9;
+    const L = 18;
+    this.box(
+      hw * 2,
+      0.06,
+      L,
+      this.mat(this.tex.red, { roughness: 0.28, metalness: 0.1, repeat: [6, 16] }),
+      0,
+      0.03,
+      z0,
+    );
+    const tileH = 1.22;
+    for (const side of [-1, 1]) {
+      const x = side * (hw + 0.08);
+      this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [L / 0.22, 5] }), x, tileH / 2, z0).userData.camCollide = true;
+      this.box(0.16, h - tileH, L, this.mat(this.tex.cPlaster, { repeat: [8, 1.2] }), x, tileH + (h - tileH) / 2, z0).userData.camCollide = true;
+      this.addCollider(side > 0 ? hw - 0.06 : -hw - 0.16, side > 0 ? hw + 0.16 : -hw + 0.06, -18, -0.3, `intake-${side}`);
+    }
+    this.box(hw * 2, 0.08, L, this.mat(this.tex.ceil), 0, h + 0.2, z0);
+    this.addCollider(-hw, hw, -18.4, -17.9, 'kpp-back');
+
+    const desk = this.box(1.4, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x4a4030 }), 0, 0.9, -12.2);
+    this.interactables.push({
+      id: 'shmon',
+      type: 'shmon',
+      position: new THREE.Vector3(0, 1, -12.2),
+      radius: 1.7,
+    });
+
+    const stall = this.box(1.6, 1.2, 0.08, this.mat(this.tex.white), 0.2, 0.6, -8.4);
+    this.interactables.push({
+      id: 'bath',
+      type: 'bath',
+      position: new THREE.Vector3(0.2, 1, -8.2),
+      radius: 2.2,
+    });
+    const robeBox = this.box(0.5, 0.2, 0.4, new THREE.MeshStandardMaterial({ color: 0x5a5a58 }), -0.6, 0.2, -7.6);
+    this.interactables.push({
+      id: 'robe',
+      type: 'robe',
+      position: new THREE.Vector3(-0.6, 1, -7.6),
+      radius: 2.0,
+    });
+
+    this.interactables.push({
+      id: 'kpp',
+      type: 'kpp',
+      position: new THREE.Vector3(0, 1, -15.4),
+      radius: 2.2,
+    });
+
+    for (let z = -16; z < 0; z += 4.2) {
+      const mat = createFlickerMaterial(this.flickerMats.length);
+      this.flickerMats.push(mat);
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 8), mat);
+      tube.rotation.x = Math.PI / 2;
+      tube.position.set(0, 2.66, z);
+      this.group.add(tube);
+    }
   }
 
   addBoundaryColliders() {

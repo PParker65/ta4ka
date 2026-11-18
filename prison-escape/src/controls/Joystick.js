@@ -28,7 +28,7 @@ export class Joystick {
   }
 
   onDown(e) {
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope')) return;
     if (this.pointerId !== null) return;
     if (!this.isLeftHalf(e.clientX)) return;
     this.pointerId = e.pointerId;

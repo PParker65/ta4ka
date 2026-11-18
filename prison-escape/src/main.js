@@ -14,6 +14,7 @@ async function begin() {
   startBtn.textContent = 'Загрузка…';
   game = new Game(canvas);
   await game.start();
+  window.__sizo = game;
   boot.classList.add('hidden');
 }
 

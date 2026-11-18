@@ -12,7 +12,7 @@ export class Input {
     );
 
     this.yaw = 0;
-    this.pitch = 0.18;
+    this.pitch = 0;
     this.lookPointer = null;
     this._lx = 0;
     this._ly = 0;
@@ -56,7 +56,7 @@ export class Input {
   }
 
   onPointerDown(e) {
-    if (e.target.closest('button')) return;
+    if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope, #boot')) return;
     if (e.clientX >= window.innerWidth * 0.5 && this.lookPointer === null) {
       this.lookPointer = e.pointerId;
       this._lx = e.clientX;
@@ -72,7 +72,7 @@ export class Input {
     this._lx = e.clientX;
     this._ly = e.clientY;
     this.yaw -= dx * this.sensitivity;
-    this.pitch = THREE_CLAMP(this.pitch + dy * this.sensitivity, 0.02, 0.72);
+    this.pitch = THREE_CLAMP(this.pitch + dy * this.sensitivity, -1.05, 1.15);
     e.preventDefault();
   }
 
@@ -82,15 +82,18 @@ export class Input {
 
   onKeyDown(e) {
     this.keys.add(e.code);
-    if (e.code === 'KeyC') {
+    this.keys.add((e.key || '').toLowerCase());
+    if (e.code === 'KeyC' || e.key === 'c' || e.key === 'C') {
       this.crouchHeld = !this.crouchHeld;
       this.syncCrouchButton();
     }
-    if (e.code === 'KeyE' || e.code === 'Space') this.interactPulse = true;
+    if (e.code === 'KeyE' || e.code === 'Space' || e.key === 'e' || e.key === 'E' || e.key === ' ')
+      this.interactPulse = true;
   }
 
   onKeyUp(e) {
     this.keys.delete(e.code);
+    this.keys.delete((e.key || '').toLowerCase());
   }
 
   consumeInteract() {
@@ -103,10 +106,10 @@ export class Input {
   moveVector() {
     let x = this.joystick.moveX;
     let z = this.joystick.moveZ;
-    if (this.keys.has('KeyA') || this.keys.has('ArrowLeft')) x -= 1;
-    if (this.keys.has('KeyD') || this.keys.has('ArrowRight')) x += 1;
-    if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) z -= 1;
-    if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) z += 1;
+    if (this.keys.has('KeyA') || this.keys.has('ArrowLeft') || this.keys.has('a') || this.keys.has('arrowleft')) x -= 1;
+    if (this.keys.has('KeyD') || this.keys.has('ArrowRight') || this.keys.has('d') || this.keys.has('arrowright')) x += 1;
+    if (this.keys.has('KeyW') || this.keys.has('ArrowUp') || this.keys.has('w') || this.keys.has('arrowup')) z -= 1;
+    if (this.keys.has('KeyS') || this.keys.has('ArrowDown') || this.keys.has('s') || this.keys.has('arrowdown')) z += 1;
     const mag = Math.hypot(x, z);
     if (mag > 1) {
       x /= mag;

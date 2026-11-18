@@ -11,7 +11,7 @@ export class CCTV {
     this.monitors = [];
     this.active = 0;
     this.hudCanvas = document.getElementById('cctv-hud');
-    this.hudCtx = this.hudCanvas.getContext('2d');
+    this.hudCtx = this.hudCanvas ? this.hudCanvas.getContext('2d') : null;
     this.scratch = document.createElement('canvas');
     this.scratch.width = 176;
     this.scratch.height = 120;
@@ -94,7 +94,7 @@ export class CCTV {
 
   blitHud() {
     const src = this.cams[this.active];
-    if (!src) return;
+    if (!src || !this.hudCtx) return;
     const ctx = this.hudCtx;
     try {
       const w = src.rt.width;
@@ -120,7 +120,8 @@ export class CCTV {
     for (let y = 0; y < 120; y += 3) ctx.fillRect(0, y, 176, 1);
     ctx.fillStyle = 'rgba(180,255,180,0.12)';
     for (let i = 0; i < 40; i++) ctx.fillRect(Math.random() * 176, Math.random() * 120, 2, 1);
-    document.getElementById('cctv-label').textContent = src.spec.id;
+    const lab = document.getElementById('cctv-label');
+    if (lab) lab.textContent = src.spec.id;
   }
 
   setActive(i) {

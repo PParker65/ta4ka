@@ -1,41 +1,18 @@
-# Побег / Prison Escape
+# СИЗО · Хатка
 
-Mobile-first third-person 3D prison escape. Visuals follow a post-Soviet SIZO (green numbered cell doors, blue tile wainscot, terracotta floors, rusted lattice bunks, peeling plaster) — not a Hollywood orange-block prison.
-
-Stack: **Three.js + Vite + Tailwind CSS**. Isolated from the rest of this repository (`prison-escape/` only).
-
-## Run
+First-person RPG survival sim of post-Soviet Ukrainian SIZO life (Катенька). Isolated Vite + Three.js + Tailwind app.
 
 ```bash
 cd prison-escape
 npm install && npm run dev
 ```
 
-Then open the printed local URL (default `http://localhost:5173`). Touch on a phone, or WASD + mouse on desktop.
+## Blocks in this build
 
-## Controls
+1. **Arrival:** KPP in cuffs → property list / shmon → bath + buzz cut → grey striped казёнка → escort down the коряк.
+2. **Cell:** rag «прописка», смотрящий dialogue, hunger / hygiene / stress, day phases (подъём, шмон, баландежка, прогулка, отбой).
+3. **Paths:** чёрный ход / красный ход / мужики from dialogue and deeds.
+4. **Economy:** tea, cigarettes, food; demo **Грев** shop (no real charge); cards; малява on a rope.
+5. **Tech:** SIZO materials, flickering lamps, SSAO/Bloom with mobile fallback, Mixamo + NPC GLB stubs.
 
-| Input | Action |
-| --- | --- |
-| Left half / virtual stick | Move |
-| Right half swipe / mouse drag | Look (orbital third-person) |
-| **Действие** / `E` | Open door 4, rattle locked doors, switch CCTV |
-| **Присесть** / `C` | Crouch / stealth (harder for guards and cameras to see) |
-| Shift | Run (desktop) |
-
-Goal: leave cell **4**, sneak the corridor, reach the **дворик для прогулок**.
-
-## Mixamo / GLB stubs
-
-Placeholder orange-robe prisoner + `AnimationMixer` clips ship by default. Drop files to replace:
-
-- `public/models/prisoner.glb`
-- `public/models/mixamo/Idle.fbx`
-- `public/models/mixamo/Walking.fbx`
-- `public/models/mixamo/Running.fbx`
-
-See `src/game/Character.js`.
-
-## Quality
-
-Desktop: SSAO + Bloom. Mobile / low-end: skipped automatically, pixel ratio capped, few real lights (fluorescent flicker is a shader).
+Touch: left stick move, right swipe look, Действие / Присесть / Грев. Keyboard: WASD, E, C.

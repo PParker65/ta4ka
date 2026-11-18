@@ -9,7 +9,7 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
  *   public/models/mixamo/Walking.fbx
  *   public/models/mixamo/Running.fbx   (run clip)
  *   public/models/mixamo/Crouching.fbx (optional)
- * Until then, a styled orange-robe placeholder + AnimationMixer clips.
+ * Until then, a grey kazenka placeholder + AnimationMixer clips.
  */
 const GLB_PATH = '/models/prisoner.glb';
 const MIXAMO = {
@@ -52,8 +52,9 @@ export class Character {
 
   buildPlaceholder() {
     const skin = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.7 });
-    const robe = new THREE.MeshStandardMaterial({ color: 0xe07018, roughness: 0.62, metalness: 0.02 });
-    const robeDark = new THREE.MeshStandardMaterial({ color: 0xb84e0c, roughness: 0.65 });
+    const robe = new THREE.MeshStandardMaterial({ color: 0x6a6a68, roughness: 0.7, metalness: 0.02 });
+    const robeDark = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.72 });
+    this._robeMats = [robe, robeDark];
     const hair = new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.9 });
     const shoe = new THREE.MeshStandardMaterial({ color: 0x3a3530, roughness: 0.85 });
 
@@ -95,6 +96,19 @@ export class Character {
     rshoe.position.x = 0.1;
     this.root.add(rshoe);
     this._shoes = [lshoe, rshoe];
+    this._scalp = scalp;
+  }
+
+  hideForFirstPerson() {
+    this.root.visible = false;
+  }
+
+  shave() {
+    if (this._scalp) this._scalp.visible = false;
+  }
+
+  applyKazenka() {
+    for (const m of this._robeMats || []) m.color.set(0x5c5c5a);
   }
 
   makeLimb(parent, name, x, y, z, mat, len, isArm) {

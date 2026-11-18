@@ -46,6 +46,43 @@ textarea {
   pointer-events: none;
 }
 
-#cctv-hud {
-  filter: grayscale(0.2) sepia(0.4) hue-rotate(70deg) contrast(1.25) brightness(0.9);
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #a1a1aa;
+}
+.stat i {
+  display: block;
+  height: 8px;
+  flex: 1;
+  border-radius: 99px;
+  background: #3f3f46;
+  position: relative;
+  overflow: hidden;
+}
+.stat i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w, 50%);
+  background: #d4a017;
+}
+#bar-hygiene::after {
+  background: #3a9a8a;
+}
+#bar-stress::after {
+  background: #b33a3a;
+}
+.shop-btn {
+  min-height: 48px;
+  width: 100%;
+  max-width: 20rem;
+  margin-bottom: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #52525b;
+  background: #18181b;
+  color: #f4f4f5;
+  font-size: 16px;
 }
