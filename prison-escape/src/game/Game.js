@@ -137,7 +137,9 @@ export class Game {
     this.audio.siren();
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
-    if (new URLSearchParams(location.search).has('cell')) this.skipToCell();
+    const params = new URLSearchParams(location.search);
+    if (params.has('cell')) this.skipToCell();
+    else if (params.get('at')) this.skipToPlace(params.get('at'));
   }
 
   skipToCell() {
@@ -181,6 +183,21 @@ export class Game {
     const door = this.prison.interactables.find((it) => it.type === 'cell-door');
     if (door) this.prison.openDoor(door);
     this.finishEscort();
+  }
+
+  skipToPlace(at) {
+    this.skipToCell();
+    this.cellLife.active = false;
+    this.cellLife.seen.add('greet');
+    this.prison.openDoor(this.prison.blockDoor);
+    this.input.pitch = 0;
+    if (at === 'yard') {
+      this.player.position.set(0, 0, LAYOUT.corridorLen + 3.2);
+      this.input.yaw = Math.PI;
+    } else {
+      this.player.position.set(0, 0, -3.6);
+      this.input.yaw = 0;
+    }
   }
 
   setupComposer() {

@@ -103,7 +103,7 @@ function addBlocks(prison) {
   block(prison, { x: -28, z: 8, w: 16, d: 22, h: 12.2, mat: brick, mass, roof, label: 'СТОЛИПИНКА' });
   block(prison, { x: 26, z: 6, w: 18, d: 18, h: 11.5, mat: mass, mass, roof, label: 'БРЕЖНЕВКА' });
   block(prison, { x: 24, z: 28, w: 14, d: 16, h: 10.5, mat: facade, mass, roof, label: 'МАЛОЛЕТКА' });
-  block(prison, { x: -8, z: 42, w: 18, d: 12, h: 9.5, mat: mass, mass, roof, label: 'ЮЛЬКА' });
+  block(prison, { x: -22, z: 44, w: 14, d: 12, h: 9.5, mat: mass, mass, roof, label: 'ЮЛЬКА' });
 
   const chimney = prison.box(1.4, 8, 1.4, brick, -6, 18, 22);
   chimney.userData.camCollide = false;
@@ -363,6 +363,16 @@ function addProcessing(prison) {
     }
   }
   prison.box(hw * 2 + 0.4, 0.12, L, new THREE.MeshStandardMaterial({ color: 0xcfc8bc }), 0, h, z0);
+
+  const endW = hw * 2 + 0.2;
+  const doorGap = 1.2;
+  const endWing = (endW - doorGap) / 2;
+  const endX = (endW + doorGap) / 4;
+  prison.box(endWing, h, 0.18, wall, -endX, h / 2, zB - 0.04).userData.camCollide = true;
+  prison.box(endWing, h, 0.18, wall, endX, h / 2, zB - 0.04).userData.camCollide = true;
+  prison.box(doorGap, 0.7, 0.18, wall, 0, h - 0.35, zB - 0.04);
+  prison.addCollider(-hw - 0.1, -doorGap / 2, zB - 0.16, zB + 0.1, 'proc-end-l');
+  prison.addCollider(doorGap / 2, hw + 0.1, zB - 0.16, zB + 0.1, 'proc-end-r');
   addVestibule(prison);
 
   // Rooms as alcoves so it is not the cell corridor.
@@ -431,7 +441,7 @@ function addProcessing(prison) {
     tube.position.set(0, 2.85, z);
     prison.group.add(tube);
   }
-  for (const z of [-46, -34, -22, -12]) {
+  for (const z of [-46, -34, -22, -12, -4]) {
     const lamp = new THREE.PointLight(0xf2ead0, 0.7, 9, 1.6);
     lamp.position.set(0, 2.7, z);
     prison.group.add(lamp);
@@ -448,9 +458,14 @@ function addVestibule(prison) {
   floor.color.set(0x7a7872);
   prison.box(W, 0.08, len, floor, 0, 0.03, z);
   prison.box(W, 0.16, len, new THREE.MeshStandardMaterial({ color: 0xc4beb2, roughness: 0.88 }), 0, h, z);
-  const wall = new THREE.MeshStandardMaterial({ color: 0xd2ccbe, roughness: 0.9 });
-  const dado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
-  const steel = new THREE.MeshStandardMaterial({ color: 0x3a3e44, metalness: 0.55, roughness: 0.4 });
+  const wall = new THREE.MeshStandardMaterial({ color: 0xd2ccbe, roughness: 0.9, side: THREE.DoubleSide });
+  const dado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75, side: THREE.DoubleSide });
+  const steel = new THREE.MeshStandardMaterial({
+    color: 0x4a5058,
+    metalness: 0.45,
+    roughness: 0.45,
+    side: THREE.DoubleSide,
+  });
   for (const side of [-1, 1]) {
     const x = side * (W / 2);
     prison.box(0.22, 1.15, len, dado, x, 0.57, z).userData.camCollide = true;
@@ -479,7 +494,9 @@ function addVestibule(prison) {
     );
   }
   prison.box(hw * 2 + 0.2, 0.35, 0.28, steel, 0, 2.75, 0.08);
-  const lamp = new THREE.PointLight(0xf0ead0, 0.7, 9, 1.7);
+  prison.box(0.12, 2.2, 0.28, steel, -hw, 1.1, 0.08);
+  prison.box(0.12, 2.2, 0.28, steel, hw, 1.1, 0.08);
+  const lamp = new THREE.PointLight(0xf0ead0, 1.05, 11, 1.5);
   lamp.position.set(0, 2.65, -1.05);
   prison.group.add(lamp);
   const tube = new THREE.Mesh(

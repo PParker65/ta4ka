@@ -1,8 +1,8 @@
 import { Joystick } from './Joystick.js';
 
 /**
- * Desktop: pointer-lock look (mouse right = look right). A/D and arrows turn.
- * W/S walk, Shift run. Mobile: left stick move, right-half swipe look.
+ * Desktop: pointer-lock look. WASD walk relative to the camera, Shift run.
+ * Mobile: left stick move, right-half swipe look.
  */
 export class Input {
   constructor({ mobile, canvas }) {

@@ -152,10 +152,20 @@ export class Prison {
       }
     }
 
-    this.box(hw * 2 + 0.4, 0.5, 0.2, this.mat(this.tex.cPlaster), 0, 1.4, 0.05);
+    this.box(hw * 2 + 0.4, 0.28, 0.2, this.mat(this.tex.cPlaster), 0, 2.28, 0.05);
     this.addCollider(-hw - 1, -0.55, -0.25, 0.22, 'start-l');
     this.addCollider(0.55, hw + 1, -0.25, 0.22, 'start-r');
     this.addBlockDoor();
+
+    const endDoor = 1.28;
+    const endWing = (hw * 2 - endDoor) / 2 + 0.2;
+    const endX = hw + 0.08 - endWing / 2;
+    const plas = this.mat(this.tex.cPlaster, { repeat: [1.2, 1.2] });
+    this.box(endWing, h, 0.22, plas, -endX, h / 2, L - 0.06).userData.camCollide = true;
+    this.box(endWing, h, 0.22, plas, endX, h / 2, L - 0.06).userData.camCollide = true;
+    this.box(endDoor, 0.45, 0.22, plas, 0, h - 0.2, L - 0.06);
+    this.box(0.1, 2.2, 0.22, plas, -endDoor / 2, 1.1, L - 0.06);
+    this.box(0.1, 2.2, 0.22, plas, endDoor / 2, 1.1, L - 0.06);
   }
 
   addBlockDoor() {
@@ -750,29 +760,61 @@ export class Prison {
     g.position.set(0, 0, z0 + 4.5);
     this.group.add(g);
 
-    const ground = this.box(9, 0.08, 9, new THREE.MeshStandardMaterial({ color: 0x6a6e66, roughness: 0.95 }), 0, -0.02, 0, g);
-    for (const [x, z] of [
-      [0, 4.4],
-      [0, -4.4],
-      [4.4, 0],
-      [-4.4, 0],
-    ]) {
-      const wall = this.box(x === 0 ? 9 : 0.28, 3.4, z === 0 ? 9 : 0.28, new THREE.MeshStandardMaterial({ color: 0xcfc8b8, roughness: 0.9 }), x, 1.7, z, g);
+    const plaster = new THREE.MeshStandardMaterial({
+      color: 0xcfc8b8,
+      roughness: 0.88,
+      side: THREE.DoubleSide,
+    });
+    const dado = new THREE.MeshStandardMaterial({
+      color: 0x3a6a62,
+      roughness: 0.75,
+      side: THREE.DoubleSide,
+    });
+    this.box(9, 0.08, 9, new THREE.MeshStandardMaterial({ color: 0x6a6e66, roughness: 0.95 }), 0, 0.03, 0, g);
+    this.box(9, 3.4, 0.3, plaster, 0, 1.7, 4.45, g);
+    for (const x of [-4.45, 4.45]) {
+      this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);
+      this.box(0.3, 2.25, 9, plaster, x, 2.27, 0, g);
     }
+
+    const doorW = 1.28;
+    const doorH = 2.22;
+    const wallZ = -4.45;
+    const wing = (9 - doorW) / 2;
+    const wingX = (9 + doorW) / 4;
+    this.box(wing, 3.4, 0.32, plaster, -wingX, 1.7, wallZ, g);
+    this.box(wing, 3.4, 0.32, plaster, wingX, 1.7, wallZ, g);
+    this.box(doorW, 3.4 - doorH, 0.32, plaster, 0, doorH + (3.4 - doorH) / 2, wallZ, g);
+    this.box(0.12, doorH, 0.32, plaster, -doorW / 2, doorH / 2, wallZ, g);
+    this.box(0.12, doorH, 0.32, plaster, doorW / 2, doorH / 2, wallZ, g);
+
+    const hw = LAYOUT.corridorHalf;
+    const neckZ = z0 - 0.2;
+    const red = this.mat(this.tex.red, { roughness: 0.78, metalness: 0, env: 0.12, repeat: [1, 0.4] });
+    red.color.set(0xb24a32);
+    this.box(hw * 2, 0.06, 1.3, red, 0, 0.03, neckZ);
+    this.box(0.2, LAYOUT.wallH, 1.3, plaster, hw, LAYOUT.wallH / 2, neckZ).userData.camCollide = true;
+    this.box(0.2, LAYOUT.wallH, 1.3, plaster, -hw, LAYOUT.wallH / 2, neckZ).userData.camCollide = true;
+    this.box(hw * 2 + 0.2, 0.14, 1.3, plaster, 0, LAYOUT.wallH + 0.2, neckZ);
 
     const skyLight = new THREE.Mesh(
       new THREE.PlaneGeometry(8, 8),
       new THREE.MeshBasicMaterial({ color: 0x8aa6b8, side: THREE.DoubleSide }),
     );
     skyLight.rotation.x = Math.PI / 2;
-    skyLight.position.y = 3.5;
+    skyLight.position.y = 3.45;
     g.add(skyLight);
+    const sun = new THREE.PointLight(0xe8dcc0, 1.15, 14, 1.5);
+    sun.position.set(0, 3.05, 0.4);
+    g.add(sun);
+    const doorLamp = new THREE.PointLight(0xf0ead0, 0.85, 8, 1.6);
+    doorLamp.position.set(0, 2.45, wallZ + 0.9);
+    g.add(doorLamp);
 
-    const gate = new THREE.Mesh(
-      new THREE.BoxGeometry(1.4, 2.2, 0.1),
-      new THREE.MeshStandardMaterial({ color: 0x4a4e46, metalness: 0.5, roughness: 0.4 }),
-    );
-    gate.position.set(0, 1.1, -4.35);
+    const green = this.mat(this.tex.green, { roughness: 0.45, metalness: 0.28 });
+    const gate = new THREE.Mesh(new THREE.BoxGeometry(1.18, 2.12, 0.07), green);
+    gate.position.set(-1.22, 1.06, wallZ + 0.62);
+    gate.rotation.y = 1.48;
     g.add(gate);
 
     this.interactables.push({
@@ -789,6 +831,8 @@ export class Prison {
     this.addCollider(-5, 5, z0 + 8.8, z0 + 10, 'yard-end');
     this.addCollider(-5.2, -4.1, z0, z0 + 9, 'yard-l');
     this.addCollider(4.1, 5.2, z0, z0 + 9, 'yard-r');
+    this.addCollider(-4.5, -doorW / 2, z0 - 0.25, z0 + 0.4, 'yard-door-l');
+    this.addCollider(doorW / 2, 4.5, z0 - 0.25, z0 + 0.4, 'yard-door-r');
   }
 
   addPipesAndProps() {
