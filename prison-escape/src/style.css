@@ -75,6 +75,26 @@ textarea {
 #bar-stress::after {
   background: #b33a3a;
 }
+.chat-row {
+  margin: 0 0 6px;
+}
+.chat-row b {
+  color: #fbbf24;
+}
+.chat-me b {
+  color: #7dd3fc;
+}
+.chat-peer b {
+  color: #86efac;
+}
+.chat-sys {
+  color: #a1a1aa;
+  font-size: 14px;
+}
+.chat-sys b {
+  color: #a1a1aa;
+}
+
 .shop-btn {
   min-height: 48px;
   width: 100%;

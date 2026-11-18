@@ -10,6 +10,7 @@ export class Joystick {
     this.x = 0;
     this.y = 0;
     this._active = false;
+    this.enabled = true;
     this.radius = 52;
     this.dead = 0.12;
 
@@ -28,7 +29,8 @@ export class Joystick {
   }
 
   onDown(e) {
-    if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope')) return;
+    if (this.enabled === false) return;
+    if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope, #chat')) return;
     if (this.pointerId !== null) return;
     if (!this.isLeftHalf(e.clientX)) return;
     this.pointerId = e.pointerId;

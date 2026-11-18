@@ -28,6 +28,22 @@
           <div id="path-label" class="text-zinc-500">Путь: новичок</div>
         </div>
 
+        <div
+          id="quest"
+          class="pointer-events-none absolute left-1/2 top-[11%] w-[92%] max-w-lg -translate-x-1/2 rounded border border-amber-700/50 bg-black/75 px-3 py-2 text-center text-[16px] leading-snug text-amber-100"
+        >
+          Сдай вещи на опись. Шнурки, ремень, телефон — всё.
+        </div>
+
+        <div
+          id="look-hint"
+          class="pointer-events-none absolute bottom-[168px] left-1/2 w-[92%] max-w-md -translate-x-1/2 text-center text-[15px] text-zinc-400"
+        >
+          Кликни в игру — смотреть мышкой. ← → или Q — поворот. WASD — шаг. E — действие.
+        </div>
+
+        <div class="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70"></div>
+
         <div class="absolute right-2 top-2 w-[42%] space-y-1 rounded border border-zinc-800 bg-black/70 p-2">
           <div class="stat"><span>Голод</span><i id="bar-hunger"></i></div>
           <div class="stat"><span>Гигиена</span><i id="bar-hygiene"></i></div>
@@ -37,7 +53,7 @@
 
         <div
           id="prompt"
-          class="absolute left-1/2 top-[16%] hidden -translate-x-1/2 rounded bg-black/75 px-3 py-1 text-center text-[16px] text-amber-200"
+          class="absolute left-1/2 top-[22%] hidden -translate-x-1/2 rounded bg-black/75 px-3 py-1 text-center text-[16px] text-amber-200"
         ></div>
         <div
           id="toast"
@@ -57,6 +73,13 @@
         </div>
 
         <div class="pointer-events-auto absolute bottom-[22px] right-[12px] flex flex-col gap-2">
+          <button
+            id="btn-talk"
+            type="button"
+            class="min-h-[48px] min-w-[118px] rounded-full border border-sky-500/70 bg-black/55 px-4 text-[16px] font-semibold text-sky-100"
+          >
+            Говорить
+          </button>
           <button
             id="btn-shop"
             type="button"
@@ -140,13 +163,37 @@
       </div>
 
       <div
+        id="chat"
+        class="absolute inset-0 z-20 hidden flex-col justify-end bg-black/50 px-4 pb-[190px] pt-10"
+      >
+        <div class="pointer-events-auto mx-auto flex w-full max-w-md flex-col rounded-xl border border-zinc-700 bg-[#12110e]/95 p-3">
+          <div class="mb-2 flex items-center justify-between">
+            <p class="text-[16px] font-semibold text-sky-200">Хатка · эфир</p>
+            <button id="btn-chat-close" type="button" class="min-h-[40px] px-2 text-[16px] text-zinc-400">Закрыть</button>
+          </div>
+          <div id="chat-log" class="mb-2 max-h-48 overflow-y-auto text-[16px] leading-relaxed"></div>
+          <form id="chat-form" class="flex gap-2">
+            <input
+              id="chat-in"
+              type="text"
+              maxlength="140"
+              autocomplete="off"
+              placeholder="Скажи хате…"
+              class="min-h-[48px] flex-1 rounded-lg border border-zinc-600 bg-black/60 px-3 text-[16px] text-zinc-100"
+            />
+            <button type="submit" class="min-h-[48px] rounded-lg bg-sky-700 px-3 text-[16px] text-white">Ок</button>
+          </form>
+        </div>
+      </div>
+
+      <div
         id="boot"
         class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#07080a] px-6 text-center"
       >
         <p class="mb-2 font-mono text-[16px] tracking-[0.3em] text-amber-500">СИЗО · КАТЕНЬКА</p>
         <h1 class="mb-3 text-3xl font-semibold">Хатка</h1>
-        <p class="mb-8 max-w-sm text-[16px] leading-relaxed text-zinc-400">
-          Симулятор тюремной жизни. Приёмка, шмон, хата, понятия. Первое лицо. Джойстик слева, взгляд справа.
+        <p class="mb-8 max-w-md text-[16px] leading-relaxed text-zinc-400">
+          Как попадают в СИЗО, если ты никогда там не был: шмон, баня, конвой в хату, прописка. Кликни — взгляд мышкой, WASD — шаг, ← → — поворот.
         </p>
         <button
           id="btn-start"

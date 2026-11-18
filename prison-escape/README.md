@@ -15,4 +15,5 @@ npm install && npm run dev
 4. **Economy:** tea, cigarettes, food; demo **Грев** shop (no real charge); cards; малява on a rope.
 5. **Tech:** SIZO materials, flickering lamps, SSAO/Bloom with mobile fallback, Mixamo + NPC GLB stubs.
 
-Touch: left stick move, right swipe look, Действие / Присесть / Грев. Keyboard: WASD, E, C.
+ПК: клик в игру (захват мыши), WASD шаг, стрелки влево-вправо или Q — поворот, E действие, T говорить.
+Телефон: джойстик слева, взгляд свайпом, кнопки справа.

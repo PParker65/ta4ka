@@ -30,6 +30,22 @@ export class Sim {
     this.ragChoice = null;
     this.propiska = false;
     this.frozen = false;
+    this.heat = 8;
+    this.rep = 0;
+    this.guided = false;
+  }
+
+  objective() {
+    if (this.pending.length) return 'Сдай вещи на опись. Шнурки, ремень, телефон — всё.';
+    if (!this.haircut) return 'Санитарная: стрижка под машинку. Так делают всем новичкам.';
+    if (this.robe !== 'kazenka') return 'Надень казёнку и тапочки. Свою одежду уже сдал.';
+    if (this.stage === 'escort') return 'Конвой ведёт в хату. Иди за ними, не отставай.';
+    if (!this.propiska) return 'Прописка: тряпка на полу, потом разговор со смотрящим.';
+    if (this.phase.id === 'food') return 'Баландежка. Возьми пайку, не лезь без очереди.';
+    if (this.phase.id === 'walk') return 'Прогулка. Круг по дворику, без болтовни через стену.';
+    if (this.phase.id === 'shmon') return 'Шмон камеры. Стой, пока смотрят койки.';
+    if (this.phase.id === 'evening') return 'Отбой. Своя койка, не чужая.';
+    return 'Живи по распорядку. «Говорить» — с хатой и с другими игроками.';
   }
 
   get phase() {
@@ -66,6 +82,7 @@ export class Sim {
     this.hunger = clamp(this.hunger - dt * 0.55, 0, 100);
     this.hygiene = clamp(this.hygiene - dt * 0.22, 0, 100);
     this.stress = clamp(this.stress + dt * 0.18 - (this.path === 'men' ? dt * 0.08 : 0), 0, 100);
+    this.heat = clamp(this.heat - dt * 0.35, 0, 100);
     if (this.hunger < 18) this.stress = clamp(this.stress + dt * 0.4, 0, 100);
   }
 

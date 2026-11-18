@@ -17,6 +17,7 @@ import { Npcs } from './Npcs.js';
 import { Minigames } from './Minigames.js';
 import { AudioFx } from './AudioFx.js';
 import { makeHands } from './Hands.js';
+import { Chat } from './Chat.js';
 
 export class Game {
   constructor(canvas) {
@@ -28,6 +29,9 @@ export class Game {
     this.clock = new THREE.Clock();
     this.sim = new Sim();
     this.audio = new AudioFx();
+    this.escort = null;
+    this.guide = null;
+    this.idle = 0;
   }
 
   async start() {
@@ -41,12 +45,13 @@ export class Game {
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.78;
+    this.renderer.toneMappingExposure = 0.88;
     this.renderer.shadowMap.enabled = !this.lowEnd;
+    if (this.renderer.shadowMap.enabled) this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0b0c0e);
-    this.scene.fog = new THREE.FogExp2(0x1a1512, 0.048);
+    this.scene.background = new THREE.Color(0x0c0d10);
+    this.scene.fog = new THREE.FogExp2(0x1c1814, 0.038);
 
     this.camera = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.07, 70);
     this.hands = makeHands();
@@ -56,12 +61,15 @@ export class Game {
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    this.hemi = new THREE.HemisphereLight(0xb8b0a0, 0x2a2018, 0.32);
+    this.hemi = new THREE.HemisphereLight(0xc4b8a8, 0x2a2018, 0.42);
     this.scene.add(this.hemi);
-    this.fill = new THREE.PointLight(0xffe6c0, 1.15, 10, 1.5);
+    this.fill = new THREE.PointLight(0xffe6c0, 1.45, 11, 1.4);
     this.scene.add(this.fill);
     this.alarmLight = new THREE.PointLight(0xff1a12, 0, 14, 1.2);
     this.scene.add(this.alarmLight);
+    const rim = new THREE.DirectionalLight(0x8899aa, 0.18);
+    rim.position.set(-4, 6, -2);
+    this.scene.add(rim);
 
     this.prison = new Prison(this.scene);
     this.prison.build();
@@ -69,25 +77,28 @@ export class Game {
     this.player = new Character(this.scene);
     await this.player.init();
     this.player.hideForFirstPerson();
-    const spawn = this.prison.playerSpawn;
-    this.player.position.copy(spawn);
+    this.player.position.copy(this.prison.playerSpawn);
 
     this.npcs = new Npcs(this.scene);
     await this.npcs.spawnConvoy();
     await this.npcs.spawnCell(this.prison.cellOrigin.x, this.prison.cellOrigin.z);
+    await this.npcs.spawnHatches(this.prison.doors || []);
 
     this.guards = new Guards(this.scene, this.prison);
     this.guards.spawn();
     this.cctv = new CCTV(this.renderer, this.scene, this.prison);
     this.cctv.setup();
 
-    this.input = new Input();
+    this.input = new Input({ mobile: this.mobile, canvas: this.canvas });
     this.input.yaw = 0;
+    if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
+    else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
+    this.chat = new Chat();
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
     this.setupComposer();
     this.bindUi();
-    this.subtitle('Наручники. КПП. Не поднимай голову без команды.');
+    this.subtitle('Конвой. Наручники. Сейчас будет приёмка — как у всех, кто сюда попадает.');
     this.audio.clang();
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
@@ -110,7 +121,7 @@ export class Game {
     }
     if (!this.mobile) {
       try {
-        this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.22, 0.45, 0.85));
+        this.composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 0.28, 0.4, 0.82));
       } catch {
         /* skip */
       }
@@ -121,6 +132,7 @@ export class Game {
   bindUi() {
     document.getElementById('btn-shop').addEventListener('pointerdown', (e) => {
       e.stopPropagation();
+      this.unlockLook();
       document.getElementById('shop').classList.remove('hidden');
       document.getElementById('shop').classList.add('flex');
     });
@@ -137,6 +149,7 @@ export class Game {
         if (pack === 'cigs') this.sim.inv.cigs += 8;
         if (pack === 'food') this.sim.inv.food += 2;
         this.sim.stress = Math.max(0, this.sim.stress - 8);
+        this.sim.rep += 1;
         this.toast('Грев зачислен (демо, без оплаты)');
         this.syncHud();
       });
@@ -148,6 +161,10 @@ export class Game {
     document.getElementById('btn-shmon-done').addEventListener('pointerdown', (e) => {
       e.stopPropagation();
       this.finishShmon();
+    });
+    document.getElementById('btn-talk')?.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      this.openTalk();
     });
   }
 
@@ -170,31 +187,30 @@ export class Game {
     this.syncHud();
   }
 
+  overlaysOpen() {
+    if (this.dialog.open || this.minigames.open || this.chat.open) return true;
+    if (!document.getElementById('shmon-ui').classList.contains('hidden')) return true;
+    if (!document.getElementById('shop').classList.contains('hidden')) return true;
+    return false;
+  }
+
   tick(dt) {
-    if (this.dialog.open || this.minigames.open) return;
-    if (!document.getElementById('shmon-ui').classList.contains('hidden')) return;
-    if (!document.getElementById('shop').classList.contains('hidden')) return;
+    this.input.yaw += this.input.turnRate() * dt;
+    if (this.overlaysOpen()) {
+      this.updateCamera(this.input.crouchHeld);
+      return;
+    }
 
     const move = this.input.moveVector();
     const crouch = this.input.crouchHeld;
     const yaw = this.input.yaw;
-    const speed = this.sim.cuffed ? 1.15 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
-    const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
-    const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-    const wish = new THREE.Vector3();
-    wish.addScaledVector(right, move.x);
-    wish.addScaledVector(forward, -move.z);
-    if (wish.lengthSq() > 0) wish.normalize();
 
-    const next = this.player.position.clone();
-    next.x += wish.x * speed * dt;
-    next.z += wish.z * speed * dt;
-    const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
-    this.player.position.x = resolved.x;
-    this.player.position.z = resolved.z;
-    this.player.setLocomotion(move.mag, false, crouch);
+    if (this.escort) this.stepEscort(dt);
+    else this.stepWalk(dt, move, crouch, yaw);
+
+    this.player.setLocomotion(this.escort ? 0.6 : move.mag, false, crouch);
     this.player.update(dt);
-    this.npcs.update(this.clock.elapsedTime);
+    this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera);
 
     this.updateCamera(crouch);
     this.fill.position.set(this.player.position.x, 2.2, this.player.position.z);
@@ -210,14 +226,21 @@ export class Game {
     });
 
     this.guards.update(dt);
-    const guardHit = this.sim.stage === 'life' && this.guards.sees(this.player.position, crouch);
+    const inOwnCell = this.player.position.x > 1.55;
+    const guardHit = this.sim.stage === 'life' && !inOwnCell && this.guards.sees(this.player.position, crouch);
     const camHit = this.cctv.update(dt, this.player.position, crouch, this.alarm);
-    if (this.sim.stage === 'life' && this.sim.path !== 'red' && (guardHit || camHit)) this.alarmHold = 3.5;
+    if (this.sim.stage === 'life' && this.sim.path !== 'red' && !inOwnCell && (guardHit || camHit)) {
+      this.alarmHold = 3.5;
+      this.sim.heat = Math.min(100, this.sim.heat + dt * 18);
+    }
     this.alarmHold = Math.max(0, this.alarmHold - dt);
     this.setAlarm(this.alarmHold > 0);
 
     this.sim.tick(dt);
     this.updateStages();
+    this.autoGuide(dt, move.mag);
+
+    if (this.input.consumeTalk()) this.openTalk();
 
     const near = this.prison.nearestInteractable(this.player.position);
     const prompt = document.getElementById('prompt');
@@ -231,10 +254,106 @@ export class Game {
     }
   }
 
+  stepWalk(dt, move, crouch, yaw) {
+    const speed = this.sim.cuffed ? 1.15 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
+    const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
+    const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+    const wish = new THREE.Vector3();
+    wish.addScaledVector(right, move.x);
+    wish.addScaledVector(forward, -move.z);
+    if (this.guide && move.mag < 0.12) {
+      const g = this.guide.clone().sub(this.player.position);
+      g.y = 0;
+      if (g.lengthSq() > 0.04) wish.add(g.normalize());
+    }
+    if (wish.lengthSq() > 0) wish.normalize();
+    const next = this.player.position.clone();
+    next.x += wish.x * speed * dt;
+    next.z += wish.z * speed * dt;
+    const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
+    this.player.position.x = resolved.x;
+    this.player.position.z = resolved.z;
+  }
+
+  stepEscort(dt) {
+    const pts = this.escort.pts;
+    const i = this.escort.i;
+    if (i >= pts.length - 1) {
+      this.finishEscort();
+      return;
+    }
+    const b = pts[i + 1];
+    const dir = new THREE.Vector3(b.x - this.player.position.x, 0, b.z - this.player.position.z);
+    const dist = dir.length();
+    if (dist < 0.2) {
+      this.escort.i += 1;
+      return;
+    }
+    dir.multiplyScalar(1 / dist);
+    const next = this.player.position.clone();
+    const step = Math.min(1.55 * dt, dist);
+    next.x += dir.x * step;
+    next.z += dir.z * step;
+    const resolved = this.prison.resolve(next, 0.22);
+    this.player.position.x = resolved.x;
+    this.player.position.z = resolved.z;
+    const want = Math.atan2(dir.x, dir.z);
+    let d = want - this.input.yaw;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    this.input.yaw += d * Math.min(1, dt * 4);
+    this.npcs.followEscort(this.player.position, this.input.yaw);
+  }
+
+  startEscort() {
+    if (this.escort) return;
+    const door = this.prison.interactables.find((it) => it.type === 'cell-door');
+    if (door) this.prison.openDoor(door);
+    this.sim.stage = 'escort';
+    this.sim.cuffed = true;
+    this.guide = null;
+    this.escort = {
+      i: 0,
+      pts: [
+        this.player.position.clone(),
+        new THREE.Vector3(0, 0, -0.4),
+        new THREE.Vector3(0.05, 0, 3.35),
+        this.prison.cellSpawn.clone(),
+      ],
+    };
+    this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
+    this.audio.clang();
+  }
+
+  finishEscort() {
+    this.escort = null;
+    this.sim.cuffed = false;
+    this.sim.stage = 'propiska';
+    this.player.position.copy(this.prison.cellSpawn);
+    this.input.yaw = Math.PI / 2;
+    this.subtitle('На полу тряпка. Это прописка — так проверяют, понял ли ты правила хаты.');
+    this.audio.clang();
+    clearTimeout(this._ragAuto);
+    this._ragAuto = setTimeout(() => {
+      if (this.sim.stage === 'propiska' && !this.sim.ragChoice && !this.dialog.open) this.ragMenu();
+    }, 900);
+  }
+
+  autoGuide(dt, mag) {
+    this.idle = mag > 0.12 || this.escort ? 0 : this.idle + dt;
+    if (this.sim.stage === 'bath' && !this.sim.haircut && this.idle > 7) {
+      this.interact(this.prison.interactables.find((x) => x.type === 'bath'));
+      this.idle = 0;
+    } else if (this.sim.stage === 'bath' && this.sim.haircut && this.sim.robe !== 'kazenka' && this.idle > 5) {
+      this.interact(this.prison.interactables.find((x) => x.type === 'robe'));
+      this.idle = 0;
+    }
+  }
+
   updateCamera(crouch) {
     const yaw = this.input.yaw;
     const pitch = this.input.pitch;
-    const eye = crouch ? 1.05 : 1.58;
+    const eye = crouch ? 1.05 : 1.62;
     this.camera.position.set(this.player.position.x, eye, this.player.position.z);
     const look = new THREE.Vector3(
       this.camera.position.x + Math.sin(yaw) * Math.cos(pitch),
@@ -248,23 +367,18 @@ export class Game {
     const z = this.player.position.z;
     if (this.sim.stage === 'kpp' && z > -13.5) {
       this.sim.stage = 'shmon';
-      this.subtitle('Кабинет досмотра. Сдай вещи на опись.');
+      this.subtitle('Кабинет досмотра. Сдай вещи — без этого дальше не пустят.');
       this.audio.clang();
     }
-    if (this.sim.stage === 'bath' && this.sim.robe === 'kazenka' && z > -1) {
-      this.sim.stage = 'escort';
-      this.sim.cuffed = false;
-      const door = this.prison.interactables.find((it) => it.type === 'cell-door');
-      if (door) this.prison.openDoor(door);
-      this.subtitle('Коряк. Ведут в хату. Зелёные двери — камеры.');
-    }
-    if (this.sim.stage === 'escort' && z > 3.1 && this.player.position.x > 1.5) {
+    if (this.sim.stage === 'bath' && this.sim.robe === 'kazenka' && !this.escort) this.startEscort();
+    if (this.sim.stage === 'escort' && z > 3.1 && this.player.position.x > 1.5 && !this.escort) {
       this.sim.stage = 'propiska';
       this.subtitle('На полу тряпка. Не наступи вслепую — это прописка.');
     }
   }
 
   canUse(item) {
+    if (this.escort) return false;
     if (item.type === 'kpp')
       return (this.sim.stage === 'kpp' || this.sim.stage === 'shmon') && this.sim.pending.length > 0;
     if (item.type === 'shmon')
@@ -294,7 +408,7 @@ export class Game {
       food: 'Баландежка',
       admin: 'К администрации',
       'cell-door': item.open ? 'Дверь открыта' : 'Дверь хаты',
-      'locked-door': `Дверь ${item.num} · заперто`,
+      'locked-door': `Дверь ${item.num} · заперто. За решёткой — чужая хата.`,
       monitor: 'Монитор',
       exit: 'Дворик для прогулок',
     };
@@ -302,11 +416,8 @@ export class Game {
   }
 
   interact(item) {
-    if (item.type === 'kpp' || (item.type === 'shmon' && this.sim.pending.length)) {
-      this.openShmon();
-      return;
-    }
-    if (item.type === 'shmon') {
+    if (!item) return;
+    if (item.type === 'kpp' || item.type === 'shmon') {
       this.openShmon();
       return;
     }
@@ -314,16 +425,17 @@ export class Game {
       this.player.shave();
       this.sim.haircut = true;
       this.sim.hygiene = Math.min(100, this.sim.hygiene + 25);
-      this.toast('Машинка. Волосы на пол.');
-      this.subtitle('Казёнку бери слева.');
+      this.toast('Машинка. Волосы на пол. Так встречают всех.');
+      this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
+      this.guide = new THREE.Vector3(-0.6, 0, -7.6);
       return;
     }
     if (item.type === 'robe') {
       this.player.applyKazenka();
       this.sim.robe = 'kazenka';
-      this.sim.stage = 'bath';
-      this.toast('Серая полосатая роба, тапочки.');
+      this.toast('Серая полосатая роба, тапочки. Теперь ты как все.');
       this.audio.clang();
+      this.startEscort();
       return;
     }
     if (item.type === 'rag') {
@@ -336,12 +448,13 @@ export class Game {
     }
     if (item.type === 'bunk') {
       this.sim.rest();
-      this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Лёг. Стресс чуть спал.');
+      this.sim.heat = Math.max(0, this.sim.heat - 6);
+      this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Своя койка. Чужую не занимай.');
       return;
     }
     if (item.type === 'wash') {
       this.sim.wash();
-      this.toast('Холодная вода, чаша Генуя.');
+      this.toast('Холодная вода, чаша Генуя. Гигиена — не для красоты, для хаты.');
       return;
     }
     if (item.type === 'cards') {
@@ -364,13 +477,12 @@ export class Game {
       }
       this.sim.inv.tea += 1;
       this.sim.shift(1, 0, 0);
+      this.sim.rep += 1;
       this.toast('Чай в общак — и тебе чуть вернули.');
       return;
     }
     if (item.type === 'food') {
-      if (this.sim.phase.id !== 'food' && this.sim.inv.food === 0) {
-        this.sim.inv.food += 1;
-      }
+      if (this.sim.phase.id !== 'food' && this.sim.inv.food === 0) this.sim.inv.food += 1;
       if (!this.sim.eat()) this.toast('Баланды нет. Жди раздачу или грев.');
       else this.toast('Баланда. Голодно, но живой.');
       return;
@@ -378,6 +490,7 @@ export class Game {
     if (item.type === 'admin') {
       this.sim.shift(0, 2, 0);
       this.sim.inv.food += 1;
+      this.sim.heat = Math.max(0, this.sim.heat - 10);
       this.toast('Кумовые. Пайка лишняя, хата косится.');
       return;
     }
@@ -387,7 +500,7 @@ export class Game {
       return;
     }
     if (item.type === 'locked-door') {
-      this.toast(`Дверь ${item.num} на замке`);
+      this.toast(`Дверь ${item.num} на замке. За кормушкой чужая жизнь.`);
       return;
     }
     if (item.type === 'monitor') {
@@ -397,10 +510,26 @@ export class Game {
     if (item.type === 'exit') {
       if (this.sim.phase.id !== 'walk' && this.sim.path !== 'red') {
         this.toast('Не время. Прогулка по распорядку.');
+        this.sim.heat = Math.min(100, this.sim.heat + 12);
         return;
       }
-      this.toast('Дворик. Круг по бетону.');
+      this.toast('Дворик. Круг по бетону. Говорить тихо.');
       this.sim.stress = Math.max(0, this.sim.stress - 10);
+    }
+  }
+
+  unlockLook() {
+    document.exitPointerLock?.();
+  }
+
+  openTalk() {
+    if (this.overlaysOpen() && !this.chat.open) return;
+    this.unlockLook();
+    this.chat.toggle();
+    if (this.chat.open) {
+      const who = this.npcs.nearestKind(this.player.position);
+      this.chat.push('Система', 'Напиши хате. Если кто-то ещё в игре — он увидит. Рядом отвечают зэки.', 'sys');
+      this.chat.whoNear = who;
     }
   }
 
@@ -423,6 +552,7 @@ export class Game {
       });
       list.appendChild(li);
     }
+    this.unlockLook();
     ui.classList.remove('hidden');
     ui.classList.add('flex');
   }
@@ -436,18 +566,20 @@ export class Game {
     document.getElementById('shmon-ui').classList.remove('flex');
     this.sim.stage = 'bath';
     this.sim.stress = Math.min(100, this.sim.stress + 12);
-    this.subtitle('Досмотр окончен. Баня. Стрижка обязательно.');
+    this.guide = new THREE.Vector3(0.2, 0, -8.2);
+    this.subtitle('Досмотр окончен. Баня и стрижка — санитарная, не наказание. Иди к машинке.');
     this.audio.buzz();
   }
 
   ragMenu() {
-    this.dialog.show('Прописка', 'На пороге половая тряпка. Как войдёшь — так и запомнят.', [
+    this.unlockLook();
+    this.dialog.show('Прописка', 'На пороге половая тряпка. Как войдёшь — так и запомнят. В настоящей хате это проверка, не шутка.', [
       {
         label: 'Перешагнуть, не трогая',
         black: 1,
         red: 0,
         men: 1,
-        reply: 'Молча вошёл. Нормально.',
+        reply: 'Молча вошёл. Нормально. Седой кивнул.',
       },
       {
         label: 'Поднять и отнести в угол',
@@ -480,9 +612,14 @@ export class Game {
       this.sim.propiska = true;
       this.sim.stage = 'life';
       this.sim.cuffed = false;
+      this.sim.rep += 2;
       this.toast(opt.reply);
-      this.subtitle('Распорядок: подъём, шмон, баландежка, прогулка. Живи.');
+      this.subtitle('Ты в хате. Распорядок: подъём, шмон, баландежка, прогулка, отбой. Говори с людьми — кнопка «Говорить».');
     };
+  }
+
+  openTalkFromChatSend() {
+    this.chat.whoNear = this.npcs.nearestKind(this.player.position);
   }
 
   setAlarm(on) {
@@ -490,7 +627,7 @@ export class Game {
     this.alarm = on;
     document.getElementById('alarm').classList.toggle('hidden', !on);
     if (on) this.toast('Конвой / камера');
-    this.hemi.color.set(on ? 0xff6655 : 0xb8b0a0);
+    this.hemi.color.set(on ? 0xff6655 : 0xc4b8a8);
     this.alarmLight.intensity = on ? 2.2 : 0;
     this.guards.setAlarm(on);
   }
@@ -500,7 +637,7 @@ export class Game {
     el.textContent = t;
     el.classList.remove('hidden');
     clearTimeout(this._sub);
-    this._sub = setTimeout(() => el.classList.add('hidden'), 5200);
+    this._sub = setTimeout(() => el.classList.add('hidden'), 7200);
   }
 
   toast(t) {
@@ -508,7 +645,7 @@ export class Game {
     el.textContent = t;
     el.classList.remove('hidden');
     clearTimeout(this._toast);
-    this._toast = setTimeout(() => el.classList.add('hidden'), 2200);
+    this._toast = setTimeout(() => el.classList.add('hidden'), 2400);
   }
 
   holdWalk(code, seconds = 1.6) {
@@ -533,7 +670,10 @@ export class Game {
     document.getElementById('bar-hunger').style.setProperty('--w', `${s.hunger}%`);
     document.getElementById('bar-hygiene').style.setProperty('--w', `${s.hygiene}%`);
     document.getElementById('bar-stress').style.setProperty('--w', `${s.stress}%`);
-    document.getElementById('inv').textContent = `чай ${s.inv.tea} · циг. ${s.inv.cigs} · пайка ${s.inv.food}`;
+    document.getElementById('inv').textContent = `чай ${s.inv.tea} · циг. ${s.inv.cigs} · пайка ${s.inv.food} · жар ${Math.round(s.heat)}`;
+    const quest = document.getElementById('quest');
+    if (quest) quest.textContent = s.objective();
+    if (s.stage === 'life' || s.stage === 'propiska') document.getElementById('look-hint')?.classList.add('hidden');
   }
 }
 

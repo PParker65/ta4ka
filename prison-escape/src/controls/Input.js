@@ -1,15 +1,18 @@
 import { Joystick } from './Joystick.js';
 
 /**
- * Touch + keyboard/mouse fallback.
- * Left half: joystick. Right half: swipe look (orbital yaw/pitch).
+ * Desktop: pointer-lock / drag-to-look, Q/E or arrows to turn, WASD to walk.
+ * Mobile: left stick move, right-half swipe look.
  */
 export class Input {
-  constructor() {
+  constructor({ mobile, canvas }) {
+    this.mobile = mobile;
+    this.canvas = canvas;
     this.joystick = new Joystick(
       document.getElementById('stick-root'),
       document.getElementById('stick-knob'),
     );
+    this.joystick.enabled = !!mobile;
 
     this.yaw = 0;
     this.pitch = 0;
@@ -19,13 +22,18 @@ export class Input {
     this.keys = new Set();
     this.crouchHeld = false;
     this.interactPulse = false;
-    this.sensitivity = 0.012;
+    this.talkPulse = false;
+    this.locked = false;
+    this.sensitivity = mobile ? 0.012 : 0.0024;
+    this.dragSensitivity = 0.008;
 
     this._down = this.onPointerDown.bind(this);
     this._move = this.onPointerMove.bind(this);
     this._up = this.onPointerUp.bind(this);
     this._keyDown = this.onKeyDown.bind(this);
     this._keyUp = this.onKeyUp.bind(this);
+    this._mouse = this.onMouseMove.bind(this);
+    this._lock = this.onLock.bind(this);
 
     window.addEventListener('pointerdown', this._down, { passive: false });
     window.addEventListener('pointermove', this._move, { passive: false });
@@ -34,6 +42,8 @@ export class Input {
     window.addEventListener('keydown', this._keyDown);
     window.addEventListener('keyup', this._keyUp);
     window.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('mousemove', this._mouse);
+    document.addEventListener('pointerlockchange', this._lock);
 
     document.getElementById('btn-interact').addEventListener('pointerdown', (e) => {
       e.preventDefault();
@@ -55,25 +65,51 @@ export class Input {
     btn.textContent = this.crouchHeld ? 'Стоя' : 'Присесть';
   }
 
+  overlay(e) {
+    return e.target.closest('button, input, textarea, #dialog, #shop, #shmon-ui, #cards, #rope, #boot, #chat');
+  }
+
+  onLock() {
+    this.locked = document.pointerLockElement === this.canvas;
+    const hint = document.getElementById('look-hint');
+    if (hint) hint.classList.toggle('hidden', this.locked || this.mobile);
+  }
+
+  tryLock() {
+    if (this.mobile || this.locked) return;
+    this.canvas.requestPointerLock?.();
+  }
+
   onPointerDown(e) {
-    if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope, #boot')) return;
-    if (e.clientX >= window.innerWidth * 0.5 && this.lookPointer === null) {
-      this.lookPointer = e.pointerId;
-      this._lx = e.clientX;
-      this._ly = e.clientY;
-      e.preventDefault();
-    }
+    if (this.overlay(e)) return;
+    if (!this.mobile && e.button === 0) this.tryLock();
+    if (this.locked) return;
+    if (this.mobile && e.clientX < window.innerWidth * 0.5) return;
+    if (this.lookPointer !== null) return;
+    this.lookPointer = e.pointerId;
+    this._lx = e.clientX;
+    this._ly = e.clientY;
+    e.preventDefault();
   }
 
   onPointerMove(e) {
-    if (e.pointerId !== this.lookPointer) return;
+    if (this.locked || e.pointerId !== this.lookPointer) return;
     const dx = e.clientX - this._lx;
     const dy = e.clientY - this._ly;
     this._lx = e.clientX;
     this._ly = e.clientY;
-    this.yaw -= dx * this.sensitivity;
-    this.pitch = THREE_CLAMP(this.pitch + dy * this.sensitivity, -1.05, 1.15);
+    this.applyLook(dx, dy, this.dragSensitivity);
     e.preventDefault();
+  }
+
+  onMouseMove(e) {
+    if (!this.locked) return;
+    this.applyLook(e.movementX || 0, e.movementY || 0, this.sensitivity);
+  }
+
+  applyLook(dx, dy, sens) {
+    this.yaw -= dx * sens;
+    this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
   }
 
   onPointerUp(e) {
@@ -81,19 +117,31 @@ export class Input {
   }
 
   onKeyDown(e) {
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
     this.keys.add(e.code);
     this.keys.add((e.key || '').toLowerCase());
-    if (e.code === 'KeyC' || e.key === 'c' || e.key === 'C') {
+    if (e.code === 'KeyC') {
       this.crouchHeld = !this.crouchHeld;
       this.syncCrouchButton();
     }
-    if (e.code === 'KeyE' || e.code === 'Space' || e.key === 'e' || e.key === 'E' || e.key === ' ')
-      this.interactPulse = true;
+    if (e.code === 'KeyE' && !e.repeat) this.interactPulse = true;
+    if (e.code === 'Space' && !e.repeat) this.interactPulse = true;
+    if (e.code === 'KeyT' && !e.repeat) this.talkPulse = true;
+    if (e.code === 'Escape' && this.locked) document.exitPointerLock?.();
   }
 
   onKeyUp(e) {
     this.keys.delete(e.code);
     this.keys.delete((e.key || '').toLowerCase());
+  }
+
+  /** Radians/sec yaw from Q/E and arrow keys so a keyboard-only PC can turn. */
+  turnRate() {
+    let t = 0;
+    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t += 2.1;
+    if (this.keys.has('ArrowRight')) t -= 2.1;
+    return t;
   }
 
   consumeInteract() {
@@ -102,12 +150,17 @@ export class Input {
     return v;
   }
 
-  /** Camera-relative move vector on XZ, magnitude 0..1. */
+  consumeTalk() {
+    const v = this.talkPulse;
+    this.talkPulse = false;
+    return v;
+  }
+
   moveVector() {
-    let x = this.joystick.moveX;
-    let z = this.joystick.moveZ;
-    if (this.keys.has('KeyA') || this.keys.has('ArrowLeft') || this.keys.has('a') || this.keys.has('arrowleft')) x -= 1;
-    if (this.keys.has('KeyD') || this.keys.has('ArrowRight') || this.keys.has('d') || this.keys.has('arrowright')) x += 1;
+    let x = this.joystick.enabled ? this.joystick.moveX : 0;
+    let z = this.joystick.enabled ? this.joystick.moveZ : 0;
+    if (this.keys.has('KeyA') || this.keys.has('a')) x -= 1;
+    if (this.keys.has('KeyD') || this.keys.has('d')) x += 1;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp') || this.keys.has('w') || this.keys.has('arrowup')) z -= 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown') || this.keys.has('s') || this.keys.has('arrowdown')) z += 1;
     const mag = Math.hypot(x, z);
@@ -127,9 +180,11 @@ export class Input {
     window.removeEventListener('pointercancel', this._up);
     window.removeEventListener('keydown', this._keyDown);
     window.removeEventListener('keyup', this._keyUp);
+    document.removeEventListener('mousemove', this._mouse);
+    document.removeEventListener('pointerlockchange', this._lock);
   }
 }
 
-function THREE_CLAMP(v, a, b) {
+function clamp(v, a, b) {
   return Math.max(a, Math.min(b, v));
 }

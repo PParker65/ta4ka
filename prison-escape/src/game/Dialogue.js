@@ -12,6 +12,7 @@ export class Dialogue {
   }
 
   show(who, text, options) {
+    document.exitPointerLock?.();
     this.open = true;
     this.root.classList.remove('hidden');
     this.root.classList.add('flex');

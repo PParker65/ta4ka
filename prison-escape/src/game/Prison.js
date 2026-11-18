@@ -511,6 +511,33 @@ export class Prison {
     const wood = new THREE.MeshStandardMaterial({ color: 0xc8b48a, roughness: 0.8 });
     this.box(1.3, 0.05, 0.55, wood, 0.2, 0.72, 0.2, cell);
     this.box(1.1, 0.04, 0.28, wood, 0.2, 0.38, 0.85, cell);
+    const kettle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.09, 0.16, 12),
+      new THREE.MeshStandardMaterial({ color: 0x7a7a72, metalness: 0.55, roughness: 0.35 }),
+    );
+    kettle.position.set(-0.15, 0.84, 0.15);
+    cell.add(kettle);
+    const lid = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 10, 6),
+      new THREE.MeshStandardMaterial({ color: 0x5a5a54, metalness: 0.5 }),
+    );
+    lid.position.set(-0.15, 0.94, 0.15);
+    cell.add(lid);
+    const mug = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.035, 0.07, 10),
+      new THREE.MeshStandardMaterial({ color: 0xc4b49a, roughness: 0.6 }),
+    );
+    mug.position.set(0.15, 0.78, 0.05);
+    cell.add(mug);
+    const photo = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.28, 0.36),
+      new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),
+    );
+    photo.position.set(1.2, 1.7, -LAYOUT.cellD / 2 + 0.1);
+    cell.add(photo);
+    const lamp = new THREE.PointLight(0xffd7a0, 0.55, 6, 2);
+    lamp.position.set(0.2, 1.6, 0.2);
+    cell.add(lamp);
   }
 
   addCat(cell) {

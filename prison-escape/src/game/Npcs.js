@@ -1,12 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-/**
- * Dynamic NPC loader stub:
- *   public/models/npc/inmate.glb  — cellmates with tattoos
- *   public/models/npc/guard.glb
- * Falls back to a tattooed placeholder mesh.
- */
 const NPC_GLB = {
   inmate: '/models/npc/inmate.glb',
   guard: '/models/npc/guard.glb',
@@ -19,87 +13,256 @@ export class Npcs {
   }
 
   async spawnCell(ox, oz) {
-    const starosta = await this.make('inmate', 0x3a3530, true);
-    starosta.position.set(ox + 0.3, 0, oz + 0.4);
-    starosta.rotation.y = Math.PI;
-    this.scene.add(starosta);
-    this.list.push({ root: starosta, id: 'starosta', kind: 'inmate' });
-
-    const bro = await this.make('inmate', 0x4a4038, false);
-    bro.position.set(ox + 1.6, 0, oz - 1.8);
-    bro.rotation.y = 0.4;
-    this.scene.add(bro);
-    this.list.push({ root: bro, id: 'cellmate', kind: 'inmate' });
+    await this.add('inmate', {
+      id: 'starosta',
+      name: 'Седой',
+      x: ox + 0.35,
+      z: oz + 0.55,
+      yaw: Math.PI,
+      tattoos: true,
+      robe: 0x4a4a46,
+    });
+    await this.add('inmate', {
+      id: 'cellmate',
+      name: 'Лёха',
+      x: ox + 1.55,
+      z: oz - 1.7,
+      yaw: 0.5,
+      robe: 0x5a5854,
+    });
+    await this.add('inmate', {
+      id: 'bunk-bro',
+      name: 'Валера',
+      x: ox + 1.7,
+      z: oz + 2.0,
+      yaw: -0.4,
+      robe: 0x3e3c38,
+    });
   }
 
   async spawnConvoy() {
-    for (const z of [-16.2, -15.1]) {
-      const g = await this.make('guard', 0x1a1c1e, false);
-      g.position.set(0.7, 0, z);
-      g.rotation.y = Math.PI;
-      this.scene.add(g);
-      this.list.push({ root: g, id: 'convoy', kind: 'guard' });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.55, z: -16.1, yaw: 0, follow: 0 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.55, z: -15.4, yaw: 0, follow: 1 });
+  }
+
+  async spawnHatches(doors) {
+    for (const d of doors) {
+      if (d.type !== 'locked-door' || d.num === 'Д') continue;
+      const face = hatchFace();
+      const side = d.side || 1;
+      face.position.set(d.position.x + side * 0.12, 1.52, d.position.z);
+      face.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+      this.scene.add(face);
+      this.list.push({
+        root: face,
+        id: 'hatch',
+        kind: 'inmate',
+        name: `Хата ${d.num}`,
+        bob: false,
+      });
     }
   }
 
-  async make(kind, cloth, tattoos) {
+  async add(kind, spec) {
     const glb = await tryGltf(NPC_GLB[kind]);
-    if (glb) return glb.scene;
-    return placeholder(kind, cloth, tattoos);
+    const root = glb || human(kind, spec);
+    root.position.set(spec.x, 0, spec.z);
+    root.rotation.y = spec.yaw || 0;
+    this.scene.add(root);
+    const label = nameplate(spec.name);
+    label.position.set(0, 1.95, 0);
+    root.add(label);
+    this.list.push({
+      root,
+      id: spec.id,
+      kind,
+      name: spec.name,
+      follow: spec.follow,
+      home: new THREE.Vector3(spec.x, 0, spec.z),
+      bob: true,
+    });
+    return root;
   }
 
-  update(t) {
+  nearestKind(pos, max = 2.4) {
+    let best = 'default';
+    let bestD = max;
     for (const n of this.list) {
-      n.root.position.y = Math.sin(t * 1.5 + n.root.position.z) * 0.01;
+      const d = Math.hypot(pos.x - n.root.position.x, pos.z - n.root.position.z);
+      if (d < bestD) {
+        bestD = d;
+        best = n.id === 'convoy' ? 'convoy' : n.id;
+      }
+    }
+    return best;
+  }
+
+  followEscort(player, yaw, t) {
+    for (const n of this.list) {
+      if (n.follow == null) continue;
+      const side = n.follow === 0 ? 0.7 : -0.7;
+      const back = 0.85;
+      const tx = player.x + Math.cos(yaw) * side - Math.sin(yaw) * back;
+      const tz = player.z - Math.sin(yaw) * side - Math.cos(yaw) * back;
+      n.root.position.x += (tx - n.root.position.x) * 0.12;
+      n.root.position.z += (tz - n.root.position.z) * 0.12;
+      n.root.rotation.y = yaw;
+    }
+  }
+
+  update(t, player) {
+    for (const n of this.list) {
+      if (n.bob !== false) n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
+      if (player && n.kind === 'inmate' && n.id !== 'hatch') {
+        const dx = player.x - n.root.position.x;
+        const dz = player.z - n.root.position.z;
+        if (dx * dx + dz * dz < 16) {
+          n.root.rotation.y += (Math.atan2(dx, dz) - n.root.rotation.y) * 0.04;
+        }
+      }
     }
   }
 }
 
-function placeholder(kind, cloth, tattoos) {
+function human(kind, spec) {
   const root = new THREE.Group();
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(0.42, 0.72, 0.26),
-    new THREE.MeshStandardMaterial({ color: cloth, roughness: 0.7 }),
-  );
-  body.position.y = 1.16;
-  root.add(body);
-  const legs = new THREE.Mesh(
-    new THREE.BoxGeometry(0.32, 0.7, 0.22),
-    new THREE.MeshStandardMaterial({ color: kind === 'guard' ? 0x1a1c1e : 0x3a3532, roughness: 0.75 }),
-  );
-  legs.position.y = 0.42;
-  root.add(legs);
-  const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 10, 8),
-    new THREE.MeshStandardMaterial({ color: 0xb08a68, roughness: 0.75 }),
-  );
-  head.position.y = 1.64;
-  root.add(head);
+  const skin = new THREE.MeshStandardMaterial({ color: 0xc2a07a, roughness: 0.62 });
+  const cloth =
+    kind === 'guard'
+      ? new THREE.MeshStandardMaterial({ color: 0x1c2228, roughness: 0.55, metalness: 0.08 })
+      : striped(spec.robe || 0x5a5a56);
+  const pants = new THREE.MeshStandardMaterial({
+    color: kind === 'guard' ? 0x15181c : 0x3a3936,
+    roughness: 0.7,
+  });
+
+  const hips = new THREE.Group();
+  hips.position.y = 0.92;
+  root.add(hips);
+
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.38, 4, 8), cloth);
+  torso.position.y = 0.08;
+  torso.castShadow = true;
+  hips.add(torso);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.125, 12, 10), skin);
+  head.position.y = 0.48;
+  hips.add(head);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 4), skin);
+  nose.position.set(0, 0.46, 0.12);
+  hips.add(nose);
+
   if (kind === 'guard') {
     const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.15, 0.09, 10),
-      new THREE.MeshStandardMaterial({ color: 0x111 }),
+      new THREE.CylinderGeometry(0.13, 0.14, 0.08, 12),
+      new THREE.MeshStandardMaterial({ color: 0x0d0e10 }),
     );
-    cap.position.y = 1.76;
-    root.add(cap);
+    cap.position.y = 0.58;
+    hips.add(cap);
+    const brim = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.02, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0x0d0e10 }),
+    );
+    brim.position.set(0, 0.55, 0.08);
+    hips.add(brim);
+    const belt = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, 0.05, 0.24),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a38, metalness: 0.3 }),
+    );
+    belt.position.y = -0.12;
+    hips.add(belt);
   } else {
     const buzz = new THREE.Mesh(
-      new THREE.SphereGeometry(0.132, 10, 8, 0, Math.PI * 2, 0, 1.0),
-      new THREE.MeshStandardMaterial({ color: 0x2a221c }),
+      new THREE.SphereGeometry(0.128, 10, 8, 0, Math.PI * 2, 0, 1.05),
+      new THREE.MeshStandardMaterial({ color: spec.tattoos ? 0x9a9a98 : 0x2a221c, roughness: 0.85 }),
     );
-    buzz.position.set(0, 1.66, 0);
-    root.add(buzz);
+    buzz.position.set(0, 0.5, 0);
+    hips.add(buzz);
   }
-  if (tattoos) {
+
+  if (spec.tattoos) {
     const ink = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.16, 0.22),
+      new THREE.PlaneGeometry(0.14, 0.18),
       new THREE.MeshBasicMaterial({ map: tattooTex(), transparent: true }),
     );
-    ink.position.set(0.22, 1.22, 0);
+    ink.position.set(0.17, 0.1, 0);
     ink.rotation.y = Math.PI / 2;
-    root.add(ink);
+    hips.add(ink);
+  }
+
+  for (const side of [-1, 1]) {
+    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.38, 3, 6), cloth);
+    arm.position.set(side * 0.22, 0.02, 0);
+    arm.rotation.z = side * 0.12;
+    hips.add(arm);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), skin);
+    hand.position.set(side * 0.24, -0.28, 0.02);
+    hips.add(hand);
+    const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.55, 3, 6), pants);
+    leg.position.set(side * 0.08, 0.38, 0);
+    root.add(leg);
+    const shoe = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.06, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x2c2a28 }),
+    );
+    shoe.position.set(side * 0.08, 0.04, 0.02);
+    root.add(shoe);
   }
   return root;
+}
+
+function striped(hex) {
+  const c = document.createElement('canvas');
+  c.width = 64;
+  c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#5c5c58';
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.fillStyle = '#2a2a28';
+  for (let y = 0; y < 64; y += 7) ctx.fillRect(0, y, 64, 3);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 3);
+  const m = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.72 });
+  m.color.setHex(hex);
+  return m;
+}
+
+function nameplate(text) {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 256, 64);
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  round(ctx, 12, 8, 232, 48, 10);
+  ctx.fill();
+  ctx.fillStyle = '#f1e6c8';
+  ctx.font = '600 28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 34);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.18), mat);
+  mesh.userData.billboard = true;
+  return mesh;
+}
+
+function hatchFace() {
+  const g = new THREE.Group();
+  const skin = new THREE.MeshStandardMaterial({ color: 0xb8926c });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), skin);
+  g.add(head);
+  const eye = new THREE.MeshStandardMaterial({ color: 0x1a120e });
+  for (const x of [-0.03, 0.03]) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.015, 6, 4), eye);
+    e.position.set(x, 0.01, 0.08);
+    g.add(e);
+  }
+  return g;
 }
 
 function tattooTex() {
@@ -122,11 +285,21 @@ function tattooTex() {
   return tex;
 }
 
+function round(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
 async function tryGltf(url) {
   try {
     const res = await fetch(url, { method: 'HEAD' });
     if (!res.ok) return null;
-    return await new GLTFLoader().loadAsync(url);
+    return (await new GLTFLoader().loadAsync(url)).scene;
   } catch {
     return null;
   }
