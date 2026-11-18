@@ -76,6 +76,16 @@ const BEATS = [
     when: (s) => s.stress > 78,
     text: 'Сердце слишком громкое. Дыши. Не дай хате увидеть, что ты сырой.',
   },
+  {
+    id: 'hope',
+    when: (s) => s.stage === 'life' && s.hope > 60,
+    text: 'Надежда здесь — как малява: прячут. Но она есть.',
+  },
+  {
+    id: 'nohope',
+    when: (s) => s.stage === 'life' && s.hope < 14,
+    text: 'Если погаснет и это — останется только распорядок. Так и сажают навсегда.',
+  },
 ];
 
 export function storyLine(sim, pos, introT) {

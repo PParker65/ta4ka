@@ -140,12 +140,21 @@ export class AudioFx {
     const o = this.ctx.createOscillator();
     const g = this.ctx.createGain();
     o.type = 'triangle';
-    o.frequency.value = 70 + Math.random() * 20;
-    g.gain.setValueAtTime(0.04, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    o.frequency.value = 52 + Math.random() * 36;
+    g.gain.setValueAtTime(0.03 + Math.random() * 0.025, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
     o.connect(g).connect(this.ctx.destination);
     o.start(t);
-    o.stop(t + 0.1);
+    o.stop(t + 0.12);
+    const o2 = this.ctx.createOscillator();
+    const g2 = this.ctx.createGain();
+    o2.type = 'square';
+    o2.frequency.value = 90 + Math.random() * 40;
+    g2.gain.setValueAtTime(0.012, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    o2.connect(g2).connect(this.ctx.destination);
+    o2.start(t);
+    o2.stop(t + 0.06);
   }
 
   clippers() {

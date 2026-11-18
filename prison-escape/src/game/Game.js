@@ -17,6 +17,7 @@ import { AudioFx } from './AudioFx.js';
 import { makeHands } from './Hands.js';
 import { Chat } from './Chat.js';
 import { storyLine, wayFor } from './Story.js';
+import { lifeTick } from './Life.js';
 
 export class Game {
   constructor(canvas) {
@@ -204,7 +205,7 @@ export class Game {
   tick(dt) {
     this.input.yaw += this.input.turnRate() * dt;
     if (this.overlaysOpen()) {
-      this.updateCamera(this.input.crouchHeld);
+      this.updateCamera(this.input.crouchHeld, dt);
       return;
     }
 
@@ -219,11 +220,11 @@ export class Game {
       else this.stepWalk(dt, move, crouch, yaw);
     }
 
-    this.player.setLocomotion(this.escort ? 0.6 : move.mag, false, crouch);
+    this.player.setLocomotion(this.escort ? 0.6 : move.mag, !!move.run, crouch);
     this.player.update(dt);
     this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
 
-    this.updateCamera(crouch);
+    this.updateCamera(crouch, dt);
     const outside = this.player.position.z < -53;
     this.sun.intensity = outside ? 1.35 : 0.1;
     this.hemi.intensity = outside ? 1.05 : 0.4;
@@ -241,14 +242,8 @@ export class Game {
       for (const p of lights) p.rotation.y = t * 0.18 + (p.userData.phase || 0);
     }
 
-    this.hands.children.forEach((c, i) => {
-      if (c.name === 'Cuffs') {
-        c.visible = this.sim.cuffed;
-        return;
-      }
-      if (c.userData.baseY == null) c.userData.baseY = c.position.y;
-      c.position.y = c.userData.baseY + Math.sin(this.clock.elapsedTime * 6 + i) * 0.012 * (move.mag + 0.15);
-    });
+    this.hands.userData.step?.(this.clock.elapsedTime, move.mag, move.run, this.sim.cuffed);
+    lifeTick(this, dt);
 
     this.guards.update(dt);
     const inOwnCell = this.player.position.x > 1.55;
@@ -307,15 +302,14 @@ export class Game {
     const wish = new THREE.Vector3();
     wish.addScaledVector(right, move.x);
     wish.addScaledVector(forward, -move.z);
-    if (this.guide && move.mag < 0.12) {
-      const g = this.guide.clone().sub(this.player.position);
-      g.y = 0;
-      if (g.lengthSq() > 0.04) wish.add(g.normalize());
-    }
     if (wish.lengthSq() > 0) wish.normalize();
+    if (!this.wishVel) this.wishVel = new THREE.Vector3();
+    const target = wish.clone().multiplyScalar(speed);
+    const k = wish.lengthSq() > 0 ? 9 : 6;
+    this.wishVel.lerp(target, 1 - Math.exp(-k * dt));
     const next = this.player.position.clone();
-    next.x += wish.x * speed * dt;
-    next.z += wish.z * speed * dt;
+    next.x += this.wishVel.x * dt;
+    next.z += this.wishVel.z * dt;
     const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
@@ -556,7 +550,7 @@ export class Game {
     n.style.opacity = String(Math.min(0.85, (s - 60) / 50));
   }
 
-  updateCamera(crouch) {
+  updateCamera(crouch, dt = 0.016) {
     const yaw = this.input.yaw;
     const pitch = this.input.pitch;
     const eye = crouch ? 1.08 : 1.64;
@@ -567,7 +561,11 @@ export class Game {
       if (x > limit) x = limit;
       if (x < -limit) x = -limit;
     }
-    this.camera.position.set(x, eye, z);
+    const spd = this.wishVel ? this.wishVel.length() : 0;
+    this._bob = (this._bob || 0) + dt * (0.8 + spd * 2.8);
+    const bob = Math.sin(this._bob) * Math.min(0.038, spd * 0.014);
+    const sway = Math.cos(this._bob * 0.5) * Math.min(0.018, spd * 0.007);
+    this.camera.position.set(x + sway, eye + bob, z);
     const look = new THREE.Vector3(
       this.camera.position.x + Math.sin(yaw) * Math.cos(pitch),
       this.camera.position.y + Math.sin(pitch),
@@ -956,6 +954,7 @@ export class Game {
     document.getElementById('bar-hunger').style.setProperty('--w', `${s.hunger}%`);
     document.getElementById('bar-hygiene').style.setProperty('--w', `${s.hygiene}%`);
     document.getElementById('bar-stress').style.setProperty('--w', `${s.stress}%`);
+    document.getElementById('bar-hope')?.style.setProperty('--w', `${s.hope}%`);
     document.getElementById('inv').textContent = `чай ${s.inv.tea} · циг. ${s.inv.cigs} · пайка ${s.inv.food} · жар ${Math.round(s.heat)}`;
     const quest = document.getElementById('quest');
     if (quest) quest.textContent = s.objective();

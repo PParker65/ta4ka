@@ -4,30 +4,67 @@ import * as THREE from 'three';
 export function makeHands() {
   const g = new THREE.Group();
   g.name = 'FPHands';
-  const skin = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.7 });
+  const skin = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.62 });
   const sleeve = streetMat();
   g.userData.street = sleeve;
   g.userData.kaz = stripedMat();
+  const arms = [];
   for (const side of [-1, 1]) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.28), sleeve);
-    arm.position.set(side * 0.22, -0.22, -0.38);
-    arm.rotation.x = 0.35;
+    const arm = new THREE.Group();
+    arm.position.set(side * 0.2, -0.2, -0.34);
     g.add(arm);
-    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.05, 0.1), skin);
-    hand.position.set(side * 0.22, -0.28, -0.54);
-    g.add(hand);
+    const sleeveM = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.075, 0.3), sleeve);
+    sleeveM.position.z = -0.04;
+    arm.add(sleeveM);
+    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.045, 0.09), skin);
+    hand.position.set(0, -0.04, -0.22);
+    arm.add(hand);
+    for (let f = 0; f < 4; f++) {
+      const finger = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.012, 0.045), skin);
+      finger.position.set(-0.024 + f * 0.016, -0.05, -0.28);
+      arm.add(finger);
+    }
+    arms.push(arm);
   }
   const cuff = new THREE.Mesh(
-    new THREE.TorusGeometry(0.05, 0.012, 6, 12),
-    new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.8, roughness: 0.3 }),
+    new THREE.TorusGeometry(0.048, 0.01, 8, 14),
+    new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.82, roughness: 0.28 }),
   );
   cuff.name = 'Cuffs';
-  cuff.position.set(0, -0.26, -0.5);
+  cuff.position.set(0, -0.24, -0.52);
   cuff.rotation.y = Math.PI / 2;
   g.add(cuff);
+  const chain = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.008, 0.008, 0.16, 6),
+    new THREE.MeshStandardMaterial({ color: 0x6a7074, metalness: 0.7, roughness: 0.35 }),
+  );
+  chain.name = 'Cuffs';
+  chain.position.set(0, -0.24, -0.52);
+  chain.rotation.z = Math.PI / 2;
+  g.add(chain);
+
   g.userData.setKazenka = () => {
     g.traverse((c) => {
       if (c.isMesh && c.material === g.userData.street) c.material = g.userData.kaz;
+    });
+  };
+  g.userData.step = (t, mag, run, cuffed) => {
+    cuff.visible = cuffed;
+    chain.visible = cuffed;
+    const freq = run ? 11 : 7;
+    const amp = mag * (run ? 0.055 : 0.032);
+    arms.forEach((arm, i) => {
+      const s = i === 0 ? 1 : -1;
+      const swing = Math.sin(t * freq) * amp * (cuffed ? 0.35 : 1) * s;
+      arm.rotation.x = 0.28 + swing;
+      arm.position.y = -0.2 + Math.abs(Math.sin(t * freq)) * mag * 0.012;
+      if (cuffed) {
+        arm.position.x = s * 0.1;
+        arm.rotation.z = -s * 0.25;
+      } else {
+        arm.position.x = s * 0.2;
+        arm.rotation.z = 0;
+      }
     });
   };
   return g;

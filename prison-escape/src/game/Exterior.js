@@ -161,6 +161,20 @@ function tower(prison, x, z, phase) {
   pivot.add(tgt);
   spot.target = tgt;
   pivot.add(spot);
+  const cone = new THREE.Mesh(
+    new THREE.ConeGeometry(3.4, 14, 16, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0xf2e6c4,
+      transparent: true,
+      opacity: 0.055,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  cone.position.copy(tgt.position).multiplyScalar(0.45);
+  cone.lookAt(tgt.position);
+  cone.rotateX(-Math.PI / 2);
+  pivot.add(cone);
   prison.searchlights.push(pivot);
 }
 
@@ -418,6 +432,40 @@ function alcove(prison, x, z, title) {
   const t = plaque(title, 1.2, 0.28);
   t.position.set(0, 2.55, 1.62);
   g.add(t);
+  const wood = new THREE.MeshStandardMaterial({ color: 0x5a4030, roughness: 0.8 });
+  const metal = new THREE.MeshStandardMaterial({ color: 0x6a7074, metalness: 0.45, roughness: 0.4 });
+  if (title === 'ШМОН') {
+    prison.box(1.5, 0.08, 0.7, wood, 0, 0.92, 0.2, g);
+    prison.box(0.08, 0.88, 0.08, wood, -0.6, 0.44, 0.4, g);
+    prison.box(0.08, 0.88, 0.08, wood, 0.6, 0.44, 0.0, g);
+    const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.12, 8), metal);
+    lamp.position.set(0.4, 1.02, 0.1);
+    g.add(lamp);
+  }
+  if (title === 'ФОТО') {
+    prison.box(0.12, 1.1, 0.12, metal, -0.4, 0.7, 0.3, g);
+    prison.box(0.22, 0.16, 0.18, darkCam(), -0.4, 1.28, 0.4, g);
+    const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.08, 10), wood);
+    stool.position.set(0.45, 0.45, 0);
+    g.add(stool);
+    prison.box(0.06, 0.42, 0.06, wood, 0.45, 0.22, 0, g);
+  }
+  if (title === 'МЕД') {
+    prison.box(1.6, 0.12, 0.55, new THREE.MeshStandardMaterial({ color: 0xe8e4dc }), 0, 0.72, 0, g);
+    prison.box(0.08, 0.7, 0.08, metal, -0.7, 0.35, 0.2, g);
+    prison.box(0.08, 0.7, 0.08, metal, 0.7, 0.35, -0.2, g);
+  }
+  if (title === 'БАНЯ') {
+    const chrome = new THREE.MeshStandardMaterial({ color: 0xb0b4b8, metalness: 0.7, roughness: 0.3 });
+    const head = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, 0.1, 8), chrome);
+    head.position.set(0.5, 1.55, 0.8);
+    g.add(head);
+    prison.box(0.45, 0.9, 0.45, wood, -0.4, 0.5, 0, g);
+  }
+}
+
+function darkCam() {
+  return new THREE.MeshStandardMaterial({ color: 0x1a1a1c, roughness: 0.45, metalness: 0.3 });
 }
 
 function addWaymarks(prison) {

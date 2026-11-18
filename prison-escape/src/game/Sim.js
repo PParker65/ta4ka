@@ -40,6 +40,9 @@ export class Sim {
     this.heat = 8;
     this.rep = 0;
     this.guided = false;
+    this.hope = 26;
+    this.attended = false;
+    this._lifePhase = null;
   }
 
   objective() {
@@ -93,7 +96,9 @@ export class Sim {
     this.hygiene = clamp(this.hygiene - dt * 0.22, 0, 100);
     this.stress = clamp(this.stress + dt * 0.18 - (this.path === 'men' ? dt * 0.08 : 0), 0, 100);
     this.heat = clamp(this.heat - dt * 0.35, 0, 100);
+    this.hope = clamp(this.hope - dt * 0.05 + (this.path === 'men' ? dt * 0.02 : 0), 0, 100);
     if (this.hunger < 18) this.stress = clamp(this.stress + dt * 0.4, 0, 100);
+    if (this.hope < 12) this.stress = clamp(this.stress + dt * 0.25, 0, 100);
   }
 
   eat() {
@@ -117,6 +122,7 @@ export class Sim {
   rest() {
     this.stress = clamp(this.stress - 18, 0, 100);
     this.hunger = clamp(this.hunger - 4, 0, 100);
+    this.hope = clamp(this.hope + 5, 0, 100);
   }
 
   smoke() {

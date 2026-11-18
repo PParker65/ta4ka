@@ -165,7 +165,23 @@ export class Npcs {
           n.root.rotation.y = Math.atan2(dx, dz);
         }
         n.root.position.y = 0;
+        (n.legs || []).forEach((leg, i) => {
+          leg.rotation.x = Math.sin(t * 8 + n.phase + i) * 0.55;
+        });
+        if (n.tail) n.tail.rotation.z = Math.sin(t * 6 + n.phase) * 0.4;
         continue;
+      }
+      const limbs = n.root.userData.limbs;
+      const walking = !!n.walkTo || n.kind === 'inmate';
+      if (limbs && walking) {
+        const spd = n.walkTo ? 8 : 2.2;
+        const amp = n.walkTo ? 0.55 : 0.12;
+        const s = Math.sin(t * spd);
+        limbs.arms[0].rotation.x = s * amp;
+        limbs.arms[1].rotation.x = -s * amp;
+        limbs.legs[0].rotation.x = -s * amp * 1.1;
+        limbs.legs[1].rotation.x = s * amp * 1.1;
+        limbs.hips.position.y = 0.92 + Math.abs(s) * (n.walkTo ? 0.03 : 0.008);
       }
       if (n.bob !== false) n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
       if (player && n.kind === 'inmate' && n.id !== 'hatch') {
@@ -213,6 +229,10 @@ function makeDog(x, z, phase) {
   tail.rotation.x = 0.7;
   tail.position.set(0, 0.48, -0.32);
   root.add(tail);
+  const legs = [];
+  root.traverse((c) => {
+    if (c.isMesh && c.geometry?.type === 'CylinderGeometry' && c.position.y < 0.3) legs.push(c);
+  });
   return {
     root,
     id: 'dog',
@@ -221,6 +241,8 @@ function makeDog(x, z, phase) {
     bob: false,
     home: new THREE.Vector3(x, 0, z),
     phase,
+    legs,
+    tail,
   };
 }
 
@@ -318,24 +340,34 @@ function human(kind, spec) {
     hips.add(ink);
   }
 
+  const limbs = { hips, arms: [], legs: [] };
   for (const side of [-1, 1]) {
+    const armG = new THREE.Group();
+    armG.position.set(side * 0.22, 0.02, 0);
+    hips.add(armG);
     const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.38, 3, 6), cloth);
-    arm.position.set(side * 0.22, 0.02, 0);
+    arm.position.y = -0.16;
     arm.rotation.z = side * 0.12;
-    hips.add(arm);
+    armG.add(arm);
     const hand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), skin);
-    hand.position.set(side * 0.24, -0.28, 0.02);
-    hips.add(hand);
+    hand.position.set(0, -0.38, 0.02);
+    armG.add(hand);
+    limbs.arms.push(armG);
+    const legG = new THREE.Group();
+    legG.position.set(side * 0.08, 0.92, 0);
+    root.add(legG);
     const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.55, 3, 6), pants);
-    leg.position.set(side * 0.08, 0.38, 0);
-    root.add(leg);
+    leg.position.y = -0.54;
+    legG.add(leg);
     const shoe = new THREE.Mesh(
       new THREE.BoxGeometry(0.1, 0.06, 0.18),
       new THREE.MeshStandardMaterial({ color: 0x2c2a28 }),
     );
-    shoe.position.set(side * 0.08, 0.04, 0.02);
-    root.add(shoe);
+    shoe.position.set(0, -0.88, 0.02);
+    legG.add(shoe);
+    limbs.legs.push(legG);
   }
+  root.userData.limbs = limbs;
   return root;
 }
 

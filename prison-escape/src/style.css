@@ -75,6 +75,9 @@ textarea {
 #bar-stress::after {
   background: #b33a3a;
 }
+#bar-hope::after {
+  background: #c9a227;
+}
 .chat-row {
   margin: 0 0 6px;
 }
