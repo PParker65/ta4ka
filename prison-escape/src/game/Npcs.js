@@ -16,8 +16,8 @@ export class Npcs {
     await this.add('inmate', {
       id: 'starosta',
       name: 'Седой',
-      x: ox + 0.35,
-      z: oz + 0.55,
+      x: ox + 0.2,
+      z: oz + 0.45,
       yaw: Math.PI,
       tattoos: true,
       robe: 0x4a4a46,
@@ -25,16 +25,16 @@ export class Npcs {
     await this.add('inmate', {
       id: 'cellmate',
       name: 'Лёха',
-      x: ox + 1.55,
-      z: oz - 1.7,
+      x: ox + 0.55,
+      z: oz - 1.15,
       yaw: 0.5,
       robe: 0x5a5854,
     });
     await this.add('inmate', {
       id: 'bunk-bro',
       name: 'Валера',
-      x: ox + 1.7,
-      z: oz + 2.0,
+      x: ox + 0.2,
+      z: oz + 1.15,
       yaw: -0.4,
       robe: 0x3e3c38,
     });
@@ -173,11 +173,11 @@ export class Npcs {
     if (!limbs) return;
     n.pose = kind;
     if (kind === 'sit') {
-      limbs.hips.position.y = 0.58;
-      limbs.legs[0].rotation.x = -1.15;
-      limbs.legs[1].rotation.x = -1.05;
-      limbs.arms[0].rotation.x = 0.4;
-      limbs.arms[1].rotation.x = 0.35;
+      limbs.hips.position.y = 0.4;
+      limbs.legs[0].rotation.x = -1.35;
+      limbs.legs[1].rotation.x = -1.28;
+      limbs.arms[0].rotation.x = 0.35;
+      limbs.arms[1].rotation.x = 0.3;
     } else if (kind === 'lean') {
       limbs.hips.position.y = 0.92;
       limbs.hips.rotation.x = 0.12;
@@ -185,6 +185,36 @@ export class Npcs {
     } else {
       limbs.hips.position.y = 0.92;
       limbs.hips.rotation.x = 0;
+    }
+  }
+
+  keepInCell(n) {
+    if (!n || n.kind !== 'inmate' || n.id === 'hatch' || n.gone) return;
+    const o = this.cellOrigin;
+    if (!o) return;
+    n.root.position.x = Math.max(o.x - 2.55, Math.min(o.x + 2.7, n.root.position.x));
+    n.root.position.z = Math.max(o.z - 2.9, Math.min(o.z + 2.9, n.root.position.z));
+  }
+
+  keepOutOfFurniture(n) {
+    if (!n || n.kind === 'dog' || n.gone || n.id === 'hatch') return;
+    const boxes = this.furniture;
+    if (!boxes?.length) return;
+    const p = n.root.position;
+    const r = 0.28;
+    for (const c of boxes) {
+      const nx = Math.max(c.minx, Math.min(p.x, c.maxx));
+      const nz = Math.max(c.minz, Math.min(p.z, c.maxz));
+      const dx = p.x - nx;
+      const dz = p.z - nz;
+      const d2 = dx * dx + dz * dz;
+      if (d2 < r * r) {
+        const d = Math.sqrt(d2) || 0.0001;
+        const push = (r - d) / d;
+        p.x += dx * push;
+        p.z += dz * push;
+        n.walkTo = null;
+      }
     }
   }
 
@@ -266,6 +296,14 @@ export class Npcs {
         this.pose(n, 'sit');
       }
       if (n.bob !== false && n.pose !== 'sit') n.root.position.y = Math.sin(t * 1.4 + n.root.position.z) * 0.012;
+      else if (n.pose === 'sit') n.root.position.y = 0;
+      this.keepOutOfFurniture(n);
+      this.keepInCell(n);
+      if (this.prison && n.kind === 'inmate' && n.id !== 'hatch' && !n.gone) {
+        const r = this.prison.resolve(n.root.position, 0.32);
+        n.root.position.x = r.x;
+        n.root.position.z = r.z;
+      }
       if (player && n.kind === 'inmate' && n.id !== 'hatch' && !n.walkTo && n.pose !== 'sit') {
         const dx = player.x - n.root.position.x;
         const dz = player.z - n.root.position.z;
@@ -330,7 +368,7 @@ function makeDog(x, z, phase) {
 
 function human(kind, spec) {
   const root = new THREE.Group();
-  const skin = new THREE.MeshStandardMaterial({ color: 0xc2a07a, roughness: 0.62 });
+  const skin = new THREE.MeshStandardMaterial({ color: 0xd4a07a, roughness: 0.55, emissive: 0x3a2010, emissiveIntensity: 0.08 });
   const cloth =
     kind === 'guard'
       ? new THREE.MeshStandardMaterial({ color: 0x1c2228, roughness: 0.55, metalness: 0.08 })

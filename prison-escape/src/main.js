@@ -13,7 +13,10 @@ async function begin() {
   starting = true;
   startBtn.textContent = 'Загрузка…';
   game = new Game(canvas);
+  game.audio.unlock();
+  game.audio.voice('Катенька. Выходи.', 'Конвой');
   await game.start();
+  game.audio.unlock();
   window.__sizo = game;
   boot.classList.add('hidden');
 }

@@ -89,7 +89,7 @@ export class Prison {
     return new THREE.MeshStandardMaterial({
       map: tex,
       bumpMap: bump,
-      bumpScale: bump ? (opts.bump ?? 0.14) : 0,
+      bumpScale: bump ? (opts.bump ?? 0.035) : 0,
       roughness: opts.roughness ?? 0.86,
       metalness: opts.metalness ?? 0.02,
       color: opts.color ?? 0xffffff,
@@ -130,20 +130,26 @@ export class Prison {
     this.box(0.55, 0.07, L, new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.55 }), 0, 0.035, L / 2);
 
     const tileH = 1.22;
-    for (const side of [-1, 1]) {
+    const doorHalf = LAYOUT.doorW / 2 + 0.12;
+    const rightDoors = [3.4, 6.95, 10.5, 14.05, 24.5];
+    const leftDoors = [3.4, 6.95, 10.5, 14.05];
+    const tileMat = this.mat(this.tex.blue, { repeat: [8, 2.2], bump: 0.02 });
+    const plasMat = this.mat(this.tex.cPlaster, { repeat: [6, 1.2], bump: 0.02 });
+    tileMat.polygonOffset = true;
+    tileMat.polygonOffsetFactor = 1;
+    tileMat.polygonOffsetUnits = 1;
+    for (const [side, doors] of [
+      [1, rightDoors],
+      [-1, leftDoors],
+    ]) {
       const x = side * (hw + 0.08);
-      const tiles = this.box(0.16, tileH, L, this.mat(this.tex.blue, { repeat: [8, 2.2] }), x, tileH / 2, L / 2);
-      tiles.userData.camCollide = true;
-      const plaster = this.box(
-        0.16,
-        h - tileH,
-        L,
-        this.mat(this.tex.cPlaster, { repeat: [6, 1.2] }),
-        x,
-        tileH + (h - tileH) / 2,
-        L / 2,
-      );
-      plaster.userData.camCollide = true;
+      for (const [a, b] of wallSegments(0, L, doors, doorHalf)) {
+        const len = b - a;
+        if (len < 0.12) continue;
+        const z = (a + b) / 2;
+        this.box(0.16, tileH, len, tileMat, x, tileH / 2, z).userData.camCollide = true;
+        this.box(0.16, h - tileH, len, plasMat, x, tileH + (h - tileH) / 2, z).userData.camCollide = true;
+      }
     }
 
     this.box(hw * 2 + 0.4, 0.5, 0.2, this.mat(this.tex.cPlaster), 0, 1.4, 0.05);
@@ -327,7 +333,10 @@ export class Prison {
 
     this.box(w, 0.05, d, this.mat(this.tex.broken, { roughness: 0.9, repeat: [2.4, 2.8] }), 0, 0.025, 0, cell);
 
-    const wallMat = this.mat(this.tex.plaster, { repeat: [w / 1.3, h / 1.1] });
+    const wallMat = this.mat(this.tex.plaster, { repeat: [w / 1.3, h / 1.1], bump: 0.02 });
+    wallMat.polygonOffset = true;
+    wallMat.polygonOffsetFactor = 1;
+    wallMat.polygonOffsetUnits = 1;
     this.box(w, h, 0.16, wallMat, 0, h / 2, d / 2, cell).userData.camCollide = true;
     this.box(w, h, 0.16, wallMat, 0, h / 2, -d / 2, cell).userData.camCollide = true;
     this.box(0.16, h, d, wallMat, w / 2, h / 2, 0, cell).userData.camCollide = true;
@@ -339,12 +348,13 @@ export class Prison {
     const zD = d / 2;
     const len1 = zB - zA;
     const len2 = zD - zC;
-    if (len1 > 0.2) this.box(0.16, h, len1, wallMat, -w / 2, h / 2, zA + len1 / 2, cell).userData.camCollide = true;
-    if (len2 > 0.2) this.box(0.16, h, len2, wallMat, -w / 2, h / 2, zC + len2 / 2, cell).userData.camCollide = true;
-    this.box(0.16, h - LAYOUT.doorH, LAYOUT.doorW + 0.2, wallMat, -w / 2, LAYOUT.doorH + (h - LAYOUT.doorH) / 2, doorRelZ, cell);
+    const innerX = -w / 2 + 0.14;
+    if (len1 > 0.2) this.box(0.16, h, len1, wallMat, innerX, h / 2, zA + len1 / 2, cell).userData.camCollide = true;
+    if (len2 > 0.2) this.box(0.16, h, len2, wallMat, innerX, h / 2, zC + len2 / 2, cell).userData.camCollide = true;
+    this.box(0.16, h - LAYOUT.doorH, LAYOUT.doorW + 0.2, wallMat, innerX, LAYOUT.doorH + (h - LAYOUT.doorH) / 2, doorRelZ, cell);
     const jamb = new THREE.MeshStandardMaterial({ color: 0x1f8c3c, roughness: 0.5, metalness: 0.2 });
-    this.box(0.12, LAYOUT.doorH, 0.1, jamb, -w / 2 + 0.04, LAYOUT.doorH / 2, doorRelZ - LAYOUT.doorW / 2, cell);
-    this.box(0.12, LAYOUT.doorH, 0.1, jamb, -w / 2 + 0.04, LAYOUT.doorH / 2, doorRelZ + LAYOUT.doorW / 2, cell);
+    this.box(0.12, LAYOUT.doorH, 0.1, jamb, innerX + 0.04, LAYOUT.doorH / 2, doorRelZ - LAYOUT.doorW / 2, cell);
+    this.box(0.12, LAYOUT.doorH, 0.1, jamb, innerX + 0.04, LAYOUT.doorH / 2, doorRelZ + LAYOUT.doorW / 2, cell);
 
     const teal = this.mat(this.tex.white, { repeat: [w / 0.16, 1] });
     teal.color.set(0x8ecfc4);
@@ -487,16 +497,24 @@ export class Prison {
   }
 
   addBunks(cell) {
+    const ox = cell.position.x;
+    const oz = cell.position.z;
     const spots = [
       [1.85, -2.35, 0],
       [1.85, 2.15, 0],
       [-0.15, 2.35, Math.PI / 2],
     ];
+    this.furniture = this.furniture || [];
     for (const [x, z, rot] of spots) {
       const bunk = this.makeBunk();
       bunk.position.set(x, 0, z);
       bunk.rotation.y = rot;
       cell.add(bunk);
+      if (rot) {
+        this.furniture.push({ minx: ox + x - 0.42, maxx: ox + x + 0.42, minz: oz + z - 0.95, maxz: oz + z + 0.95 });
+      } else {
+        this.furniture.push({ minx: ox + x - 0.95, maxx: ox + x + 0.55, minz: oz + z - 0.42, maxz: oz + z + 0.42 });
+      }
     }
   }
 

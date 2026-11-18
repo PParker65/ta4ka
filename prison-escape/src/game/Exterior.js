@@ -335,17 +335,32 @@ function addProcessing(prison) {
 
   const wall = new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.9 });
   const dado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
-  for (const side of [-1, 1]) {
+  const zA = z0 - L / 2;
+  const zB = z0 + L / 2;
+  const leftGaps = [-36.2, -22.2];
+  const rightGaps = [-28.2, -15.4];
+  const alcoveHalf = 1.55;
+  for (const [side, gaps] of [
+    [-1, leftGaps],
+    [1, rightGaps],
+  ]) {
     const x = side * (hw + 0.1);
-    prison.box(0.18, 1.15, L, dado, x, 0.57, z0).userData.camCollide = true;
-    prison.box(0.18, h - 1.15, L, wall, x, 1.15 + (h - 1.15) / 2, z0).userData.camCollide = true;
-    prison.addCollider(
-      side > 0 ? hw - 0.08 : -hw - 0.2,
-      side > 0 ? hw + 0.2 : -hw + 0.08,
-      -54.2,
-      -1.15,
-      `proc-${side}`,
-    );
+    for (const [a, b] of procSegments(zA, zB, gaps, alcoveHalf)) {
+      const len = b - a;
+      if (len < 0.12) continue;
+      const z = (a + b) / 2;
+      prison.box(0.18, 1.15, len, dado, x, 0.57, z).userData.camCollide = true;
+      prison.box(0.18, h - 1.15, len, wall, x, 1.15 + (h - 1.15) / 2, z).userData.camCollide = true;
+    }
+    for (const [a, b] of procSegments(zA, zB, gaps, alcoveHalf)) {
+      prison.addCollider(
+        side > 0 ? hw - 0.08 : -hw - 0.2,
+        side > 0 ? hw + 0.2 : -hw + 0.08,
+        a,
+        b,
+        `proc-${side}-${a}`,
+      );
+    }
   }
   prison.box(hw * 2 + 0.4, 0.12, L, new THREE.MeshStandardMaterial({ color: 0xcfc8bc }), 0, h, z0);
 
@@ -506,4 +521,16 @@ function plaque(text, w, h) {
   tex.colorSpace = THREE.SRGBColorSpace;
   const mat = new THREE.MeshBasicMaterial({ map: tex });
   return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+}
+
+function procSegments(start, end, gaps, half) {
+  const cuts = gaps.map((z) => [z - half, z + half]).sort((a, b) => a[0] - b[0]);
+  const segs = [];
+  let cursor = start;
+  for (const [a, b] of cuts) {
+    if (a > cursor + 0.05) segs.push([cursor, a]);
+    cursor = Math.max(cursor, b);
+  }
+  if (cursor < end) segs.push([cursor, end]);
+  return segs;
 }

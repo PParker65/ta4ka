@@ -144,15 +144,15 @@ export class CellLife {
     const valera = g.npcs.byId('bunk-bro');
 
     if (phase === 'evening') {
-      if (starosta) g.npcs.sitAt(starosta, o.x + 1.7, o.z + 2.0);
-      if (leha) g.npcs.sitAt(leha, o.x + 1.7, o.z - 2.2);
-      if (valera) g.npcs.sitAt(valera, o.x - 0.15, o.z + 2.2);
+      if (starosta) g.npcs.sitAt(starosta, o.x + 0.95, o.z + 2.15);
+      if (leha) g.npcs.sitAt(leha, o.x + 0.95, o.z - 2.35);
+      if (valera) g.npcs.sitAt(valera, o.x - 0.15, o.z + 1.55);
       return;
     }
     if (phase === 'shmon') {
-      if (starosta) g.npcs.standAt(starosta, o.x + 1.6, o.z + 1.9, Math.PI);
-      if (leha) g.npcs.standAt(leha, o.x + 1.6, o.z - 2.1, Math.PI);
-      if (valera) g.npcs.standAt(valera, o.x - 0.1, o.z + 2.1, Math.PI);
+      if (starosta) g.npcs.standAt(starosta, o.x + 0.85, o.z + 1.55, Math.PI);
+      if (leha) g.npcs.standAt(leha, o.x + 0.85, o.z - 1.7, Math.PI);
+      if (valera) g.npcs.standAt(valera, o.x + 0.2, o.z + 1.35, Math.PI);
       return;
     }
     if (phase === 'food') {
@@ -164,14 +164,14 @@ export class CellLife {
     const t = this.t;
     if (starosta && !starosta.walkPath?.length) {
       const pace = Math.sin(t * 0.22);
-      g.npcs.standAt(starosta, o.x + 0.2 + pace * 0.8, o.z + 0.4, pace > 0 ? 1.2 : -1.2);
+      g.npcs.standAt(starosta, o.x + 0.05 + pace * 0.55, o.z + 0.25, pace > 0 ? 1.2 : -1.2);
     }
     if (leha && !leha.walkTo) {
-      g.npcs.pose(leha, t % 28 < 14 ? 'lean' : 'stand');
+      g.npcs.standAt(leha, o.x + 0.55, o.z - 1.15, 0.4);
     }
     if (valera && !valera.walkTo) {
-      if (t % 22 < 10) g.npcs.standAt(valera, o.x + 1.1, o.z + 2.6, 0);
-      else g.npcs.standAt(valera, o.x + 0.3, o.z + 0.15, Math.PI);
+      if (t % 22 < 10) g.npcs.standAt(valera, o.x - 0.2, o.z + 2.55, 0);
+      else g.npcs.standAt(valera, o.x + 0.25, o.z + 0.2, Math.PI);
     }
   }
 

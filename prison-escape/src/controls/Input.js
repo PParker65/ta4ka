@@ -99,6 +99,7 @@ export class Input {
   }
 
   onPointerDown(e) {
+    this.onUnlockAudio?.();
     if (this.overlay(e)) return;
     if (!this.mobile && e.button === 0) this.tryLock();
     if (this.locked) return;
@@ -135,6 +136,7 @@ export class Input {
   }
 
   onKeyDown(e) {
+    this.onUnlockAudio?.();
     const tag = (e.target && e.target.tagName) || '';
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
     this.keys.add(e.code);
@@ -153,12 +155,9 @@ export class Input {
     this.keys.delete((e.key || '').toLowerCase());
   }
 
-  /** A/D, Q, arrows: left looks left, right looks right. */
+  /** Look is mouse only. WASD never turns the camera. */
   turnRate() {
-    let t = 0;
-    if (this.keys.has('KeyA') || this.keys.has('a') || this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t -= 2.6;
-    if (this.keys.has('KeyD') || this.keys.has('d') || this.keys.has('ArrowRight')) t += 2.6;
-    return t;
+    return 0;
   }
 
   consumeInteract() {
@@ -176,6 +175,8 @@ export class Input {
   moveVector() {
     let x = this.joystick.enabled ? this.joystick.moveX : 0;
     let z = this.joystick.enabled ? this.joystick.moveZ : 0;
+    if (this.keys.has('KeyA') || this.keys.has('a')) x -= 1;
+    if (this.keys.has('KeyD') || this.keys.has('d')) x += 1;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp') || this.keys.has('w') || this.keys.has('arrowup')) z -= 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown') || this.keys.has('s') || this.keys.has('arrowdown')) z += 1;
     const mag = Math.hypot(x, z);

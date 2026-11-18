@@ -67,7 +67,7 @@ export class Game {
 
     this.hemi = new THREE.HemisphereLight(0xd8e4ee, 0x6a6050, 0.9);
     this.scene.add(this.hemi);
-    this.fill = new THREE.PointLight(0xffe6c0, 0.35, 9, 1.6);
+    this.fill = new THREE.PointLight(0xffe6c0, 0.22, 12, 2);
     this.scene.add(this.fill);
     this.alarmLight = new THREE.PointLight(0xff1a12, 0, 14, 1.2);
     this.scene.add(this.alarmLight);
@@ -100,6 +100,9 @@ export class Game {
     await this.npcs.spawnConvoy();
     await this.npcs.spawnCell(this.prison.cellOrigin.x, this.prison.cellOrigin.z);
     await this.npcs.spawnHatches(this.prison.doors || []);
+    this.npcs.furniture = this.prison.furniture || [];
+    this.npcs.prison = this.prison;
+    this.npcs.cellOrigin = this.prison.cellOrigin;
     this.npcs.list.forEach((n) => {
       n.root.traverse((c) => {
         if (c.userData.billboard) c.visible = false;
@@ -112,6 +115,7 @@ export class Game {
     this.cctv.setup();
 
     this.input = new Input({ mobile: this.mobile, canvas: this.canvas });
+    this.input.onUnlockAudio = () => this.audio.unlock();
     this.cellLife = new CellLife(this);
     this.input.yaw = 0;
     this.input.pitch = 0.06;
@@ -122,6 +126,7 @@ export class Game {
     if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
     else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
+    this.dialog.onSpeak = (who, text) => this.audio.voice(`${who}. ${text}`, who);
     this.chat = new Chat();
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
     this.setupComposer();
@@ -281,9 +286,9 @@ export class Game {
     this.fill.intensity = outside
       ? 0.05
       : this.sim.stage === 'life' && this.sim.phase.id === 'evening'
-        ? 0.22
-        : 0.5;
-    if (!outside) this.fill.position.set(this.player.position.x, 2.15, this.player.position.z);
+        ? 0.12
+        : 0.22;
+    if (!outside) this.fill.position.set(this.player.position.x, 2.55, this.player.position.z);
     this.alarmLight.position.set(this.player.position.x, 2.15, this.player.position.z);
     this.scene.fog.near = outside ? 42 : 9;
     this.scene.fog.far = outside ? 155 : 34;
@@ -476,6 +481,7 @@ export class Game {
     this.sim.locked = false;
     this.sim.stage = 'propiska';
     this.input.yaw = Math.PI / 2;
+    this.input.pitch = 0;
     this.subtitle('Ты зашёл через дверь. Теперь хата — не конвой.');
     this.audio.clang();
     this.cellLife.begin();
@@ -1019,6 +1025,7 @@ export class Game {
     el.classList.remove('hidden');
     clearTimeout(this._sub);
     this._sub = setTimeout(() => el.classList.add('hidden'), 7200);
+    this.audio.voice(t);
   }
 
   toast(t) {

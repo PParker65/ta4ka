@@ -18,6 +18,7 @@ export class Dialogue {
     this.root.classList.add('flex');
     this.who.textContent = who;
     this.text.textContent = text;
+    this.onSpeak?.(who, text);
     this.choices.innerHTML = '';
     for (const opt of options) {
       const b = document.createElement('button');
