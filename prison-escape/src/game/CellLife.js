@@ -68,14 +68,37 @@ export class CellLife {
       this.seen.add('greet');
       g.greetingMenu();
     }
+    if (g.sim.stage !== 'life' || g.dialog.open) return;
+    const life = this.t - (this.lifeT || this.t);
+    if (life > 7 && !this.seen.has('watch')) {
+      this.seen.add('watch');
+      g.subtitle('Седой не смотрит на тебя. Смотрит, сядешь ли сам, или будешь столбом у двери.');
+    }
+    if (life > 16 && !this.seen.has('pipe')) {
+      this.seen.add('pipe');
+      g.subtitle('Из трубы кап-кап. Лёха считает это вместо дней. Завтра научит, если не сорвёшься.');
+    }
+    if (life > 28 && !this.seen.has('whistle')) {
+      this.seen.add('whistle');
+      g.subtitle('Валера свистит в нос. На секунду крыша выше, чем три метра. Потом снова известь.');
+    }
+    if (life > 40 && !this.seen.has('hatch-tap') && g.sim.task?.id === 'hatch') {
+      this.seen.add('hatch-tap');
+      g.audio.clang();
+      g.subtitle('Кормушка. Два коротких. Соседи знают, что в четвёртой свежак.');
+    }
+    if (life > 55 && !this.seen.has('hope')) {
+      this.seen.add('hope');
+      g.subtitle('Надежда здесь прячется, как малява. Кто орёт про волю вслух — уже на карандаше.');
+    }
   }
 
   onPropiskaDone() {
+    this.lifeT = this.t;
     this.nextTask();
-    const o = this.g.prison.cellOrigin;
     const leha = this.g.npcs.byId('cellmate');
-    const s = cellSpots(o);
-    if (leha && s) this.g.npcs.goTo(leha, s.lehaBunk);
+    const s = this.g.prison.seats;
+    if (leha && s) this.g.npcs.goTo(leha, s.lehaSit);
     this.g.subtitle('Лёха: «Не стой в дверях. Сядь, когда посадят. Дальше — слушай хату.»');
   }
 
@@ -105,7 +128,8 @@ export class CellLife {
     if (this.g.sim.stage !== 'life' && this.g.sim.stage !== 'propiska') return;
     this.ambientT += dt;
     const idle = this.g.idle || 0;
-    if ((idle > 4.5 || this.ambientT > 11) && !this.g.dialog.open) {
+    if (this.g.sim.stage === 'life' && this.t - (this.lifeT || 0) < 50) return;
+    if ((idle > 5.5 || this.ambientT > 14) && !this.g.dialog.open) {
       this.ambientT = 0;
       this.g.idle = 0;
       AMBIENT[(Math.random() * AMBIENT.length) | 0](this.g);
@@ -137,9 +161,8 @@ export class CellLife {
 
   directNpcs() {
     const g = this.g;
-    const o = g.prison.cellOrigin;
-    if (!o) return;
-    const s = cellSpots(o);
+    const s = g.prison.seats;
+    if (!s) return;
     const phase = g.sim.stage === 'life' ? g.sim.phase.id : 'wake';
     if (phase !== this._npcPhase) {
       this._npcPhase = phase;
@@ -148,47 +171,61 @@ export class CellLife {
         if (n) {
           n.duty = null;
           n.dutyIndex = 0;
+          n.askFrozen = null;
         }
       }
     }
     const starosta = g.npcs.byId('starosta');
     const leha = g.npcs.byId('cellmate');
     const valera = g.npcs.byId('bunk-bro');
-    const ask = this.askSpot(o);
 
     if (phase === 'evening') {
-      this.hold(starosta, 'sleep', s.sedoyBunk, 99);
-      this.hold(leha, 'sleep', s.lehaBunk, 99);
-      this.hold(valera, 'sleep', s.valeraBunk, 99);
+      this.hold(starosta, 'sleep', s.sedoyStool, 99);
+      this.hold(leha, 'sleep', s.lehaLie, 99);
+      this.hold(valera, 'sleep', s.valeraLie, 99);
       return;
     }
     if (phase === 'shmon') {
-      this.hold(starosta, 'shmon', s.aisleN, 99);
-      this.hold(leha, 'shmon', s.aisleS, 99);
-      this.hold(valera, 'shmon', s.aisle, 99);
+      this.hold(starosta, 'shmon', s.shmonSedoy, 99);
+      this.hold(leha, 'shmon', s.shmonLeha, 99);
+      this.hold(valera, 'shmon', s.shmonValera, 99);
       return;
     }
     if (phase === 'food') {
-      this.hold(starosta, 'food', s.tableSit, 99);
-      this.hold(leha, 'food', s.tableS, 99);
-      this.hold(valera, 'food', s.tableN, 99);
+      this.hold(starosta, 'food', s.sedoyStool, 99);
+      this.hold(leha, 'food', s.stoolS, 99);
+      this.hold(valera, 'food', s.stoolN, 99);
       return;
     }
 
     this.cycle(starosta, [
-      { name: 'throne', spot: s.tableSit, hold: 16 },
-      { name: 'ask', spot: ask || s.aisle, hold: 7, line: 'Седой: «Статья. Первый раз? Цигарка — на стол, не в карман.»' },
-      { name: 'watch', spot: s.hatchWatch, hold: 9 },
+      { name: 'throne', spot: s.sedoyStool, hold: 26 },
+      {
+        name: 'ask',
+        spot: 'ask',
+        hold: 10,
+        line: 'Седой: «Статья. Первый раз? Цигарка — на стол, не в карман.»',
+      },
     ]);
     this.cycle(leha, [
-      { name: 'bunk', spot: s.lehaBunk, hold: 14 },
-      { name: 'hatch', spot: s.hatchWatch, hold: 8 },
-      { name: 'ask', spot: ask || s.aisleS, hold: 6, line: 'Лёха тихо: «Свежак. Кормушку без команды не открывай.»' },
+      { name: 'bunk', spot: s.lehaSit, hold: 24 },
+      { name: 'hatch', spot: s.hatch, hold: 12 },
+      {
+        name: 'ask',
+        spot: 'ask',
+        hold: 9,
+        line: 'Лёха тихо: «Свежак. Кормушку без команды не открывай.»',
+      },
     ]);
     this.cycle(valera, [
-      { name: 'bunk', spot: s.valeraBunk, hold: 15 },
-      { name: 'window', spot: s.window, hold: 10 },
-      { name: 'ask', spot: ask || s.tableN, hold: 6, line: 'Валера: «Карты вечером, если цигарка есть. Пока хата смотрит.»' },
+      { name: 'bunk', spot: s.valeraSit, hold: 22 },
+      { name: 'window', spot: s.window, hold: 14 },
+      {
+        name: 'ask',
+        spot: 'ask',
+        hold: 9,
+        line: 'Валера: «Карты вечером, если цигарка есть. Пока хата смотрит.»',
+      },
     ]);
   }
 
@@ -204,29 +241,40 @@ export class CellLife {
     if (!n || !steps?.length) return;
     const i = n.dutyIndex || 0;
     const step = steps[i % steps.length];
+    const spot = step.spot === 'ask' ? this.frozenAsk(n) : step.spot;
     if (n.duty !== step.name) {
       n.duty = step.name;
       n.dutyUntil = this.t + step.hold;
       n.asked = false;
-      this.g.npcs.goTo(n, step.spot);
+      if (step.spot !== 'ask') n.askFrozen = null;
+      this.g.npcs.goTo(n, spot);
       return;
     }
-    if (!n.walkTo && step.line && !n.asked && this.t > (n.dutyUntil || 0) - step.hold + 1.4) {
+    if (!n.walkTo && step.line && !n.asked && this.t > (n.dutyUntil || 0) - step.hold + 1.6) {
       n.asked = true;
       if (!this.g.dialog.open) this.g.subtitle(step.line);
     }
     if (!n.walkTo && this.t > (n.dutyUntil || 0)) {
       n.dutyIndex = (i + 1) % steps.length;
       n.duty = null;
+      n.askFrozen = null;
     }
   }
 
-  askSpot(o) {
+  frozenAsk(n) {
+    if (n.askFrozen) return n.askFrozen;
+    n.askFrozen = this.askSpotOnce();
+    return n.askFrozen;
+  }
+
+  askSpotOnce() {
+    const o = this.g.prison.cellOrigin;
+    const s = this.g.prison.seats;
     const p = this.g.player?.position;
-    if (!p) return null;
-    if (Math.abs(p.x - o.x) > 3.2 || Math.abs(p.z - o.z) > 3.5) return cellSpots(o).aisle;
-    const x = clamp(p.x - 0.15, o.x - 1.55, o.x + 0.25);
-    const z = clamp(p.z + 1.2, o.z - 1.35, o.z + 1.35);
+    if (!p || !o) return s?.aisle;
+    if (Math.abs(p.x - o.x) > 3.2 || Math.abs(p.z - o.z) > 3.5) return s?.aisle;
+    const x = clamp(p.x - 0.2, o.x - 1.55, o.x + 0.35);
+    const z = clamp(p.z + 1.15, o.z - 1.25, o.z + 1.15);
     return { x, z, yaw: Math.atan2(p.x - x, p.z - z), sit: false };
   }
 
@@ -354,22 +402,6 @@ export class CellLife {
       this.completeTask('kettle');
     };
   }
-}
-
-function cellSpots(o) {
-  return {
-    tableSit: { x: o.x - 0.8, z: o.z + 0.12, yaw: Math.PI / 2, sit: true },
-    tableS: { x: o.x + 0.12, z: o.z - 0.72, yaw: 0, sit: true },
-    tableN: { x: o.x + 0.12, z: o.z + 0.82, yaw: Math.PI, sit: true },
-    lehaBunk: { x: o.x + 1.2, z: o.z - 1.78, yaw: 0, sit: true },
-    sedoyBunk: { x: o.x + 1.2, z: o.z + 1.55, yaw: Math.PI, sit: true },
-    valeraBunk: { x: o.x - 0.2, z: o.z + 1.62, yaw: 0.15, sit: true },
-    hatchWatch: { x: o.x - 2.05, z: o.z - 0.4, yaw: -Math.PI / 2, lean: true },
-    window: { x: o.x - 1.55, z: o.z + 2.2, yaw: 0 },
-    aisle: { x: o.x - 0.95, z: o.z + 0.1, yaw: Math.PI / 2 },
-    aisleN: { x: o.x - 0.95, z: o.z + 1.05, yaw: Math.PI },
-    aisleS: { x: o.x - 0.95, z: o.z - 1.05, yaw: Math.PI },
-  };
 }
 
 function clamp(v, a, b) {

@@ -388,6 +388,7 @@ export class Prison {
     this.addBunks(cell);
     this.addWashCorner(cell, w, d);
     this.addTable(cell);
+    this.addLivedIn(cell);
     this.addCat(cell);
     this.addCellLamp(cell, 0, h - 0.12, 0);
 
@@ -399,6 +400,7 @@ export class Prison {
     this.addCollider(ox - w / 2 - 0.12, ox - w / 2 + 0.16, 3.4 + doorGap, oz + d / 2, 'cell-inner-b');
 
     this.cellOrigin = new THREE.Vector3(ox, 0, oz);
+    this.seats = makeSeats(ox, oz);
     this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.55, 0, oz - 0.35);
     this.doorThreshold = new THREE.Vector3(LAYOUT.corridorHalf + 0.35, 0, 3.4);
     this.playerSpawn = new THREE.Vector3(0, 0, -82.35);
@@ -519,6 +521,12 @@ export class Prison {
       const bunk = this.makeBunk();
       bunk.position.set(x, 0, z);
       bunk.rotation.y = rot;
+      if (x === 1.85 && z === -2.35) {
+        const tag = cellSign('ТВОЯ');
+        tag.scale.setScalar(0.55);
+        tag.position.set(-0.02, 0.78, 0.42);
+        bunk.add(tag);
+      }
       cell.add(bunk);
       if (rot) {
         this.furniture.push({ minx: ox + x - 0.5, maxx: ox + x + 0.5, minz: oz + z - 1.05, maxz: oz + z + 1.05 });
@@ -549,13 +557,24 @@ export class Prison {
       g.add(frame);
     }
     const cloth = new THREE.MeshStandardMaterial({ color: 0xc5c0b4, roughness: 0.95 });
-    const lower = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.7), cloth);
+    const lower = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.12, 0.72), cloth);
     lower.position.set(0.04, 0.5, 0);
     g.add(lower);
-    const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.7), cloth);
+    const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.1, 0.72), cloth);
     mattress.position.set(0.04, 1.26, 0);
-    mattress.rotation.z = 0.04;
     g.add(mattress);
+    const pillow = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.1, 0.38),
+      new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.9 }),
+    );
+    pillow.position.set(0.72, 0.62, 0);
+    g.add(pillow);
+    const blanket = new THREE.Mesh(
+      new THREE.BoxGeometry(0.9, 0.05, 0.7),
+      new THREE.MeshStandardMaterial({ color: 0x4a5a6a, roughness: 0.92 }),
+    );
+    blanket.position.set(-0.28, 0.58, 0);
+    g.add(blanket);
     return g;
   }
 
@@ -633,7 +652,7 @@ export class Prison {
     this.furniture.push({ minx: ox + 1.7, maxx: ox + 3.1, minz: oz + 1.85, maxz: oz + 3.35 });
     const wood = new THREE.MeshStandardMaterial({ color: 0xc8b48a, roughness: 0.8 });
     this.box(1.3, 0.05, 0.55, wood, 0.2, 0.72, 0.2, cell);
-    this.box(1.1, 0.04, 0.28, wood, 0.2, 0.38, 0.85, cell);
+    this.addStools(cell);
     const kettle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.07, 0.09, 0.16, 12),
       new THREE.MeshStandardMaterial({ color: 0x7a7a72, metalness: 0.55, roughness: 0.35 }),
@@ -675,9 +694,60 @@ export class Prison {
     );
     photo.position.set(1.2, 1.7, -LAYOUT.cellD / 2 + 0.1);
     cell.add(photo);
-    const lamp = new THREE.PointLight(0xffd7a0, 0.55, 6, 2);
+    const lamp = new THREE.PointLight(0xffd7a0, 0.7, 7, 2);
     lamp.position.set(0.2, 1.6, 0.2);
     cell.add(lamp);
+    const windowFill = new THREE.PointLight(0x9bb4c4, 0.4, 8, 2);
+    windowFill.position.set(-1.2, 2.15, LAYOUT.cellD / 2 - 0.5);
+    cell.add(windowFill);
+  }
+
+  addStools(cell) {
+    const wood = new THREE.MeshStandardMaterial({ color: 0x6a4e32, roughness: 0.86 });
+    const spots = [
+      [1.08, 0.18],
+      [0.18, -0.4],
+      [0.22, 0.74],
+    ];
+    for (const [x, z] of spots) {
+      this.box(0.34, 0.07, 0.34, wood, x, 0.44, z, cell);
+      for (const [sx, sz] of [
+        [-0.11, -0.11],
+        [0.11, -0.11],
+        [-0.11, 0.11],
+        [0.11, 0.11],
+      ]) {
+        this.box(0.055, 0.4, 0.055, wood, x + sx, 0.2, z + sz, cell);
+      }
+    }
+  }
+
+  addLivedIn(cell) {
+    const rope = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
+    this.box(2.4, 0.012, 0.012, rope, -0.4, 1.92, 2.9, cell);
+    const cloths = [0x4a4a52, 0xc8c2b0, 0x2a2a28];
+    cloths.forEach((c, i) => {
+      const rag = new THREE.Mesh(
+        new THREE.BoxGeometry(0.28, 0.42, 0.04),
+        new THREE.MeshStandardMaterial({ color: c, roughness: 0.92 }),
+      );
+      rag.position.set(-1.1 + i * 0.55, 1.68, 2.9);
+      rag.rotation.z = (i - 1) * 0.08;
+      cell.add(rag);
+    });
+    const bottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),
+    );
+    bottle.position.set(0.55, 0.86, 0.28);
+    cell.add(bottle);
+    const book = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.03, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x4a2020, roughness: 0.85 }),
+    );
+    book.position.set(1.4, 0.58, 2.0);
+    book.rotation.y = 0.4;
+    cell.add(book);
   }
 
   addCat(cell) {
@@ -775,6 +845,14 @@ export class Prison {
       this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);
       this.box(0.3, 2.25, 9, plaster, x, 2.27, 0, g);
     }
+    const cage = new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.55, roughness: 0.4 });
+    for (let i = -4; i <= 4; i++) {
+      this.box(0.05, 0.05, 8.8, cage, i, 3.38, 0, g);
+      this.box(8.8, 0.05, 0.05, cage, 0, 3.38, i, g);
+    }
+    const ring = new THREE.MeshStandardMaterial({ color: 0x5a5e58, roughness: 0.92 });
+    this.box(5.2, 0.02, 0.18, ring, 0, 0.06, 0, g);
+    this.box(0.18, 0.02, 5.2, ring, 0, 0.06, 0, g);
 
     const doorW = 1.28;
     const doorH = 2.22;
@@ -975,6 +1053,26 @@ function cellSign(text) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), new THREE.MeshBasicMaterial({ map: tex }));
+}
+
+export function makeSeats(ox, oz) {
+  const w = LAYOUT.cellW;
+  const d = LAYOUT.cellD;
+  return {
+    sedoyStool: { x: ox + 1.08, z: oz + 0.18, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
+    stoolS: { x: ox + 0.18, z: oz - 0.4, yaw: 0, sit: true, seatY: 0.5 },
+    stoolN: { x: ox + 0.22, z: oz + 0.74, yaw: Math.PI, sit: true, seatY: 0.5 },
+    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: -Math.PI / 2, sit: true, seatY: 0.56 },
+    lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
+    valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.56 },
+    valeraLie: { x: ox - 0.15, z: oz + 2.32, yaw: 0, lie: true },
+    hatch: { x: ox - w / 2 + 0.82, z: 3.42, yaw: -Math.PI / 2, lean: true },
+    window: { x: ox - 1.35, z: oz + d / 2 - 0.92, yaw: 0 },
+    shmonSedoy: { x: ox - 1.2, z: oz + 0.4, yaw: -Math.PI / 2 },
+    shmonLeha: { x: ox - 1.2, z: oz + 1.2, yaw: -Math.PI / 2 },
+    shmonValera: { x: ox - 1.2, z: oz - 0.5, yaw: -Math.PI / 2 },
+    aisle: { x: ox - 1.05, z: oz + 0.08, yaw: Math.PI / 2 },
+  };
 }
 
 function wallSegments(start, end, gaps, half) {

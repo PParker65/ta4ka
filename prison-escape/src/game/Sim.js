@@ -89,7 +89,7 @@ export class Sim {
   tick(dt) {
     if (this.stage !== 'life') return;
     this.phaseT += dt;
-    if (this.phaseT > 28) {
+    if (this.phaseT > 52) {
       this.phaseT = 0;
       this.phaseIndex = (this.phaseIndex + 1) % PHASES.length;
       if (this.phaseIndex === 0) this.day += 1;

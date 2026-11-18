@@ -99,7 +99,7 @@ export class Game {
 
     this.npcs = new Npcs(this.scene);
     await this.npcs.spawnConvoy();
-    await this.npcs.spawnCell(this.prison.cellOrigin.x, this.prison.cellOrigin.z);
+    await this.npcs.spawnCell(this.prison.cellOrigin.x, this.prison.cellOrigin.z, this.prison.seats);
     await this.npcs.spawnHatches(this.prison.doors || []);
     this.npcs.furniture = this.prison.furniture || [];
     this.npcs.prison = this.prison;

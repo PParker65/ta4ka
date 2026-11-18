@@ -527,6 +527,12 @@ function alcove(prison, x, z, title) {
     const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.12, 8), metal);
     lamp.position.set(0.4, 1.02, 0.1);
     g.add(lamp);
+    const bag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.12, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x3a3530, roughness: 0.9 }),
+    );
+    bag.position.set(-0.2, 1.02, 0.15);
+    g.add(bag);
   }
   if (title === 'ФОТО') {
     prison.box(0.12, 1.1, 0.12, metal, -0.4, 0.7, 0.3, g);
@@ -547,6 +553,12 @@ function alcove(prison, x, z, title) {
     head.position.set(0.5, 1.55, 0.8);
     g.add(head);
     prison.box(0.45, 0.9, 0.45, wood, -0.4, 0.5, 0, g);
+    const robe = new THREE.Mesh(
+      new THREE.BoxGeometry(0.32, 0.7, 0.06),
+      new THREE.MeshStandardMaterial({ color: 0x5a5a56, roughness: 0.85 }),
+    );
+    robe.position.set(-0.9, 1.35, 0.6);
+    g.add(robe);
   }
 }
 
