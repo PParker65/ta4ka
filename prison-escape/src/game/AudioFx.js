@@ -79,6 +79,75 @@ export class AudioFx {
     this._amb = src;
   }
 
+  rumble() {
+    this.unlock();
+    if (!this.ctx || this._rumble) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.value = 42;
+    g.gain.value = 0.035;
+    o.connect(g).connect(this.ctx.destination);
+    o.start(t);
+    this._rumble = { o, g };
+  }
+
+  stopRumble() {
+    if (!this._rumble || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    this._rumble.g.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+    this._rumble.o.stop(t + 0.85);
+    this._rumble = null;
+  }
+
+  doorScrape() {
+    this.unlock();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(90, t);
+    o.frequency.exponentialRampToValueAtTime(38, t + 1.6);
+    g.gain.setValueAtTime(0.07, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 1.7);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(t);
+    o.stop(t + 1.72);
+  }
+
+  siren() {
+    this.unlock();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(620, t);
+    o.frequency.linearRampToValueAtTime(410, t + 1.1);
+    g.gain.setValueAtTime(0.03, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(t);
+    o.stop(t + 1.42);
+  }
+
+  foot() {
+    this.unlock();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = 70 + Math.random() * 20;
+    g.gain.setValueAtTime(0.04, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    o.connect(g).connect(this.ctx.destination);
+    o.start(t);
+    o.stop(t + 0.1);
+  }
+
   clippers() {
     this.unlock();
     if (!this.ctx) return;

@@ -364,7 +364,7 @@ export class Prison {
     this.cellOrigin = new THREE.Vector3(ox, 0, oz);
     this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.15, 0, 3.55);
     this.doorThreshold = new THREE.Vector3(LAYOUT.corridorHalf + 0.35, 0, 3.4);
-    this.playerSpawn = new THREE.Vector3(0, 0, -81.15);
+    this.playerSpawn = new THREE.Vector3(0, 0, -82.35);
 
     const rag = new THREE.Mesh(
       new THREE.BoxGeometry(0.55, 0.03, 0.38),

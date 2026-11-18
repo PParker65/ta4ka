@@ -95,6 +95,11 @@ export class Game {
     await this.npcs.spawnConvoy();
     await this.npcs.spawnCell(this.prison.cellOrigin.x, this.prison.cellOrigin.z);
     await this.npcs.spawnHatches(this.prison.doors || []);
+    this.npcs.list.forEach((n) => {
+      n.root.traverse((c) => {
+        if (c.userData.billboard) c.visible = false;
+      });
+    });
 
     this.guards = new Guards(this.scene, this.prison);
     this.guards.spawn();
@@ -103,7 +108,11 @@ export class Game {
 
     this.input = new Input({ mobile: this.mobile, canvas: this.canvas });
     this.input.yaw = 0;
-    this.input.pitch = -0.04;
+    this.input.pitch = 0.06;
+    this.camera.fov = 48;
+    this.camera.updateProjectionMatrix();
+    this.renderer.toneMappingExposure = 0.38;
+    this.hands.visible = false;
     if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
     else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
@@ -113,9 +122,8 @@ export class Game {
     this.bindUi();
     document.getElementById('hud')?.classList.add('hud-quiet');
     this.audio.ambient();
-    this.audio.clang();
-    this.audio.bark();
-    this.subtitle('Двери автозака. Свет бьёт в глаза. Это уже не воля.');
+    this.audio.rumble();
+    this.audio.siren();
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
   }
@@ -202,14 +210,15 @@ export class Game {
     const yaw = this.input.yaw;
 
     this.stepIntro(dt);
-    if (this.introT >= 2.8 || this._hold) {
+    this.stepRain(dt);
+    if (this.introT >= 10 || this._hold) {
       if (this.escort) this.stepEscort(dt);
       else this.stepWalk(dt, move, crouch, yaw);
     }
 
     this.player.setLocomotion(this.escort ? 0.6 : move.mag, false, crouch);
     this.player.update(dt);
-    this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera);
+    this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
 
     this.updateCamera(crouch);
     const outside = this.player.position.z < -53;
@@ -296,6 +305,13 @@ export class Game {
     const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
+    if (wish.lengthSq() > 0) {
+      this._footT = (this._footT || 0) + dt;
+      if (this._footT > 0.48) {
+        this._footT = 0;
+        this.audio.foot();
+      }
+    }
     if (!this.sim.docs) {
       if (this.player.position.z < -88) {
         this.player.position.z = -88;
@@ -394,27 +410,82 @@ export class Game {
   }
 
   stepIntro(dt) {
-    if (this.introDone) return;
+    if (this._introHud) return;
     this.introT += dt;
+    const t = this.introT;
     const fade = document.getElementById('fade');
     if (fade) {
-      const o = Math.max(0, 1 - this.introT / 1.6);
+      const o = Math.max(0, 1 - t / 2.4);
       fade.style.opacity = String(o);
       if (o <= 0) fade.style.display = 'none';
     }
-    if (!this._introBark && this.introT > 2.15) {
-      this._introBark = true;
-      this.subtitle('Конвой: «Выходи. Руки. Собака не игрушка.»');
+
+    const doors = this.prison.vanDoors;
+    if (doors) {
+      const k = smoothstep((t - 2.4) / 1.8);
+      doors.left.rotation.y = k * 1.28;
+      doors.right.rotation.y = -k * 1.28;
+    }
+
+    if (!this._introDoors && t > 2.4) {
+      this._introDoors = true;
+      this.audio.stopRumble();
+      this.audio.doorScrape();
+      this.audio.clang();
+    }
+    if (!this._introLook && t > 4.2) {
+      this._introLook = true;
       this.audio.bark();
     }
-    if (this.introT > 2.8) {
+    if (!this._introOut && t > 7.2) {
+      this._introOut = true;
+      this.subtitle('Конвой: «Выходи.»');
+      this.audio.bark();
+      this.pullFresh();
+    }
+    if (!this._introControl && t > 10) {
+      this._introControl = true;
+      this.hands.visible = true;
+    }
+    if (!this._introHud && t > 18) {
+      this._introHud = true;
       document.getElementById('hud')?.classList.remove('hud-quiet');
       this.introDone = true;
+      this.npcs.list.forEach((n) => {
+        n.root.traverse((c) => {
+          if (c.userData.billboard) c.visible = true;
+        });
+      });
+    }
+
+    if (t < 11) {
+      const lookK = smoothstep((t - 3.6) / 2.2);
+      this.input.pitch = 0.06 + lookK * -0.28;
+      this.camera.fov = 48 + lookK * 14;
+      this.camera.updateProjectionMatrix();
+      this.renderer.toneMappingExposure = 0.38 + lookK * 0.8;
     }
   }
 
+  pullFresh() {
+    const n = this.npcs.fresh;
+    if (!n) return;
+    n.walkTo = new THREE.Vector3(0, 0, -70);
+  }
+
+  stepRain(dt) {
+    const rain = this.prison.rain;
+    if (!rain) return;
+    const arr = rain.geometry.attributes.position.array;
+    for (let i = 1; i < arr.length; i += 3) {
+      arr[i] -= dt * 9;
+      if (arr[i] < 0) arr[i] = 14 + Math.random() * 4;
+    }
+    rain.geometry.attributes.position.needsUpdate = true;
+  }
+
   autoGuide(dt, mag) {
-    this.idle = mag > 0.12 || this.escort || this.introT < 2.8 ? 0 : this.idle + dt;
+    this.idle = mag > 0.12 || this.escort || this.introT < 10 ? 0 : this.idle + dt;
     if (this.sim.stage === 'kpp' && !this.sim.docs && this.idle > 6 && !this._kppNudge) {
       this._kppNudge = true;
       this.guide = new THREE.Vector3(3.4, 0, -56.2);
@@ -836,4 +907,9 @@ function stageName(st) {
 
 function isMobile() {
   return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 820;
+}
+
+function smoothstep(x) {
+  const t = Math.max(0, Math.min(1, x));
+  return t * t * (3 - 2 * t);
 }

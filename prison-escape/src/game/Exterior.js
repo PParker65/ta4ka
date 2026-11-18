@@ -20,7 +20,7 @@ export function buildArrival(prison) {
   addKpp(prison);
   addProcessing(prison);
 
-  prison.playerSpawn = new THREE.Vector3(0, 0, -81.15);
+  prison.playerSpawn = new THREE.Vector3(0, 0, -82.35);
 }
 
 function addSky(prison) {
@@ -205,14 +205,16 @@ function addVan(prison) {
     }
   }
 
-  const doorL = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.4, 0.95), body);
-  doorL.position.set(-1.05, 1.05, -2.68);
-  doorL.rotation.y = 1.2;
+  const doorL = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.42, 1.02), body);
+  doorL.position.set(-0.5, 1.05, -2.62);
+  doorL.rotation.y = 0;
   van.add(doorL);
   const doorR = doorL.clone();
-  doorR.position.x = 1.05;
-  doorR.rotation.y = -1.2;
+  doorR.position.set(0.5, 1.05, -2.62);
   van.add(doorR);
+  prison.vanDoors = { left: doorL, right: doorR };
+
+  addRain(prison);
 
   const plate = plaque('АА 1313 КІ', 0.7, 0.18);
   plate.position.set(0, 0.7, 2.75);
@@ -225,7 +227,26 @@ function addVan(prison) {
   prison.group.add(flood.target);
   prison.box(0.14, 5.0, 0.14, steel, 3.2, 2.5, -86);
 
-  prison.playerSpawn = new THREE.Vector3(0, 0, -81.15);
+  prison.playerSpawn = new THREE.Vector3(0, 0, -82.35);
+}
+
+function addRain(prison) {
+  const n = 700;
+  const pos = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    pos[i * 3] = (Math.random() - 0.5) * 70;
+    pos[i * 3 + 1] = Math.random() * 16;
+    pos[i * 3 + 2] = -90 + Math.random() * 70;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const rain = new THREE.Points(
+    g,
+    new THREE.PointsMaterial({ color: 0xb8c4ce, size: 0.045, transparent: true, opacity: 0.45, depthWrite: false }),
+  );
+  rain.name = 'Rain';
+  prison.group.add(rain);
+  prison.rain = rain;
 }
 
 function addKpp(prison) {

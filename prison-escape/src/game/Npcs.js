@@ -44,6 +44,20 @@ export class Npcs {
     await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.85, z: -78.6, yaw: Math.PI, follow: 0 });
     await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.85, z: -78.4, yaw: Math.PI, follow: 1 });
     await this.add('guard', { id: 'kpp-officer', name: 'Дежурный', x: 4.2, z: -55.4, yaw: Math.PI, follow: null });
+    await this.add('inmate', {
+      id: 'fresh',
+      name: '',
+      x: 0.42,
+      z: -82.55,
+      yaw: Math.PI,
+      robe: 0x3a3a38,
+    });
+    const fresh = this.list.find((n) => n.id === 'fresh');
+    if (fresh) {
+      const plate = fresh.root.children.find((c) => c.userData.billboard);
+      if (plate) plate.visible = false;
+      this.fresh = fresh;
+    }
     this.dogs = [makeDog(-3.6, -73.2, 0.4), makeDog(2.4, -71.4, -0.3), makeDog(-1.2, -75.5, 0.9)];
     for (const d of this.dogs) {
       this.scene.add(d.root);
@@ -79,9 +93,11 @@ export class Npcs {
     root.position.set(spec.x, 0, spec.z);
     root.rotation.y = spec.yaw || 0;
     this.scene.add(root);
-    const label = nameplate(spec.name);
-    label.position.set(0, 1.95, 0);
-    root.add(label);
+    if (spec.name) {
+      const label = nameplate(spec.name);
+      label.position.set(0, 1.95, 0);
+      root.add(label);
+    }
     this.list.push({
       root,
       id: spec.id,
@@ -120,8 +136,18 @@ export class Npcs {
     }
   }
 
-  update(t, player, camera) {
+  update(t, player, camera, dt = 0.016) {
     for (const n of this.list) {
+      if (n.walkTo) {
+        const dx = n.walkTo.x - n.root.position.x;
+        const dz = n.walkTo.z - n.root.position.z;
+        const d = Math.hypot(dx, dz) || 1;
+        if (d > 0.2) {
+          n.root.position.x += (dx / d) * dt * 1.25;
+          n.root.position.z += (dz / d) * dt * 1.25;
+          n.root.rotation.y = Math.atan2(dx, dz);
+        }
+      }
       if (camera) {
         n.root.traverse((c) => {
           if (c.userData.billboard) c.quaternion.copy(camera.quaternion);
