@@ -31,18 +31,33 @@
         </div>
 
         <div
-          id="quest"
-          class="pointer-events-none absolute left-1/2 top-[11%] w-[92%] max-w-lg -translate-x-1/2 rounded border border-amber-700/50 bg-black/75 px-3 py-2 text-center text-[16px] leading-snug text-amber-100"
+          id="way"
+          class="pointer-events-none absolute left-1/2 top-[4.6rem] flex -translate-x-1/2 items-center gap-3 rounded-full border border-amber-700/60 bg-black/75 px-3 py-1.5"
         >
-          Сдай вещи на опись. Шнурки, ремень, телефон — всё.
+          <div id="compass" class="relative h-10 w-10 rounded-full border border-amber-500/80">
+            <div id="needle" class="absolute left-1/2 top-0.5 origin-[50%_18px] text-amber-300">▲</div>
+          </div>
+          <div class="min-w-[9rem] text-left">
+            <div id="way-name" class="text-[16px] font-semibold text-amber-100">КПП</div>
+            <div id="way-dist" class="text-[14px] text-zinc-400">документы · справа</div>
+          </div>
+        </div>
+
+        <div
+          id="quest"
+          class="pointer-events-none absolute left-1/2 top-[12%] hidden w-[92%] max-w-lg -translate-x-1/2 rounded border border-amber-700/40 bg-black/70 px-3 py-2 text-center text-[16px] leading-snug text-amber-100"
+        >
+          КПП справа от ворот.
         </div>
 
         <div
           id="look-hint"
           class="pointer-events-none absolute bottom-[168px] left-1/2 w-[92%] max-w-md -translate-x-1/2 text-center text-[15px] text-zinc-400"
         >
-          Кликни в игру — смотреть мышкой. ← → или Q — поворот. WASD — шаг. E — действие.
+          Мышь — взгляд. ← влево, → вправо. WASD — шаг. Shift — бег. E — действие.
         </div>
+
+        <div id="nerves" class="pointer-events-none absolute inset-0 z-[5] hidden"></div>
 
         <div class="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70"></div>
 
@@ -88,6 +103,13 @@
             class="min-h-[48px] min-w-[118px] rounded-full border border-emerald-600/70 bg-black/55 px-4 text-[16px] font-semibold text-emerald-100"
           >
             Грев
+          </button>
+          <button
+            id="btn-run"
+            type="button"
+            class="min-h-[52px] min-w-[118px] rounded-full border border-red-500/70 bg-black/55 px-4 text-[16px] font-semibold uppercase text-red-100"
+          >
+            Бег
           </button>
           <button
             id="btn-interact"

@@ -577,6 +577,23 @@ export class Prison {
       new THREE.MeshStandardMaterial({ color: 0x5a5a54, metalness: 0.5 }),
     );
     lid.position.set(-0.15, 0.94, 0.15);
+    const paper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.01, 0.2),
+      new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 }),
+    );
+    paper.position.set(0.35, 0.76, 0.12);
+    paper.rotation.y = 0.3;
+    cell.add(paper);
+    const pack = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.03, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x6a1020, roughness: 0.6 }),
+    );
+    pack.position.set(0.55, 0.76, 0.28);
+    cell.add(pack);
+    const cal = cellSign('ХАТА 4');
+    cal.position.set(-2.2, 1.85, 0.2);
+    cal.rotation.y = Math.PI / 2;
+    cell.add(cal);
     cell.add(lid);
     const mug = new THREE.Mesh(
       new THREE.CylinderGeometry(0.04, 0.035, 0.07, 10),
@@ -837,6 +854,25 @@ export class Prison {
     }
     return best;
   }
+}
+
+function cellSign(text) {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#3a2a18';
+  ctx.fillRect(0, 0, 256, 128);
+  ctx.strokeStyle = '#d4b070';
+  ctx.strokeRect(6, 6, 244, 116);
+  ctx.fillStyle = '#f0e0c0';
+  ctx.font = '700 42px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 64);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), new THREE.MeshBasicMaterial({ map: tex }));
 }
 
 function wallSegments(start, end, gaps, half) {

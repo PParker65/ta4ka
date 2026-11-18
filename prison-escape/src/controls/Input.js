@@ -21,6 +21,7 @@ export class Input {
     this._ly = 0;
     this.keys = new Set();
     this.crouchHeld = false;
+    this.sprintHeld = false;
     this.interactPulse = false;
     this.talkPulse = false;
     this.locked = false;
@@ -56,6 +57,23 @@ export class Input {
       this.crouchHeld = !this.crouchHeld;
       this.syncCrouchButton();
     });
+    const runBtn = document.getElementById('btn-run');
+    if (runBtn) {
+      const down = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.sprintHeld = true;
+        runBtn.classList.add('bg-amber-700/70');
+      };
+      const up = () => {
+        this.sprintHeld = false;
+        runBtn.classList.remove('bg-amber-700/70');
+      };
+      runBtn.addEventListener('pointerdown', down);
+      runBtn.addEventListener('pointerup', up);
+      runBtn.addEventListener('pointercancel', up);
+      runBtn.addEventListener('pointerleave', up);
+    }
     this.syncCrouchButton();
   }
 
@@ -108,7 +126,7 @@ export class Input {
   }
 
   applyLook(dx, dy, sens) {
-    this.yaw -= dx * sens;
+    this.yaw += dx * sens;
     this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
   }
 
@@ -125,8 +143,7 @@ export class Input {
       this.crouchHeld = !this.crouchHeld;
       this.syncCrouchButton();
     }
-    if (e.code === 'KeyE' && !e.repeat) this.interactPulse = true;
-    if (e.code === 'Space' && !e.repeat) this.interactPulse = true;
+    if ((e.code === 'KeyE' || e.code === 'Space' || e.code === 'KeyF') && !e.repeat) this.interactPulse = true;
     if (e.code === 'KeyT' && !e.repeat) this.talkPulse = true;
     if (e.code === 'Escape' && this.locked) document.exitPointerLock?.();
   }
@@ -136,11 +153,11 @@ export class Input {
     this.keys.delete((e.key || '').toLowerCase());
   }
 
-  /** Radians/sec yaw from Q/E and arrow keys so a keyboard-only PC can turn. */
+  /** Radians/sec. Left looks left, right looks right. */
   turnRate() {
     let t = 0;
-    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t += 2.1;
-    if (this.keys.has('ArrowRight')) t -= 2.1;
+    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t -= 2.4;
+    if (this.keys.has('KeyR') || this.keys.has('ArrowRight')) t += 2.4;
     return t;
   }
 
@@ -168,7 +185,8 @@ export class Input {
       x /= mag;
       z /= mag;
     }
-    const run = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight') || mag > 0.72;
+    const run =
+      this.sprintHeld || this.keys.has('ShiftLeft') || this.keys.has('ShiftRight') || this.keys.has('shift');
     return { x, z, mag: Math.min(1, mag), run };
   }
 

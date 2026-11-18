@@ -16,6 +16,7 @@ import { Minigames } from './Minigames.js';
 import { AudioFx } from './AudioFx.js';
 import { makeHands } from './Hands.js';
 import { Chat } from './Chat.js';
+import { storyLine, wayFor } from './Story.js';
 
 export class Game {
   constructor(canvas) {
@@ -85,6 +86,8 @@ export class Game {
 
     this.prison = new Prison(this.scene);
     this.prison.build();
+    this.beacon = makeBeacon();
+    this.scene.add(this.beacon);
 
     this.player = new Character(this.scene);
     await this.player.init();
@@ -211,7 +214,7 @@ export class Game {
 
     this.stepIntro(dt);
     this.stepRain(dt);
-    if (this.introT >= 10 || this._hold) {
+    if (this.introT >= 8 || this._hold) {
       if (this.escort) this.stepEscort(dt);
       else this.stepWalk(dt, move, crouch, yaw);
     }
@@ -261,6 +264,10 @@ export class Game {
     this.sim.tick(dt);
     this.updateStages();
     this.autoGuide(dt, move.mag);
+    this.stepCompass(dt);
+    this.stepStory();
+    this.stepNerves();
+    this._lastMove = move;
 
     if (this.input.consumeTalk()) this.openTalk();
 
@@ -286,8 +293,15 @@ export class Game {
         run: false,
       };
     }
-    if (!this.sim.docs) move.run = false;
-    const speed = this.sim.cuffed ? 1.05 : crouch ? 1.2 : move.run ? 3.2 : 2.1;
+    const speed = this.sim.cuffed
+      ? move.run
+        ? 2.2
+        : 1.2
+      : crouch
+        ? 1.25
+        : move.run
+          ? 4.2
+          : 2.3;
     const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
     const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
     const wish = new THREE.Vector3();
@@ -307,7 +321,7 @@ export class Game {
     this.player.position.z = resolved.z;
     if (wish.lengthSq() > 0) {
       this._footT = (this._footT || 0) + dt;
-      if (this._footT > 0.48) {
+      if (this._footT > (move.run ? 0.3 : 0.48)) {
         this._footT = 0;
         this.audio.foot();
       }
@@ -319,8 +333,14 @@ export class Game {
         this.toast('Конвой: «Стой. КПП впереди, не к забору.»');
         this.sim.stress = Math.min(100, this.sim.stress + 6);
       }
-      if (move.run || move.mag > 0.85) {
+      if (move.run) {
         this.npcs.dogsAlert?.(true);
+        if (!this._ranWarn) {
+          this._ranWarn = true;
+          this.subtitle('Конвой: «Шагом! Собака не игрушка.»');
+          this.audio.bark();
+          this.sim.stress = Math.min(100, this.sim.stress + 8);
+        }
       }
     }
   }
@@ -443,9 +463,10 @@ export class Game {
       this.audio.bark();
       this.pullFresh();
     }
-    if (!this._introControl && t > 10) {
+    if (!this._introControl && t > 8) {
       this._introControl = true;
       this.hands.visible = true;
+      document.getElementById('quest')?.classList.remove('hidden');
     }
     if (!this._introHud && t > 18) {
       this._introHud = true;
@@ -486,18 +507,53 @@ export class Game {
 
   autoGuide(dt, mag) {
     this.idle = mag > 0.12 || this.escort || this.introT < 10 ? 0 : this.idle + dt;
-    if (this.sim.stage === 'kpp' && !this.sim.docs && this.idle > 6 && !this._kppNudge) {
-      this._kppNudge = true;
-      this.guide = new THREE.Vector3(3.4, 0, -56.2);
-      this.subtitle('КПП справа от ворот. Документы. В камеру сразу не ведут.');
+    if (this.idle > 9 && !this._lost) {
+      this._lost = true;
+      const w = wayFor(this.sim, this.prison);
+      this.subtitle(`${w.name}. ${w.hint} Компас сверху.`);
     }
-    if (this.sim.stage === 'bath' && !this.sim.haircut && this.idle > 7) {
-      this.interact(this.prison.interactables.find((x) => x.type === 'bath'));
-      this.idle = 0;
-    } else if (this.sim.stage === 'bath' && this.sim.haircut && this.sim.robe !== 'kazenka' && this.idle > 5) {
-      this.interact(this.prison.interactables.find((x) => x.type === 'robe'));
-      this.idle = 0;
+    if (mag > 0.12) this._lost = false;
+  }
+
+  stepCompass(dt) {
+    const w = wayFor(this.sim, this.prison);
+    const dx = w.x - this.player.position.x;
+    const dz = w.z - this.player.position.z;
+    const dist = Math.hypot(dx, dz);
+    let ang = Math.atan2(dx, dz) - this.input.yaw;
+    while (ang > Math.PI) ang -= Math.PI * 2;
+    while (ang < -Math.PI) ang += Math.PI * 2;
+    const needle = document.getElementById('needle');
+    if (needle) needle.style.transform = `rotate(${(ang * 180) / Math.PI}deg)`;
+    const name = document.getElementById('way-name');
+    const dEl = document.getElementById('way-dist');
+    if (name) name.textContent = w.name;
+    if (dEl) dEl.textContent = dist < 1.4 ? w.hint : `${Math.round(dist)} м · ${w.hint}`;
+    if (this.beacon) {
+      this.beacon.position.set(w.x, 1.7 + Math.sin(this.clock.elapsedTime * 2.2) * 0.12, w.z);
+      this.beacon.visible = dist > 1.1 && !this.escort;
+      this.beacon.rotation.y += dt * 1.4;
     }
+    this.guide = new THREE.Vector3(w.x, 0, w.z);
+  }
+
+  stepStory() {
+    const beat = storyLine(this.sim, this.player.position, this.introT);
+    if (!beat || beat.id === this._beat) return;
+    this._beat = beat.id;
+    this.subtitle(beat.text);
+  }
+
+  stepNerves() {
+    const n = document.getElementById('nerves');
+    if (!n) return;
+    const s = this.sim.stress;
+    if (s < 62) {
+      n.classList.add('hidden');
+      return;
+    }
+    n.classList.remove('hidden');
+    n.style.opacity = String(Math.min(0.85, (s - 60) / 50));
   }
 
   updateCamera(crouch) {
@@ -518,6 +574,12 @@ export class Game {
       this.camera.position.z + Math.cos(yaw) * Math.cos(pitch),
     );
     this.camera.lookAt(look);
+    if (this.introT > 11) {
+      const running = this._lastMove?.run && !crouch && !this.sim.cuffed;
+      const want = running ? 70 : 62;
+      this.camera.fov += (want - this.camera.fov) * 0.1;
+      this.camera.updateProjectionMatrix();
+    }
   }
 
   updateStages() {
@@ -897,6 +959,8 @@ export class Game {
     document.getElementById('inv').textContent = `чай ${s.inv.tea} · циг. ${s.inv.cigs} · пайка ${s.inv.food} · жар ${Math.round(s.heat)}`;
     const quest = document.getElementById('quest');
     if (quest) quest.textContent = s.objective();
+    const way = document.getElementById('way');
+    if (way && this.introT > 9) way.classList.remove('opacity-0');
     if (s.stage === 'life' || s.stage === 'propiska') document.getElementById('look-hint')?.classList.add('hidden');
   }
 }
@@ -912,4 +976,22 @@ function isMobile() {
 function smoothstep(x) {
   const t = Math.max(0, Math.min(1, x));
   return t * t * (3 - 2 * t);
+}
+
+function makeBeacon() {
+  const g = new THREE.Group();
+  const m = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.16, 0),
+    new THREE.MeshBasicMaterial({ color: 0xe8b84a, transparent: true, opacity: 0.9, depthWrite: false }),
+  );
+  g.add(m);
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.22, 0.28, 16),
+    new THREE.MeshBasicMaterial({ color: 0xe8b84a, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = -1.55;
+  g.add(ring);
+  g.visible = false;
+  return g;
 }

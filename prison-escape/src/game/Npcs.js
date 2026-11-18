@@ -287,6 +287,18 @@ function human(kind, spec) {
     );
     belt.position.y = -0.12;
     hips.add(belt);
+    const stock = new THREE.MeshStandardMaterial({ color: 0x2a241c, roughness: 0.7 });
+    const gun = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.72), stock);
+    gun.position.set(0.18, -0.02, 0.22);
+    gun.rotation.x = 0.15;
+    hips.add(gun);
+    const barrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.015, 0.015, 0.38, 6),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a3c, metalness: 0.6, roughness: 0.35 }),
+    );
+    barrel.rotation.x = Math.PI / 2;
+    barrel.position.set(0.18, 0.0, 0.62);
+    hips.add(barrel);
   } else {
     const buzz = new THREE.Mesh(
       new THREE.SphereGeometry(0.128, 10, 8, 0, Math.PI * 2, 0, 1.05),

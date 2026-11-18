@@ -19,6 +19,7 @@ export function buildArrival(prison) {
   addVan(prison);
   addKpp(prison);
   addProcessing(prison);
+  addWaymarks(prison);
 
   prison.playerSpawn = new THREE.Vector3(0, 0, -82.35);
 }
@@ -417,6 +418,27 @@ function alcove(prison, x, z, title) {
   const t = plaque(title, 1.2, 0.28);
   t.position.set(0, 2.55, 1.62);
   g.add(t);
+}
+
+function addWaymarks(prison) {
+  const paint = new THREE.MeshBasicMaterial({ color: 0xc9a227, transparent: true, opacity: 0.7, depthWrite: false });
+  for (let z = -78; z <= -58; z += 3.6) {
+    const chev = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.7, 3), paint);
+    chev.rotation.x = -Math.PI / 2;
+    chev.position.set(0.95, 0.03, z);
+    prison.group.add(chev);
+  }
+  const kpp = plaque('КПП →', 1.6, 0.38);
+  kpp.position.set(2.35, 1.55, -58.4);
+  kpp.rotation.y = -0.4;
+  prison.group.add(kpp);
+  const puddle = new THREE.Mesh(
+    new THREE.CircleGeometry(1.4, 10),
+    new THREE.MeshStandardMaterial({ color: 0x2a3034, roughness: 0.22, metalness: 0.35 }),
+  );
+  puddle.rotation.x = -Math.PI / 2;
+  puddle.position.set(-1.6, 0.02, -72);
+  prison.group.add(puddle);
 }
 
 function plaque(text, w, h) {
