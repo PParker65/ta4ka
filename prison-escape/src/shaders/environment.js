@@ -218,39 +218,62 @@ export function latticeTex() {
 }
 
 export function brickTex() {
-  const size = 512;
+  const size = 1024;
   const { c, ctx } = canvas(size);
-  ctx.fillStyle = '#4a4038';
+  const bump = canvas(size);
+  bump.ctx.fillStyle = '#202018';
+  bump.ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#3e3832';
   ctx.fillRect(0, 0, size, size);
-  const bh = 32;
-  const bw = 72;
-  for (let y = 0, row = 0; y < size; y += bh, row++) {
+  const bh = 28;
+  const bw = 62;
+  const grout = 3;
+  for (let y = 0, row = 0; y < size + bh; y += bh, row++) {
     const off = row % 2 ? bw / 2 : 0;
     for (let x = -bw; x < size; x += bw) {
-      const px = x + off + 2;
-      const py = y + 2;
-      const pw = bw - 4;
-      const ph = bh - 4;
-      const wet = Math.random() < 0.12;
-      const col = shade(wet ? '#5a4036' : '#8a6a58', (Math.random() - 0.5) * 32);
-      ctx.fillStyle = col;
+      const px = x + off + grout;
+      const py = y + grout;
+      const pw = bw - grout * 2;
+      const ph = bh - grout * 2;
+      const wet = Math.random() < 0.14;
+      const d = (Math.random() - 0.5) * 36;
+      ctx.fillStyle = shade(wet ? '#534038' : '#8d6e5a', d);
       ctx.fillRect(px, py, pw, ph);
-      ctx.fillStyle = 'rgba(255,230,200,0.08)';
-      ctx.fillRect(px, py, pw, 4);
-      ctx.fillStyle = 'rgba(20,10,8,0.18)';
-      ctx.fillRect(px, py + ph - 5, pw, 5);
-      if (Math.random() < 0.18) {
-        ctx.fillStyle = 'rgba(30,22,18,0.4)';
-        ctx.fillRect(px + Math.random() * (pw - 8), py + Math.random() * (ph - 6), 4 + Math.random() * 10, 3);
+      const lg = ctx.createLinearGradient(px, py, px, py + ph);
+      lg.addColorStop(0, 'rgba(255,236,210,0.16)');
+      lg.addColorStop(0.45, 'rgba(0,0,0,0)');
+      lg.addColorStop(1, 'rgba(20,8,6,0.22)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(px, py, pw, ph);
+      bump.ctx.fillStyle = shade('#c8c0b0', d * 0.4);
+      bump.ctx.fillRect(px, py, pw, ph);
+      bump.ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      bump.ctx.fillRect(px, py, pw, 3);
+      bump.ctx.fillStyle = 'rgba(0,0,0,0.22)';
+      bump.ctx.fillRect(px, py + ph - 3, pw, 3);
+      if (Math.random() < 0.22) {
+        ctx.fillStyle = 'rgba(28,18,12,0.45)';
+        const cx = px + 4 + Math.random() * (pw - 10);
+        const cy = py + 3 + Math.random() * (ph - 8);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, 2 + Math.random() * 5, 1 + Math.random() * 3, Math.random(), 0, 6.28);
+        ctx.fill();
+        bump.ctx.fillStyle = '#4a4a40';
+        bump.ctx.fillRect(cx - 2, cy - 1, 4, 2);
       }
-      if (Math.random() < 0.08) {
-        ctx.fillStyle = 'rgba(50,80,40,0.22)';
-        ctx.fillRect(px, py + ph - 3, pw, 3);
+      if (Math.random() < 0.07) {
+        ctx.fillStyle = 'rgba(48,72,36,0.2)';
+        ctx.fillRect(px, py + ph - 4, pw, 4);
       }
     }
   }
-  noise(ctx, size, 0.1);
-  return toTex(c, 1.6, 1.6);
+  noise(ctx, size, 0.08);
+  noise(bump.ctx, size, 0.12);
+  const tex = toTex(c, 2.2, 2.2);
+  const bumpTex = toTex(bump.c, 2.2, 2.2);
+  bumpTex.colorSpace = THREE.NoColorSpace;
+  tex.userData.bump = bumpTex;
+  return tex;
 }
 
 export function ceilingTex() {

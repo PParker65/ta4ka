@@ -382,6 +382,8 @@ export class Game {
     if (ev === 'cell') {
       const door = this.prison.interactables.find((it) => it.type === 'cell-door');
       if (door) this.prison.openDoor(door);
+      const col = this.prison.colliders.find((c) => c.id === door?.colliderId);
+      if (col) col.active = false;
       this.audio.clang();
       this.subtitle('Конвой: «Четвёртая. Заходи в дверь. Не боком — через порог.»');
     }
@@ -393,6 +395,7 @@ export class Game {
     this.sim.cuffed = true;
     this.guide = null;
     const spawn = this.prison.cellSpawn;
+    const origin = this.prison.cellOrigin;
     this.escort = {
       i: 0,
       pts: [
@@ -400,9 +403,11 @@ export class Game {
         { x: 0, z: -0.85, event: 'block' },
         { x: 0, z: 1.2 },
         { x: 0, z: 2.45, event: 'voice' },
-        { x: 0.05, z: 3.38, event: 'cell' },
-        { x: LAYOUT.corridorHalf + 0.5, z: 3.42 },
+        { x: 0, z: 3.2, event: 'cell' },
+        { x: LAYOUT.corridorHalf + 0.12, z: 3.4 },
+        { x: LAYOUT.corridorHalf + 1.05, z: 3.45 },
         { x: spawn.x, z: spawn.z },
+        { x: origin.x - 0.6, z: origin.z },
       ],
     };
     this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
@@ -411,6 +416,9 @@ export class Game {
 
   finishEscort() {
     this.escort = null;
+    if (this.player.position.x < LAYOUT.corridorHalf + 0.9) {
+      this.player.position.copy(this.prison.cellSpawn);
+    }
     this.sim.cuffed = false;
     this.sim.locked = true;
     this.sim.stage = 'propiska';
@@ -556,7 +564,8 @@ export class Game {
     const eye = crouch ? 1.08 : 1.64;
     let x = this.player.position.x;
     let z = this.player.position.z;
-    if (z > -1.2 && z < LAYOUT.corridorLen) {
+    const inHall = Math.abs(this.player.position.x) < LAYOUT.corridorHalf;
+    if (inHall && z > -1.2 && z < LAYOUT.corridorLen) {
       const limit = LAYOUT.corridorHalf - 0.42;
       if (x > limit) x = limit;
       if (x < -limit) x = -limit;

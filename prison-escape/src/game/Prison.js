@@ -80,8 +80,16 @@ export class Prison {
     tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
     if (opts.repeat) tex.repeat.set(opts.repeat[0], opts.repeat[1]);
+    let bump = null;
+    if (map.userData?.bump) {
+      bump = map.userData.bump.clone();
+      bump.wrapS = bump.wrapT = THREE.RepeatWrapping;
+      if (opts.repeat) bump.repeat.set(opts.repeat[0], opts.repeat[1]);
+    }
     return new THREE.MeshStandardMaterial({
       map: tex,
+      bumpMap: bump,
+      bumpScale: bump ? (opts.bump ?? 0.14) : 0,
       roughness: opts.roughness ?? 0.86,
       metalness: opts.metalness ?? 0.02,
       color: opts.color ?? 0xffffff,
@@ -362,7 +370,7 @@ export class Prison {
     this.addCollider(ox - w / 2 - 0.12, ox - w / 2 + 0.16, 3.4 + doorGap, oz + d / 2, 'cell-inner-b');
 
     this.cellOrigin = new THREE.Vector3(ox, 0, oz);
-    this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.15, 0, 3.55);
+    this.cellSpawn = new THREE.Vector3(ox - w / 2 + 1.55, 0, oz - 0.35);
     this.doorThreshold = new THREE.Vector3(LAYOUT.corridorHalf + 0.35, 0, 3.4);
     this.playerSpawn = new THREE.Vector3(0, 0, -82.35);
 

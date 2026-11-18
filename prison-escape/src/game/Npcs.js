@@ -267,27 +267,47 @@ function human(kind, spec) {
   torso.castShadow = true;
   hips.add(torso);
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.125, 16, 12), skin);
-  head.position.y = 0.48;
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 8), skin);
+  neck.position.y = 0.32;
+  hips.add(neck);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 16), skin);
+  head.position.y = 0.5;
   hips.add(head);
-  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), skin);
-  nose.position.set(0, 0.46, 0.12);
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 8), skin);
+  jaw.scale.set(0.92, 0.7, 0.85);
+  jaw.position.set(0, 0.42, 0.02);
+  hips.add(jaw);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), skin);
+  nose.scale.set(0.7, 0.9, 1.15);
+  nose.position.set(0, 0.48, 0.13);
   hips.add(nose);
-  const white = new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.4 });
+  const brow = new THREE.MeshStandardMaterial({ color: 0x3a2a22, roughness: 0.85 });
+  for (const x of [-0.045, 0.045]) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.008, 0.012), brow);
+    b.position.set(x, 0.545, 0.11);
+    b.rotation.z = x > 0 ? -0.15 : 0.15;
+    hips.add(b);
+    const ear = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), skin);
+    ear.scale.set(0.55, 1, 0.7);
+    ear.position.set(x * 2.6, 0.5, 0);
+    hips.add(ear);
+  }
+  const white = new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.35 });
   const iris = new THREE.MeshStandardMaterial({ color: 0x2a241c });
-  for (const x of [-0.038, 0.038]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), white);
-    eye.position.set(x, 0.5, 0.1);
+  for (const x of [-0.04, 0.04]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), white);
+    eye.scale.set(1, 0.75, 0.7);
+    eye.position.set(x, 0.515, 0.108);
     hips.add(eye);
-    const p = new THREE.Mesh(new THREE.SphereGeometry(0.008, 6, 4), iris);
-    p.position.set(x, 0.5, 0.115);
+    const p = new THREE.Mesh(new THREE.SphereGeometry(0.009, 8, 6), iris);
+    p.position.set(x, 0.515, 0.122);
     hips.add(p);
   }
   const mouth = new THREE.Mesh(
-    new THREE.BoxGeometry(0.05, 0.012, 0.01),
-    new THREE.MeshStandardMaterial({ color: 0x6a3a38 }),
+    new THREE.BoxGeometry(0.048, 0.01, 0.012),
+    new THREE.MeshStandardMaterial({ color: 0x6a3a38, roughness: 0.6 }),
   );
-  mouth.position.set(0, 0.415, 0.112);
+  mouth.position.set(0, 0.425, 0.12);
   hips.add(mouth);
 
   if (kind === 'guard') {

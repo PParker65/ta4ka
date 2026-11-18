@@ -126,7 +126,7 @@ export class Input {
   }
 
   applyLook(dx, dy, sens) {
-    this.yaw += dx * sens;
+    this.yaw -= dx * sens;
     this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
   }
 
@@ -156,8 +156,8 @@ export class Input {
   /** Radians/sec. Left looks left, right looks right. */
   turnRate() {
     let t = 0;
-    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t -= 2.4;
-    if (this.keys.has('KeyR') || this.keys.has('ArrowRight')) t += 2.4;
+    if (this.keys.has('KeyQ') || this.keys.has('ArrowLeft')) t += 2.4;
+    if (this.keys.has('KeyR') || this.keys.has('ArrowRight')) t -= 2.4;
     return t;
   }
 
