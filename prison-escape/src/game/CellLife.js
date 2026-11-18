@@ -74,7 +74,8 @@ export class CellLife {
     this.nextTask();
     const o = this.g.prison.cellOrigin;
     const leha = this.g.npcs.byId('cellmate');
-    if (leha && o) leha.walkTo = { x: o.x + 0.4, y: 0, z: o.z - 0.2 };
+    const s = cellSpots(o);
+    if (leha && s) this.g.npcs.goTo(leha, s.lehaBunk);
     this.g.subtitle('Лёха: «Не стой в дверях. Сядь, когда посадят. Дальше — слушай хату.»');
   }
 
@@ -138,40 +139,95 @@ export class CellLife {
     const g = this.g;
     const o = g.prison.cellOrigin;
     if (!o) return;
+    const s = cellSpots(o);
     const phase = g.sim.stage === 'life' ? g.sim.phase.id : 'wake';
+    if (phase !== this._npcPhase) {
+      this._npcPhase = phase;
+      for (const id of ['starosta', 'cellmate', 'bunk-bro']) {
+        const n = g.npcs.byId(id);
+        if (n) {
+          n.duty = null;
+          n.dutyIndex = 0;
+        }
+      }
+    }
     const starosta = g.npcs.byId('starosta');
     const leha = g.npcs.byId('cellmate');
     const valera = g.npcs.byId('bunk-bro');
-    const npcs = g.npcs;
+    const ask = this.askSpot(o);
 
     if (phase === 'evening') {
-      if (starosta) npcs.sitAt(starosta, o.x + 1.35, o.z + 1.62, Math.PI);
-      if (leha) npcs.sitAt(leha, o.x + 1.35, o.z - 1.82, 0);
-      if (valera) npcs.sitAt(valera, o.x - 1.15, o.z + 1.45, 0.4);
+      this.hold(starosta, 'sleep', s.sedoyBunk, 99);
+      this.hold(leha, 'sleep', s.lehaBunk, 99);
+      this.hold(valera, 'sleep', s.valeraBunk, 99);
       return;
     }
     if (phase === 'shmon') {
-      if (starosta) npcs.standAt(starosta, o.x - 0.95, o.z + 1.15, Math.PI);
-      if (leha) npcs.standAt(leha, o.x - 0.95, o.z - 1.15, Math.PI);
-      if (valera) npcs.standAt(valera, o.x - 0.95, o.z + 0.05, Math.PI);
+      this.hold(starosta, 'shmon', s.aisleN, 99);
+      this.hold(leha, 'shmon', s.aisleS, 99);
+      this.hold(valera, 'shmon', s.aisle, 99);
       return;
     }
     if (phase === 'food') {
-      if (starosta) npcs.standAt(starosta, o.x - 0.85, o.z + 0.2, Math.PI / 2);
-      if (leha) npcs.standAt(leha, o.x + 0.2, o.z - 0.62, 0);
-      if (valera) npcs.standAt(valera, o.x + 0.2, o.z + 0.88, Math.PI);
+      this.hold(starosta, 'food', s.tableSit, 99);
+      this.hold(leha, 'food', s.tableS, 99);
+      this.hold(valera, 'food', s.tableN, 99);
       return;
     }
-    const t = this.t;
-    if (starosta && !starosta.walkPath?.length) {
-      const pace = Math.sin(t * 0.18);
-      npcs.standAt(starosta, o.x - 0.95, o.z + pace * 1.05, pace > 0 ? 0 : Math.PI);
+
+    this.cycle(starosta, [
+      { name: 'throne', spot: s.tableSit, hold: 16 },
+      { name: 'ask', spot: ask || s.aisle, hold: 7, line: 'Седой: «Статья. Первый раз? Цигарка — на стол, не в карман.»' },
+      { name: 'watch', spot: s.hatchWatch, hold: 9 },
+    ]);
+    this.cycle(leha, [
+      { name: 'bunk', spot: s.lehaBunk, hold: 14 },
+      { name: 'hatch', spot: s.hatchWatch, hold: 8 },
+      { name: 'ask', spot: ask || s.aisleS, hold: 6, line: 'Лёха тихо: «Свежак. Кормушку без команды не открывай.»' },
+    ]);
+    this.cycle(valera, [
+      { name: 'bunk', spot: s.valeraBunk, hold: 15 },
+      { name: 'window', spot: s.window, hold: 10 },
+      { name: 'ask', spot: ask || s.tableN, hold: 6, line: 'Валера: «Карты вечером, если цигарка есть. Пока хата смотрит.»' },
+    ]);
+  }
+
+  hold(n, name, spot, hold) {
+    if (!n || !spot) return;
+    if (n.duty === name) return;
+    n.duty = name;
+    n.dutyUntil = this.t + hold;
+    this.g.npcs.goTo(n, spot);
+  }
+
+  cycle(n, steps) {
+    if (!n || !steps?.length) return;
+    const i = n.dutyIndex || 0;
+    const step = steps[i % steps.length];
+    if (n.duty !== step.name) {
+      n.duty = step.name;
+      n.dutyUntil = this.t + step.hold;
+      n.asked = false;
+      this.g.npcs.goTo(n, step.spot);
+      return;
     }
-    if (leha) npcs.standAt(leha, o.x - 0.9, o.z - 1.05, 0.35);
-    if (valera) {
-      if ((t % 28) < 14) npcs.standAt(valera, o.x + 0.55, o.z + 2.55, 0);
-      else npcs.standAt(valera, o.x - 0.85, o.z + 1.35, -0.4);
+    if (!n.walkTo && step.line && !n.asked && this.t > (n.dutyUntil || 0) - step.hold + 1.4) {
+      n.asked = true;
+      if (!this.g.dialog.open) this.g.subtitle(step.line);
     }
+    if (!n.walkTo && this.t > (n.dutyUntil || 0)) {
+      n.dutyIndex = (i + 1) % steps.length;
+      n.duty = null;
+    }
+  }
+
+  askSpot(o) {
+    const p = this.g.player?.position;
+    if (!p) return null;
+    if (Math.abs(p.x - o.x) > 3.2 || Math.abs(p.z - o.z) > 3.5) return cellSpots(o).aisle;
+    const x = clamp(p.x - 0.15, o.x - 1.55, o.x + 0.25);
+    const z = clamp(p.z + 1.2, o.z - 1.35, o.z + 1.35);
+    return { x, z, yaw: Math.atan2(p.x - x, p.z - z), sit: false };
   }
 
   talkTo(id) {
@@ -298,4 +354,24 @@ export class CellLife {
       this.completeTask('kettle');
     };
   }
+}
+
+function cellSpots(o) {
+  return {
+    tableSit: { x: o.x - 0.8, z: o.z + 0.12, yaw: Math.PI / 2, sit: true },
+    tableS: { x: o.x + 0.12, z: o.z - 0.72, yaw: 0, sit: true },
+    tableN: { x: o.x + 0.12, z: o.z + 0.82, yaw: Math.PI, sit: true },
+    lehaBunk: { x: o.x + 1.2, z: o.z - 1.78, yaw: 0, sit: true },
+    sedoyBunk: { x: o.x + 1.2, z: o.z + 1.55, yaw: Math.PI, sit: true },
+    valeraBunk: { x: o.x - 0.2, z: o.z + 1.62, yaw: 0.15, sit: true },
+    hatchWatch: { x: o.x - 2.05, z: o.z - 0.4, yaw: -Math.PI / 2, lean: true },
+    window: { x: o.x - 1.55, z: o.z + 2.2, yaw: 0 },
+    aisle: { x: o.x - 0.95, z: o.z + 0.1, yaw: Math.PI / 2 },
+    aisleN: { x: o.x - 0.95, z: o.z + 1.05, yaw: Math.PI },
+    aisleS: { x: o.x - 0.95, z: o.z - 1.05, yaw: Math.PI },
+  };
+}
+
+function clamp(v, a, b) {
+  return Math.max(a, Math.min(b, v));
 }

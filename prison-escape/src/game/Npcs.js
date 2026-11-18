@@ -147,28 +147,41 @@ export class Npcs {
     }
   }
 
-  sitAt(n, x, z, yaw) {
-    if (!n) return;
+  /** Walk once to a spot, then sit or stand still. Never retarget every frame. */
+  goTo(n, spot) {
+    if (!n || !spot) return;
+    n.holdYaw = spot.yaw ?? 0;
+    n.wantSit = !!spot.sit;
+    n.wantLean = !!spot.lean;
+    const dx = spot.x - n.root.position.x;
+    const dz = spot.z - n.root.position.z;
+    if (Math.hypot(dx, dz) > 0.18) {
+      if (n.pose === 'sit') this.pose(n, 'stand');
+      n.walkTo = { x: spot.x, z: spot.z };
+      n.stuckT = 0;
+      n.stuckX = n.root.position.x;
+      n.stuckZ = n.root.position.z;
+    } else {
+      this.arrive(n, spot.x, spot.z);
+    }
+  }
+
+  arrive(n, x, z) {
     n.walkTo = null;
-    n.walkPath = null;
-    n.root.position.x += (x - n.root.position.x) * 0.2;
-    n.root.position.z += (z - n.root.position.z) * 0.2;
-    if (yaw != null) n.root.rotation.y += (yaw - n.root.rotation.y) * 0.2;
-    this.pose(n, 'sit');
+    n.root.position.x = x;
+    n.root.position.z = z;
+    n.root.rotation.y = n.holdYaw ?? n.root.rotation.y;
+    if (n.wantSit) this.pose(n, 'sit');
+    else if (n.wantLean) this.pose(n, 'lean');
+    else this.pose(n, 'stand');
+  }
+
+  sitAt(n, x, z, yaw) {
+    this.goTo(n, { x, z, yaw, sit: true });
   }
 
   standAt(n, x, z, yaw) {
-    if (!n) return;
-    const dx = x - n.root.position.x;
-    const dz = z - n.root.position.z;
-    if (Math.hypot(dx, dz) > 0.14) {
-      if (n.pose === 'sit') this.pose(n, 'stand');
-      n.walkTo = { x, y: 0, z };
-    } else {
-      n.walkTo = null;
-      n.root.rotation.y = yaw;
-      this.pose(n, 'stand');
-    }
+    this.goTo(n, { x, z, yaw, sit: false });
   }
 
   pose(n, kind) {
@@ -230,7 +243,6 @@ export class Npcs {
         else if (m === right) p.x = c.maxx + r;
         else if (m === down) p.z = c.minz - r;
         else p.z = c.maxz + r;
-        n.walkTo = null;
         continue;
       }
       const nx = Math.max(c.minx, Math.min(p.x, c.maxx));
@@ -243,7 +255,6 @@ export class Npcs {
         const push = (r - d) / d;
         p.x += dx * push;
         p.z += dz * push;
-        n.walkTo = null;
       }
     }
   }
@@ -304,12 +315,22 @@ export class Npcs {
         const dx = n.walkTo.x - n.root.position.x;
         const dz = n.walkTo.z - n.root.position.z;
         const d = Math.hypot(dx, dz) || 1;
-        if (d > 0.2) {
-          n.root.position.x += (dx / d) * dt * 1.55;
-          n.root.position.z += (dz / d) * dt * 1.55;
+        if (d > 0.16) {
+          const spd = n.kind === 'inmate' ? 0.72 : 1.35;
+          n.root.position.x += (dx / d) * dt * spd;
+          n.root.position.z += (dz / d) * dt * spd;
           n.root.rotation.y = Math.atan2(dx, dz);
+          const moved = Math.hypot(n.root.position.x - (n.stuckX ?? 0), n.root.position.z - (n.stuckZ ?? 0));
+          n.stuckT = (n.stuckT || 0) + dt;
+          if (moved > 0.08) {
+            n.stuckT = 0;
+            n.stuckX = n.root.position.x;
+            n.stuckZ = n.root.position.z;
+          } else if (n.stuckT > 1.1) {
+            this.arrive(n, n.root.position.x, n.root.position.z);
+          }
         } else {
-          n.walkTo = null;
+          this.arrive(n, n.walkTo.x, n.walkTo.z);
         }
       }
       if (camera) {
@@ -359,11 +380,11 @@ export class Npcs {
         n.root.position.x = r.x;
         n.root.position.z = r.z;
       }
-      if (player && n.kind === 'inmate' && n.id !== 'hatch' && !n.walkTo && n.pose !== 'sit') {
+      if (player && n.duty === 'ask' && !n.walkTo && n.kind === 'inmate') {
         const dx = player.x - n.root.position.x;
         const dz = player.z - n.root.position.z;
-        if (dx * dx + dz * dz < 16) {
-          n.root.rotation.y += (Math.atan2(dx, dz) - n.root.rotation.y) * 0.04;
+        if (dx * dx + dz * dz < 12) {
+          n.root.rotation.y += (Math.atan2(dx, dz) - n.root.rotation.y) * 0.12;
         }
       }
     }
