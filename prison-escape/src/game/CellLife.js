@@ -142,36 +142,35 @@ export class CellLife {
     const starosta = g.npcs.byId('starosta');
     const leha = g.npcs.byId('cellmate');
     const valera = g.npcs.byId('bunk-bro');
+    const npcs = g.npcs;
 
     if (phase === 'evening') {
-      if (starosta) g.npcs.sitAt(starosta, o.x + 0.95, o.z + 2.15);
-      if (leha) g.npcs.sitAt(leha, o.x + 0.95, o.z - 2.35);
-      if (valera) g.npcs.sitAt(valera, o.x - 0.15, o.z + 1.55);
+      if (starosta) npcs.sitAt(starosta, o.x + 1.35, o.z + 1.62, Math.PI);
+      if (leha) npcs.sitAt(leha, o.x + 1.35, o.z - 1.82, 0);
+      if (valera) npcs.sitAt(valera, o.x - 1.15, o.z + 1.45, 0.4);
       return;
     }
     if (phase === 'shmon') {
-      if (starosta) g.npcs.standAt(starosta, o.x + 0.85, o.z + 1.55, Math.PI);
-      if (leha) g.npcs.standAt(leha, o.x + 0.85, o.z - 1.7, Math.PI);
-      if (valera) g.npcs.standAt(valera, o.x + 0.2, o.z + 1.35, Math.PI);
+      if (starosta) npcs.standAt(starosta, o.x - 0.95, o.z + 1.15, Math.PI);
+      if (leha) npcs.standAt(leha, o.x - 0.95, o.z - 1.15, Math.PI);
+      if (valera) npcs.standAt(valera, o.x - 0.95, o.z + 0.05, Math.PI);
       return;
     }
     if (phase === 'food') {
-      if (starosta) g.npcs.standAt(starosta, o.x + 0.1, o.z + 0.35, 0);
-      if (leha) g.npcs.standAt(leha, o.x + 0.55, o.z - 0.15, 2.2);
-      if (valera) g.npcs.standAt(valera, o.x - 0.35, o.z + 0.15, 1.2);
+      if (starosta) npcs.standAt(starosta, o.x - 0.85, o.z + 0.2, Math.PI / 2);
+      if (leha) npcs.standAt(leha, o.x + 0.2, o.z - 0.62, 0);
+      if (valera) npcs.standAt(valera, o.x + 0.2, o.z + 0.88, Math.PI);
       return;
     }
     const t = this.t;
     if (starosta && !starosta.walkPath?.length) {
-      const pace = Math.sin(t * 0.22);
-      g.npcs.standAt(starosta, o.x + 0.05 + pace * 0.55, o.z + 0.25, pace > 0 ? 1.2 : -1.2);
+      const pace = Math.sin(t * 0.18);
+      npcs.standAt(starosta, o.x - 0.95, o.z + pace * 1.05, pace > 0 ? 0 : Math.PI);
     }
-    if (leha && !leha.walkTo) {
-      g.npcs.standAt(leha, o.x + 0.55, o.z - 1.15, 0.4);
-    }
-    if (valera && !valera.walkTo) {
-      if (t % 22 < 10) g.npcs.standAt(valera, o.x - 0.2, o.z + 2.55, 0);
-      else g.npcs.standAt(valera, o.x + 0.25, o.z + 0.2, Math.PI);
+    if (leha) npcs.standAt(leha, o.x - 0.9, o.z - 1.05, 0.35);
+    if (valera) {
+      if ((t % 28) < 14) npcs.standAt(valera, o.x + 0.55, o.z + 2.55, 0);
+      else npcs.standAt(valera, o.x - 0.85, o.z + 1.35, -0.4);
     }
   }
 

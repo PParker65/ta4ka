@@ -16,26 +16,26 @@ export class Npcs {
     await this.add('inmate', {
       id: 'starosta',
       name: 'Седой',
-      x: ox + 0.2,
+      x: ox - 0.95,
       z: oz + 0.45,
-      yaw: Math.PI,
+      yaw: Math.PI / 2,
       tattoos: true,
       robe: 0x4a4a46,
     });
     await this.add('inmate', {
       id: 'cellmate',
       name: 'Лёха',
-      x: ox + 0.55,
-      z: oz - 1.15,
-      yaw: 0.5,
+      x: ox - 0.9,
+      z: oz - 1.05,
+      yaw: 0.4,
       robe: 0x5a5854,
     });
     await this.add('inmate', {
       id: 'bunk-bro',
       name: 'Валера',
-      x: ox + 0.2,
-      z: oz + 1.15,
-      yaw: -0.4,
+      x: ox - 0.85,
+      z: oz + 1.35,
+      yaw: -0.3,
       robe: 0x3e3c38,
     });
   }
@@ -147,22 +147,25 @@ export class Npcs {
     }
   }
 
-  sitAt(n, x, z) {
+  sitAt(n, x, z, yaw) {
     if (!n) return;
     n.walkTo = null;
     n.walkPath = null;
-    n.root.position.x += (x - n.root.position.x) * 0.08;
-    n.root.position.z += (z - n.root.position.z) * 0.08;
+    n.root.position.x += (x - n.root.position.x) * 0.2;
+    n.root.position.z += (z - n.root.position.z) * 0.2;
+    if (yaw != null) n.root.rotation.y += (yaw - n.root.rotation.y) * 0.2;
     this.pose(n, 'sit');
   }
 
   standAt(n, x, z, yaw) {
     if (!n) return;
-    n.walkTo = null;
     const dx = x - n.root.position.x;
     const dz = z - n.root.position.z;
-    if (Math.hypot(dx, dz) > 0.12) n.walkTo = { x, y: 0, z };
-    else {
+    if (Math.hypot(dx, dz) > 0.14) {
+      if (n.pose === 'sit') this.pose(n, 'stand');
+      n.walkTo = { x, y: 0, z };
+    } else {
+      n.walkTo = null;
       n.root.rotation.y = yaw;
       this.pose(n, 'stand');
     }
@@ -173,18 +176,31 @@ export class Npcs {
     if (!limbs) return;
     n.pose = kind;
     if (kind === 'sit') {
-      limbs.hips.position.y = 0.4;
-      limbs.legs[0].rotation.x = -1.35;
-      limbs.legs[1].rotation.x = -1.28;
-      limbs.arms[0].rotation.x = 0.35;
-      limbs.arms[1].rotation.x = 0.3;
+      limbs.hips.position.y = 0.48;
+      limbs.hips.rotation.x = 0.22;
+      limbs.legs[0].position.y = 0.5;
+      limbs.legs[1].position.y = 0.5;
+      limbs.legs[0].rotation.x = -0.18;
+      limbs.legs[1].rotation.x = -0.14;
+      limbs.arms[0].rotation.x = 0.28;
+      limbs.arms[1].rotation.x = 0.22;
     } else if (kind === 'lean') {
       limbs.hips.position.y = 0.92;
       limbs.hips.rotation.x = 0.12;
+      limbs.legs[0].position.y = 0.92;
+      limbs.legs[1].position.y = 0.92;
+      limbs.legs[0].rotation.x = 0;
+      limbs.legs[1].rotation.x = 0;
       limbs.arms[0].rotation.x = -0.4;
     } else {
       limbs.hips.position.y = 0.92;
       limbs.hips.rotation.x = 0;
+      limbs.legs[0].position.y = 0.92;
+      limbs.legs[1].position.y = 0.92;
+      limbs.legs[0].rotation.x = 0;
+      limbs.legs[1].rotation.x = 0;
+      limbs.arms[0].rotation.x = 0;
+      limbs.arms[1].rotation.x = 0;
     }
   }
 
@@ -197,12 +213,26 @@ export class Npcs {
   }
 
   keepOutOfFurniture(n) {
-    if (!n || n.kind === 'dog' || n.gone || n.id === 'hatch') return;
+    if (!n || n.kind === 'dog' || n.gone || n.id === 'hatch' || n.pose === 'sit') return;
     const boxes = this.furniture;
     if (!boxes?.length) return;
     const p = n.root.position;
-    const r = 0.28;
+    const r = 0.34;
     for (const c of boxes) {
+      const inside = p.x > c.minx && p.x < c.maxx && p.z > c.minz && p.z < c.maxz;
+      if (inside) {
+        const left = p.x - c.minx;
+        const right = c.maxx - p.x;
+        const down = p.z - c.minz;
+        const up = c.maxz - p.z;
+        const m = Math.min(left, right, down, up);
+        if (m === left) p.x = c.minx - r;
+        else if (m === right) p.x = c.maxx + r;
+        else if (m === down) p.z = c.minz - r;
+        else p.z = c.maxz + r;
+        n.walkTo = null;
+        continue;
+      }
       const nx = Math.max(c.minx, Math.min(p.x, c.maxx));
       const nz = Math.max(c.minz, Math.min(p.z, c.maxz));
       const dx = p.x - nx;
@@ -214,6 +244,28 @@ export class Npcs {
         p.x += dx * push;
         p.z += dz * push;
         n.walkTo = null;
+      }
+    }
+  }
+
+  separateInmates() {
+    const people = this.list.filter((n) => n.kind === 'inmate' && n.id !== 'hatch' && !n.gone && n.pose !== 'sit');
+    const min = 0.78;
+    for (let i = 0; i < people.length; i++) {
+      for (let j = i + 1; j < people.length; j++) {
+        const a = people[i].root.position;
+        const b = people[j].root.position;
+        const dx = a.x - b.x;
+        const dz = a.z - b.z;
+        const d = Math.hypot(dx, dz) || 0.0001;
+        if (d >= min) continue;
+        const push = (min - d) / 2;
+        const ux = dx / d;
+        const uz = dz / d;
+        a.x += ux * push;
+        a.z += uz * push;
+        b.x -= ux * push;
+        b.z -= uz * push;
       }
     }
   }
@@ -287,11 +339,14 @@ export class Npcs {
       const walking = !!n.walkTo;
       if (limbs && walking) {
         const s = Math.sin(t * 8);
+        limbs.hips.position.y = 0.92 + Math.abs(s) * 0.03;
+        limbs.hips.rotation.x = 0;
         limbs.arms[0].rotation.x = s * 0.55;
         limbs.arms[1].rotation.x = -s * 0.55;
+        limbs.legs[0].position.y = 0.92;
+        limbs.legs[1].position.y = 0.92;
         limbs.legs[0].rotation.x = -s * 0.6;
         limbs.legs[1].rotation.x = s * 0.6;
-        limbs.hips.position.y = 0.92 + Math.abs(s) * 0.03;
       } else if (limbs && n.pose === 'sit') {
         this.pose(n, 'sit');
       }
@@ -312,6 +367,7 @@ export class Npcs {
         }
       }
     }
+    this.separateInmates();
   }
 }
 
@@ -546,7 +602,7 @@ function nameplate(text) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.18), mat);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.13), mat);
   mesh.userData.billboard = true;
   return mesh;
 }

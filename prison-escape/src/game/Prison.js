@@ -521,9 +521,9 @@ export class Prison {
       bunk.rotation.y = rot;
       cell.add(bunk);
       if (rot) {
-        this.furniture.push({ minx: ox + x - 0.42, maxx: ox + x + 0.42, minz: oz + z - 0.95, maxz: oz + z + 0.95 });
+        this.furniture.push({ minx: ox + x - 0.5, maxx: ox + x + 0.5, minz: oz + z - 1.05, maxz: oz + z + 1.05 });
       } else {
-        this.furniture.push({ minx: ox + x - 0.95, maxx: ox + x + 0.55, minz: oz + z - 0.42, maxz: oz + z + 0.42 });
+        this.furniture.push({ minx: ox + x - 1.05, maxx: ox + x + 1.05, minz: oz + z - 0.5, maxz: oz + z + 0.5 });
       }
     }
   }
@@ -547,18 +547,12 @@ export class Prison {
       const frame = new THREE.Mesh(new THREE.BoxGeometry(1.96, 0.05, 0.82), rustDark);
       frame.position.y = y;
       g.add(frame);
-      const deck = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.88, 0.74),
-        new THREE.MeshStandardMaterial({ map: this.tex.lattice, roughness: 0.7, metalness: 0.35 }),
-      );
-      deck.rotation.x = -Math.PI / 2;
-      deck.position.y = y + 0.03;
-      g.add(deck);
     }
-    const mattress = new THREE.Mesh(
-      new THREE.BoxGeometry(1.7, 0.08, 0.7),
-      new THREE.MeshStandardMaterial({ color: 0xc5c0b4, roughness: 0.95 }),
-    );
+    const cloth = new THREE.MeshStandardMaterial({ color: 0xc5c0b4, roughness: 0.95 });
+    const lower = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.7), cloth);
+    lower.position.set(0.04, 0.5, 0);
+    g.add(lower);
+    const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.7), cloth);
     mattress.position.set(0.04, 1.26, 0);
     mattress.rotation.z = 0.04;
     g.add(mattress);
@@ -632,6 +626,11 @@ export class Prison {
   }
 
   addTable(cell) {
+    const ox = cell.position.x;
+    const oz = cell.position.z;
+    this.furniture = this.furniture || [];
+    this.furniture.push({ minx: ox - 0.55, maxx: ox + 0.95, minz: oz - 0.18, maxz: oz + 0.58 });
+    this.furniture.push({ minx: ox + 1.7, maxx: ox + 3.1, minz: oz + 1.85, maxz: oz + 3.35 });
     const wood = new THREE.MeshStandardMaterial({ color: 0xc8b48a, roughness: 0.8 });
     this.box(1.3, 0.05, 0.55, wood, 0.2, 0.72, 0.2, cell);
     this.box(1.1, 0.04, 0.28, wood, 0.2, 0.38, 0.85, cell);

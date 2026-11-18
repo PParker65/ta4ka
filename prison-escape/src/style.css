@@ -49,13 +49,18 @@ textarea {
 .stat {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
+  gap: 4px;
+  font-size: 9px;
+  line-height: 1;
   color: #a1a1aa;
+}
+.stat span {
+  width: 3.4rem;
+  flex: none;
 }
 .stat i {
   display: block;
-  height: 8px;
+  height: 4px;
   flex: 1;
   border-radius: 99px;
   background: #3f3f46;
@@ -99,7 +104,7 @@ textarea {
 }
 
 #needle {
-  transform-origin: 50% 18px;
+  transform-origin: 50% 11px;
 }
 .chat-row b {
   color: #fbbf24;
