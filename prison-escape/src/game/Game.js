@@ -57,7 +57,7 @@ export class Game {
     this.scene.background = new THREE.Color(0x8ea8bc);
     this.scene.fog = new THREE.Fog(0x9aadb8, 55, 170);
 
-    this.camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.32, 260);
+    this.camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.08, 260);
     this.hands = makeHands();
     this.camera.add(this.hands);
     this.scene.add(this.camera);
@@ -608,7 +608,8 @@ export class Game {
     if (dEl) dEl.textContent = dist < 1.4 ? w.hint : `${Math.round(dist)} м · ${w.hint}`;
     if (this.beacon) {
       this.beacon.position.set(w.x, 1.7 + Math.sin(this.clock.elapsedTime * 2.2) * 0.12, w.z);
-      this.beacon.visible = dist > 1.1 && !this.escort;
+      const inCell = this.player.position.x > 1.55 && this.player.position.z > 1.5;
+      this.beacon.visible = dist > 1.1 && !this.escort && !inCell;
       this.beacon.rotation.y += dt * 1.4;
     }
     this.guide = new THREE.Vector3(w.x, 0, w.z);

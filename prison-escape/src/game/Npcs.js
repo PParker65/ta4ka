@@ -206,13 +206,13 @@ export class Npcs {
     };
     if (kind === 'sit') {
       limbs.hips.position.y = n.seatY ?? 0.5;
-      limbs.hips.rotation.x = 0.04;
-      if (thighs[0]) thighs[0].rotation.x = -1.08;
-      if (thighs[1]) thighs[1].rotation.x = -1.02;
-      if (shins[0]) shins[0].rotation.x = 1.18;
-      if (shins[1]) shins[1].rotation.x = 1.12;
-      limbs.arms[0].rotation.x = 0.85;
-      limbs.arms[1].rotation.x = 0.78;
+      limbs.hips.rotation.x = 0;
+      if (thighs[0]) thighs[0].rotation.x = -1.15;
+      if (thighs[1]) thighs[1].rotation.x = -1.1;
+      if (shins[0]) shins[0].rotation.x = 1.22;
+      if (shins[1]) shins[1].rotation.x = 1.18;
+      limbs.arms[0].rotation.x = 1.05;
+      limbs.arms[1].rotation.x = 0.95;
     } else if (kind === 'lie') {
       limbs.hips.position.y = 0.54;
       limbs.hips.rotation.x = 1.48;
@@ -394,6 +394,7 @@ export class Npcs {
         if (shins?.[0]) shins[0].rotation.x = Math.max(0, -s) * 0.35;
         if (shins?.[1]) shins[1].rotation.x = Math.max(0, s) * 0.35;
       } else if (limbs && n.pose === 'sit') {
+        limbs.hips.rotation.x = 0;
         limbs.hips.position.y = (n.seatY ?? 0.5) + Math.sin(t * 1.15 + n.root.position.x) * 0.006;
       } else if (limbs && n.pose === 'lie') {
         limbs.hips.position.y = 0.54 + Math.sin(t * 0.9) * 0.004;
@@ -497,10 +498,13 @@ function human(kind, spec) {
   hips.position.y = 0.92;
   root.add(hips);
 
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.38, 4, 8), cloth);
-  torso.position.y = 0.08;
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.44, 0.2), cloth);
+  torso.position.y = 0.1;
   torso.castShadow = true;
   hips.add(torso);
+  const skirt = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.2, 0.22), cloth);
+  skirt.position.y = -0.16;
+  hips.add(skirt);
 
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 8), skin);
   neck.position.y = 0.32;
@@ -600,7 +604,7 @@ function human(kind, spec) {
     const armG = new THREE.Group();
     armG.position.set(side * 0.22, 0.02, 0);
     hips.add(armG);
-    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.38, 3, 6), cloth);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.36, 0.07), cloth);
     arm.position.y = -0.16;
     arm.rotation.z = side * 0.12;
     armG.add(arm);
@@ -611,14 +615,14 @@ function human(kind, spec) {
     const thighG = new THREE.Group();
     thighG.position.set(side * 0.09, -0.1, 0);
     hips.add(thighG);
-    const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.34, 3, 6), pants);
-    thigh.position.y = -0.2;
+    const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.36, 0.12), pants);
+    thigh.position.y = -0.18;
     thighG.add(thigh);
     const shinG = new THREE.Group();
     shinG.position.set(0, -0.4, 0);
     thighG.add(shinG);
-    const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.048, 0.34, 3, 6), pants);
-    shin.position.y = -0.2;
+    const shin = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.36, 0.1), pants);
+    shin.position.y = -0.18;
     shinG.add(shin);
     const shoe = new THREE.Mesh(
       new THREE.BoxGeometry(0.1, 0.06, 0.18),
