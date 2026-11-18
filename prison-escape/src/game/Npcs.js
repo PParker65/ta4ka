@@ -161,6 +161,7 @@ export class Npcs {
     n.wantLie = !!spot.lie;
     n.wantLean = !!spot.lean;
     n.seatY = spot.seatY ?? 0.5;
+    n.sitStyle = spot.sitStyle || 'chair';
     if (n.walkTo && Math.hypot(n.walkTo.x - spot.x, n.walkTo.z - spot.z) < 0.04) return;
     const dx = spot.x - n.root.position.x;
     const dz = spot.z - n.root.position.z;
@@ -207,12 +208,16 @@ export class Npcs {
     if (kind === 'sit') {
       limbs.hips.position.y = n.seatY ?? 0.5;
       limbs.hips.rotation.x = 0;
-      if (thighs[0]) thighs[0].rotation.x = -1.15;
-      if (thighs[1]) thighs[1].rotation.x = -1.1;
-      if (shins[0]) shins[0].rotation.x = 1.22;
-      if (shins[1]) shins[1].rotation.x = 1.18;
-      limbs.arms[0].rotation.x = 1.05;
-      limbs.arms[1].rotation.x = 0.95;
+      const bunk = n.sitStyle === 'bunk';
+      if (thighs[0]) thighs[0].rotation.x = bunk ? 0.08 : -1.15;
+      if (thighs[1]) thighs[1].rotation.x = bunk ? 0.04 : -1.1;
+      if (shins[0]) shins[0].rotation.x = bunk ? 0.05 : 1.22;
+      if (shins[1]) shins[1].rotation.x = bunk ? 0.02 : 1.18;
+      limbs.arms[0].rotation.x = bunk ? 0.35 : 1.05;
+      limbs.arms[1].rotation.x = bunk ? 0.28 : 0.95;
+      n.root.traverse((c) => {
+        if (c.userData.billboard) c.position.y = 1.22;
+      });
     } else if (kind === 'lie') {
       limbs.hips.position.y = 0.54;
       limbs.hips.rotation.x = 1.48;
@@ -234,6 +239,9 @@ export class Npcs {
       zeroLegs();
       limbs.arms[0].rotation.x = 0;
       limbs.arms[1].rotation.x = 0;
+      n.root.traverse((c) => {
+        if (c.userData.billboard) c.position.y = 1.95;
+      });
     }
   }
 
