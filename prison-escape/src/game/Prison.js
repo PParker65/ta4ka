@@ -1009,6 +1009,29 @@ export class Prison {
     wallCal.position.set(0.15, 1.88, LAYOUT.cellD / 2 - 0.16);
     wallCal.rotation.y = Math.PI;
     cell.add(wallCal);
+    const dadoWin = new THREE.MeshStandardMaterial({ color: 0x3a524c, roughness: 0.45, transparent: true, opacity: 0.42 });
+    this.box(1.4, 0.7, 0.02, dadoWin, 0.15, 0.72, LAYOUT.cellD / 2 - 0.14, cell);
+    this.box(0.7, 0.45, 0.02, dadoWin, 0.55, 0.5, LAYOUT.cellD / 2 - 0.14, cell);
+    const winShelf = new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.88 });
+    this.box(0.42, 0.035, 0.14, winShelf, 0.2, 0.95, LAYOUT.cellD / 2 - 0.22, cell);
+    const winMug = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.03, 0.06, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.55, metalness: 0.2 }),
+    );
+    winMug.position.set(0.12, 0.99, LAYOUT.cellD / 2 - 0.22);
+    cell.add(winMug);
+    const winNews = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.14, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: 0.92 }),
+    );
+    winNews.position.set(0.32, 1.06, LAYOUT.cellD / 2 - 0.2);
+    winNews.rotation.set(0.1, 0.2, 0.15);
+    cell.add(winNews);
+    const winTicks = wallScratch('||||');
+    winTicks.scale.set(0.9, 0.9, 0.9);
+    winTicks.position.set(0.55, 0.62, LAYOUT.cellD / 2 - 0.15);
+    winTicks.rotation.y = Math.PI;
+    cell.add(winTicks);
     const cloths = [0x8a8e98, 0xd8d2c0, 0x9a6a42];
     cloths.forEach((c, i) => {
       const rag = new THREE.Mesh(

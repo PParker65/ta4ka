@@ -38,8 +38,12 @@ import {
   DAY6_WALK,
   DAY6_WALK_GONE,
   DAY6_WALK_RED,
+  DAY6_WALK_FOUND,
+  DAY6_WALK_BURN,
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
+  DAY6_NIGHT_FOUND,
+  DAY6_NIGHT_BURN,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -478,6 +482,10 @@ export class CellLife {
           ? DAY6_NIGHT_RED
           : g.sim.day >= 6 && g.sim.malyava === 'gone'
           ? DAY6_NIGHT_GONE
+          : g.sim.day >= 6 && g.sim.malyava === 'found'
+          ? DAY6_NIGHT_FOUND
+          : g.sim.day >= 6 && g.sim.malyava === 'burn'
+          ? DAY6_NIGHT_BURN
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
           : g.sim.day >= 4
@@ -505,6 +513,10 @@ export class CellLife {
             ? DAY6_WALK_RED
             : g.sim.malyava === 'gone'
             ? DAY6_WALK_GONE
+            : g.sim.malyava === 'found'
+            ? DAY6_WALK_FOUND
+            : g.sim.malyava === 'burn'
+            ? DAY6_WALK_BURN
             : DAY6_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 5
           ? g.sim.malyava === 'gone'
