@@ -14,6 +14,7 @@ import {
   DAY2_YARD,
   DAY3_NOTE,
   DAY4_LEHA,
+  DAY4_HATCH,
   DAY4_WALK,
   DAY5_COURT,
   DAY5_WALK,
@@ -481,6 +482,7 @@ export class CellLife {
     if (opt.passTea && g.sim.inv.tea > 0) {
       g.sim.inv.tea -= 1;
       g.sim.rep += 1;
+      g.sim.teaPaid = true;
     }
     g.toast(opt.reply);
   }
@@ -504,6 +506,11 @@ export class CellLife {
           g.sim.shift(0, 1, 0);
         }
       };
+      return;
+    }
+    if (g.sim.day >= 4 && g.sim.malyava === 'hold' && !g.sim.teaPaid) {
+      g.dialog.show(DAY4_HATCH.who, DAY4_HATCH.text, DAY4_HATCH.options);
+      g.dialog.onPick = (opt) => this.applyTalk(opt);
       return;
     }
     g.dialog.show(HATCH_TALK.who, HATCH_TALK.text, HATCH_TALK.options);

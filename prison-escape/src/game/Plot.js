@@ -6,6 +6,7 @@ import {
   DAY2_SEDOY,
   DAY2_YARD,
   DAY2_FOOD,
+  DAY2_SHMON,
   DAY3_NIGHT,
   DAY3_MORNING,
   DAY4_LEHA,
@@ -21,6 +22,8 @@ import {
   DAY5_BACK_SELF,
   DAY5_WALK,
   DAY6_NIGHT,
+  DAY6_FOOD,
+  DAY6_WALK,
   DAY7_WAKE,
   WEEK_HELD,
   HOLD_NIGHT,
@@ -44,7 +47,10 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d === 3 && ph === 'wake') return 'Третий день. Кормушка днём живая. Не зевай.';
   if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
+  if (d === 4 && !sim.teaPaid && sim.malyava === 'hold') return 'Чай в щели ждут. Не долг на воле.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
+  if (d === 6 && ph === 'food') return 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
+  if (d === 6 && ph === 'walk') return 'Шестой круг. Завтра не ори про волю.';
   if (d === 5 && ph === 'wake') return 'С коряка шепчут список. Днём щель станет кабинетом.';
   if (d === 5 && ph === 'food' && !sim.courtTalk) return 'Вызов. Следователь в щели. Про хату — или про срок.';
   if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
@@ -77,6 +83,9 @@ export function onPhaseEnter(game, id) {
     if (s.day === 5 && !s.heardDay5Yard) {
       s.heardDay5Yard = true;
       pickDialog(g, DAY5_WALK);
+    } else if (s.day === 6 && !s.heardDay6Yard) {
+      s.heardDay6Yard = true;
+      pickDialog(g, DAY6_WALK);
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, DAY4_WALK);
@@ -139,7 +148,7 @@ export function onPhaseEnter(game, id) {
   if (id === 'shmon') {
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.clang();
-    if (s.malyava === 'hold' && s.day >= 3) {
+    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 3) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
@@ -147,6 +156,10 @@ export function onPhaseEnter(game, id) {
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
       g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       return;
+    }
+    if (s.day === 2 && !s.seenDay2Shmon) {
+      s.seenDay2Shmon = true;
+      pickDialog(g, DAY2_SHMON);
     }
     if (s.stash === 'bunk' && s.day === 2) {
       s.heat = Math.min(100, s.heat + 22);
@@ -156,7 +169,7 @@ export function onPhaseEnter(game, id) {
       g.subtitle('Кормушка: «Нычка. Свежак думал, что первый.»');
     } else if (s.stash === 'wash' && s.day === 2) {
       g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.» Матрас чистый. Чаша не их дело — сегодня.');
-    } else {
+    } else if (!(s.day === 2 && s.seenDay2Shmon)) {
       g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.»');
     }
     return;
@@ -171,6 +184,11 @@ export function onPhaseEnter(game, id) {
     if (s.day === 5 && !s.seenDay5Sled) {
       s.seenDay5Sled = true;
       pickDialog(g, s.malyava === 'admin' ? DAY5_SLED_RED : DAY5_SLED);
+      return;
+    }
+    if (s.day === 6 && !s.seenDay6Food) {
+      s.seenDay6Food = true;
+      pickDialog(g, DAY6_FOOD);
       return;
     }
     if (s.day === 4 && !s.seenDay4Food) {
@@ -251,6 +269,7 @@ function pickDialog(g, pack) {
     if (opt.passTea && s.inv.tea > 0) {
       s.inv.tea -= 1;
       s.rep += 1;
+      s.teaPaid = true;
     }
     g.toast(opt.reply);
   };

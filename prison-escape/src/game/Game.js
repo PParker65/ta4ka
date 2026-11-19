@@ -208,8 +208,11 @@ export class Game {
     if (day >= 2 && day <= 14) this.sim.day = day | 0;
     const mal = params.get('malyava');
     if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found') this.sim.malyava = mal;
+    if (mal === 'hold') this.sim.inv.tea = Math.max(this.sim.inv.tea, 1);
     const talk = params.get('court');
     if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
+    const stash = params.get('stash');
+    if (stash === 'wash' || stash === 'bunk' || stash === 'none') this.sim.stash = stash;
   }
 
   applyLook(params) {
@@ -224,6 +227,10 @@ export class Game {
       this.player.position.set(o.x - 0.35, 0, o.z - 1.15);
       this.input.yaw = 0.12;
       this.input.pitch = -0.22;
+    } else if (look === 'bunk') {
+      this.player.position.set(o.x + 0.55, 0, o.z - 1.35);
+      this.input.yaw = 1.15;
+      this.input.pitch = -0.28;
     }
   }
 
@@ -966,6 +973,13 @@ export class Game {
   label(item) {
     if (item.type === 'hatch' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
     if (item.type === 'malyava' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
+    if (
+      (item.type === 'hatch' || item.type === 'malyava') &&
+      this.sim.day >= 4 &&
+      this.sim.malyava === 'hold' &&
+      !this.sim.teaPaid
+    )
+      return 'Чай в щели';
     const map = {
       kpp: 'Сверка документов · КПП',
       shmon: 'Сдать вещи на опись',

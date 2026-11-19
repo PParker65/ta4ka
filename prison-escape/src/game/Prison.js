@@ -480,8 +480,8 @@ export class Prison {
     this.interactables.push({
       id: 'malyava',
       type: 'malyava',
-      position: new THREE.Vector3(ox - 1.8, 1, oz + 2.4),
-      radius: 1.4,
+      position: new THREE.Vector3(ox - w / 2 + 0.55, 1.4, 3.42),
+      radius: 3.2,
     });
     this.interactables.push({
       id: 'obshak',
@@ -510,8 +510,8 @@ export class Prison {
     this.interactables.push({
       id: 'hatch',
       type: 'hatch',
-      position: new THREE.Vector3(ox - w / 2 + 0.55, 1, 3.42),
-      radius: 1.5,
+      position: new THREE.Vector3(ox - w / 2 + 0.55, 1.4, 3.42),
+      radius: 3.2,
     });
     const tray = new THREE.Group();
     tray.position.set(ox - w / 2 + 0.42, 0.92, 3.42);
@@ -575,6 +575,38 @@ export class Prison {
     extra.visible = false;
     this.group.add(extra);
     this.storyExtra = extra;
+    const tea = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.04, 0.06),
+      new THREE.MeshStandardMaterial({ color: 0x6a4a28, roughness: 0.78, emissive: 0x2a1808, emissiveIntensity: 0.2 }),
+    );
+    tea.visible = false;
+    this.group.add(tea);
+    this.storyTea = tea;
+    const rummage = new THREE.Group();
+    rummage.position.set(ox + 1.55, 0.06, oz - 1.55);
+    rummage.visible = false;
+    const rag = new THREE.MeshStandardMaterial({ color: 0x8a7a62, roughness: 0.94 });
+    const ragA = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.03, 0.22), rag);
+    ragA.rotation.y = 0.4;
+    rummage.add(ragA);
+    const ragB = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.025, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0x4a5a6a, roughness: 0.93 }),
+    );
+    ragB.position.set(0.18, 0.01, 0.12);
+    ragB.rotation.y = -0.6;
+    rummage.add(ragB);
+    this.group.add(rummage);
+    this.storyRummage = rummage;
+    const found = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.012, 0.11),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.86, emissive: 0x3a3010, emissiveIntensity: 0.25 }),
+    );
+    found.position.set(ox + 1.42, 0.08, oz - 1.72);
+    found.rotation.set(0, 0.7, 0.08);
+    found.visible = false;
+    this.group.add(found);
+    this.storyFound = found;
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
       wash: new THREE.Vector3(ox + 2.05, 0.97, oz + 2.48),
@@ -587,7 +619,9 @@ export class Prison {
     const a = this._storyAnchors;
     const waiting = sim.day >= 3 && !sim.malyava;
     const hold = sim.malyava === 'hold';
-    if (this.hatchFlap) this.hatchFlap.rotation.z = waiting ? -0.7 : 0;
+    const teaDue = sim.day >= 4 && hold && !sim.teaPaid;
+    const searching = sim.stage === 'life' && sim.phase?.id === 'shmon';
+    if (this.hatchFlap) this.hatchFlap.rotation.z = waiting || teaDue ? -0.7 : 0;
     if (waiting) {
       this.storyNote.visible = true;
       if (this.hatchAnchor) {
@@ -610,6 +644,19 @@ export class Prison {
     }
     if (this.storyAsh) this.storyAsh.visible = sim.malyava === 'burn';
     if (this.storyExtra) this.storyExtra.visible = sim.malyava === 'admin' || sim.courtTalk === 'cell';
+    if (this.storyTea) {
+      this.storyTea.visible = teaDue;
+      if (teaDue && this.hatchAnchor) {
+        this.hatchAnchor.getWorldPosition(this.storyTea.position);
+        this.storyTea.position.y -= 0.05;
+      }
+    }
+    if (this.playerMattress) {
+      this.playerMattress.rotation.z = searching ? 0.58 : 0;
+      this.playerMattress.position.y = searching ? 0.64 : 0.5;
+    }
+    if (this.storyRummage) this.storyRummage.visible = searching;
+    if (this.storyFound) this.storyFound.visible = sim.malyava === 'found';
   }
 
   addWindows(cell, w, d, h) {
@@ -650,10 +697,11 @@ export class Prison {
     ];
     this.furniture = this.furniture || [];
     for (const [x, z, rot] of spots) {
-      const bunk = this.makeBunk();
+      const mine = x === 1.85 && z === -2.35;
+      const bunk = this.makeBunk(mine);
       bunk.position.set(x, 0, z);
       bunk.rotation.y = rot;
-      if (x === 1.85 && z === -2.35) {
+      if (mine) {
         const tag = cellSign('ТВОЯ');
         tag.scale.setScalar(0.55);
         tag.position.set(-0.02, 0.78, 0.42);
@@ -668,7 +716,7 @@ export class Prison {
     }
   }
 
-  makeBunk() {
+  makeBunk(player = false) {
     const g = new THREE.Group();
     const rust = new THREE.MeshStandardMaterial({ color: 0x7a2c22, metalness: 0.45, roughness: 0.55 });
     const rustDark = new THREE.MeshStandardMaterial({ color: 0x4a241c, metalness: 0.4, roughness: 0.6 });
@@ -692,6 +740,7 @@ export class Prison {
     const lower = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.12, 0.72), cloth);
     lower.position.set(0.04, 0.5, 0);
     g.add(lower);
+    if (player) this.playerMattress = lower;
     const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.1, 0.72), cloth);
     mattress.position.set(0.04, 1.26, 0);
     g.add(mattress);
@@ -962,6 +1011,17 @@ export class Prison {
     sock.position.set(0.55, 1.72, 2.9);
     sock.rotation.z = 0.15;
     cell.add(sock);
+    const wet = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 });
+    for (const [sx, sy, sz, rz] of [
+      [-1.52, 0.92, LAYOUT.cellD / 2 - 0.28, 0.35],
+      [-1.22, 0.98, LAYOUT.cellD / 2 - 0.26, -0.2],
+      [-1.38, 1.08, LAYOUT.cellD / 2 - 0.3, 0.1],
+    ]) {
+      const hang = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.035), wet);
+      hang.position.set(sx, sy, sz);
+      hang.rotation.z = rz;
+      cell.add(hang);
+    }
     const rad = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.68, metalness: 0.22 });
     this.box(1.15, 0.42, 0.12, rad, -1.35, 0.38, LAYOUT.cellD / 2 - 0.22, cell);
     for (let i = -2; i <= 2; i++) {
