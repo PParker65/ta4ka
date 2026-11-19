@@ -238,14 +238,17 @@ export class Npcs {
         if (c.userData.billboard) c.position.y = 1.22;
       });
     } else if (kind === 'lie') {
-      limbs.hips.position.y = 0.54;
-      limbs.hips.rotation.x = 1.48;
-      if (thighs[0]) thighs[0].rotation.x = 0.12;
-      if (thighs[1]) thighs[1].rotation.x = 0.08;
-      if (shins[0]) shins[0].rotation.x = 0.18;
-      if (shins[1]) shins[1].rotation.x = 0.14;
-      limbs.arms[0].rotation.x = 0.55;
-      limbs.arms[1].rotation.x = 0.4;
+      limbs.hips.position.y = 0.5;
+      limbs.hips.rotation.x = 1.42;
+      if (thighs[0]) thighs[0].rotation.x = 0.04;
+      if (thighs[1]) thighs[1].rotation.x = 0.02;
+      if (shins[0]) shins[0].rotation.x = 0.06;
+      if (shins[1]) shins[1].rotation.x = 0.04;
+      limbs.arms[0].rotation.x = 0.35;
+      limbs.arms[1].rotation.x = 0.22;
+      n.root.traverse((c) => {
+        if (c.userData.billboard) c.visible = false;
+      });
     } else if (kind === 'lean') {
       limbs.hips.position.y = 0.92;
       limbs.hips.rotation.x = 0.16;
@@ -259,7 +262,10 @@ export class Npcs {
       limbs.arms[0].rotation.x = 0;
       limbs.arms[1].rotation.x = 0;
       n.root.traverse((c) => {
-        if (c.userData.billboard) c.position.y = 1.95;
+        if (c.userData.billboard) {
+          c.visible = true;
+          c.position.y = 1.95;
+        }
       });
     }
   }

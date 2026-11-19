@@ -234,6 +234,10 @@ export class Game {
   }
 
   skipToPlace(at) {
+    if (at === 'propiska') {
+      this.skipToCell();
+      return;
+    }
     if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath' || at === 'neck' || at === 'escort') {
       this.skipToArrival();
       this.sim.locked = false;
@@ -1269,7 +1273,16 @@ export class Game {
 }
 
 function stageName(st) {
-  return { kpp: 'КПП', shmon: 'Шмон', bath: 'Баня', escort: 'Коряк', propiska: 'Прописка', life: 'Хата' }[st] || st;
+  return {
+    kpp: 'КПП',
+    shmon: 'Шмон',
+    photo: 'Фото',
+    med: 'Мед',
+    bath: 'Баня',
+    escort: 'Коряк',
+    propiska: 'Прописка',
+    life: 'Хата',
+  }[st] || st;
 }
 
 function isMobile() {

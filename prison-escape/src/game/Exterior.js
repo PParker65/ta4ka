@@ -305,7 +305,7 @@ function addKpp(prison) {
 
   prison.box(1.5, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a3530 }), 3.2, 1.05, -56.4);
 
-  const steel = new THREE.MeshStandardMaterial({ color: 0x3a3e44, metalness: 0.62, roughness: 0.38 });
+  const steel = new THREE.MeshStandardMaterial({ color: 0x6a727c, metalness: 0.22, roughness: 0.62 });
   const left = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.4, 0.16), steel);
   left.position.set(-3.3, 1.7, -54.2);
   prison.group.add(left);
@@ -315,12 +315,18 @@ function addKpp(prison) {
   for (const g of [left, right]) {
     for (let y = 0.3; y < 3.2; y += 0.38) {
       const bar = new THREE.Mesh(
-        new THREE.BoxGeometry(3.0, 0.04, 0.04),
-        new THREE.MeshStandardMaterial({ color: 0x8a9096, metalness: 0.8, roughness: 0.3 }),
+        new THREE.BoxGeometry(3.0, 0.05, 0.05),
+        new THREE.MeshStandardMaterial({ color: 0xb0b6bc, metalness: 0.35, roughness: 0.4 }),
       );
       bar.position.set(0, y - 1.7, 0.1);
       g.add(bar);
     }
+    const stripe = new THREE.Mesh(
+      new THREE.BoxGeometry(3.0, 0.18, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 }),
+    );
+    stripe.position.set(0, 0.35, 0.1);
+    g.add(stripe);
   }
 
   prison.addCollider(-6.4, 2.0, -54.5, -53.9, 'kpp-gate');
@@ -622,6 +628,10 @@ function alcove(prison, x, z, title) {
     g.add(tags);
   }
   if (title === 'ФОТО') {
+    prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0xece8dc, roughness: 0.78 }), 0.2, 1.3, -1.55, g);
+    const marks = plaque('180\n170\n160', 0.42, 1.05);
+    marks.position.set(-1.15, 1.45, -1.48);
+    g.add(marks);
     prison.box(0.12, 1.1, 0.12, metal, -0.4, 0.7, 0.3, g);
     prison.box(0.22, 0.16, 0.18, darkCam(), -0.4, 1.28, 0.4, g);
     const stool = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.08, 10), wood);
