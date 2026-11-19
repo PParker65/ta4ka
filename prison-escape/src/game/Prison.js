@@ -1173,6 +1173,17 @@ export class Prison {
     outlet.position.set(-LAYOUT.cellW / 2 + 0.2, 0.95, 0.6);
     outlet.rotation.y = Math.PI / 2;
     cell.add(outlet);
+    const own = wallScratch('СВОЯ');
+    own.scale.set(0.7, 0.7, 0.7);
+    own.position.set(LAYOUT.cellW / 2 - 0.22, 1.05, -1.9);
+    own.rotation.y = -Math.PI / 2;
+    cell.add(own);
+    const pail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.11, 0.09, 0.2, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.45, roughness: 0.45 }),
+    );
+    pail.position.set(2.35, 0.14, 2.55);
+    cell.add(pail);
   }
 
   addCat(cell) {

@@ -14,6 +14,9 @@ import {
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_FOOD,
+  DAY3_FOOD_HOLD,
+  DAY3_FOOD_BURN,
+  DAY3_FOOD_RED,
   DAY3_WALK,
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
@@ -69,6 +72,12 @@ export function plotObjective(sim) {
       : 'Третий день. Кормушка днём живая. Не зевай.';
   if (d === 3 && ph === 'food' && !sim.malyava)
     return 'Пайка. Два коротких в щель — бумага, не ложка. Не зевай.';
+  if (d === 3 && ph === 'food' && sim.malyava === 'hold')
+    return 'Пайка. Карман жжёт. Ешь. Не читай вслух.';
+  if (d === 3 && ph === 'food' && sim.malyava === 'burn')
+    return 'Пайка пахнет золой. Ешь. Не свисти.';
+  if (d === 3 && ph === 'food' && sim.malyava === 'admin')
+    return 'Пайка лишняя. Красному ложку дают последним.';
   if (d === 3 && ph === 'evening' && !sim.malyava)
     return 'Отбой. Бумага ещё в щели. Завтра либо твоя, либо кума.';
   if (d === 3 && ph === 'walk') {
@@ -222,9 +231,12 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, DAY2_FOOD);
       return;
     }
-    if (s.day === 3 && !s.malyava && !s.seenDay3Food) {
+    if (s.day === 3 && !s.seenDay3Food) {
       s.seenDay3Food = true;
-      pickDialog(g, DAY3_FOOD);
+      if (!s.malyava) pickDialog(g, DAY3_FOOD);
+      else if (s.malyava === 'hold') pickDialog(g, DAY3_FOOD_HOLD);
+      else if (s.malyava === 'burn') pickDialog(g, DAY3_FOOD_BURN);
+      else pickDialog(g, DAY3_FOOD_RED);
       return;
     }
     if (s.day === 5 && !s.seenDay5Sled) {
