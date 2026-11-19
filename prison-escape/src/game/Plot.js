@@ -46,6 +46,7 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'evening') {
     g.fill.intensity = 0.12;
+    for (const l of g.prison.windowFills || []) l.intensity = 0.08;
     if (s.day === 1 && !s.seenNight1) {
       s.seenNight1 = true;
       g.unlockLook();
@@ -73,7 +74,16 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'shmon') {
     g.audio.clang();
-    if (s.stash === 'bunk') {
+    if (s.malyava === 'hold' && s.day >= 3) {
+      s.malyava = 'found';
+      s.heat = Math.min(100, s.heat + 28);
+      s.stress = Math.min(100, s.stress + 16);
+      s.hope = Math.max(0, s.hope - 10);
+      g.toast('Нашли бумагу. Карман пустой, жар полный.');
+      g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в матрасе.»');
+      return;
+    }
+    if (s.stash === 'bunk' && s.day === 2) {
       s.heat = Math.min(100, s.heat + 22);
       s.stress = Math.min(100, s.stress + 14);
       s.hope = Math.max(0, s.hope - 8);
@@ -90,6 +100,7 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'wake') {
     g.fill.intensity = 0.5;
+    for (const l of g.prison.windowFills || []) l.intensity = 0.4;
     g.audio.buzz();
     g.subtitle(
       s.day === 1

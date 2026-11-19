@@ -313,6 +313,11 @@ export class CellLife {
       return true;
     }
     this.talkCd[id] = now + 8;
+    if (g.sim.malyava === 'admin' && id !== 'starosta') {
+      g.toast('Хата молчит. Так разговаривают с красным.');
+      g.sim.stress = Math.min(100, g.sim.stress + 6);
+      return true;
+    }
     if (id === 'starosta') {
       if (g.sim.task?.id === 'cig') {
         g.unlockLook();

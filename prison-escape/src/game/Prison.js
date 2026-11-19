@@ -723,6 +723,8 @@ export class Prison {
     const windowFill = new THREE.PointLight(0x9bb4c4, 0.4, 8, 2);
     windowFill.position.set(-1.2, 2.15, LAYOUT.cellD / 2 - 0.5);
     cell.add(windowFill);
+    this.windowFills = this.windowFills || [];
+    this.windowFills.push(windowFill);
   }
 
   addStools(cell) {
@@ -776,6 +778,41 @@ export class Prison {
     days.position.set(-2.15, 1.45, 1.1);
     days.rotation.y = Math.PI / 2;
     cell.add(days);
+
+    const wet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.55, 10),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a32, roughness: 0.18, metalness: 0.12 }),
+    );
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(2.15, 0.04, 2.35);
+    cell.add(wet);
+    const ash = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.045, 0.025, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.7 }),
+    );
+    ash.position.set(0.48, 0.755, 0.02);
+    cell.add(ash);
+    const slip = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.04, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 }),
+    );
+    slip.position.set(1.55, 0.05, -1.85);
+    slip.rotation.y = 0.4;
+    cell.add(slip);
+    const slip2 = slip.clone();
+    slip2.position.set(1.72, 0.05, -1.72);
+    slip2.rotation.y = -0.2;
+    cell.add(slip2);
+    const ticks = wallScratch('|||| |');
+    ticks.position.set(-2.18, 1.15, -0.4);
+    ticks.rotation.y = Math.PI / 2;
+    cell.add(ticks);
+    const drip = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018, 6, 6),
+      new THREE.MeshStandardMaterial({ color: 0x8aa0a8, roughness: 0.2, transparent: true, opacity: 0.7 }),
+    );
+    drip.position.set(-0.8, 2.72, 1.1);
+    cell.add(drip);
   }
 
   addCat(cell) {
@@ -881,6 +918,7 @@ export class Prison {
     const ring = new THREE.MeshStandardMaterial({ color: 0x5a5e58, roughness: 0.92 });
     this.box(5.2, 0.02, 0.18, ring, 0, 0.06, 0, g);
     this.box(0.18, 0.02, 5.2, ring, 0, 0.06, 0, g);
+    this.addYardLife(g);
 
     const doorW = 1.28;
     const doorH = 2.22;
@@ -938,6 +976,56 @@ export class Prison {
     this.addCollider(4.1, 5.2, z0, z0 + 9, 'yard-r');
     this.addCollider(-4.5, -doorW / 2, z0 - 0.25, z0 + 0.4, 'yard-door-l');
     this.addCollider(doorW / 2, 4.5, z0 - 0.25, z0 + 0.4, 'yard-door-r');
+  }
+
+  addYardLife(g) {
+    const mesh = new THREE.MeshStandardMaterial({ color: 0x2e3236, metalness: 0.55, roughness: 0.42 });
+    for (const x of [-4.28, 4.28]) {
+      for (let i = -8; i <= 8; i++) {
+        this.box(0.03, 3.2, 0.03, mesh, x, 1.7, i * 0.48, g);
+      }
+      for (let y = 0.4; y <= 3.1; y += 0.38) {
+        this.box(0.03, 0.03, 8.6, mesh, x, y, 0, g);
+      }
+    }
+    for (let i = -8; i <= 8; i++) {
+      this.box(0.03, 3.2, 0.03, mesh, i * 0.5, 1.7, 4.28, g);
+    }
+    const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
+    this.box(1.8, 0.08, 0.38, bench, -2.2, 0.42, 2.6, g);
+    this.box(0.08, 0.4, 0.08, bench, -2.95, 0.2, 2.48, g);
+    this.box(0.08, 0.4, 0.08, bench, -1.45, 0.2, 2.48, g);
+    this.box(0.08, 0.4, 0.08, bench, -2.95, 0.2, 2.72, g);
+    this.box(0.08, 0.4, 0.08, bench, -1.45, 0.2, 2.72, g);
+    const puddle = new THREE.Mesh(
+      new THREE.CircleGeometry(0.7, 12),
+      new THREE.MeshStandardMaterial({ color: 0x4a4e46, roughness: 0.16, metalness: 0.18 }),
+    );
+    puddle.rotation.x = -Math.PI / 2;
+    puddle.position.set(1.4, 0.045, -1.1);
+    g.add(puddle);
+    const grate = this.box(0.42, 0.02, 0.42, mesh, 1.4, 0.05, -1.1, g);
+    grate.rotation.y = 0.2;
+    const stain = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95, transparent: true, opacity: 0.35 });
+    this.box(1.6, 1.1, 0.02, stain, -2.4, 1.4, 4.28, g);
+    const cam = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.1, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.4, roughness: 0.5 }),
+    );
+    cam.position.set(3.6, 2.85, -3.6);
+    cam.rotation.y = -0.7;
+    g.add(cam);
+    const lens = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.045, 0.06, 8),
+      new THREE.MeshStandardMaterial({ color: 0x111214, metalness: 0.7, roughness: 0.25 }),
+    );
+    lens.rotation.x = Math.PI / 2;
+    lens.position.set(3.55, 2.85, -3.48);
+    g.add(lens);
+    const scratch = wallScratch('НЕ ОРИ');
+    scratch.position.set(0.2, 1.55, 4.26);
+    scratch.rotation.y = Math.PI;
+    g.add(scratch);
   }
 
   addPipesAndProps() {
@@ -1098,6 +1186,25 @@ function cellSign(text) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), new THREE.MeshBasicMaterial({ map: tex }));
+}
+
+function wallScratch(text) {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 96;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 256, 96);
+  ctx.fillStyle = 'rgba(40,32,24,0.85)';
+  ctx.font = '700 36px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 50);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(
+    new THREE.PlaneGeometry(0.9, 0.34),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true }),
+  );
 }
 
 export function makeSeats(ox, oz) {
