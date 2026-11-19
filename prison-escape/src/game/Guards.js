@@ -45,55 +45,60 @@ export class Guards {
 
   makeGuard(waypoints, speed) {
     const root = new THREE.Group();
-    const coat = new THREE.MeshStandardMaterial({ color: 0x1a1c1e, roughness: 0.7 });
+    const coat = new THREE.MeshStandardMaterial({ color: 0x2c343c, roughness: 0.72 });
     const skin = new THREE.MeshStandardMaterial({ color: 0xb08a68, roughness: 0.75 });
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.7, 0.28), coat);
-    body.position.y = 1.15;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.58, 0.24), coat);
+    body.position.y = 1.18;
     body.castShadow = true;
     root.add(body);
-    const legs = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.7, 0.22), coat);
-    legs.position.y = 0.42;
+    const legs = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.62, 0.2), coat);
+    legs.position.y = 0.4;
     root.add(legs);
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), skin);
-    head.position.y = 1.62;
+    for (const x of [-0.22, 0.22]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.48, 0.1), coat);
+      arm.position.set(x, 1.12, 0);
+      root.add(arm);
+    }
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), skin);
+    head.position.y = 1.58;
     root.add(head);
     const cap = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.15, 0.1, 10),
-      new THREE.MeshStandardMaterial({ color: 0x111214 }),
+      new THREE.CylinderGeometry(0.13, 0.14, 0.09, 10),
+      new THREE.MeshStandardMaterial({ color: 0x1a1c20 }),
     );
-    cap.position.y = 1.74;
+    cap.position.y = 1.7;
     root.add(cap);
     const brim = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.02, 0.16),
-      new THREE.MeshStandardMaterial({ color: 0x111214 }),
+      new THREE.BoxGeometry(0.16, 0.02, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0x1a1c20 }),
     );
-    brim.position.set(0, 1.7, 0.1);
+    brim.position.set(0, 1.66, 0.09);
     root.add(brim);
 
     const torch = new THREE.Group();
-    torch.position.set(0.18, 1.28, 0.12);
+    torch.position.set(0.26, 1.12, 0.1);
     const handle = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.03, 0.22, 8),
+      new THREE.CylinderGeometry(0.025, 0.025, 0.18, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.5 }),
     );
     handle.rotation.x = Math.PI / 2;
     torch.add(handle);
     const cone = new THREE.Mesh(
-      new THREE.ConeGeometry(0.55, 2.4, 16, 1, true),
+      new THREE.ConeGeometry(0.16, 1.15, 12, 1, true),
       new THREE.MeshBasicMaterial({
         color: 0xfff2c4,
         transparent: true,
-        opacity: 0.2,
+        opacity: 0.07,
         depthWrite: false,
         side: THREE.DoubleSide,
       }),
     );
     cone.rotation.x = Math.PI / 2;
-    cone.position.z = 1.25;
+    cone.position.z = 0.65;
     torch.add(cone);
     root.add(torch);
 
-    const light = new THREE.SpotLight(0xfff1c2, 2.2, 11, 0.38, 0.45, 1.1);
+    const light = new THREE.SpotLight(0xfff1c2, 1.15, 7, 0.32, 0.5, 1.2);
     light.position.set(0.18, 1.28, 0.2);
     light.target.position.set(0.18, 0.9, 3.2);
     root.add(light);

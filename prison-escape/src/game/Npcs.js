@@ -397,8 +397,12 @@ export class Npcs {
         }
       }
       if (camera) {
+        const look = new THREE.Vector3();
+        camera.getWorldDirection(look);
         n.root.traverse((c) => {
-          if (c.userData.billboard) c.quaternion.copy(camera.quaternion);
+          if (!c.userData.billboard) return;
+          c.quaternion.copy(camera.quaternion);
+          c.visible = look.y < 0.22;
         });
       }
       if (n.kind === 'dog') {
@@ -757,7 +761,7 @@ function nameplate(text) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.13), mat);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.075), mat);
   mesh.userData.billboard = true;
   return mesh;
 }

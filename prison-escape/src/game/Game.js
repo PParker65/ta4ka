@@ -210,9 +210,9 @@ export class Game {
     if (id === 'walk') {
       const door = this.prison.interactables.find((it) => it.type === 'cell-door');
       if (door && !door.open) this.prison.openDoor(door);
-      this.player.position.set(0.18, 0, 5.2);
+      this.player.position.set(0.2, 0, 22.4);
       this.input.yaw = 0;
-      this.input.pitch = 0.02;
+      this.input.pitch = 0.04;
     }
   }
 
