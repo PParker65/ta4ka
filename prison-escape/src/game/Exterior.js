@@ -510,15 +510,16 @@ function addProcessing(prison) {
   prison.interactables.push({
     id: 'robe',
     type: 'robe',
-    position: new THREE.Vector3(-0.9, 1, -13.6),
-    radius: 2.7,
+    position: new THREE.Vector3(2.05, 1, -14.55),
+    radius: 1.8,
   });
-  const kaz = new THREE.MeshStandardMaterial({ color: 0x6a6a62, roughness: 0.82 });
+  const kaz = new THREE.MeshStandardMaterial({ color: 0x8a8a4a, roughness: 0.82 });
   const stripe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.8 });
-  prison.box(0.5, 0.1, 0.34, kaz, -0.9, 0.12, -13.6);
-  prison.box(0.46, 0.08, 0.3, kaz, -0.88, 0.2, -13.58);
-  prison.box(0.5, 0.02, 0.34, stripe, -0.9, 0.16, -13.6);
-  prison.box(0.22, 0.08, 0.22, new THREE.MeshStandardMaterial({ color: 0x3a3a38 }), -0.55, 0.08, -13.35);
+  prison.box(0.55, 0.14, 0.4, kaz, 2.05, 0.14, -14.55);
+  prison.box(0.5, 0.12, 0.36, kaz, 2.08, 0.26, -14.52);
+  prison.box(0.55, 0.03, 0.4, stripe, 2.05, 0.2, -14.55);
+  prison.box(0.5, 0.03, 0.36, stripe, 2.08, 0.32, -14.52);
+  prison.box(0.24, 0.09, 0.24, new THREE.MeshStandardMaterial({ color: 0x3a3a38 }), 1.7, 0.08, -14.35);
   const mist = new THREE.MeshStandardMaterial({
     color: 0xc8d4d0,
     transparent: true,

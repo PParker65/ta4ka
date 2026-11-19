@@ -520,34 +520,24 @@ export class Prison {
   }
 
   addWindows(cell, w, d, h) {
+    const view = new THREE.MeshBasicMaterial({
+      map: this.tex.windowView,
+      side: THREE.DoubleSide,
+    });
+    this.windowGlass = this.windowGlass || [];
+    this.windowGlass.push(view);
     for (const x of [-1.35, 1.35]) {
-      const frame = this.box(1.15, 1.35, 0.1, new THREE.MeshStandardMaterial({ color: 0x3a342c }), x, 2.15, d / 2 - 0.08, cell);
-      const glass = this.box(
-        0.95,
-        1.15,
-        0.02,
-        new THREE.MeshStandardMaterial({
-          map: this.tex.windowView,
-          color: 0xffffff,
-          roughness: 0.22,
-          metalness: 0.08,
-          emissive: 0x6a7a88,
-          emissiveIntensity: 0.22,
-        }),
-        x,
-        2.15,
-        d / 2 - 0.02,
-        cell,
-      );
-      glass.material.toneMapped = true;
-      this.windowGlass = this.windowGlass || [];
-      this.windowGlass.push(glass.material);
+      this.box(1.15, 1.35, 0.1, new THREE.MeshStandardMaterial({ color: 0x3a342c }), x, 2.15, d / 2 - 0.08, cell);
+      const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 1.15), view);
+      glass.position.set(x, 2.15, d / 2 - 0.12);
+      glass.rotation.y = Math.PI;
+      cell.add(glass);
       const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
       for (let i = -3; i <= 3; i++) {
-        this.box(0.03, 1.15, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.01, cell);
+        this.box(0.03, 1.15, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.1, cell);
       }
       for (let j = -2; j <= 2; j++) {
-        this.box(0.95, 0.025, 0.025, bars, x, 2.15 + j * 0.22, d / 2 - 0.01, cell);
+        this.box(0.95, 0.025, 0.025, bars, x, 2.15 + j * 0.22, d / 2 - 0.1, cell);
       }
     }
   }

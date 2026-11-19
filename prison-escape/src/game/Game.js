@@ -280,8 +280,9 @@ export class Game {
         this.sim.med = true;
         this.sim.stage = 'bath';
         this.prison.openKpp();
-        this.player.position.set(-0.2, 0, -15.4);
+        this.player.position.set(0.35, 0, -15.4);
         this.input.yaw = Math.PI / 2;
+        this.input.pitch = 0.08;
       } else if (at === 'escort') {
         this.sim.docs = true;
         this.sim.pending = [];
@@ -993,7 +994,7 @@ export class Game {
         this.toast(opt.reply);
         this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
         this.audio.clippers();
-        this.guide = new THREE.Vector3(-0.9, 0, -13.6);
+        this.guide = new THREE.Vector3(2.05, 0, -14.55);
       };
       return;
     }

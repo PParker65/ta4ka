@@ -50,7 +50,10 @@ export function onPhaseEnter(game, id) {
   if (id === 'evening') {
     g.fill.intensity = 0.12;
     for (const l of g.prison.windowFills || []) l.intensity = 0.08;
-    for (const m of g.prison.windowGlass || []) m.emissiveIntensity = 0.05;
+    for (const m of g.prison.windowGlass || []) {
+      if ('emissiveIntensity' in m) m.emissiveIntensity = 0.05;
+      if (m.color) m.color.setHex(0x6a7380);
+    }
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     if (s.day === 1 && !s.seenNight1) {
       s.seenNight1 = true;
@@ -113,7 +116,10 @@ export function onPhaseEnter(game, id) {
   if (id === 'wake') {
     g.fill.intensity = 0.5;
     for (const l of g.prison.windowFills || []) l.intensity = 0.4;
-    for (const m of g.prison.windowGlass || []) m.emissiveIntensity = 0.22;
+    for (const m of g.prison.windowGlass || []) {
+      if ('emissiveIntensity' in m) m.emissiveIntensity = 0.22;
+      if (m.color) m.color.setHex(0xffffff);
+    }
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.buzz();
     g.subtitle(
