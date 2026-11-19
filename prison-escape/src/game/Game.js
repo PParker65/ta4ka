@@ -268,6 +268,10 @@ export class Game {
       this.player.position.set(o.x - 0.35, 0, o.z + 0.95);
       this.input.yaw = -Math.PI / 2;
       this.input.pitch = -0.22;
+    } else if (look === 'wash') {
+      this.player.position.set(o.x + 2.72, 0, o.z + 2.82);
+      this.input.yaw = Math.atan2(-0.72, 0.14);
+      this.input.pitch = -0.55;
     }
   }
 

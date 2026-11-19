@@ -35,6 +35,7 @@ import {
   DAY3_SHMON_HATCH,
   DAY3_SHMON_BURN,
   DAY4_LEHA,
+  DAY4_NIGHT_WAIT,
   DAY4_WALK,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
@@ -198,7 +199,7 @@ export function onPhaseEnter(game, id) {
     for (const l of g.prison.windowFills || []) l.intensity = 0.08;
     for (const m of g.prison.windowGlass || []) {
       if ('emissiveIntensity' in m) m.emissiveIntensity = 0.05;
-      if (m.color) m.color.setHex(0x6a7380);
+      if (m.color) m.color.setHex(0x9aa8b4);
     }
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     if (s.day === 1 && !s.seenNight1) {
@@ -218,7 +219,7 @@ export function onPhaseEnter(game, id) {
       else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
-      pickDialog(g, DAY4_LEHA);
+      pickDialog(g, s.malyava ? DAY4_LEHA : DAY4_NIGHT_WAIT);
     } else if (s.day === 5 && !s.seenDay5) {
       s.seenDay5 = true;
       pickDialog(g, day5Evening(s));

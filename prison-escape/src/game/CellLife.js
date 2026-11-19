@@ -26,6 +26,7 @@ import {
   DAY3_MORNING_CAUGHT,
   DAY2_WAKE,
   DAY4_LEHA,
+  DAY4_NIGHT_WAIT,
   DAY4_HATCH,
   DAY4_WALK,
   DAY5_COURT,
@@ -452,7 +453,9 @@ export class CellLife {
       g.unlockLook();
       const leha =
         g.sim.day >= 4
-          ? DAY4_LEHA
+          ? g.sim.malyava
+            ? DAY4_LEHA
+            : DAY4_NIGHT_WAIT
           : g.sim.day >= 3
             ? g.sim.path === 'red'
               ? DAY3_MORNING_RED

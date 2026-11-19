@@ -628,7 +628,7 @@ export class Prison {
     this.storyFound = found;
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
-      wash: new THREE.Vector3(ox + 2.05, 0.97, oz + 2.48),
+      wash: new THREE.Vector3(ox + 2.0, 0.99, oz + 2.95),
       bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
     };
   }
@@ -1004,7 +1004,12 @@ export class Prison {
   addLivedIn(cell) {
     const rope = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
     this.box(2.4, 0.012, 0.012, rope, -0.4, 1.92, 2.9, cell);
-    const cloths = [0x6a6e78, 0xc8c2b0, 0x7a5a3a];
+    const wallCal = cellSign('СУТКИ');
+    wallCal.scale.setScalar(0.85);
+    wallCal.position.set(0.15, 1.88, LAYOUT.cellD / 2 - 0.16);
+    wallCal.rotation.y = Math.PI;
+    cell.add(wallCal);
+    const cloths = [0x8a8e98, 0xd8d2c0, 0x9a6a42];
     cloths.forEach((c, i) => {
       const rag = new THREE.Mesh(
         new THREE.BoxGeometry(0.28, 0.42, 0.04),
