@@ -18,6 +18,7 @@ import {
   DAY2_WAKE,
   DAY2_WAKE_BUNK,
   DAY3_NIGHT,
+  DAY3_NIGHT_WAIT,
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
@@ -36,6 +37,7 @@ import {
   DAY4_LEHA,
   DAY4_WALK,
   DAY4_FOOD,
+  DAY4_FOOD_WAIT,
   DAY4_WAKE,
   DAY4_WAKE_BURN,
   DAY4_WAKE_RED,
@@ -213,7 +215,7 @@ export function onPhaseEnter(game, id) {
       if (s.malyava === 'admin') pickDialog(g, SNITCH_NIGHT);
       else if (s.malyava === 'hold') pickDialog(g, HOLD_NIGHT);
       else if (s.malyava === 'burn') pickDialog(g, BURN_NIGHT);
-      else pickDialog(g, DAY3_NIGHT);
+      else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
       pickDialog(g, DAY4_LEHA);
@@ -302,7 +304,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 4 && !s.seenDay4Food) {
       s.seenDay4Food = true;
-      pickDialog(g, DAY4_FOOD);
+      pickDialog(g, s.malyava ? DAY4_FOOD : DAY4_FOOD_WAIT);
       return;
     }
     if (s.day >= 3 && !s.malyava) {

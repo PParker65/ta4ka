@@ -560,12 +560,12 @@ export class Prison {
 
   addStoryProps(ox, oz, w) {
     const paper = new THREE.Mesh(
-      new THREE.BoxGeometry(0.24, 0.018, 0.16),
+      new THREE.BoxGeometry(0.28, 0.022, 0.18),
       new THREE.MeshStandardMaterial({
-        color: 0xf0e6c8,
-        roughness: 0.82,
-        emissive: 0x3a3418,
-        emissiveIntensity: 0.35,
+        color: 0xf2e6c4,
+        roughness: 0.78,
+        emissive: 0x5a4a18,
+        emissiveIntensity: 0.55,
       }),
     );
     const fold = new THREE.Mesh(
@@ -643,23 +643,28 @@ export class Prison {
     if (this.hatchFlap) this.hatchFlap.rotation.z = waiting || teaDue ? -0.7 : 0;
     if (waiting) {
       this.storyNote.visible = true;
+      this.storyNote.scale.set(1.55, 1.55, 1.55);
       if (this.hatchAnchor) {
         this.hatchAnchor.getWorldPosition(this.storyNote.position);
-        this.storyNote.rotation.set(0.15, 1.2, 0.35);
+        this.storyNote.position.x += 0.08;
+        this.storyNote.rotation.set(0.28, Math.PI / 2, 0.04);
       } else {
         this.storyNote.position.copy(a.hatch);
-        this.storyNote.rotation.set(0.2, 0.5, 0.12);
+        this.storyNote.rotation.set(0.28, Math.PI / 2, 0.04);
       }
     } else if (hold && sim.stash === 'wash') {
       this.storyNote.visible = true;
+      this.storyNote.scale.set(1, 1, 1);
       this.storyNote.position.copy(a.wash);
       this.storyNote.rotation.set(0, 0.3, 0);
     } else if (hold && sim.stash === 'bunk') {
       this.storyNote.visible = true;
+      this.storyNote.scale.set(1, 1, 1);
       this.storyNote.position.copy(a.bunk);
       this.storyNote.rotation.set(0, -0.4, 0);
     } else {
       this.storyNote.visible = false;
+      this.storyNote.scale.set(1, 1, 1);
     }
     if (this.storyAsh) this.storyAsh.visible = sim.malyava === 'burn';
     if (this.storyExtra) this.storyExtra.visible = sim.malyava === 'admin' || sim.courtTalk === 'cell';

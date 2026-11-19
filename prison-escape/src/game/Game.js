@@ -236,9 +236,9 @@ export class Game {
     if (!o) return;
     this.hands.position.set(0, 0, 0);
     if (look === 'hatch') {
-      this.player.position.set(o.x + 0.15, 0, 3.42);
+      this.player.position.set(o.x - LAYOUT.cellW / 2 + 1.2, 0, 3.42);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = 0.06;
+      this.input.pitch = 0.02;
     } else if (look === 'table') {
       this.player.position.set(o.x - 0.35, 0, o.z - 1.15);
       this.input.yaw = 0.12;
@@ -1025,8 +1025,7 @@ export class Game {
     if (item.type === 'cell-door') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
     if (item.type === 'exit') return this.sim.stage === 'life' && this.sim.phase.id === 'walk';
     if (item.type === 'admin') return this.sim.stage === 'life' && this.sim.day >= 3;
-    if (item.type === 'rag')
-      return !this.sim.ragChoice && (this.sim.stage === 'propiska' || this.sim.stage === 'life');
+    if (item.type === 'rag') return !this.sim.ragChoice && this.sim.stage === 'propiska';
     if (item.type === 'starosta') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
     if (['window', 'kettle', 'hatch', 'calendar'].includes(item.type))
       return this.sim.stage === 'propiska' || this.sim.stage === 'life';
