@@ -29,6 +29,10 @@ import {
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
+  DAY3_SHMON_FOUND,
+  DAY3_SHMON_WASH,
+  DAY3_SHMON_HATCH,
+  DAY3_SHMON_BURN,
   DAY4_LEHA,
   DAY4_WALK,
   DAY4_FOOD,
@@ -94,6 +98,13 @@ export function plotObjective(sim) {
       : sim.stash === 'bunk'
         ? 'Третий подъём. Вчера матрас пел. Кормушка днём живая. Не зевай.'
         : 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d === 3 && ph === 'shmon') {
+    if (sim.malyava === 'found') return 'Нашли бумагу. К стене. Руки видно. Рот на замок.';
+    if (sim.malyava === 'hold' && sim.stash === 'wash') return 'Шмон. Чаша сегодня не их дело. Не смотри на неё.';
+    if (sim.malyava === 'burn') return 'Шмон. Пахнет золой. К стене. Нос казённый.';
+    if (!sim.malyava) return 'Шмон. Щель ещё живая. Койки шарят. Кормушку — пока нет.';
+    return 'Шмон. К стенам. Руки видно. Карман не шарь сам.';
+  }
   if (d === 3 && ph === 'food' && !sim.malyava)
     return 'Пайка. Два коротких в щель — бумага, не ложка. Не зевай.';
   if (d === 3 && ph === 'food' && sim.malyava === 'hold')
@@ -231,7 +242,20 @@ export function onPhaseEnter(game, id) {
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
-      g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
+      if (!s.seenDay3Shmon) {
+        s.seenDay3Shmon = true;
+        pickDialog(g, DAY3_SHMON_FOUND);
+      } else {
+        g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
+      }
+      return;
+    }
+    if (s.day === 3 && !s.seenDay3Shmon) {
+      s.seenDay3Shmon = true;
+      if (s.malyava === 'hold' && s.stash === 'wash') pickDialog(g, DAY3_SHMON_WASH);
+      else if (s.malyava === 'burn') pickDialog(g, DAY3_SHMON_BURN);
+      else if (!s.malyava) pickDialog(g, DAY3_SHMON_HATCH);
+      else g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.»');
       return;
     }
     if (s.day === 2 && !s.seenDay2Shmon) {

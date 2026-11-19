@@ -1027,6 +1027,27 @@ export class Prison {
     days.position.set(-2.15, 1.45, 1.1);
     days.rotation.y = Math.PI / 2;
     cell.add(days);
+    const floorRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, 0.03, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.94 }),
+    );
+    floorRag.position.set(-1.75, 0.04, 0.85);
+    floorRag.rotation.y = 0.45;
+    cell.add(floorRag);
+    const doorPail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.13, 0.11, 0.26, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.35, roughness: 0.55 }),
+    );
+    doorPail.position.set(-1.95, 0.16, 1.35);
+    cell.add(doorPail);
+    const korm = wallScratch('КОРМ');
+    korm.scale.set(0.9, 0.9, 0.9);
+    korm.position.set(-LAYOUT.cellW / 2 + 0.22, 1.28, 2.55);
+    korm.rotation.y = Math.PI / 2;
+    cell.add(korm);
+    const hatchRust = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88 });
+    this.box(0.02, 0.55, 0.7, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.5, 3.15, cell);
+    this.box(0.02, 0.28, 0.35, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.22, 3.35, cell);
 
     const wet = new THREE.Mesh(
       new THREE.CircleGeometry(0.55, 10),
@@ -1533,7 +1554,7 @@ export class Prison {
     const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
     circle.rotation.z = Math.PI;
-    circle.position.set(0, 0.082, 0.9);
+    circle.position.set(0, 0.085, 1.7);
     g.add(circle);
     const wallKrug = wallScratch('КРУГ');
     wallKrug.scale.set(1.7, 1.7, 1.7);
@@ -1854,13 +1875,13 @@ function floorPaint(text) {
   c.height = 256;
   const ctx = c.getContext('2d');
   ctx.clearRect(0, 0, 768, 256);
-  ctx.strokeStyle = 'rgba(30,24,16,0.95)';
+  ctx.strokeStyle = 'rgba(90,70,36,0.95)';
   ctx.lineWidth = 10;
   ctx.font = '800 168px serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.strokeText(text, 384, 140);
-  ctx.fillStyle = 'rgba(48,38,24,0.92)';
+  ctx.fillStyle = 'rgba(232,226,196,0.92)';
   ctx.fillText(text, 384, 140);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
