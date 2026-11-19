@@ -210,7 +210,7 @@ export class Game {
     const day = Number(params.get('day') || 0);
     if (day >= 2 && day <= 14) this.sim.day = day | 0;
     const mal = params.get('malyava');
-    if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found') this.sim.malyava = mal;
+    if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found' || mal === 'gone') this.sim.malyava = mal;
     if (mal === 'hold') this.sim.inv.tea = Math.max(this.sim.inv.tea, 1);
     const talk = params.get('court');
     if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
@@ -272,6 +272,10 @@ export class Game {
       this.player.position.set(o.x + 2.72, 0, o.z + 2.82);
       this.input.yaw = Math.atan2(-0.72, 0.14);
       this.input.pitch = -0.55;
+    } else if (look === 'door') {
+      this.player.position.set(o.x - 0.45, 0, 3.42);
+      this.input.yaw = -Math.PI / 2;
+      this.input.pitch = 0.02;
     }
   }
 

@@ -628,7 +628,7 @@ export class Prison {
     this.storyFound = found;
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
-      wash: new THREE.Vector3(ox + 2.0, 0.99, oz + 2.95),
+      wash: new THREE.Vector3(ox + 2.22, 0.12, oz + 2.62),
       bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
     };
   }
@@ -654,9 +654,9 @@ export class Prison {
       }
     } else if (hold && sim.stash === 'wash') {
       this.storyNote.visible = true;
-      this.storyNote.scale.set(1, 1, 1);
+      this.storyNote.scale.set(1.8, 1.8, 1.8);
       this.storyNote.position.copy(a.wash);
-      this.storyNote.rotation.set(0, 0.3, 0);
+      this.storyNote.rotation.set(-0.5, 0.7, 0.15);
     } else if (hold && sim.stash === 'bunk') {
       this.storyNote.visible = true;
       this.storyNote.scale.set(1, 1, 1);

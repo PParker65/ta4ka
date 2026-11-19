@@ -46,7 +46,9 @@ import {
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_WAKE,
+  DAY5_WAKE_GONE,
   DAY5_SLED,
+  DAY5_SLED_GONE,
   DAY5_SLED_RED,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
@@ -133,11 +135,18 @@ export function plotObjective(sim) {
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
   if (d === 6 && ph === 'food') return 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
   if (d === 6 && ph === 'walk') return 'Шестой круг. Завтра не ори про волю.';
-  if (d === 5 && ph === 'wake') return 'С коряка шепчут список. Днём щель станет кабинетом.';
-  if (d === 5 && ph === 'food' && !sim.courtTalk) return 'Вызов. Следователь в щели. Про хату — или про срок.';
+  if (d === 5 && ph === 'wake')
+    return sim.malyava === 'gone'
+      ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
+      : 'С коряка шепчут список. Днём щель станет кабинетом.';
+  if (d === 5 && ph === 'food' && !sim.courtTalk)
+    return sim.malyava === 'gone'
+      ? 'Вызов. Бумага уже в папке. Следователь знает щель. Про хату — или про срок.'
+      : 'Вызов. Следователь в щели. Про хату — или про срок.';
   if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
   if (d === 5 && sim.courtTalk === 'silent') return 'Про хату — ничего. Жар есть. Хата ещё дышит.';
   if (d === 5 && sim.courtTalk === 'self') return '«Ничего не видел.» Хата слышала тон. Не рассказывай сон.';
+  if (d === 5 && sim.malyava === 'gone') return 'Щель отдала бумагу без тебя. Следователь уже читал.';
   if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
   if (d === 6) return 'Шестой день. Свежак кончается. Не ори про волю.';
   if (d === 7) return 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
@@ -295,7 +304,11 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 5 && !s.seenDay5Sled) {
       s.seenDay5Sled = true;
-      pickDialog(g, s.malyava === 'admin' ? DAY5_SLED_RED : DAY5_SLED);
+      if (!s.malyava) {
+        s.malyava = 'gone';
+        s.heat = Math.min(100, s.heat + 12);
+      }
+      pickDialog(g, s.malyava === 'admin' ? DAY5_SLED_RED : s.malyava === 'gone' ? DAY5_SLED_GONE : DAY5_SLED);
       return;
     }
     if (s.day === 6 && !s.seenDay6Food) {
@@ -345,7 +358,14 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 5 && !s.seenDay5Wake) {
       s.seenDay5Wake = true;
-      pickDialog(g, DAY5_WAKE);
+      if (!s.malyava) {
+        s.malyava = 'gone';
+        s.heat = Math.min(100, s.heat + 12);
+        s.hope = Math.max(0, s.hope - 6);
+        pickDialog(g, DAY5_WAKE_GONE);
+      } else {
+        pickDialog(g, DAY5_WAKE);
+      }
       return;
     }
     if (s.day === 7 && !s.seenDay7Morning) {
@@ -369,6 +389,7 @@ function eveningLine(s) {
   if (s.malyava === 'hold') return 'Отбой. Карман жжёт. Своя койка, бумага не на столе.';
   if (s.malyava === 'found') return 'Отбой. Нашли днём. Ночь длиннее пайки.';
   if (s.malyava === 'burn') return 'Отбой. Пахнет золой. Своя койка.';
+  if (s.malyava === 'gone') return 'Отбой. Щель пустая с утра. Своя койка.';
   if (s.courtTalk === 'silent') return 'Отбой. Щель закрылась. Своя койка.';
   return 'Отбой. Своя койка. Чужую не занимай.';
 }
@@ -377,6 +398,7 @@ function wakeLine(s) {
   if (s.day === 1) return 'Подъём. Мат с коряка. День не спрашивает, готов ты или нет.';
   if (s.courtTalk === 'cell' || s.malyava === 'admin') return `Подъём. День ${s.day}. Хата не здоровается. Так начинают красных.`;
   if (s.malyava === 'found') return `Подъём. День ${s.day}. Жар с вчера. Руки видно, рот на замок.`;
+  if (s.malyava === 'gone') return `Подъём. День ${s.day}. Щель пустая. Бумагу взяли без тебя.`;
   return `Подъём. День ${s.day}. Хата уже знает, как ты дышишь.`;
 }
 
