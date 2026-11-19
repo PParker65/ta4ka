@@ -70,6 +70,7 @@ export class Sim {
     this.heardDay6Yard = false;
     this.teaPaid = false;
     this.seenDay3Food = false;
+    this.seenDay4Wake = false;
   }
 
   objective() {

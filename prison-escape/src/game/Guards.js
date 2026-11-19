@@ -137,6 +137,7 @@ export class Guards {
       this.shmonGuard.waypoints = searching ? this.shmonIn : this.shmonOut;
       this.shmonGuard.index = 0;
       this.shmonGuard.wait = 0;
+      this.shmonGuard.root.position.copy(this.shmonGuard.waypoints[0]);
     }
     for (const g of this.list) {
       if (g.wait > 0) {

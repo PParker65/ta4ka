@@ -13,6 +13,9 @@ import {
   DAY4_LEHA,
   DAY4_WALK,
   DAY4_FOOD,
+  DAY4_WAKE,
+  DAY4_WAKE_BURN,
+  DAY4_WAKE_RED,
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_WAKE,
@@ -47,6 +50,8 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'walk') return 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d === 3 && ph === 'wake') return 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d === 4 && ph === 'wake' && sim.malyava === 'hold' && !sim.teaPaid)
+    return 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
   if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && !sim.teaPaid && sim.malyava === 'hold') return 'Чай в щели ждут. Не долг на воле.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
@@ -223,6 +228,13 @@ export function onPhaseEnter(game, id) {
     if (s.day === 3 && !s.seenDay3Morning) {
       s.seenDay3Morning = true;
       pickDialog(g, DAY3_MORNING);
+      return;
+    }
+    if (s.day === 4 && !s.seenDay4Wake) {
+      s.seenDay4Wake = true;
+      if (s.malyava === 'admin' || s.courtTalk === 'cell') pickDialog(g, DAY4_WAKE_RED);
+      else if (s.malyava === 'burn') pickDialog(g, DAY4_WAKE_BURN);
+      else pickDialog(g, DAY4_WAKE);
       return;
     }
     if (s.day === 5 && !s.seenDay5Wake) {
