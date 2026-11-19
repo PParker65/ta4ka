@@ -12,6 +12,7 @@ import {
   ceilingTex,
   diamondCeilingTex,
   greenMetalTex,
+  windowViewTex,
   createFlickerMaterial,
 } from '../shaders/environment.js';
 import { buildArrival, openKppGate, tickKppGate } from './Exterior.js';
@@ -55,6 +56,7 @@ export class Prison {
       ceil: ceilingTex(),
       diamond: diamondCeilingTex(),
       green: greenMetalTex(),
+      windowView: windowViewTex(),
     };
 
     this.addCorridor();
@@ -501,7 +503,24 @@ export class Prison {
   addWindows(cell, w, d, h) {
     for (const x of [-1.35, 1.35]) {
       const frame = this.box(1.15, 1.35, 0.1, new THREE.MeshStandardMaterial({ color: 0x3a342c }), x, 2.15, d / 2 - 0.08, cell);
-      const glass = this.box(0.95, 1.15, 0.02, new THREE.MeshStandardMaterial({ color: 0xb7c8d4, emissive: 0x8aa, emissiveIntensity: 0.35, roughness: 0.2 }), x, 2.15, d / 2 - 0.02, cell);
+      const glass = this.box(
+        0.95,
+        1.15,
+        0.02,
+        new THREE.MeshStandardMaterial({
+          map: this.tex.windowView,
+          color: 0xffffff,
+          roughness: 0.22,
+          metalness: 0.08,
+          emissive: 0x6a7a88,
+          emissiveIntensity: 0.22,
+        }),
+        x,
+        2.15,
+        d / 2 - 0.02,
+        cell,
+      );
+      glass.material.toneMapped = true;
       const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
       for (let i = -3; i <= 3; i++) {
         this.box(0.03, 1.15, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.01, cell);

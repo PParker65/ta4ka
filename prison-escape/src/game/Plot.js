@@ -1,6 +1,7 @@
 /**
  * Week in хата 4. Not an escape. Choices stick until Tuesday's player comes back.
  */
+import { NIGHT1, DAY2_SEDOY } from './Dialogue.js';
 
 export function plotObjective(sim) {
   if (sim.stage !== 'life' || !sim.propiska) return null;
@@ -47,9 +48,24 @@ export function onPhaseEnter(game, id) {
     g.fill.intensity = 0.12;
     if (s.day === 1 && !s.seenNight1) {
       s.seenNight1 = true;
-      g.subtitle('Лёха, в темноте: «Завтра шмон. Нычку в чаше, не в матрасе. Матрас они знают.»');
-    } else if (s.day === 2) {
-      g.subtitle('Седой: «Сутки прожил. Завтра либо человек, либо пустое место. Решай молча.»');
+      g.unlockLook();
+      g.dialog.show(NIGHT1.who, NIGHT1.text, NIGHT1.options);
+      g.dialog.onPick = (opt) => {
+        if (opt.stash) s.stash = opt.stash;
+        s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
+        if (opt.heat) s.heat = Math.min(100, s.heat + opt.heat);
+        g.toast(opt.reply);
+      };
+    } else if (s.day === 2 && !s.seenDay2) {
+      s.seenDay2 = true;
+      g.unlockLook();
+      g.dialog.show(DAY2_SEDOY.who, DAY2_SEDOY.text, DAY2_SEDOY.options);
+      g.dialog.onPick = (opt) => {
+        s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
+        if (opt.hope) s.hope = Math.min(100, s.hope + opt.hope);
+        if (opt.heat) s.heat = Math.min(100, s.heat + opt.heat);
+        g.toast(opt.reply);
+      };
     } else {
       g.subtitle('Отбой. Своя койка. Чужую не занимай.');
     }

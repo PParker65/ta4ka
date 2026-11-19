@@ -433,6 +433,43 @@ export function asphaltTex() {
   return toTex(c, 1, 1);
 }
 
+/** What you see through хата bars: opposite block, wet yard, dirty sky. Not a black pane. */
+export function windowViewTex() {
+  const size = 256;
+  const { c, ctx } = canvas(size);
+  const sky = ctx.createLinearGradient(0, 0, 0, 140);
+  sky.addColorStop(0, '#7a90a4');
+  sky.addColorStop(1, '#c4c2b6');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, size, 150);
+  ctx.fillStyle = '#8a8e86';
+  ctx.fillRect(0, 148, size, 108);
+  ctx.fillStyle = '#5c564c';
+  for (let x = 12; x < size; x += 36) {
+    ctx.fillRect(x, 92, 28, 70);
+    ctx.fillStyle = '#3a3630';
+    for (let y = 100; y < 155; y += 14) {
+      ctx.fillRect(x + 4, y, 8, 8);
+      ctx.fillRect(x + 16, y, 8, 8);
+    }
+    ctx.fillStyle = '#5c564c';
+  }
+  ctx.fillStyle = 'rgba(20,22,18,0.35)';
+  ctx.fillRect(0, 160, size, 96);
+  ctx.strokeStyle = 'rgba(12,12,14,0.45)';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 7; i++) {
+    ctx.beginPath();
+    ctx.moveTo(18 + i * 36, 0);
+    ctx.lineTo(18 + i * 36, size);
+    ctx.stroke();
+  }
+  noise(ctx, size, 0.14);
+  const tex = toTex(c, 1, 1);
+  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
 export function skyTex() {
   const { c, ctx } = canvas(256);
   const g = ctx.createLinearGradient(0, 0, 0, 256);

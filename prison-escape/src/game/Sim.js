@@ -47,6 +47,8 @@ export class Sim {
     this.task = null;
     this.stash = 'none';
     this.seenNight1 = false;
+    this.seenDay2 = false;
+    this.heardYard = false;
     this.malyava = null;
   }
 

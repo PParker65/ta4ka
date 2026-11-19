@@ -2,7 +2,18 @@
  * Life inside хата 4 after the door closes.
  * Never idle: convoy leaves, прописка fires, then tasks, talk, routine.
  */
-import { CIG_ASK, HATCH_TALK, KETTLE_TALK, WINDOW_TALK, TALK_STAROSTA, TALK_LEHA, TALK_VALERA } from './Dialogue.js';
+import {
+  CIG_ASK,
+  HATCH_TALK,
+  KETTLE_TALK,
+  WINDOW_TALK,
+  TALK_STAROSTA,
+  TALK_LEHA,
+  TALK_VALERA,
+  DAY2_SEDOY,
+  DAY2_YARD,
+  DAY3_NOTE,
+} from './Dialogue.js';
 import { onPhaseEnter, plotObjective } from './Plot.js';
 
 const AMBIENT = [
@@ -314,7 +325,8 @@ export class CellLife {
         return true;
       }
       g.unlockLook();
-      g.dialog.show(TALK_STAROSTA.who, TALK_STAROSTA.text, TALK_STAROSTA.options);
+      const sedoy = g.sim.day >= 2 ? DAY2_SEDOY : TALK_STAROSTA;
+      g.dialog.show(sedoy.who, sedoy.text, sedoy.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
       return true;
     }
@@ -326,7 +338,8 @@ export class CellLife {
     }
     if (id === 'bunk-bro') {
       g.unlockLook();
-      g.dialog.show(TALK_VALERA.who, TALK_VALERA.text, TALK_VALERA.options);
+      const valera = g.sim.day >= 2 && g.sim.phase.id === 'walk' ? DAY2_YARD : TALK_VALERA;
+      g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);
         if (opt.minigame === 'cards') {
@@ -364,6 +377,8 @@ export class CellLife {
     if (opt.hope) g.sim.hope = Math.min(100, g.sim.hope + opt.hope);
     if (opt.stress) g.sim.stress = Math.max(0, Math.min(100, g.sim.stress + opt.stress));
     if (opt.heat) g.sim.heat = Math.max(0, Math.min(100, g.sim.heat + opt.heat));
+    if (opt.stash) g.sim.stash = opt.stash;
+    if (opt.malyava) g.sim.malyava = opt.malyava;
     g.toast(opt.reply);
   }
 
@@ -375,6 +390,17 @@ export class CellLife {
       g.sim.attended = true;
       g.toast('Пайка через кормушку. Тёплая ещё, пока не остыла.');
       g.subtitle('Седой: «Ешь. В сортир — после.»');
+      return;
+    }
+    if (g.sim.day >= 3 && !g.sim.malyava) {
+      g.dialog.show(DAY3_NOTE.who, DAY3_NOTE.text, DAY3_NOTE.options);
+      g.dialog.onPick = (opt) => {
+        this.applyTalk(opt);
+        if (opt.malyava === 'admin') {
+          g.sim.inv.food += 1;
+          g.sim.shift(0, 1, 0);
+        }
+      };
       return;
     }
     g.dialog.show(HATCH_TALK.who, HATCH_TALK.text, HATCH_TALK.options);
