@@ -14,7 +14,14 @@ import {
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_WAKE,
+  DAY5_SLED,
+  DAY5_SLED_RED,
+  DAY5_BACK_SILENT,
+  DAY5_BACK_CELL,
+  DAY5_BACK_SELF,
+  DAY5_WALK,
   DAY6_NIGHT,
+  DAY7_WAKE,
   WEEK_HELD,
   HOLD_NIGHT,
   BURN_NIGHT,
@@ -36,6 +43,16 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'walk') return 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d === 3 && ph === 'wake') return 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
+  if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
+  if (d === 5 && ph === 'wake') return 'С коряка шепчут список. Днём щель станет кабинетом.';
+  if (d === 5 && ph === 'food' && !sim.courtTalk) return 'Вызов. Следователь в щели. Про хату — или про срок.';
+  if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
+  if (d === 5 && sim.courtTalk === 'silent') return 'Про хату — ничего. Жар есть. Хата ещё дышит.';
+  if (d === 5 && sim.courtTalk === 'self') return '«Ничего не видел.» Хата слышала тон. Не рассказывай сон.';
+  if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
+  if (d === 6) return 'Шестой день. Свежак кончается. Не ори про волю.';
+  if (d === 7) return 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
   if (d >= 3 && !sim.malyava && (ph === 'food' || ph === 'wake' || ph === 'evening')) {
     return 'Кормушка стучит. Бумага: нести, жечь или к куму.';
   }
@@ -43,11 +60,6 @@ export function plotObjective(sim) {
   if (d >= 3 && sim.malyava === 'burn') return 'Бумага зола. Хата напротив тише, чем надо.';
   if (d >= 3 && sim.malyava === 'admin') return 'Хата молчит. Красный ход. Пайка не греет.';
   if (d >= 3 && sim.malyava === 'found') return 'Нашли бумагу. Жар. Хата это уже знает.';
-  if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
-  if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
-  if (d === 5 && ph === 'wake') return 'С коряка шепчут список. Вечером хата спросит про вас.';
-  if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
-  if (d === 6) return 'Шестой день. Свежак кончается. Не ори про волю.';
   return null;
 }
 
@@ -62,7 +74,10 @@ export function onPhaseEnter(game, id) {
     g.audio.clang();
     g.subtitle('Конвой: «Прогулка. Шагом. Дворик — круг. КПП — не твоё.»');
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
-    if (s.day >= 4 && !s.heardDay4Yard) {
+    if (s.day === 5 && !s.heardDay5Yard) {
+      s.heardDay5Yard = true;
+      pickDialog(g, DAY5_WALK);
+    } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, DAY4_WALK);
     } else if (s.day >= 2 && !s.heardYard) {
@@ -109,7 +124,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, DAY4_LEHA);
     } else if (s.day === 5 && !s.seenDay5) {
       s.seenDay5 = true;
-      pickDialog(g, DAY5_COURT);
+      pickDialog(g, day5Evening(s));
     } else if (s.day === 6 && !s.seenDay6) {
       s.seenDay6 = true;
       pickDialog(g, DAY6_NIGHT);
@@ -153,6 +168,11 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, DAY2_FOOD);
       return;
     }
+    if (s.day === 5 && !s.seenDay5Sled) {
+      s.seenDay5Sled = true;
+      pickDialog(g, s.malyava === 'admin' ? DAY5_SLED_RED : DAY5_SLED);
+      return;
+    }
     if (s.day === 4 && !s.seenDay4Food) {
       s.seenDay4Food = true;
       pickDialog(g, DAY4_FOOD);
@@ -184,21 +204,34 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, DAY5_WAKE);
       return;
     }
+    if (s.day === 7 && !s.seenDay7Morning) {
+      s.seenDay7Morning = true;
+      pickDialog(g, DAY7_WAKE);
+      return;
+    }
     g.subtitle(wakeLine(s));
   }
 }
 
+function day5Evening(s) {
+  if (s.courtTalk === 'cell') return DAY5_BACK_CELL;
+  if (s.courtTalk === 'silent') return DAY5_BACK_SILENT;
+  if (s.courtTalk === 'self') return DAY5_BACK_SELF;
+  return DAY5_COURT;
+}
+
 function eveningLine(s) {
-  if (s.malyava === 'admin') return 'Отбой. Чайник молчит. Так спят с красным в хате.';
+  if (s.courtTalk === 'cell' || s.malyava === 'admin') return 'Отбой. Чайник молчит. Так спят с красным в хате.';
   if (s.malyava === 'hold') return 'Отбой. Карман жжёт. Своя койка, бумага не на столе.';
   if (s.malyava === 'found') return 'Отбой. Нашли днём. Ночь длиннее пайки.';
   if (s.malyava === 'burn') return 'Отбой. Пахнет золой. Своя койка.';
+  if (s.courtTalk === 'silent') return 'Отбой. Щель закрылась. Своя койка.';
   return 'Отбой. Своя койка. Чужую не занимай.';
 }
 
 function wakeLine(s) {
   if (s.day === 1) return 'Подъём. Мат с коряка. День не спрашивает, готов ты или нет.';
-  if (s.malyava === 'admin') return `Подъём. День ${s.day}. Хата не здоровается. Так начинают красных.`;
+  if (s.courtTalk === 'cell' || s.malyava === 'admin') return `Подъём. День ${s.day}. Хата не здоровается. Так начинают красных.`;
   if (s.malyava === 'found') return `Подъём. День ${s.day}. Жар с вчера. Руки видно, рот на замок.`;
   return `Подъём. День ${s.day}. Хата уже знает, как ты дышишь.`;
 }
@@ -214,6 +247,7 @@ function pickDialog(g, pack) {
     if (opt.stress) s.stress = Math.min(100, Math.max(0, s.stress + opt.stress));
     if (opt.stash) s.stash = opt.stash;
     if (opt.malyava) s.malyava = opt.malyava;
+    if (opt.courtTalk) s.courtTalk = opt.courtTalk;
     if (opt.passTea && s.inv.tea > 0) {
       s.inv.tea -= 1;
       s.rep += 1;
@@ -223,7 +257,9 @@ function pickDialog(g, pack) {
 }
 
 export function walkLine(sim) {
+  if (sim.courtTalk === 'cell') return 'Валера не смотрит. Свист кончился в щели.';
   if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
+  if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
 }

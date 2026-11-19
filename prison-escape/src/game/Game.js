@@ -140,6 +140,7 @@ export class Game {
     const params = new URLSearchParams(location.search);
     if (params.has('cell')) {
       this.skipToCell();
+      this.applySkipFlags(params);
       const ph = params.get('phase');
       if (ph) this.forcePhase(ph);
     } else if (params.get('at')) this.skipToPlace(params.get('at'));
@@ -189,6 +190,15 @@ export class Game {
     if (door?.open) this.prison.closeDoor(door);
     this.prison.closeDoor(this.prison.blockDoor);
     this.finishEscort();
+  }
+
+  applySkipFlags(params) {
+    const day = Number(params.get('day') || 0);
+    if (day >= 2 && day <= 14) this.sim.day = day | 0;
+    const mal = params.get('malyava');
+    if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found') this.sim.malyava = mal;
+    const talk = params.get('court');
+    if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
   }
 
   forcePhase(id) {

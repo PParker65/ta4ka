@@ -16,19 +16,34 @@ import {
   DAY4_LEHA,
   DAY4_WALK,
   DAY5_COURT,
+  DAY5_WALK,
+  DAY5_BACK_SILENT,
+  DAY5_BACK_CELL,
+  DAY5_BACK_SELF,
 } from './Dialogue.js';
 import { onPhaseEnter, plotObjective, hatchReady } from './Plot.js';
 
 function ambientFor(g) {
   const s = g.sim;
-  if (s.malyava === 'admin') {
+  if (s.courtTalk === 'cell' || s.malyava === 'admin') {
     return [
       () => g.subtitle('Чайник стоит. Никто не наливает. Так выглядит красный ход изнутри.'),
-      () => g.subtitle('Лёха смотрит в стену. Слов нет. Слова кончились вчера.'),
+      () => g.subtitle('Лёха смотрит в стену. Слов нет. Слова ушли в щель.'),
       () => {
         g.audio.clang();
         g.subtitle('Шаги. Могли за тобой. Могли мимо. Красному всё равно.');
         s.stress = Math.min(100, s.stress + 8);
+      },
+    ];
+  }
+  if (s.day === 5 && !s.courtTalk) {
+    return [
+      () => g.subtitle('С коряка шепчут фамилию. Не твою — пока.'),
+      () => g.subtitle('Седой: «Про хату — ничего. Про себя — коротко.»'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Ключ в щели. Не пайка. Вызов.');
+        s.stress = Math.min(100, s.stress + 5);
       },
     ];
   }
@@ -365,7 +380,7 @@ export class CellLife {
       return true;
     }
     this.talkCd[id] = now + 8;
-    if (g.sim.malyava === 'admin' && id !== 'starosta') {
+    if ((g.sim.malyava === 'admin' || g.sim.courtTalk === 'cell') && id !== 'starosta') {
       g.toast('Хата молчит. Так разговаривают с красным.');
       g.sim.stress = Math.min(100, g.sim.stress + 6);
       return true;
@@ -382,7 +397,18 @@ export class CellLife {
         return true;
       }
       g.unlockLook();
-      const sedoy = g.sim.day >= 5 ? DAY5_COURT : g.sim.day >= 2 ? DAY2_SEDOY : TALK_STAROSTA;
+      const sedoy =
+        g.sim.day >= 5 && g.sim.courtTalk === 'cell'
+          ? DAY5_BACK_CELL
+          : g.sim.day >= 5 && g.sim.courtTalk === 'silent'
+            ? DAY5_BACK_SILENT
+            : g.sim.day >= 5 && g.sim.courtTalk === 'self'
+              ? DAY5_BACK_SELF
+              : g.sim.day >= 5
+                ? DAY5_COURT
+                : g.sim.day >= 2
+                  ? DAY2_SEDOY
+                  : TALK_STAROSTA;
       g.dialog.show(sedoy.who, sedoy.text, sedoy.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
       return true;
@@ -397,11 +423,13 @@ export class CellLife {
     if (id === 'bunk-bro') {
       g.unlockLook();
       const valera =
-        g.sim.phase.id === 'walk' && g.sim.day >= 4
-          ? DAY4_WALK
-          : g.sim.day >= 2 && g.sim.phase.id === 'walk'
-            ? DAY2_YARD
-            : TALK_VALERA;
+        g.sim.phase.id === 'walk' && g.sim.day >= 5
+          ? DAY5_WALK
+          : g.sim.phase.id === 'walk' && g.sim.day >= 4
+            ? DAY4_WALK
+            : g.sim.day >= 2 && g.sim.phase.id === 'walk'
+              ? DAY2_YARD
+              : TALK_VALERA;
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);
@@ -442,6 +470,7 @@ export class CellLife {
     if (opt.heat) g.sim.heat = Math.max(0, Math.min(100, g.sim.heat + opt.heat));
     if (opt.stash) g.sim.stash = opt.stash;
     if (opt.malyava) g.sim.malyava = opt.malyava;
+    if (opt.courtTalk) g.sim.courtTalk = opt.courtTalk;
     if (opt.passTea && g.sim.inv.tea > 0) {
       g.sim.inv.tea -= 1;
       g.sim.rep += 1;

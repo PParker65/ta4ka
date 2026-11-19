@@ -1091,8 +1091,10 @@ export class Prison {
       }
     }
     for (let i = -8; i <= 8; i++) {
-      if (Math.abs(i) < 2) continue;
       this.box(0.03, 3.2, 0.03, mesh, i * 0.5, 1.7, 4.28, g);
+    }
+    for (let y = 0.4; y <= 3.1; y += 0.38) {
+      this.box(8.6, 0.03, 0.03, mesh, 0, y, 4.28, g);
     }
     const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
     this.box(1.6, 0.08, 0.36, bench, 0.15, 0.42, 1.15, g);
@@ -1112,8 +1114,11 @@ export class Prison {
     g.add(puddle);
     const grate = this.box(0.42, 0.02, 0.42, mesh, 1.4, 0.05, -1.1, g);
     grate.rotation.y = 0.2;
-    const stain = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95, transparent: true, opacity: 0.35 });
-    this.box(1.6, 1.1, 0.02, stain, -2.4, 1.4, 4.28, g);
+    const stain = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95, transparent: true, opacity: 0.55 });
+    this.box(1.6, 1.1, 0.02, stain, -2.4, 1.4, 4.22, g);
+    const wetWall = new THREE.MeshStandardMaterial({ color: 0x4a524c, roughness: 0.35, transparent: true, opacity: 0.45 });
+    this.box(0.55, 2.2, 0.02, wetWall, 1.8, 1.2, 4.22, g);
+    this.box(0.22, 1.6, 0.02, wetWall, 2.05, 0.9, 4.22, g);
     const cam = new THREE.Mesh(
       new THREE.BoxGeometry(0.16, 0.1, 0.22),
       new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.4, roughness: 0.5 }),
@@ -1166,10 +1171,14 @@ export class Prison {
       p.position.set(-0.2 + (i % 2) * 0.28, 0.042, -2.2 + i * 0.55);
       g.add(p);
     }
+    const lime = new THREE.MeshStandardMaterial({ color: 0xc8c4a0, roughness: 0.82 });
+    for (let a = 0; a < Math.PI * 2; a += 0.26) {
+      this.box(0.48, 0.014, 0.1, lime, Math.cos(a) * 2.35, 0.055, Math.sin(a) * 2.35, g);
+    }
     const circle = wallScratch('КРУГ');
-    circle.scale.setScalar(1.3);
+    circle.scale.set(2.4, 2.4, 2.4);
     circle.rotation.x = -Math.PI / 2;
-    circle.position.set(0, 0.055, 0.2);
+    circle.position.set(0, 0.062, 0.15);
     g.add(circle);
     this.box(1.4, 0.08, 0.34, bench, 2.4, 0.42, 1.8, g);
     this.box(0.08, 0.4, 0.08, bench, 1.85, 0.2, 1.68, g);
@@ -1196,6 +1205,43 @@ export class Prison {
     );
     bucket.position.set(3.4, 0.18, -2.8);
     g.add(bucket);
+    const bucket2 = bucket.clone();
+    bucket2.position.set(-2.85, 0.18, 3.55);
+    g.add(bucket2);
+    const rag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.32, 0.08, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.92 }),
+    );
+    rag.position.set(-2.55, 0.08, 3.35);
+    rag.rotation.y = 0.4;
+    g.add(rag);
+    const mop = new THREE.MeshStandardMaterial({ color: 0x4a3a28, roughness: 0.8 });
+    this.box(0.04, 1.15, 0.04, mop, -3.05, 0.58, 3.4, g);
+    const mopHead = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.06, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.9 }),
+    );
+    mopHead.position.set(-3.05, 0.08, 3.4);
+    g.add(mopHead);
+    const rustPipe = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.7, metalness: 0.25 });
+    this.box(2.4, 0.07, 0.07, rustPipe, 0.2, 2.18, 4.12, g);
+    this.box(0.08, 0.55, 0.08, rustPipe, -0.9, 1.88, 4.12, g);
+    this.box(0.08, 0.55, 0.08, rustPipe, 1.3, 1.88, 4.12, g);
+    const bar = new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.55, roughness: 0.4 });
+    this.box(0.06, 2.15, 0.06, bar, -1.15, 1.1, 3.95, g);
+    this.box(0.06, 2.15, 0.06, bar, 1.15, 1.1, 3.95, g);
+    this.box(2.42, 0.05, 0.05, bar, 0, 2.18, 3.95, g);
+    const jacket = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.55, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0x3a4a3c, roughness: 0.9 }),
+    );
+    jacket.position.set(-3.95, 1.35, 1.4);
+    jacket.rotation.y = Math.PI / 2;
+    g.add(jacket);
+    const puddle2 = puddle.clone();
+    puddle2.scale.set(0.7, 0.55, 1);
+    puddle2.position.set(-1.6, 0.045, 2.9);
+    g.add(puddle2);
     const chain = new THREE.MeshStandardMaterial({ color: 0x5a5e58, metalness: 0.55, roughness: 0.4 });
     for (let y = 0.5; y <= 2.6; y += 0.22) {
       this.box(0.22, 0.04, 0.04, chain, 4.18, y, 2.2, g);

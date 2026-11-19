@@ -61,6 +61,10 @@ export class Sim {
     this.seenDay4Food = false;
     this.seenFoundNight = false;
     this.malyava = null;
+    this.courtTalk = null;
+    this.seenDay5Sled = false;
+    this.heardDay5Yard = false;
+    this.seenDay7Morning = false;
   }
 
   objective() {
