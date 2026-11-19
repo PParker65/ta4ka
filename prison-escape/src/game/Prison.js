@@ -671,8 +671,8 @@ export class Prison {
       }
     }
     if (this.playerMattress) {
-      this.playerMattress.rotation.z = searching ? 0.58 : 0;
-      this.playerMattress.position.y = searching ? 0.64 : 0.5;
+      this.playerMattress.rotation.z = searching ? 0.85 : 0;
+      this.playerMattress.position.y = searching ? 0.72 : 0.5;
     }
     if (this.storyRummage) this.storyRummage.visible = searching;
     if (this.storyFound)
@@ -758,10 +758,13 @@ export class Prison {
       g.add(frame);
     }
     const cloth = new THREE.MeshStandardMaterial({ color: 0xc5c0b4, roughness: 0.95 });
+    const lowerBed = new THREE.Group();
+    lowerBed.position.set(0, 0.5, 0);
+    g.add(lowerBed);
     const lower = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.12, 0.72), cloth);
-    lower.position.set(0.04, 0.5, 0);
-    g.add(lower);
-    if (player) this.playerMattress = lower;
+    lower.position.set(0.04, 0, 0);
+    lowerBed.add(lower);
+    if (player) this.playerMattress = lowerBed;
     const mattress = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.1, 0.72), cloth);
     mattress.position.set(0.04, 1.26, 0);
     g.add(mattress);
@@ -769,21 +772,21 @@ export class Prison {
       new THREE.BoxGeometry(0.28, 0.1, 0.38),
       new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.9 }),
     );
-    pillow.position.set(0.72, 0.62, 0);
-    g.add(pillow);
+    pillow.position.set(0.72, 0.12, 0);
+    lowerBed.add(pillow);
     const blanket = new THREE.Mesh(
       new THREE.BoxGeometry(0.9, 0.05, 0.7),
       new THREE.MeshStandardMaterial({ color: 0x4a5a6a, roughness: 0.92 }),
     );
-    blanket.position.set(-0.28, 0.58, 0);
-    g.add(blanket);
+    blanket.position.set(-0.28, 0.08, 0);
+    lowerBed.add(blanket);
     const rumple = new THREE.Mesh(
       new THREE.BoxGeometry(0.55, 0.07, 0.62),
       new THREE.MeshStandardMaterial({ color: 0x3e4a56, roughness: 0.93 }),
     );
-    rumple.position.set(-0.5, 0.61, 0.04);
+    rumple.position.set(-0.5, 0.11, 0.04);
     rumple.rotation.z = 0.12;
-    g.add(rumple);
+    lowerBed.add(rumple);
     return g;
   }
 
@@ -999,6 +1002,7 @@ export class Prison {
     );
     drip.position.set(-0.8, 2.72, 1.1);
     cell.add(drip);
+    this.washDrip = drip;
     const soap = new THREE.Mesh(
       new THREE.BoxGeometry(0.07, 0.025, 0.045),
       new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.45 }),

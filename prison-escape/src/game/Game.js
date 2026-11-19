@@ -524,6 +524,11 @@ export class Game {
     lifeTick(this, dt);
 
     this.guards.update(dt, this.sim.stage === 'life' ? this.sim.phase.id : null);
+    if (this.prison.washDrip) {
+      const fall = this.clock.elapsedTime % 1.7;
+      this.prison.washDrip.position.y = 2.72 - fall * 0.5;
+      this.prison.washDrip.material.opacity = 0.72 - fall * 0.32;
+    }
     const inOwnCell = this.player.position.x > 1.55;
     const onWalk = this.sim.stage === 'life' && this.sim.phase.id === 'walk';
     if (onWalk && this.player.position.z > LAYOUT.corridorLen + 0.6) {

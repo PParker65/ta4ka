@@ -48,6 +48,17 @@ export class Guards {
       new THREE.Vector3(o.x + 1.25, 0, o.z - 2.15),
     ];
     this.shmonGuard = this.makeGuard(this.shmonOut, 0.9);
+    const band = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.08, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0x9a1c1c, roughness: 0.6 }),
+    );
+    band.position.set(0.22, 1.32, 0);
+    this.shmonGuard.root.add(band);
+    this.shmonGuard.light.intensity = 2.8;
+    this.shmonGuard.light.distance = 9;
+    this.shmonGuard.torch.children.forEach((c) => {
+      if (c.material?.opacity !== undefined) c.material.opacity = 0.18;
+    });
     this.list.push(this.shmonGuard);
   }
 
