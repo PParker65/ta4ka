@@ -229,17 +229,20 @@ export class Game {
       this.input.yaw = 0.12;
       this.input.pitch = -0.22;
     } else if (look === 'steam') {
-      this.player.position.set(o.x - 0.55, 0, o.z - 0.5);
-      this.input.yaw = 0.18;
-      this.input.pitch = 0.18;
+      this.player.position.set(o.x - 0.7, 0, o.z - 0.85);
+      this.input.yaw = Math.atan2(0.55, 1.0);
+      this.input.pitch = -0.36;
     } else if (look === 'bunk') {
       this.player.position.set(o.x - 0.2, 0, o.z - 0.4);
       this.input.yaw = Math.atan2(2.05, -1.95);
       this.input.pitch = -0.28;
     } else if (look === 'hands') {
-      this.player.position.set(o.x - 0.4, 0, o.z);
-      this.input.yaw = Math.PI / 2;
-      this.input.pitch = 0.55;
+      this.player.position.set(o.x - 0.35, 0, o.z);
+      this.input.yaw = 0.2;
+      this.input.pitch = -1.05;
+      if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
+        this.hands.userData.holdNote.visible = true;
+      }
     }
   }
 

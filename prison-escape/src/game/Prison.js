@@ -882,12 +882,12 @@ export class Prison {
     const steam = new THREE.Group();
     steam.position.set(-0.15, 1.02, 0.15);
     cell.add(steam);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const puff = new THREE.Mesh(
-        new THREE.SphereGeometry(0.028 + i * 0.01, 6, 6),
-        new THREE.MeshBasicMaterial({ color: 0xd8d4cc, transparent: true, opacity: 0.22, depthWrite: false }),
+        new THREE.SphereGeometry(0.045 + i * 0.016, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xe8e4dc, transparent: true, opacity: 0.38, depthWrite: false }),
       );
-      puff.position.y = i * 0.07;
+      puff.position.y = i * 0.09;
       steam.add(puff);
     }
     this.kettleSteam = steam;
