@@ -1135,6 +1135,22 @@ export class Prison {
     card.position.set(2.7, 1.72, -0.8);
     card.rotation.y = -Math.PI / 2;
     cell.add(card);
+    const hush = wallScratch('НЕ СТУЧИ');
+    hush.scale.set(0.85, 0.85, 0.85);
+    hush.position.set(-LAYOUT.cellW / 2 + 0.22, 1.62, 0.15);
+    hush.rotation.y = Math.PI / 2;
+    cell.add(hush);
+    const fly = new THREE.MeshStandardMaterial({ color: 0xc8b878, roughness: 0.7 });
+    this.box(0.04, 0.42, 0.01, fly, 1.1, 2.55, LAYOUT.cellD / 2 - 0.22, cell);
+    const specks = new THREE.MeshStandardMaterial({ color: 0x1a1a14, roughness: 0.9 });
+    for (const [fx, fy] of [
+      [1.08, 2.48],
+      [1.12, 2.4],
+      [1.1, 2.35],
+      [1.14, 2.52],
+    ]) {
+      this.box(0.015, 0.015, 0.012, specks, fx, fy, LAYOUT.cellD / 2 - 0.21, cell);
+    }
     const broom = new THREE.MeshStandardMaterial({ color: 0x5a4030, roughness: 0.85 });
     this.box(0.035, 1.15, 0.035, broom, 2.75, 0.58, -2.4, cell);
     const bristles = new THREE.Mesh(
