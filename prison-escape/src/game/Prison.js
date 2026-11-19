@@ -1304,14 +1304,14 @@ export class Prison {
       p.position.set(-0.2 + (i % 2) * 0.28, 0.042, -2.2 + i * 0.55);
       g.add(p);
     }
-    const lime = new THREE.MeshStandardMaterial({ color: 0xddd6b4, roughness: 0.78 });
-    for (let a = 0; a < Math.PI * 2; a += 0.2) {
-      const seg = this.box(0.72, 0.022, 0.18, lime, Math.cos(a) * 2.4, 0.058, Math.sin(a) * 2.4, g);
+    const lime = new THREE.MeshStandardMaterial({ color: 0xe8e2c4, roughness: 0.74 });
+    for (let a = 0; a < Math.PI * 2; a += 0.18) {
+      const seg = this.box(0.78, 0.03, 0.22, lime, Math.cos(a) * 2.4, 0.06, Math.sin(a) * 2.4, g);
       seg.rotation.y = -a;
     }
     const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
-    circle.position.set(0.15, 0.07, 0.2);
+    circle.position.set(0, 0.075, 0.35);
     g.add(circle);
     const wallKrug = wallScratch('КРУГ');
     wallKrug.scale.set(1.7, 1.7, 1.7);
@@ -1586,19 +1586,22 @@ function cellSign(text) {
 
 function floorPaint(text) {
   const c = document.createElement('canvas');
-  c.width = 512;
-  c.height = 192;
+  c.width = 768;
+  c.height = 256;
   const ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, 512, 192);
-  ctx.fillStyle = 'rgba(236, 228, 176, 0.95)';
-  ctx.font = '800 118px sans-serif';
+  ctx.clearRect(0, 0, 768, 256);
+  ctx.strokeStyle = 'rgba(30,24,16,0.95)';
+  ctx.lineWidth = 10;
+  ctx.font = '800 168px serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, 256, 102);
+  ctx.strokeText(text, 384, 140);
+  ctx.fillStyle = 'rgba(48,38,24,0.92)';
+  ctx.fillText(text, 384, 140);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return new THREE.Mesh(
-    new THREE.PlaneGeometry(2.4, 0.9),
+    new THREE.PlaneGeometry(3.4, 1.15),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
   );
 }
@@ -1641,7 +1644,7 @@ export function makeSeats(ox, oz) {
     aisle: { x: ox - 1.05, z: oz + 0.08, yaw: Math.PI / 2 },
     doorQueue: { x: ox - 1.35, z: oz - 0.55, yaw: -Math.PI / 2 },
     walkHall: { x: 0.2, z: LAYOUT.corridorLen + 2.8, yaw: 0 },
-    walkYard: { x: 0.4, z: LAYOUT.corridorLen + 5.4, yaw: Math.PI },
+    walkYard: { x: -2.15, z: LAYOUT.corridorLen + 7.1, yaw: Math.PI * 0.65 },
   };
 }
 

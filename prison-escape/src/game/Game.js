@@ -286,9 +286,9 @@ export class Game {
     if (at === 'yard') {
       this.skipToCell();
       this.forcePhase('walk');
-      this.player.position.set(0.4, 0, LAYOUT.corridorLen + 4.2);
-      this.input.yaw = 0.72;
-      this.input.pitch = -0.12;
+      this.player.position.set(-0.9, 0, LAYOUT.corridorLen + 5.1);
+      this.input.yaw = 0.35;
+      this.input.pitch = -0.18;
       return;
     }
     if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'med' || at === 'bath' || at === 'neck' || at === 'escort') {

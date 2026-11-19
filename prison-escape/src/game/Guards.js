@@ -34,9 +34,9 @@ export class Guards {
       ),
       this.makeGuard(
         [
-          new THREE.Vector3(-2.1, 0, LAYOUT.corridorLen + 3.4),
-          new THREE.Vector3(2.2, 0, LAYOUT.corridorLen + 5.6),
-          new THREE.Vector3(0.2, 0, LAYOUT.corridorLen + 4.2),
+          new THREE.Vector3(-3.1, 0, LAYOUT.corridorLen + 7.2),
+          new THREE.Vector3(3.1, 0, LAYOUT.corridorLen + 7.6),
+          new THREE.Vector3(-1.6, 0, LAYOUT.corridorLen + 8.2),
         ],
         0.48,
       ),
