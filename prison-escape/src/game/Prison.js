@@ -1011,13 +1011,13 @@ export class Prison {
     sock.position.set(0.55, 1.72, 2.9);
     sock.rotation.z = 0.15;
     cell.add(sock);
-    const wet = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 });
+    const hangMat = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 });
     for (const [sx, sy, sz, rz] of [
       [-1.52, 0.92, LAYOUT.cellD / 2 - 0.28, 0.35],
       [-1.22, 0.98, LAYOUT.cellD / 2 - 0.26, -0.2],
       [-1.38, 1.08, LAYOUT.cellD / 2 - 0.3, 0.1],
     ]) {
-      const hang = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.035), wet);
+      const hang = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.035), hangMat);
       hang.position.set(sx, sy, sz);
       hang.rotation.z = rz;
       cell.add(hang);
@@ -1371,7 +1371,7 @@ export class Prison {
     }
     const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
-    circle.position.set(0, 0.075, 0.35);
+    circle.position.set(0, 0.075, 1.55);
     g.add(circle);
     const wallKrug = wallScratch('КРУГ');
     wallKrug.scale.set(1.7, 1.7, 1.7);
@@ -1467,13 +1467,13 @@ export class Prison {
 
     const box = this.box(0.18, 0.28, 0.08, new THREE.MeshStandardMaterial({ color: 0x4a5560, metalness: 0.4 }), LAYOUT.corridorHalf - 0.18, 1.55, 10.2);
 
-    const wet = new THREE.MeshStandardMaterial({ color: 0x3a2420, roughness: 0.22, metalness: 0.35 });
+    const puddleMat = new THREE.MeshStandardMaterial({ color: 0x3a2420, roughness: 0.22, metalness: 0.35 });
     for (const [x, z, s] of [
       [0.35, 7.2, 0.55],
       [-0.4, 19.4, 0.7],
       [0.2, 31.5, 0.45],
     ]) {
-      const p = new THREE.Mesh(new THREE.CircleGeometry(s, 8), wet);
+      const p = new THREE.Mesh(new THREE.CircleGeometry(s, 8), puddleMat);
       p.rotation.x = -Math.PI / 2;
       p.position.set(x, 0.045, z);
       this.group.add(p);
