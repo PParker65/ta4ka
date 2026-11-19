@@ -1171,15 +1171,20 @@ export class Prison {
       p.position.set(-0.2 + (i % 2) * 0.28, 0.042, -2.2 + i * 0.55);
       g.add(p);
     }
-    const lime = new THREE.MeshStandardMaterial({ color: 0xc8c4a0, roughness: 0.82 });
-    for (let a = 0; a < Math.PI * 2; a += 0.26) {
-      this.box(0.48, 0.014, 0.1, lime, Math.cos(a) * 2.35, 0.055, Math.sin(a) * 2.35, g);
+    const lime = new THREE.MeshStandardMaterial({ color: 0xddd6b4, roughness: 0.78 });
+    for (let a = 0; a < Math.PI * 2; a += 0.2) {
+      const seg = this.box(0.72, 0.022, 0.18, lime, Math.cos(a) * 2.4, 0.058, Math.sin(a) * 2.4, g);
+      seg.rotation.y = -a;
     }
-    const circle = wallScratch('КРУГ');
-    circle.scale.set(2.4, 2.4, 2.4);
+    const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
-    circle.position.set(0, 0.062, 0.15);
+    circle.position.set(0.15, 0.07, 0.2);
     g.add(circle);
+    const wallKrug = wallScratch('КРУГ');
+    wallKrug.scale.set(1.7, 1.7, 1.7);
+    wallKrug.position.set(-2.6, 1.55, 4.22);
+    wallKrug.rotation.y = Math.PI;
+    g.add(wallKrug);
     this.box(1.4, 0.08, 0.34, bench, 2.4, 0.42, 1.8, g);
     this.box(0.08, 0.4, 0.08, bench, 1.85, 0.2, 1.68, g);
     this.box(0.08, 0.4, 0.08, bench, 2.95, 0.2, 1.68, g);
@@ -1444,6 +1449,25 @@ function cellSign(text) {
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), new THREE.MeshBasicMaterial({ map: tex }));
+}
+
+function floorPaint(text) {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 192;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 512, 192);
+  ctx.fillStyle = 'rgba(236, 228, 176, 0.95)';
+  ctx.font = '800 118px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 102);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(
+    new THREE.PlaneGeometry(2.4, 0.9),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
+  );
 }
 
 function wallScratch(text) {
