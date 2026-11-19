@@ -450,7 +450,7 @@ function addProcessing(prison) {
     id: 'bath',
     type: 'bath',
     position: new THREE.Vector3(1.2, 1, -15.4),
-    radius: 2.2,
+    radius: 1.35,
   });
   const tile = new THREE.MeshStandardMaterial({ color: 0xd8e0dc, roughness: 0.55 });
   prison.box(2.2, 1.3, 0.08, tile, 1.4, 0.65, -16.2);
@@ -462,7 +462,7 @@ function addProcessing(prison) {
     id: 'robe',
     type: 'robe',
     position: new THREE.Vector3(-0.9, 1, -13.6),
-    radius: 2.0,
+    radius: 2.7,
   });
   const kaz = new THREE.MeshStandardMaterial({ color: 0x6a6a62, roughness: 0.82 });
   const stripe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.8 });

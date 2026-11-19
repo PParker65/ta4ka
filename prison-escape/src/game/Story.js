@@ -99,7 +99,12 @@ const BEATS = [
   {
     id: 'life-walk',
     when: (s) => s.stage === 'life' && s.phase.id === 'walk',
-    text: 'Круг по бетону. Через стену не ори. Уши у всех.',
+    text: 'Круг по бетону. Через стену не ори. Уши у всех. КПП — не твоя дверь.',
+  },
+  {
+    id: 'locked-in',
+    when: (s, p) => (s.stage === 'life' || s.stage === 'propiska') && s.phase.id !== 'walk' && p.x < 1.4 && p.z > 0.6,
+    text: 'Коряк без команды — это уже побег. Мурчики не чай пьют.',
   },
   {
     id: 'hungry',

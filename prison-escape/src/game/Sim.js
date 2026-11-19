@@ -1,4 +1,5 @@
 /** RPG state: stages, physiology, path, inventory. */
+import { plotObjective } from './Plot.js';
 
 export const PHASES = [
   { id: 'wake', label: 'Подъём' },
@@ -44,6 +45,9 @@ export class Sim {
     this.attended = false;
     this._lifePhase = null;
     this.task = null;
+    this.stash = 'none';
+    this.seenNight1 = false;
+    this.malyava = null;
   }
 
   objective() {
@@ -56,11 +60,13 @@ export class Sim {
     if (this.stage === 'escort') return 'Конвой ведёт по коряку. В хату — только через дверь, когда откроют.';
     if (this.task?.label) return this.task.label;
     if (!this.propiska) return 'Прописка. Хатка проверяет, кто ты. Не шарься, пока не скажут.';
+    const plot = plotObjective(this);
+    if (plot) return plot;
     if (this.phase.id === 'food') return 'Баландежка. Возьми пайку, не лезь без очереди.';
     if (this.phase.id === 'walk') return 'Прогулка. Круг по дворику, без болтовни через стену.';
     if (this.phase.id === 'shmon') return 'Шмон камеры. Стой, пока смотрят койки.';
     if (this.phase.id === 'evening') return 'Отбой. Своя койка, не чужая.';
-    return 'Живи по распорядку. «Говорить» — с хатой и с другими игроками.';
+    return 'Живи по распорядку. «Говорить» — с хатой. На волю через суд, не через дверь.';
   }
 
   get phase() {

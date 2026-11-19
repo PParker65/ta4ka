@@ -3,6 +3,7 @@
  * Never idle: convoy leaves, прописка fires, then tasks, talk, routine.
  */
 import { CIG_ASK, HATCH_TALK, KETTLE_TALK, WINDOW_TALK, TALK_STAROSTA, TALK_LEHA, TALK_VALERA } from './Dialogue.js';
+import { onPhaseEnter, plotObjective } from './Plot.js';
 
 const AMBIENT = [
   (g) => g.subtitle('Седой, не глядя: «Ноги с чужой шконки. Это не просьба.»'),
@@ -108,7 +109,7 @@ export class CellLife {
     if (!t) {
       this.g.sim.task = {
         id: 'live',
-        label: 'Живи по распорядку. Говори с хатой. Не дай надежде погаснуть.',
+        label: plotObjective(this.g.sim) || 'Живи по распорядку. Говори с хатой. Дверь сам не откроешь.',
       };
       return;
     }
@@ -143,25 +144,7 @@ export class CellLife {
     const id = g.sim.phase.id;
     if (id === this._phase) return;
     this._phase = id;
-    if (id === 'shmon') {
-      g.audio.clang();
-      g.subtitle('Кормушка: «Шмон. К стенам. Руки видно. Нычку не проверяй при них.»');
-    } else if (id === 'food') {
-      g.subtitle('Баланда в кормушку. Не лезь без очереди. В сортир, пока едят, не ходи.');
-    } else if (id === 'walk') {
-      g.audio.clang();
-      this.setCellDoor(true);
-      g.subtitle('Прогулка. Круг по бетону. Через стену не ори — уши у всех. Седой уже у двери.');
-    } else if (id === 'evening') {
-      g.fill.intensity = 0.12;
-      this.setCellDoor(false);
-      g.subtitle('Отбой. Своя койка. Чужую не занимай. Завтра опять шмон.');
-    } else if (id === 'wake') {
-      g.fill.intensity = 0.5;
-      this.setCellDoor(false);
-      g.audio.buzz();
-      g.subtitle('Подъём. Мат с коряка. День не спрашивает, готов ты или нет.');
-    }
+    onPhaseEnter(g, id);
   }
 
   directNpcs() {
@@ -208,12 +191,14 @@ export class CellLife {
         { x: s.aisle.x, z: s.aisle.z },
         { x: s.doorQueue.x, z: 3.42 },
         { x: 0.12, z: 3.42 },
+        { x: 0.12, z: 18 },
         { x: s.walkHall.x, z: s.walkHall.z },
       ]);
       this.route(valera, 'walk', s.walkYard, [
         { x: s.aisle.x + 0.2, z: s.aisle.z },
         { x: s.doorQueue.x, z: 3.5 },
         { x: 0.22, z: 3.55 },
+        { x: 0.2, z: 22 },
         { x: s.walkYard.x, z: s.walkYard.z },
       ]);
       return;

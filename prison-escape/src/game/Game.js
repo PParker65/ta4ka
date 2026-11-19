@@ -17,6 +17,7 @@ import { AudioFx } from './AudioFx.js';
 import { makeHands } from './Hands.js';
 import { Chat } from './Chat.js';
 import { storyLine, wayFor } from './Story.js';
+import { plotObjective, walkLine } from './Plot.js';
 import { lifeTick } from './Life.js';
 import { CellLife } from './CellLife.js';
 
@@ -185,7 +186,8 @@ export class Game {
       });
     });
     const door = this.prison.interactables.find((it) => it.type === 'cell-door');
-    if (door) this.prison.openDoor(door);
+    if (door?.open) this.prison.closeDoor(door);
+    this.prison.closeDoor(this.prison.blockDoor);
     this.finishEscort();
   }
 
@@ -454,9 +456,10 @@ export class Game {
 
     this.guards.update(dt);
     const inOwnCell = this.player.position.x > 1.55;
-    const guardHit = this.sim.stage === 'life' && !inOwnCell && this.guards.sees(this.player.position, crouch);
+    const onWalk = this.sim.stage === 'life' && this.sim.phase.id === 'walk';
+    const guardHit = this.sim.stage === 'life' && !onWalk && !inOwnCell && this.guards.sees(this.player.position, crouch);
     const camHit = this.cctv.update(dt, this.player.position, crouch, this.alarm);
-    if (this.sim.stage === 'life' && this.sim.path !== 'red' && !inOwnCell && (guardHit || camHit)) {
+    if (this.sim.stage === 'life' && !onWalk && !inOwnCell && (guardHit || camHit)) {
       this.alarmHold = 3.5;
       this.sim.heat = Math.min(100, this.sim.heat + dt * 18);
     }
@@ -517,6 +520,7 @@ export class Game {
     const resolved = this.prison.resolve(next, crouch ? 0.2 : 0.26);
     this.player.position.x = resolved.x;
     this.player.position.z = resolved.z;
+    this.confineInmate(dt);
     this._footT = (this._footT || 0) + dt;
     if (this._footT > (move.run ? 0.3 : 0.48)) {
       this._footT = 0;
@@ -652,6 +656,9 @@ export class Game {
     this.sim.cuffed = false;
     this.sim.locked = false;
     this.sim.stage = 'propiska';
+    this.prison.closeDoor(this.prison.blockDoor);
+    const shut = this.prison.interactables.find((it) => it.type === 'cell-door');
+    if (shut?.open) this.prison.closeDoor(shut);
     this.input.yaw = Math.PI / 2;
     this.input.pitch = 0;
     this.subtitle('Ты зашёл через дверь. Теперь хата — не конвой.');
@@ -872,8 +879,12 @@ export class Game {
     if (item.type === 'shmon') return this.sim.docs && this.sim.pending.length > 0;
     if (item.type === 'photo') return this.sim.pending.length === 0 && !this.sim.photo;
     if (item.type === 'med') return this.sim.photo && !this.sim.med;
-    if (item.type === 'bath' || item.type === 'robe') return this.sim.med;
+    if (item.type === 'bath') return this.sim.med && !this.sim.haircut;
+    if (item.type === 'robe') return this.sim.haircut && this.sim.robe !== 'kazenka';
     if (item.type === 'block-door') return false;
+    if (item.type === 'cell-door') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
+    if (item.type === 'exit') return this.sim.stage === 'life' && this.sim.phase.id === 'walk';
+    if (item.type === 'admin') return this.sim.stage === 'life' && this.sim.day >= 3;
     if (item.type === 'rag')
       return !this.sim.ragChoice && (this.sim.stage === 'propiska' || this.sim.stage === 'life');
     if (item.type === 'starosta') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
@@ -908,7 +919,7 @@ export class Game {
       kettle: 'Чайник · чифир',
       hatch: 'Кормушка',
       calendar: 'Календарь хаты',
-      'cell-door': item.open ? 'Дверь открыта' : 'Дверь хаты',
+      'cell-door': item.open ? 'Дверь открыта конвоем' : 'Замок. Конвой открывает, не ты',
       'locked-door': `Дверь ${item.num} · заперто. За решёткой — чужая хата.`,
       monitor: 'Монитор',
       exit: 'Дворик для прогулок',
@@ -1027,7 +1038,14 @@ export class Game {
       }
       this.sim.rest();
       this.sim.heat = Math.max(0, this.sim.heat - 6);
-      this.toast(this.sim.path === 'black' ? 'Нычка под матрасом на месте.' : 'Своя шконка. Чужую не занимай.');
+      if (this.sim.seenNight1 && this.sim.phase.id === 'evening') this.sim.stash = 'bunk';
+      this.toast(
+        this.sim.stash === 'bunk'
+          ? 'Сунул под матрас. Лёха сказал — плохое место.'
+          : this.sim.path === 'black'
+            ? 'Нычка под матрасом на месте.'
+            : 'Своя шконка. Чужую не занимай.',
+      );
       this.cellLife.completeTask('bunk');
       return;
     }
@@ -1039,7 +1057,12 @@ export class Game {
     }
     if (item.type === 'wash') {
       this.sim.wash();
-      this.toast('Холодная вода, чаша Генуя. Гигиена — не для красоты, для хаты.');
+      if (this.sim.seenNight1) this.sim.stash = 'wash';
+      this.toast(
+        this.sim.stash === 'wash'
+          ? 'Нычка у чаши. Лёха кивнул в темноте.'
+          : 'Холодная вода, чаша Генуя. Гигиена — не для красоты, для хаты.',
+      );
       return;
     }
     if (item.type === 'cards') {
@@ -1081,7 +1104,7 @@ export class Game {
       return;
     }
     if (item.type === 'cell-door') {
-      this.prison.openDoor(item);
+      this.toast('Замок с той стороны. Конвой открывает, не ты.');
       this.audio.clang();
       return;
     }
@@ -1094,13 +1117,59 @@ export class Game {
       return;
     }
     if (item.type === 'exit') {
-      if (this.sim.phase.id !== 'walk' && this.sim.path !== 'red') {
-        this.toast('Не время. Прогулка по распорядку.');
+      if (this.sim.phase.id !== 'walk') {
+        this.toast('Не время. Прогулка по распорядку, не когда вздумается.');
         this.sim.heat = Math.min(100, this.sim.heat + 12);
         return;
       }
-      this.toast('Дворик. Круг по бетону. Говорить тихо.');
+      this.toast(walkLine(this.sim));
       this.sim.stress = Math.max(0, this.sim.stress - 10);
+      this.sim.attended = true;
+    }
+  }
+
+  confineInmate(dt) {
+    if (this.escort) return;
+    const s = this.sim;
+    const p = this.player.position;
+    const inside = s.stage === 'propiska' || s.stage === 'life' || s.stage === 'escort';
+    if (s.docs && p.z < -52 && s.stage !== 'kpp') {
+      p.z = -51.4;
+      this.toast('Ворота только внутрь.');
+      this.audio.bark();
+    }
+    if (!inside) return;
+    if (p.z < 0.5) {
+      p.z = 0.62;
+      if (!this._blockWarn || performance.now() - this._blockWarn > 4000) {
+        this._blockWarn = performance.now();
+        this.toast('Створки на сборник закрыты. Назад — только с конвоем.');
+        this.audio.clang();
+      }
+    }
+    const walk = s.stage === 'life' && s.phase.id === 'walk';
+    const inCell = p.x > 1.55;
+    if (walk || inCell) return;
+    this.alarmHold = Math.max(this.alarmHold, 2.4);
+    s.heat = Math.min(100, s.heat + dt * 32);
+    s.stress = Math.min(100, s.stress + dt * 14);
+    const doorZ = 3.4;
+    p.x += dt * 2.6;
+    if (p.z < doorZ) p.z += dt * 1.4;
+    if (p.z > doorZ) p.z -= dt * 1.4;
+    if (!this._guardYell || performance.now() - this._guardYell > 3200) {
+      this._guardYell = performance.now();
+      this.subtitle('Конвой: «Стой! В хату! Руки!»');
+      this.audio.clang();
+      this.toast('Мурчики не чай пьют. Тебя видят.');
+    }
+    if (s.heat > 62) {
+      p.copy(this.prison.cellSpawn);
+      const door = this.prison.interactables.find((it) => it.type === 'cell-door');
+      if (door?.open) this.prison.closeDoor(door);
+      this.prison.closeDoor(this.prison.blockDoor);
+      this.toast('Запихнули. Замок с той стороны.');
+      this.audio.clang();
     }
   }
 
