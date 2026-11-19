@@ -244,6 +244,13 @@ export class CellLife {
     const starosta = g.npcs.byId('starosta');
     const leha = g.npcs.byId('cellmate');
     const valera = g.npcs.byId('bunk-bro');
+    const shunned = g.sim.malyava === 'admin' || g.sim.courtTalk === 'cell';
+    if (shunned && phase !== 'walk' && phase !== 'shmon') {
+      this.snap(starosta, 'cold', { ...s.sedoyStool, yaw: Math.PI / 2 });
+      this.snap(leha, 'cold', { ...s.lehaSit, yaw: 0 });
+      this.snap(valera, 'cold', { ...s.valeraSit, yaw: -Math.PI / 2 });
+      return;
+    }
 
     if (phase === 'evening') {
       this.snap(starosta, 'sleep', s.sedoyStool);

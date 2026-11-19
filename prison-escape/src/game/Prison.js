@@ -518,6 +518,69 @@ export class Prison {
       position: new THREE.Vector3(ox - w / 2 + 0.35, 1, oz),
       radius: 1.3,
     });
+    this.addStoryProps(ox, oz, w);
+  }
+
+  addStoryProps(ox, oz, w) {
+    const paper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.012, 0.11),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.88 }),
+    );
+    const fold = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.008, 0.11),
+      new THREE.MeshStandardMaterial({ color: 0xcfc4a4, roughness: 0.9 }),
+    );
+    fold.position.set(0.045, 0.006, 0);
+    paper.add(fold);
+    paper.visible = false;
+    this.group.add(paper);
+    this.storyNote = paper;
+    const ash = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0x1a1a16, roughness: 0.96 }),
+    );
+    ash.scale.set(1.7, 0.38, 1.25);
+    ash.position.set(ox + 0.02, 0.785, oz + 0.14);
+    ash.visible = false;
+    this.group.add(ash);
+    this.storyAsh = ash;
+    const extra = new THREE.Mesh(
+      new THREE.BoxGeometry(0.11, 0.045, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.88 }),
+    );
+    extra.position.set(ox - w / 2 + 0.55, 0.99, 3.42);
+    extra.visible = false;
+    this.group.add(extra);
+    this.storyExtra = extra;
+    this._storyAnchors = {
+      hatch: new THREE.Vector3(ox - w / 2 + 0.4, 1.5, 3.42),
+      wash: new THREE.Vector3(ox + 2.05, 0.97, oz + 2.48),
+      bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
+    };
+  }
+
+  syncStoryProps(sim) {
+    if (!this.storyNote || !sim) return;
+    const a = this._storyAnchors;
+    const waiting = sim.day >= 3 && !sim.malyava;
+    const hold = sim.malyava === 'hold';
+    if (waiting) {
+      this.storyNote.visible = true;
+      this.storyNote.position.copy(a.hatch);
+      this.storyNote.rotation.set(0.2, 0.5, 0.12);
+    } else if (hold && sim.stash === 'wash') {
+      this.storyNote.visible = true;
+      this.storyNote.position.copy(a.wash);
+      this.storyNote.rotation.set(0, 0.3, 0);
+    } else if (hold && sim.stash === 'bunk') {
+      this.storyNote.visible = true;
+      this.storyNote.position.copy(a.bunk);
+      this.storyNote.rotation.set(0, -0.4, 0);
+    } else {
+      this.storyNote.visible = false;
+    }
+    if (this.storyAsh) this.storyAsh.visible = sim.malyava === 'burn';
+    if (this.storyExtra) this.storyExtra.visible = sim.malyava === 'admin' || sim.courtTalk === 'cell';
   }
 
   addWindows(cell, w, d, h) {
@@ -882,6 +945,47 @@ export class Prison {
     hole.position.set(-LAYOUT.cellW / 2 + 0.23, 1.48, -1.8);
     hole.rotation.y = Math.PI / 2;
     cell.add(hole);
+    const peel = new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.92 });
+    this.box(0.55, 0.38, 0.02, peel, -1.1, 1.55, LAYOUT.cellD / 2 - 0.14, cell);
+    this.box(0.32, 0.22, 0.02, peel, -0.7, 1.38, LAYOUT.cellD / 2 - 0.14, cell);
+    const shelf = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.86 });
+    this.box(0.55, 0.04, 0.18, shelf, 2.55, 1.35, 0.4, cell);
+    this.box(0.04, 0.35, 0.04, shelf, 2.35, 1.16, 0.48, cell);
+    this.box(0.04, 0.35, 0.04, shelf, 2.72, 1.16, 0.32, cell);
+    const paste = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.02, 0.11, 6),
+      new THREE.MeshStandardMaterial({ color: 0xc8d0c4, roughness: 0.5 }),
+    );
+    paste.position.set(2.48, 1.42, 0.38);
+    paste.rotation.z = 1.2;
+    cell.add(paste);
+    const card = cellSign('МАМА');
+    card.scale.setScalar(0.42);
+    card.position.set(2.7, 1.72, -0.8);
+    card.rotation.y = -Math.PI / 2;
+    cell.add(card);
+    const broom = new THREE.MeshStandardMaterial({ color: 0x5a4030, roughness: 0.85 });
+    this.box(0.035, 1.15, 0.035, broom, 2.75, 0.58, -2.4, cell);
+    const bristles = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.08, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x8a7a58, roughness: 0.9 }),
+    );
+    bristles.position.set(2.75, 0.08, -2.4);
+    cell.add(bristles);
+    const news = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.008, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0bc, roughness: 0.9 }),
+    );
+    news.position.set(0.48, 0.76, 0.18);
+    news.rotation.y = 0.25;
+    cell.add(news);
+    const outlet = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.1, 0.02),
+      new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.6 }),
+    );
+    outlet.position.set(-LAYOUT.cellW / 2 + 0.2, 0.95, 0.6);
+    outlet.rotation.y = Math.PI / 2;
+    cell.add(outlet);
   }
 
   addCat(cell) {

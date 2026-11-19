@@ -199,6 +199,18 @@ export class Game {
     if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found') this.sim.malyava = mal;
     const talk = params.get('court');
     if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
+    const look = params.get('look');
+    if (look === 'hatch' && this.prison.cellOrigin) {
+      const o = this.prison.cellOrigin;
+      this.player.position.set(o.x - LAYOUT.cellW / 2 + 1.2, 0, 3.42);
+      this.input.yaw = -Math.PI / 2;
+      this.input.pitch = 0.1;
+    } else if (look === 'table' && this.prison.cellOrigin) {
+      const o = this.prison.cellOrigin;
+      this.player.position.set(o.x - 0.4, 0, o.z - 1.1);
+      this.input.yaw = 0.15;
+      this.input.pitch = -0.28;
+    }
   }
 
   forcePhase(id) {
@@ -436,6 +448,7 @@ export class Game {
       this.updateCamera(this.input.crouchHeld, dt);
       this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
       this.cellLife?.tick(dt);
+      this.prison.syncStoryProps?.(this.sim);
       this.syncHud();
       return;
     }
@@ -506,6 +519,7 @@ export class Game {
     this.setAlarm(this.alarmHold > 0);
 
     this.sim.tick(dt);
+    this.prison.syncStoryProps?.(this.sim);
     this.updateStages();
     this.autoGuide(dt, move.mag);
     this.stepCompass(dt);
@@ -1110,7 +1124,15 @@ export class Game {
       return;
     }
     if (item.type === 'malyava') {
-      if (this.sim.path === 'red') {
+      if (this.sim.day >= 3 && !this.sim.malyava) {
+        this.cellLife.useHatch();
+        return;
+      }
+      if (this.sim.malyava === 'hold') {
+        this.toast('Бумага в кармане. Не читай вслух.');
+        return;
+      }
+      if (this.sim.malyava === 'admin' || this.sim.path === 'red' || this.sim.courtTalk === 'cell') {
         this.toast('Красным дорогу не дают.');
         return;
       }
