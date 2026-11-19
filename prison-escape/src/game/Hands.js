@@ -27,16 +27,16 @@ export function makeHands() {
     arms.push(arm);
   }
   const note = new THREE.Mesh(
-    new THREE.BoxGeometry(0.1, 0.012, 0.07),
+    new THREE.BoxGeometry(0.12, 0.012, 0.08),
     new THREE.MeshStandardMaterial({
       color: 0xf4e6b0,
       roughness: 0.78,
       emissive: 0x6a5420,
-      emissiveIntensity: 0.55,
+      emissiveIntensity: 0.68,
     }),
   );
-  note.position.set(0.01, 0.035, -0.08);
-  note.rotation.set(-1.15, 0.08, 0.2);
+  note.position.set(0.03, 0.048, -0.055);
+  note.rotation.set(-1.1, 0.1, 0.24);
   const fold = new THREE.Mesh(
     new THREE.BoxGeometry(0.003, 0.014, 0.068),
     new THREE.MeshBasicMaterial({ color: 0xb8a878 }),

@@ -228,8 +228,8 @@ export class Game {
     }
     if (look === 'krug') {
       this.player.position.set(-0.2, 0, LAYOUT.corridorLen + 5.2);
-      this.input.yaw = 0.08;
-      this.input.pitch = -0.72;
+      this.input.yaw = 0.12;
+      this.input.pitch = -0.92;
       return;
     }
     const o = this.prison.cellOrigin;
@@ -254,9 +254,9 @@ export class Game {
     } else if (look === 'hands') {
       this.player.position.set(o.x - 1.15, 0, o.z - 0.2);
       this.input.yaw = 0.15;
-      this.input.pitch = -0.62;
+      this.input.pitch = -0.7;
       this.sim.cuffed = false;
-      this.hands.position.set(0, 0.08, 0.05);
+      this.hands.position.set(0, 0.1, 0.08);
       if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
         this.hands.userData.holdNote.visible = true;
       }
@@ -338,9 +338,9 @@ export class Game {
     if (at === 'yard') {
       this.skipToCell();
       this.forcePhase('walk');
-      this.player.position.set(-0.35, 0, LAYOUT.corridorLen + 3.85);
-      this.input.yaw = 0.04;
-      this.input.pitch = -0.48;
+      this.player.position.set(-0.2, 0, LAYOUT.corridorLen + 5.2);
+      this.input.yaw = 0.12;
+      this.input.pitch = -0.82;
       return;
     }
     if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'med' || at === 'bath' || at === 'neck' || at === 'escort') {

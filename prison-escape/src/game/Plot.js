@@ -45,6 +45,7 @@ import {
   DAY4_WAKE_WAIT,
   FOUND_NIGHT,
   DAY5_COURT,
+  DAY5_COURT_GONE,
   DAY5_WAKE,
   DAY5_WAKE_GONE,
   DAY5_SLED,
@@ -56,9 +57,13 @@ import {
   DAY5_WALK,
   DAY5_WALK_GONE,
   DAY6_NIGHT,
+  DAY6_NIGHT_GONE,
   DAY6_FOOD,
+  DAY6_FOOD_GONE,
   DAY6_WALK,
+  DAY6_WALK_GONE,
   DAY7_WAKE,
+  DAY7_WAKE_GONE,
   WEEK_HELD,
   HOLD_NIGHT,
   BURN_NIGHT,
@@ -134,8 +139,14 @@ export function plotObjective(sim) {
   if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && !sim.teaPaid && sim.malyava === 'hold') return 'Чай в щели ждут. Не долг на воле.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
-  if (d === 6 && ph === 'food') return 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
-  if (d === 6 && ph === 'walk') return 'Шестой круг. Завтра не ори про волю.';
+  if (d === 6 && ph === 'food')
+    return sim.malyava === 'gone'
+      ? 'Шестая пайка. Щель пустая с пятого. Ложка после смотрящего. Папка уже не пустая.'
+      : 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
+  if (d === 6 && ph === 'walk')
+    return sim.malyava === 'gone'
+      ? 'Шестой круг. Бумагу взяли без тебя. Завтра не ори про волю.'
+      : 'Шестой круг. Завтра не ори про волю.';
   if (d === 5 && ph === 'wake')
     return sim.malyava === 'gone'
       ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
@@ -149,8 +160,14 @@ export function plotObjective(sim) {
   if (d === 5 && sim.courtTalk === 'self') return '«Ничего не видел.» Хата слышала тон. Не рассказывай сон.';
   if (d === 5 && sim.malyava === 'gone') return 'Щель отдала бумагу без тебя. Следователь уже читал.';
   if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
-  if (d === 6) return 'Шестой день. Свежак кончается. Не ори про волю.';
-  if (d === 7) return 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
+  if (d === 6)
+    return sim.malyava === 'gone'
+      ? 'Шестой день. Щель пустая с пятого. Свежак кончается. Не ори про волю.'
+      : 'Шестой день. Свежак кончается. Не ори про волю.';
+  if (d === 7)
+    return sim.malyava === 'gone'
+      ? 'Неделя. Бумагу взяли без тебя. Свежак кончился. Молчи. Ешь.'
+      : 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
   if (d >= 3 && !sim.malyava && (ph === 'food' || ph === 'wake' || ph === 'evening')) {
     return 'Кормушка стучит. Бумага: нести, жечь или к куму.';
   }
@@ -177,7 +194,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, s.malyava === 'gone' ? DAY5_WALK_GONE : DAY5_WALK);
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
-      pickDialog(g, DAY6_WALK);
+      pickDialog(g, s.malyava === 'gone' ? DAY6_WALK_GONE : DAY6_WALK);
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, DAY4_WALK);
@@ -229,13 +246,13 @@ export function onPhaseEnter(game, id) {
       else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
-      pickDialog(g, s.malyava ? DAY4_LEHA : DAY4_NIGHT_WAIT);
+      pickDialog(g, s.malyava && s.malyava !== 'gone' ? DAY4_LEHA : DAY4_NIGHT_WAIT);
     } else if (s.day === 5 && !s.seenDay5) {
       s.seenDay5 = true;
       pickDialog(g, day5Evening(s));
     } else if (s.day === 6 && !s.seenDay6) {
       s.seenDay6 = true;
-      pickDialog(g, DAY6_NIGHT);
+      pickDialog(g, s.malyava === 'gone' ? DAY6_NIGHT_GONE : DAY6_NIGHT);
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
       pickDialog(g, WEEK_HELD);
@@ -314,12 +331,12 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 6 && !s.seenDay6Food) {
       s.seenDay6Food = true;
-      pickDialog(g, DAY6_FOOD);
+      pickDialog(g, s.malyava === 'gone' ? DAY6_FOOD_GONE : DAY6_FOOD);
       return;
     }
     if (s.day === 4 && !s.seenDay4Food) {
       s.seenDay4Food = true;
-      pickDialog(g, s.malyava ? DAY4_FOOD : DAY4_FOOD_WAIT);
+      pickDialog(g, s.malyava && s.malyava !== 'gone' ? DAY4_FOOD : DAY4_FOOD_WAIT);
       return;
     }
     if (s.day >= 3 && !s.malyava) {
@@ -371,7 +388,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 7 && !s.seenDay7Morning) {
       s.seenDay7Morning = true;
-      pickDialog(g, DAY7_WAKE);
+      pickDialog(g, s.malyava === 'gone' ? DAY7_WAKE_GONE : DAY7_WAKE);
       return;
     }
     g.subtitle(wakeLine(s));
@@ -382,6 +399,7 @@ function day5Evening(s) {
   if (s.courtTalk === 'cell') return DAY5_BACK_CELL;
   if (s.courtTalk === 'silent') return DAY5_BACK_SILENT;
   if (s.courtTalk === 'self') return DAY5_BACK_SELF;
+  if (s.malyava === 'gone') return DAY5_COURT_GONE;
   return DAY5_COURT;
 }
 

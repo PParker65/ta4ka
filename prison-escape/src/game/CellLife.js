@@ -30,9 +30,13 @@ import {
   DAY4_HATCH,
   DAY4_WALK,
   DAY5_COURT,
+  DAY5_COURT_GONE,
   DAY5_WALK,
   DAY5_WALK_GONE,
   DAY5_WAKE_GONE,
+  DAY6_WALK,
+  DAY6_WALK_GONE,
+  DAY6_NIGHT_GONE,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -438,6 +442,8 @@ export class CellLife {
             ? DAY5_BACK_SILENT
             : g.sim.day >= 5 && g.sim.courtTalk === 'self'
               ? DAY5_BACK_SELF
+              : g.sim.day >= 5 && g.sim.malyava === 'gone'
+                ? DAY5_COURT_GONE
               : g.sim.day >= 5
                 ? DAY5_COURT
                 : g.sim.day >= 2
@@ -454,7 +460,9 @@ export class CellLife {
     if (id === 'cellmate') {
       g.unlockLook();
       const leha =
-        g.sim.day >= 5 && g.sim.malyava === 'gone'
+        g.sim.day >= 6 && g.sim.malyava === 'gone'
+          ? DAY6_NIGHT_GONE
+          : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
           : g.sim.day >= 4
             ? g.sim.malyava && g.sim.malyava !== 'gone'
@@ -476,7 +484,11 @@ export class CellLife {
     if (id === 'bunk-bro') {
       g.unlockLook();
       const valera =
-        g.sim.phase.id === 'walk' && g.sim.day >= 5
+        g.sim.phase.id === 'walk' && g.sim.day >= 6
+          ? g.sim.malyava === 'gone'
+            ? DAY6_WALK_GONE
+            : DAY6_WALK
+          : g.sim.phase.id === 'walk' && g.sim.day >= 5
           ? g.sim.malyava === 'gone'
             ? DAY5_WALK_GONE
             : DAY5_WALK
