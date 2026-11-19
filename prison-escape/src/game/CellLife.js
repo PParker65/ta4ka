@@ -5,6 +5,7 @@
 import {
   CIG_ASK,
   HATCH_TALK,
+  HATCH_GONE,
   KETTLE_TALK,
   WINDOW_TALK,
   TALK_STAROSTA,
@@ -577,6 +578,11 @@ export class CellLife {
           g.sim.shift(0, 1, 0);
         }
       };
+      return;
+    }
+    if (g.sim.malyava === 'gone') {
+      g.dialog.show(HATCH_GONE.who, HATCH_GONE.text, HATCH_GONE.options);
+      g.dialog.onPick = (opt) => this.applyTalk(opt);
       return;
     }
     if (g.sim.day >= 4 && g.sim.malyava === 'hold' && !g.sim.teaPaid) {

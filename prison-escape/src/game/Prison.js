@@ -1037,6 +1037,29 @@ export class Prison {
     days.position.set(-2.15, 1.45, 1.1);
     days.rotation.y = Math.PI / 2;
     cell.add(days);
+    const dampCal = new THREE.MeshStandardMaterial({ color: 0x4a524c, roughness: 0.4, transparent: true, opacity: 0.5 });
+    this.box(0.02, 0.85, 0.42, dampCal, -LAYOUT.cellW / 2 + 0.21, 0.72, 1.1, cell);
+    this.box(0.02, 0.45, 0.22, dampCal, -LAYOUT.cellW / 2 + 0.21, 0.48, 1.28, cell);
+    const calShelf = new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.88 });
+    this.box(0.16, 0.035, 0.42, calShelf, -LAYOUT.cellW / 2 + 0.32, 0.92, 1.1, cell);
+    const stuffedNews = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.16, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: 0.92 }),
+    );
+    stuffedNews.position.set(-LAYOUT.cellW / 2 + 0.28, 1.08, 1.22);
+    stuffedNews.rotation.set(0.15, 0.4, 0.2);
+    cell.add(stuffedNews);
+    const mug = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.032, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.55, metalness: 0.2 }),
+    );
+    mug.position.set(-LAYOUT.cellW / 2 + 0.34, 0.96, 0.98);
+    cell.add(mug);
+    const ticks2 = wallScratch('||||');
+    ticks2.scale.set(0.85, 0.85, 0.85);
+    ticks2.position.set(-LAYOUT.cellW / 2 + 0.22, 0.62, 0.95);
+    ticks2.rotation.y = Math.PI / 2;
+    cell.add(ticks2);
     const floorRag = new THREE.Mesh(
       new THREE.BoxGeometry(0.38, 0.03, 0.22),
       new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.94 }),
@@ -1044,6 +1067,21 @@ export class Prison {
     floorRag.position.set(-1.75, 0.04, 0.85);
     floorRag.rotation.y = 0.45;
     cell.add(floorRag);
+    const floorRag2 = floorRag.clone();
+    floorRag2.position.set(-1.55, 0.035, 1.15);
+    floorRag2.rotation.y = -0.3;
+    cell.add(floorRag2);
+    const buttCal = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.82 });
+    for (const [bx, bz] of [
+      [-1.62, 1.02],
+      [-1.48, 0.88],
+      [-1.7, 1.22],
+    ]) {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.035, 5), buttCal);
+      c.rotation.z = Math.PI / 2;
+      c.position.set(bx, 0.055, bz);
+      cell.add(c);
+    }
     const doorPail = new THREE.Mesh(
       new THREE.CylinderGeometry(0.13, 0.11, 0.26, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.35, roughness: 0.55 }),

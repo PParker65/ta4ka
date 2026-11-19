@@ -65,6 +65,7 @@ import {
   DAY7_WAKE,
   DAY7_WAKE_GONE,
   WEEK_HELD,
+  WEEK_HELD_GONE,
   HOLD_NIGHT,
   BURN_NIGHT,
   SNITCH_NIGHT,
@@ -255,7 +256,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, s.malyava === 'gone' ? DAY6_NIGHT_GONE : DAY6_NIGHT);
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
-      pickDialog(g, WEEK_HELD);
+      pickDialog(g, s.malyava === 'gone' ? WEEK_HELD_GONE : WEEK_HELD);
     } else {
       g.subtitle(eveningLine(s));
     }

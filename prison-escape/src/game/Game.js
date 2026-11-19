@@ -265,9 +265,9 @@ export class Game {
       this.input.yaw = 0;
       this.input.pitch = 0.18;
     } else if (look === 'cal') {
-      this.player.position.set(o.x - 0.35, 0, o.z + 0.95);
+      this.player.position.set(o.x - 0.55, 0, o.z + 1.05);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = -0.22;
+      this.input.pitch = -0.38;
     } else if (look === 'wash') {
       this.player.position.set(o.x + 2.72, 0, o.z + 2.82);
       this.input.yaw = Math.atan2(-0.47, -0.12);
@@ -1044,6 +1044,8 @@ export class Game {
   }
 
   label(item) {
+    if ((item.type === 'hatch' || item.type === 'malyava') && this.sim.malyava === 'gone')
+      return 'Щель пустая';
     if (item.type === 'hatch' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
     if (item.type === 'malyava' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
     if (
@@ -1184,7 +1186,11 @@ export class Game {
     }
     if (item.type === 'calendar') {
       this.sim.hope = Math.min(100, this.sim.hope + 3);
-      this.toast(`День ${this.sim.day}. Чёрточка на стене ещё не стала стеной.`);
+      this.toast(
+        this.sim.malyava === 'gone'
+          ? `День ${this.sim.day}. Чёрточки есть. Бумаги в щели нет.`
+          : `День ${this.sim.day}. Чёрточка на стене ещё не стала стеной.`,
+      );
       return;
     }
     if (item.type === 'bunk') {
