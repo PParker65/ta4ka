@@ -32,7 +32,7 @@ export class Joystick {
     if (this.enabled === false) return;
     if (e.target.closest('button, #dialog, #shop, #shmon-ui, #cards, #rope, #chat')) return;
     if (this.pointerId !== null) return;
-    if (!this.isLeftHalf(e.clientX)) return;
+    if (!e.target.closest('#stick-root') && !this.root.contains(e.target)) return;
     this.pointerId = e.pointerId;
     this._active = true;
     this.root.setPointerCapture?.(e.pointerId);

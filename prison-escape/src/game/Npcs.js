@@ -266,6 +266,7 @@ export class Npcs {
 
   keepInCell(n) {
     if (!n || n.kind !== 'inmate' || n.id === 'hatch' || n.gone || n.zone === 'proc') return;
+    if (n.duty === 'walk') return;
     const o = this.cellOrigin;
     if (!o) return;
     n.root.position.x = Math.max(o.x - 2.55, Math.min(o.x + 2.7, n.root.position.x));
@@ -275,6 +276,7 @@ export class Npcs {
   keepOutOfFurniture(n) {
     if (!n || n.kind === 'dog' || n.gone || n.id === 'hatch') return;
     if (n.wantSit || n.wantLie || n.wantLean || n.pose === 'sit' || n.pose === 'lie') return;
+    if (n.duty === 'walk') return;
     const boxes = this.furniture;
     if (!boxes?.length) return;
     const p = n.root.position;
@@ -357,6 +359,8 @@ export class Npcs {
             if (n.id === 'convoy') {
               n.gone = true;
               n.root.visible = false;
+            } else {
+              this.arrive(n, n.root.position.x, n.root.position.z);
             }
           }
         }
@@ -379,6 +383,8 @@ export class Npcs {
           } else if (n.stuckT > 1.2) {
             this.arrive(n, n.walkTo.x, n.walkTo.z);
           }
+        } else if (n.walkPath && n.walkPath.length > 1) {
+          n.walkPath.shift();
         } else {
           this.arrive(n, n.walkTo.x, n.walkTo.z);
         }
@@ -436,6 +442,7 @@ export class Npcs {
         n.kind === 'inmate' &&
         n.id !== 'hatch' &&
         !n.gone &&
+        n.duty !== 'walk' &&
         n.pose !== 'sit' &&
         n.pose !== 'lie' &&
         !n.wantSit &&

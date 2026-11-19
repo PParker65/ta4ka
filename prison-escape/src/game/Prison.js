@@ -729,7 +729,7 @@ export class Prison {
   addLivedIn(cell) {
     const rope = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
     this.box(2.4, 0.012, 0.012, rope, -0.4, 1.92, 2.9, cell);
-    const cloths = [0x4a4a52, 0xc8c2b0, 0x2a2a28];
+    const cloths = [0x6a6e78, 0xc8c2b0, 0x7a5a3a];
     cloths.forEach((c, i) => {
       const rag = new THREE.Mesh(
         new THREE.BoxGeometry(0.28, 0.42, 0.04),
@@ -1091,7 +1091,7 @@ export function makeSeats(ox, oz) {
     lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: -Math.PI / 2, sit: true, seatY: 0.56, sitStyle: 'bunk' },
     lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
     valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.56, sitStyle: 'bunk' },
-    valeraLie: { x: ox - 0.15, z: oz + 2.32, yaw: 0, lie: true },
+    valeraLie: { x: ox - 0.15, z: oz + 2.35, yaw: 0, lie: true },
     hatch: { x: ox - w / 2 + 0.82, z: 3.42, yaw: -Math.PI / 2, lean: true },
     window: { x: ox - 1.35, z: oz + d / 2 - 0.92, yaw: 0 },
     shmonSedoy: { x: ox - 1.2, z: oz + 0.4, yaw: -Math.PI / 2 },
@@ -1099,6 +1099,8 @@ export function makeSeats(ox, oz) {
     shmonValera: { x: ox - 1.2, z: oz - 0.5, yaw: -Math.PI / 2 },
     aisle: { x: ox - 1.05, z: oz + 0.08, yaw: Math.PI / 2 },
     doorQueue: { x: ox - 1.35, z: oz - 0.55, yaw: -Math.PI / 2 },
+    walkHall: { x: 0.15, z: 8.6, yaw: 0 },
+    walkYard: { x: 0.35, z: 14.2, yaw: Math.PI },
   };
 }
 

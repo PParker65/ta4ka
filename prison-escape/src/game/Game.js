@@ -125,7 +125,6 @@ export class Game {
     this.renderer.toneMappingExposure = 0.38;
     this.hands.visible = false;
     if (this.mobile) document.getElementById('look-hint')?.classList.add('hidden');
-    else document.getElementById('stick-root')?.classList.add('hidden');
     this.dialog = new Dialogue();
     this.chat = new Chat();
     this.minigames = new Minigames(this.sim, (m) => this.toast(m));
@@ -235,7 +234,7 @@ export class Game {
   }
 
   skipToPlace(at) {
-    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath' || at === 'neck') {
+    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath' || at === 'neck' || at === 'escort') {
       this.skipToArrival();
       this.sim.locked = false;
       this.sim.cuffed = false;
@@ -269,6 +268,22 @@ export class Game {
         this.prison.openKpp();
         this.player.position.set(-0.2, 0, -15.4);
         this.input.yaw = Math.PI / 2;
+      } else if (at === 'escort') {
+        this.sim.docs = true;
+        this.sim.pending = [];
+        this.sim.photo = true;
+        this.sim.med = true;
+        this.sim.haircut = true;
+        this.sim.robe = 'kazenka';
+        this.player.shave?.();
+        this.player.applyKazenka?.();
+        this.hands.userData.setKazenka?.();
+        this.prison.openKpp();
+        this.player.position.set(0, 0, -13.2);
+        this.input.yaw = 0;
+        this.input.pitch = 0.04;
+        this.startEscort();
+        return;
       } else if (at === 'neck') {
         this.sim.docs = true;
         this.sim.pending = [];
@@ -280,8 +295,11 @@ export class Game {
         this.escort = null;
         this.prison.openKpp();
         this.prison.openDoor(this.prison.blockDoor);
-        this.player.position.set(0, 0, 1.35);
+        this.player.position.set(0, 0, 1.85);
         this.input.yaw = 0;
+        this.input.pitch = 0.04;
+        this.sim.locked = false;
+        this.sim.cuffed = false;
       }
       return;
     }
@@ -354,7 +372,8 @@ export class Game {
   }
 
   loop() {
-    const dt = Math.min(0.05, this.clock.getDelta());
+    const raw = this.clock.getDelta();
+    const dt = Math.min(this.escort ? 0.4 : 0.05, raw);
     this.tick(dt);
     updateFlickerMaterials(this.prison.flickerMats, this.clock.elapsedTime, this.alarm);
     if (this.clock.elapsedTime % 0.25 < dt + 0.002) this.cctv.renderFeeds(this.scene);
@@ -513,7 +532,10 @@ export class Game {
   stepEscort(dt) {
     const pts = this.escort.pts;
     const i = this.escort.i;
-    if (i >= pts.length - 1) {
+    if (
+      i >= pts.length - 1 ||
+      (this.player.position.x > LAYOUT.corridorHalf + 1.15 && this.player.position.z > 4.0)
+    ) {
       this.finishEscort();
       return;
     }
@@ -527,18 +549,18 @@ export class Game {
     }
     dir.multiplyScalar(1 / dist);
     const next = this.player.position.clone();
-    const step = Math.min(1.45 * dt, dist);
+    const step = Math.min(2.85 * dt, dist);
     next.x += dir.x * step;
     next.z += dir.z * step;
-    const resolved = this.prison.resolve(next, 0.2);
-    this.player.position.x = resolved.x;
-    this.player.position.z = resolved.z;
+    this.player.position.x = next.x;
+    this.player.position.z = next.z;
     if (!this.escort.freeLook) {
       const want = Math.atan2(dir.x, dir.z);
       let d = want - this.input.yaw;
       while (d > Math.PI) d -= Math.PI * 2;
       while (d < -Math.PI) d += Math.PI * 2;
       this.input.yaw += d * Math.min(1, dt * 3.2);
+      this.input.pitch += (0.04 - this.input.pitch) * Math.min(1, dt * 2.6);
     }
     this.npcs.followEscort(this.player.position, this.input.yaw);
   }
@@ -579,8 +601,11 @@ export class Game {
     const origin = this.prison.cellOrigin;
     this.escort = {
       i: 0,
+      stuck: 0,
       pts: [
         { x: this.player.position.x, z: this.player.position.z },
+        { x: 0, z: this.player.position.z },
+        { x: 0, z: -4.2 },
         { x: 0, z: -0.85, event: 'block' },
         { x: 0, z: 1.2, event: 'doors' },
         { x: 0, z: 2.45, event: 'voice' },
@@ -591,6 +616,16 @@ export class Game {
         { x: origin.x - 0.6, z: origin.z },
       ],
     };
+    for (const n of this.npcs.list) {
+      if (n.follow == null) continue;
+      n.gone = false;
+      n.root.visible = true;
+      const side = n.follow === 0 ? 0.65 : -0.65;
+      n.root.position.set(this.player.position.x + side, 0, this.player.position.z - 0.9);
+    }
+    this.prison.openDoor(this.prison.blockDoor);
+    const cellDoor = this.prison.interactables.find((it) => it.type === 'cell-door');
+    if (cellDoor) this.prison.openDoor(cellDoor);
     this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
     this.audio.voiceOnce('cell', 'Хату четыре. Шагом.', 'Конвой');
     this.audio.clang();
@@ -832,7 +867,8 @@ export class Game {
     if (item.type === 'starosta') return this.sim.stage === 'propiska' || this.sim.stage === 'life';
     if (['window', 'kettle', 'hatch', 'calendar'].includes(item.type))
       return this.sim.stage === 'propiska' || this.sim.stage === 'life';
-    if (['bunk', 'bunk-other', 'wash', 'cards', 'malyava', 'obshak', 'food', 'admin'].includes(item.type))
+    if (item.type === 'food') return this.sim.stage === 'life' && this.sim.phase.id === 'food';
+    if (['bunk', 'bunk-other', 'wash', 'cards', 'malyava', 'obshak', 'admin'].includes(item.type))
       return this.sim.stage === 'life' || this.sim.stage === 'propiska';
     return true;
   }

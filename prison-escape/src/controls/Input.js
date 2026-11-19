@@ -12,7 +12,7 @@ export class Input {
       document.getElementById('stick-root'),
       document.getElementById('stick-knob'),
     );
-    this.joystick.enabled = !!mobile;
+    this.joystick.enabled = true;
 
     this.yaw = 0;
     this.pitch = 0;

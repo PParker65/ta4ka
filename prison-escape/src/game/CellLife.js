@@ -185,9 +185,9 @@ export class CellLife {
     const valera = g.npcs.byId('bunk-bro');
 
     if (phase === 'evening') {
-      this.hold(starosta, 'sleep', s.sedoyStool, 99);
-      this.hold(leha, 'sleep', s.lehaLie, 99);
-      this.hold(valera, 'sleep', s.valeraLie, 99);
+      this.snap(starosta, 'sleep', s.sedoyStool);
+      this.snap(leha, 'sleep', s.lehaLie);
+      this.snap(valera, 'sleep', s.valeraLie);
       return;
     }
     if (phase === 'shmon') {
@@ -203,9 +203,19 @@ export class CellLife {
       return;
     }
     if (phase === 'walk') {
-      this.hold(starosta, 'walk', s.aisle, 99);
-      this.hold(leha, 'walk', s.hatch, 99);
-      this.hold(valera, 'walk', s.doorQueue, 99);
+      this.hold(starosta, 'walk', s.doorQueue, 99);
+      this.route(leha, 'walk', s.walkHall, [
+        { x: s.aisle.x, z: s.aisle.z },
+        { x: s.doorQueue.x, z: 3.42 },
+        { x: 0.12, z: 3.42 },
+        { x: s.walkHall.x, z: s.walkHall.z },
+      ]);
+      this.route(valera, 'walk', s.walkYard, [
+        { x: s.aisle.x + 0.2, z: s.aisle.z },
+        { x: s.doorQueue.x, z: 3.5 },
+        { x: 0.22, z: 3.55 },
+        { x: s.walkYard.x, z: s.walkYard.z },
+      ]);
       return;
     }
 
@@ -239,6 +249,23 @@ export class CellLife {
     n.duty = name;
     n.dutyUntil = this.t + hold;
     this.g.npcs.goTo(n, spot);
+  }
+
+  route(n, name, spot, path) {
+    if (!n || n.duty === name) return;
+    this.hold(n, name, spot, 99);
+    n.walkPath = path.slice();
+  }
+
+  snap(n, name, spot) {
+    if (!n || !spot) return;
+    if (n.duty === name && n.pose === (spot.lie ? 'lie' : spot.sit ? 'sit' : 'stand')) return;
+    n.duty = name;
+    n.dutyUntil = this.t + 99;
+    n.walkPath = [];
+    n.walkTo = null;
+    this.g.npcs.goTo(n, spot);
+    this.g.npcs.arrive(n, spot.x, spot.z);
   }
 
   cycle(n, steps) {
