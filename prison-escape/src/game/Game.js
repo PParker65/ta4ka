@@ -992,7 +992,7 @@ export class Game {
         this.sim.hygiene = Math.min(100, this.sim.hygiene + 25);
         this.sim.shift(opt.black, opt.red, opt.men);
         this.toast(opt.reply);
-        this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
+        this.subtitle('Казёнка у стула. Полосатая роба, тапочки. Не через коридор.');
         this.audio.clippers();
         this.guide = new THREE.Vector3(2.05, 0, -14.55);
       };

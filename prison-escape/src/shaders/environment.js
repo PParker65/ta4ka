@@ -435,36 +435,47 @@ export function asphaltTex() {
 
 /** What you see through хата bars: opposite block, wet yard, dirty sky. Not a black pane. */
 export function windowViewTex() {
-  const size = 256;
+  const size = 512;
   const { c, ctx } = canvas(size);
-  const sky = ctx.createLinearGradient(0, 0, 0, 140);
-  sky.addColorStop(0, '#7a90a4');
-  sky.addColorStop(1, '#c4c2b6');
+  const sky = ctx.createLinearGradient(0, 0, 0, 280);
+  sky.addColorStop(0, '#6a8498');
+  sky.addColorStop(0.45, '#9aabb8');
+  sky.addColorStop(1, '#c8c2b4');
   ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, size, 150);
-  ctx.fillStyle = '#8a8e86';
-  ctx.fillRect(0, 148, size, 108);
-  ctx.fillStyle = '#5c564c';
-  for (let x = 12; x < size; x += 36) {
-    ctx.fillRect(x, 92, 28, 70);
-    ctx.fillStyle = '#3a3630';
-    for (let y = 100; y < 155; y += 14) {
-      ctx.fillRect(x + 4, y, 8, 8);
-      ctx.fillRect(x + 16, y, 8, 8);
+  ctx.fillRect(0, 0, size, 300);
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.ellipse(90, 70, 70, 14, 0, 0, 6.28);
+  ctx.ellipse(220, 50, 90, 16, 0, 0, 6.28);
+  ctx.fill();
+  ctx.fillStyle = '#6a665c';
+  ctx.fillRect(0, 250, size, 262);
+  ctx.fillStyle = '#4a463c';
+  ctx.fillRect(0, 248, size, 8);
+  for (let x = 20; x < size; x += 72) {
+    ctx.fillStyle = '#5a5348';
+    ctx.fillRect(x, 118, 58, 140);
+    ctx.fillStyle = '#3a342c';
+    ctx.fillRect(x + 4, 122, 50, 8);
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 2; col++) {
+        const lit = (x + row + col) % 5 === 0;
+        ctx.fillStyle = lit ? '#d4b878' : '#1a1814';
+        ctx.fillRect(x + 8 + col * 24, 140 + row * 22, 16, 14);
+      }
     }
-    ctx.fillStyle = '#5c564c';
   }
-  ctx.fillStyle = 'rgba(20,22,18,0.35)';
-  ctx.fillRect(0, 160, size, 96);
-  ctx.strokeStyle = 'rgba(12,12,14,0.45)';
-  ctx.lineWidth = 3;
-  for (let i = 0; i < 7; i++) {
+  ctx.fillStyle = 'rgba(30,32,28,0.28)';
+  ctx.fillRect(0, 300, size, 212);
+  ctx.strokeStyle = 'rgba(80,90,70,0.25)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 12; i++) {
     ctx.beginPath();
-    ctx.moveTo(18 + i * 36, 0);
-    ctx.lineTo(18 + i * 36, size);
+    ctx.moveTo(0, 260 + i * 18);
+    ctx.lineTo(size, 270 + i * 16);
     ctx.stroke();
   }
-  noise(ctx, size, 0.14);
+  noise(ctx, size, 0.12);
   const tex = toTex(c, 1, 1);
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
   return tex;

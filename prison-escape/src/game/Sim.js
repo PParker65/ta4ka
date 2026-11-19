@@ -53,6 +53,8 @@ export class Sim {
     this.seenDay5 = false;
     this.seenWeek = false;
     this.heardYard = false;
+    this.seenDay2Food = false;
+    this.seenDay3Morning = false;
     this.malyava = null;
   }
 

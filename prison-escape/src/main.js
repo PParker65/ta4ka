@@ -25,3 +25,6 @@ startBtn.addEventListener('pointerup', (e) => {
   e.preventDefault();
   begin();
 });
+
+const bootParams = new URLSearchParams(location.search);
+if (bootParams.has('cell') || bootParams.get('at')) begin();

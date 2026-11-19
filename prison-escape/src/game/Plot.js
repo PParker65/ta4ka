@@ -1,7 +1,20 @@
 /**
  * Week in хата 4. Not an escape. Choices stick until Tuesday's player comes back.
  */
-import { NIGHT1, DAY2_SEDOY, DAY3_NIGHT, DAY4_LEHA, DAY5_COURT, WEEK_HELD } from './Dialogue.js';
+import {
+  NIGHT1,
+  DAY2_SEDOY,
+  DAY2_YARD,
+  DAY2_FOOD,
+  DAY3_NIGHT,
+  DAY3_MORNING,
+  DAY4_LEHA,
+  DAY5_COURT,
+  WEEK_HELD,
+  HOLD_NIGHT,
+  BURN_NIGHT,
+  SNITCH_NIGHT,
+} from './Dialogue.js';
 
 export function plotObjective(sim) {
   if (sim.stage !== 'life' || !sim.propiska) return null;
@@ -12,13 +25,19 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'shmon') {
     return sim.stash === 'bunk'
       ? 'Шмон. Нычка в матрасе — плохое место. Стой. Руки видно.'
-      : 'Шмон. К стене. Руки видно. Нычку в матрасе не клади.';
+      : 'Шмон. К стенам. Руки видно. Нычку в матрасе не клади.';
   }
   if (d === 2 && ph === 'food') return 'Баланда. Очередь. В сортир, пока едят, не ходи.';
   if (d === 2 && ph === 'walk') return 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
-  if (d >= 3 && ph === 'wake') return 'Третий день. Хата уже не спрашивает имя — спрашивает дело.';
+  if (d === 3 && ph === 'wake') return 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d >= 3 && !sim.malyava && (ph === 'food' || ph === 'wake' || ph === 'evening')) {
+    return 'Кормушка стучит. Бумага: нести, жечь или к куму.';
+  }
   if (d >= 3 && sim.malyava === 'hold') return 'Малява жжёт карман. Несу, жгу или к куму — это уже сюжет, не квест.';
+  if (d >= 3 && sim.malyava === 'burn') return 'Бумага зола. Хата напротив тише, чем надо.';
+  if (d >= 3 && sim.malyava === 'admin') return 'Хата молчит. Красный ход. Пайка не греет.';
+  if (d >= 3 && sim.malyava === 'found') return 'Нашли бумагу. Жар. Хата это уже знает.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
   if (d >= 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
   return null;
@@ -35,6 +54,10 @@ export function onPhaseEnter(game, id) {
     g.audio.clang();
     g.subtitle('Конвой: «Прогулка. Шагом. Дворик — круг. КПП — не твоё.»');
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
+    if (s.day >= 2 && !s.heardYard) {
+      s.heardYard = true;
+      pickDialog(g, DAY2_YARD);
+    }
     return;
   }
   if (door?.open) g.prison.closeDoor(door);
@@ -57,20 +80,16 @@ export function onPhaseEnter(game, id) {
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     if (s.day === 1 && !s.seenNight1) {
       s.seenNight1 = true;
-      g.unlockLook();
-      g.dialog.show(NIGHT1.who, NIGHT1.text, NIGHT1.options);
-      g.dialog.onPick = (opt) => {
-        if (opt.stash) s.stash = opt.stash;
-        s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
-        if (opt.heat) s.heat = Math.min(100, s.heat + opt.heat);
-        g.toast(opt.reply);
-      };
+      pickDialog(g, NIGHT1);
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
       pickDialog(g, DAY2_SEDOY);
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
-      pickDialog(g, DAY3_NIGHT);
+      if (s.malyava === 'admin') pickDialog(g, SNITCH_NIGHT);
+      else if (s.malyava === 'hold') pickDialog(g, HOLD_NIGHT);
+      else if (s.malyava === 'burn') pickDialog(g, BURN_NIGHT);
+      else pickDialog(g, DAY3_NIGHT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
       pickDialog(g, DAY4_LEHA);
@@ -81,7 +100,7 @@ export function onPhaseEnter(game, id) {
       s.seenWeek = true;
       pickDialog(g, WEEK_HELD);
     } else {
-      g.subtitle('Отбой. Своя койка. Чужую не занимай.');
+      g.subtitle(eveningLine(s));
     }
     return;
   }
@@ -94,7 +113,7 @@ export function onPhaseEnter(game, id) {
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
-      g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в матрасе.»');
+      g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       return;
     }
     if (s.stash === 'bunk' && s.day === 2) {
@@ -103,6 +122,8 @@ export function onPhaseEnter(game, id) {
       s.hope = Math.max(0, s.hope - 8);
       g.toast('Нашли. Матрас — первое место. Жар.');
       g.subtitle('Кормушка: «Нычка. Свежак думал, что первый.»');
+    } else if (s.stash === 'wash' && s.day === 2) {
+      g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.» Матрас чистый. Чаша не их дело — сегодня.');
     } else {
       g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.»');
     }
@@ -110,6 +131,15 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'food') {
     if (g.prison.foodTray) g.prison.foodTray.visible = true;
+    if (s.day === 2 && !s.seenDay2Food) {
+      s.seenDay2Food = true;
+      pickDialog(g, DAY2_FOOD);
+      return;
+    }
+    if (s.day >= 3 && !s.malyava) {
+      g.subtitle('Баланда. Кормушка стучит два коротких — не за пайку.');
+      return;
+    }
     g.subtitle('Баланда в кормушку. Не лезь без очереди. В сортир, пока едят, не ходи.');
     return;
   }
@@ -122,12 +152,28 @@ export function onPhaseEnter(game, id) {
     }
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.buzz();
-    g.subtitle(
-      s.day === 1
-        ? 'Подъём. Мат с коряка. День не спрашивает, готов ты или нет.'
-        : `Подъём. День ${s.day}. Хата уже знает, как ты дышишь.`,
-    );
+    if (s.day === 3 && !s.seenDay3Morning) {
+      s.seenDay3Morning = true;
+      pickDialog(g, DAY3_MORNING);
+      return;
+    }
+    g.subtitle(wakeLine(s));
   }
+}
+
+function eveningLine(s) {
+  if (s.malyava === 'admin') return 'Отбой. Чайник молчит. Так спят с красным в хате.';
+  if (s.malyava === 'hold') return 'Отбой. Карман жжёт. Своя койка, бумага не на столе.';
+  if (s.malyava === 'found') return 'Отбой. Нашли днём. Ночь длиннее пайки.';
+  if (s.malyava === 'burn') return 'Отбой. Пахнет золой. Своя койка.';
+  return 'Отбой. Своя койка. Чужую не занимай.';
+}
+
+function wakeLine(s) {
+  if (s.day === 1) return 'Подъём. Мат с коряка. День не спрашивает, готов ты или нет.';
+  if (s.malyava === 'admin') return `Подъём. День ${s.day}. Хата не здоровается. Так начинают красных.`;
+  if (s.malyava === 'found') return `Подъём. День ${s.day}. Жар с вчера. Руки видно, рот на замок.`;
+  return `Подъём. День ${s.day}. Хата уже знает, как ты дышишь.`;
 }
 
 function pickDialog(g, pack) {
@@ -136,10 +182,11 @@ function pickDialog(g, pack) {
   g.dialog.show(pack.who, pack.text, pack.options);
   g.dialog.onPick = (opt) => {
     s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
-    if (opt.hope) s.hope = Math.min(100, s.hope + opt.hope);
+    if (opt.hope) s.hope = Math.min(100, Math.max(0, s.hope + opt.hope));
     if (opt.heat) s.heat = Math.min(100, Math.max(0, s.heat + opt.heat));
-    if (opt.stress) s.stress = Math.min(100, s.stress + opt.stress);
+    if (opt.stress) s.stress = Math.min(100, Math.max(0, s.stress + opt.stress));
     if (opt.stash) s.stash = opt.stash;
+    if (opt.malyava) s.malyava = opt.malyava;
     if (opt.passTea && s.inv.tea > 0) {
       s.inv.tea -= 1;
       s.rep += 1;
@@ -149,6 +196,11 @@ function pickDialog(g, pack) {
 }
 
 export function walkLine(sim) {
+  if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
+}
+
+export function hatchReady(sim) {
+  return sim.day >= 3 && !sim.malyava;
 }

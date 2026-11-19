@@ -385,7 +385,7 @@ export class Prison {
     this.box(0.05, 1.12, d - 0.25, white, w / 2 - 0.1, 0.58, 0, cell);
 
     const brick = this.mat(this.tex.brick);
-    this.box(1.8, 1.4, 0.05, brick, -1.6, 2.15, d / 2 - 0.12, cell);
+    this.box(1.4, 0.85, 0.05, brick, 0, 1.55, d / 2 - 0.12, cell);
 
     const blue = this.mat(this.tex.occupied);
     this.box(2.6, 1.15, 0.04, blue, 1.4, 1.55, -d / 2 + 0.12, cell);
@@ -526,18 +526,23 @@ export class Prison {
     });
     this.windowGlass = this.windowGlass || [];
     this.windowGlass.push(view);
+    const wood = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.82 });
+    const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
     for (const x of [-1.35, 1.35]) {
-      this.box(1.15, 1.35, 0.1, new THREE.MeshStandardMaterial({ color: 0x3a342c }), x, 2.15, d / 2 - 0.08, cell);
-      const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 1.15), view);
-      glass.position.set(x, 2.15, d / 2 - 0.12);
+      const z = d / 2 - 0.09;
+      this.box(1.18, 0.08, 0.1, wood, x, 2.15 + 0.62, z, cell);
+      this.box(1.18, 0.08, 0.1, wood, x, 2.15 - 0.62, z, cell);
+      this.box(0.08, 1.32, 0.1, wood, x - 0.55, 2.15, z, cell);
+      this.box(0.08, 1.32, 0.1, wood, x + 0.55, 2.15, z, cell);
+      const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.98, 1.16), view);
+      glass.position.set(x, 2.15, d / 2 - 0.2);
       glass.rotation.y = Math.PI;
       cell.add(glass);
-      const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
       for (let i = -3; i <= 3; i++) {
-        this.box(0.03, 1.15, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.1, cell);
+        this.box(0.03, 1.12, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.16, cell);
       }
       for (let j = -2; j <= 2; j++) {
-        this.box(0.95, 0.025, 0.025, bars, x, 2.15 + j * 0.22, d / 2 - 0.1, cell);
+        this.box(0.96, 0.025, 0.025, bars, x, 2.15 + j * 0.22, d / 2 - 0.16, cell);
       }
     }
   }
@@ -824,6 +829,51 @@ export class Prison {
     );
     drip.position.set(-0.8, 2.72, 1.1);
     cell.add(drip);
+    const soap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.025, 0.045),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.45 }),
+    );
+    soap.position.set(2.0, 0.97, 2.95);
+    cell.add(soap);
+    const brush = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 0.14, 6),
+      new THREE.MeshStandardMaterial({ color: 0xc8c4bc, roughness: 0.5 }),
+    );
+    brush.position.set(2.08, 1.02, 2.92);
+    brush.rotation.z = 0.4;
+    cell.add(brush);
+    const paper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.01, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xe4dcc4, roughness: 0.92 }),
+    );
+    paper.position.set(1.55, 0.58, -2.15);
+    paper.rotation.y = -0.35;
+    cell.add(paper);
+    const bread = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.05, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.88 }),
+    );
+    bread.position.set(0.42, 0.78, 0.32);
+    cell.add(bread);
+    const sock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.28, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x4a4a46, roughness: 0.94 }),
+    );
+    sock.position.set(0.55, 1.72, 2.9);
+    sock.rotation.z = 0.15;
+    cell.add(sock);
+    const rad = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.68, metalness: 0.22 });
+    this.box(1.15, 0.42, 0.12, rad, -1.35, 0.38, LAYOUT.cellD / 2 - 0.22, cell);
+    for (let i = -2; i <= 2; i++) {
+      this.box(0.06, 0.38, 0.1, rad, -1.35 + i * 0.2, 0.38, LAYOUT.cellD / 2 - 0.2, cell);
+    }
+    const hole = new THREE.Mesh(
+      new THREE.CircleGeometry(0.035, 10),
+      new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.4 }),
+    );
+    hole.position.set(-LAYOUT.cellW / 2 + 0.23, 1.48, -1.8);
+    hole.rotation.y = Math.PI / 2;
+    cell.add(hole);
   }
 
   addCat(cell) {
@@ -1052,6 +1102,40 @@ export class Prison {
     scratch.position.set(0.2, 1.55, 4.26);
     scratch.rotation.y = Math.PI;
     g.add(scratch);
+    const horn = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.14, 0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, metalness: 0.45, roughness: 0.5 }),
+    );
+    horn.position.set(-3.6, 2.9, -3.5);
+    horn.rotation.x = 0.5;
+    horn.rotation.z = -0.4;
+    g.add(horn);
+    const num = wallScratch('13');
+    num.scale.setScalar(1.6);
+    num.position.set(3.2, 1.7, 4.26);
+    num.rotation.y = Math.PI;
+    g.add(num);
+    const butt = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.8 });
+    for (const [x, z] of [
+      [-0.4, 0.8],
+      [0.2, 1.1],
+      [-1.8, 2.4],
+      [1.1, -0.4],
+    ]) {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.04, 5), butt);
+      c.rotation.z = Math.PI / 2;
+      c.rotation.y = Math.random();
+      c.position.set(x, 0.06, z);
+      g.add(c);
+    }
+    const print = new THREE.MeshStandardMaterial({ color: 0x4a4a42, roughness: 0.95, transparent: true, opacity: 0.35 });
+    for (let i = 0; i < 8; i++) {
+      const p = new THREE.Mesh(new THREE.CircleGeometry(0.09, 6), print);
+      p.rotation.x = -Math.PI / 2;
+      p.scale.set(1, 1.6, 1);
+      p.position.set(-0.2 + (i % 2) * 0.28, 0.042, -2.2 + i * 0.55);
+      g.add(p);
+    }
   }
 
   addPipesAndProps() {

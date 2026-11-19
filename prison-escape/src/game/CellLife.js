@@ -16,20 +16,68 @@ import {
   DAY4_LEHA,
   DAY5_COURT,
 } from './Dialogue.js';
-import { onPhaseEnter, plotObjective } from './Plot.js';
+import { onPhaseEnter, plotObjective, hatchReady } from './Plot.js';
 
-const AMBIENT = [
-  (g) => g.subtitle('Седой, не глядя: «Ноги с чужой шконки. Это не просьба.»'),
-  (g) => g.subtitle('Лёха шепчет: «Кормушка сейчас глухая. Ночью — живая.»'),
-  (g) => {
-    g.audio.clang();
-    g.subtitle('Шаги на коряке. Свет в щели. Мимо. Сердце всё равно стучит.');
-    g.sim.stress = Math.min(100, g.sim.stress + 6);
-  },
-  (g) => g.subtitle('Валера насвистывает едва слышно. На секунду хата — не камера.'),
-  (g) => g.subtitle('Из трубы: кап-кап. Кто-то считает это вместо дней.'),
-  (g) => g.subtitle('Седой: «Общак не спрашивает. Общак помнит, кто кинул чай.»'),
-];
+function ambientFor(g) {
+  const s = g.sim;
+  if (s.malyava === 'admin') {
+    return [
+      () => g.subtitle('Чайник стоит. Никто не наливает. Так выглядит красный ход изнутри.'),
+      () => g.subtitle('Лёха смотрит в стену. Слов нет. Слова кончились вчера.'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Шаги. Могли за тобой. Могли мимо. Красному всё равно.');
+        s.stress = Math.min(100, s.stress + 8);
+      },
+    ];
+  }
+  if (s.malyava === 'hold') {
+    return [
+      () => g.subtitle('Карман жжёт. Бумага шуршит громче шагов на коряке.'),
+      () => g.subtitle('Лёха шепчет: «Не в матрас. Чаша. Или жги.»'),
+      () => g.subtitle('Валера не свистит. Свист сейчас — как малява вслух.'),
+    ];
+  }
+  if (s.malyava === 'found') {
+    return [
+      () => g.subtitle('Жар. Хата знает, что нашли. Не спрашивает вслух.'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Кормушка: ключ, пауза, ушли. Бумаги уже нет. Жар есть.');
+        s.stress = Math.min(100, s.stress + 6);
+      },
+    ];
+  }
+  if (s.malyava === 'burn') {
+    return [
+      () => g.subtitle('Пахнет золой. Соседи тише, чем вчера.'),
+      () => g.subtitle('Валера свистит короче. Песня обгорела с краю.'),
+    ];
+  }
+  if (s.day >= 3) {
+    return [
+      () => g.subtitle('Седой: «Имя уже знаем. Дело ещё нет.»'),
+      () => g.subtitle('Лёха: «Кормушка днём живая. Не зевай.»'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Два коротких в щель. Не пайка. Бумага.');
+      },
+      () => g.subtitle('Из трубы: кап-кап. Третий день считается иначе, чем первый.'),
+    ];
+  }
+  return [
+    () => g.subtitle('Седой, не глядя: «Ноги с чужой шконки. Это не просьба.»'),
+    () => g.subtitle('Лёха шепчет: «Кормушка сейчас глухая. Ночью — живая.»'),
+    () => {
+      g.audio.clang();
+      g.subtitle('Шаги на коряке. Свет в щели. Мимо. Сердце всё равно стучит.');
+      s.stress = Math.min(100, s.stress + 6);
+    },
+    () => g.subtitle('Валера насвистывает едва слышно. На секунду хата — не камера.'),
+    () => g.subtitle('Из трубы: кап-кап. Кто-то считает это вместо дней.'),
+    () => g.subtitle('Седой: «Общак не спрашивает. Общак помнит, кто кинул чай.»'),
+  ];
+}
 
 const TASKS = [
   { id: 'cig', label: 'Седой ждёт цигарку. Подойди, E — отдай или откажи.' },
@@ -147,7 +195,8 @@ export class CellLife {
     if ((idle > 5.5 || this.ambientT > 14) && !this.g.dialog.open) {
       this.ambientT = 0;
       this.g.idle = 0;
-      AMBIENT[(Math.random() * AMBIENT.length) | 0](this.g);
+      const lines = ambientFor(this.g);
+      lines[(Math.random() * lines.length) | 0]();
     }
   }
 
@@ -404,7 +453,7 @@ export class CellLife {
       g.subtitle('Седой: «Ешь. В сортир — после.»');
       return;
     }
-    if (g.sim.day >= 3 && !g.sim.malyava) {
+    if (hatchReady(g.sim)) {
       g.dialog.show(DAY3_NOTE.who, DAY3_NOTE.text, DAY3_NOTE.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);
