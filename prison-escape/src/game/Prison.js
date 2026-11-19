@@ -1218,9 +1218,9 @@ export class Prison {
     const dirt = new THREE.MeshStandardMaterial({ color: 0x5a584e, roughness: 0.96 });
     this.box(9, 0.08, 9, dirt, 0, 0.03, 0, g);
     const crack = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.9 });
-    this.box(3.4, 0.015, 0.04, crack, -0.6, 0.075, 0.8, g);
-    this.box(0.04, 0.015, 2.2, crack, 1.1, 0.075, -0.4, g);
-    this.box(2.1, 0.015, 0.03, crack, 0.4, 0.075, 2.2, g);
+    this.box(3.4, 0.015, 0.04, crack, -1.9, 0.075, -2.15, g);
+    this.box(0.04, 0.015, 2.2, crack, 2.35, 0.075, 2.5, g);
+    this.box(2.1, 0.015, 0.03, crack, 1.8, 0.075, -2.4, g);
     this.box(9, 3.4, 0.3, plaster, 0, 1.7, 4.45, g);
     for (const x of [-4.45, 4.45]) {
       this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);

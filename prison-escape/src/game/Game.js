@@ -229,9 +229,9 @@ export class Game {
       this.input.yaw = 0.12;
       this.input.pitch = -0.22;
     } else if (look === 'bunk') {
-      this.player.position.set(o.x + 0.4, 0, o.z - 2.05);
-      this.input.yaw = Math.PI / 2;
-      this.input.pitch = -0.52;
+      this.player.position.set(o.x + 0.55, 0, o.z - 1.55);
+      this.input.yaw = 1.85;
+      this.input.pitch = -0.38;
     } else if (look === 'hands') {
       this.player.position.set(o.x - 0.4, 0, o.z);
       this.input.yaw = Math.PI / 2;
@@ -523,7 +523,7 @@ export class Game {
     this.cellLife?.tick(dt);
     lifeTick(this, dt);
 
-    this.guards.update(dt);
+    this.guards.update(dt, this.sim.stage === 'life' ? this.sim.phase.id : null);
     const inOwnCell = this.player.position.x > 1.55;
     const onWalk = this.sim.stage === 'life' && this.sim.phase.id === 'walk';
     if (onWalk && this.player.position.z > LAYOUT.corridorLen + 0.6) {

@@ -148,7 +148,9 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'shmon') {
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
+    if (door && !door.open) g.prison.openDoor(door);
     g.audio.clang();
+    g.subtitle('Конвой в хате. К стенам. Руки видно.');
     if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 3) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);

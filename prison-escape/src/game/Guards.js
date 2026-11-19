@@ -41,6 +41,14 @@ export class Guards {
         0.48,
       ),
     );
+    const o = this.prison.cellOrigin || new THREE.Vector3(4.7, 0, 5.2);
+    this.shmonOut = [new THREE.Vector3(0.12, 0, 3.2), new THREE.Vector3(0.12, 0, 3.9)];
+    this.shmonIn = [
+      new THREE.Vector3(o.x + 1.05, 0, o.z - 1.7),
+      new THREE.Vector3(o.x + 1.25, 0, o.z - 2.15),
+    ];
+    this.shmonGuard = this.makeGuard(this.shmonOut, 0.9);
+    this.list.push(this.shmonGuard);
   }
 
   makeGuard(waypoints, speed) {
@@ -122,7 +130,14 @@ export class Guards {
     };
   }
 
-  update(dt) {
+  update(dt, phase) {
+    const searching = phase === 'shmon';
+    if (this.shmonGuard && searching !== this._inCell) {
+      this._inCell = searching;
+      this.shmonGuard.waypoints = searching ? this.shmonIn : this.shmonOut;
+      this.shmonGuard.index = 0;
+      this.shmonGuard.wait = 0;
+    }
     for (const g of this.list) {
       if (g.wait > 0) {
         g.wait -= dt;
