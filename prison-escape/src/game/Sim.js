@@ -48,6 +48,7 @@ export class Sim {
     this.stash = 'none';
     this.seenNight1 = false;
     this.seenDay2 = false;
+    this.seenDay3 = false;
     this.seenDay4 = false;
     this.seenDay5 = false;
     this.heardYard = false;

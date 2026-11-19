@@ -128,6 +128,8 @@ export class Prison {
       L / 2,
     );
     floor.material.color.set(0xb24a32);
+    floor.material.roughness = 0.42;
+    floor.material.metalness = 0.12;
 
     this.box(0.55, 0.07, L, new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.55 }), 0, 0.035, L / 2);
 
@@ -1065,6 +1067,44 @@ export class Prison {
     quiet.rotation.x = -Math.PI / 2;
     quiet.position.set(-0.55, 0.05, 11.2);
     this.group.add(quiet);
+
+    const rust = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.7, metalness: 0.25 });
+    for (const z of [5.1, 12.2, 20.4, 28.6]) {
+      this.box(0.1, 0.52, 0.95, rust, -LAYOUT.corridorHalf + 0.2, 0.42, z);
+      for (let i = -3; i <= 3; i++) {
+        this.box(0.04, 0.48, 0.04, rust, -LAYOUT.corridorHalf + 0.16, 0.42, z + i * 0.12);
+      }
+    }
+    const valve = new THREE.Mesh(
+      new THREE.TorusGeometry(0.07, 0.015, 6, 10),
+      new THREE.MeshStandardMaterial({ color: 0x8a2020, metalness: 0.5, roughness: 0.4 }),
+    );
+    valve.position.set(-LAYOUT.corridorHalf + 0.28, 2.18, 9.4);
+    valve.rotation.y = Math.PI / 2;
+    this.group.add(valve);
+    const cable = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9 });
+    for (const z of [8.2, 16.8, 25.5]) {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.85, 5), cable);
+      c.position.set(LAYOUT.corridorHalf - 0.18, 2.15, z);
+      c.rotation.z = 0.35;
+      this.group.add(c);
+    }
+    const board = this.box(
+      0.04,
+      0.55,
+      0.7,
+      new THREE.MeshStandardMaterial({ color: 0x3a4a38, roughness: 0.85 }),
+      LAYOUT.corridorHalf - 0.14,
+      1.55,
+      16.2,
+    );
+    const paper = this.box(0.01, 0.22, 0.16, new THREE.MeshStandardMaterial({ color: 0xe8e0cc }), LAYOUT.corridorHalf - 0.11, 1.62, 16.05);
+    paper.rotation.z = 0.08;
+    for (const z of [6.95, 10.5, 14.05]) {
+      const leak = new THREE.PointLight(0xffc070, 0.22, 2.4, 2);
+      leak.position.set(-LAYOUT.corridorHalf + 0.25, 1.52, z);
+      this.group.add(leak);
+    }
   }
 
   addLamps() {

@@ -1,7 +1,7 @@
 /**
  * Week in хата 4. Not an escape. Choices stick until Tuesday's player comes back.
  */
-import { NIGHT1, DAY2_SEDOY, DAY4_LEHA, DAY5_COURT } from './Dialogue.js';
+import { NIGHT1, DAY2_SEDOY, DAY3_NIGHT, DAY4_LEHA, DAY5_COURT } from './Dialogue.js';
 
 export function plotObjective(sim) {
   if (sim.stage !== 'life' || !sim.propiska) return null;
@@ -62,6 +62,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
       pickDialog(g, DAY2_SEDOY);
+    } else if (s.day === 3 && !s.seenDay3) {
+      s.seenDay3 = true;
+      pickDialog(g, DAY3_NIGHT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
       pickDialog(g, DAY4_LEHA);
