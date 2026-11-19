@@ -238,7 +238,7 @@ export class Game {
       this.skipToCell();
       return;
     }
-    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath' || at === 'neck' || at === 'escort') {
+    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'med' || at === 'bath' || at === 'neck' || at === 'escort') {
       this.skipToArrival();
       this.sim.locked = false;
       this.sim.cuffed = false;
@@ -263,6 +263,14 @@ export class Game {
         this.prison.openKpp();
         this.player.position.set(-0.2, 0, -28.2);
         this.input.yaw = Math.PI / 2;
+      } else if (at === 'med') {
+        this.sim.docs = true;
+        this.sim.pending = [];
+        this.sim.photo = true;
+        this.sim.stage = 'med';
+        this.prison.openKpp();
+        this.player.position.set(-0.2, 0, -22.2);
+        this.input.yaw = -Math.PI / 2;
       } else if (at === 'bath') {
         this.sim.docs = true;
         this.sim.pending = [];

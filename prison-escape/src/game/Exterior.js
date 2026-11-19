@@ -306,27 +306,25 @@ function addKpp(prison) {
   prison.box(1.5, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a3530 }), 3.2, 1.05, -56.4);
 
   const steel = new THREE.MeshStandardMaterial({ color: 0x6a727c, metalness: 0.22, roughness: 0.62 });
-  const left = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.4, 0.16), steel);
-  left.position.set(-3.3, 1.7, -54.2);
+  const left = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.4, 0.16), steel);
+  left.position.set(-3.2, 1.7, -54.2);
   prison.group.add(left);
   const right = left.clone();
-  right.position.x = 0.2;
+  right.position.x = 0.15;
   prison.group.add(right);
+  const barMat = new THREE.MeshStandardMaterial({ color: 0xb8bec4, metalness: 0.3, roughness: 0.42 });
+  const stripeMat = new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 });
   for (const g of [left, right]) {
-    for (let y = 0.3; y < 3.2; y += 0.38) {
-      const bar = new THREE.Mesh(
-        new THREE.BoxGeometry(3.0, 0.05, 0.05),
-        new THREE.MeshStandardMaterial({ color: 0xb0b6bc, metalness: 0.35, roughness: 0.4 }),
-      );
-      bar.position.set(0, y - 1.7, 0.1);
-      g.add(bar);
+    for (const faceZ of [-0.1, 0.1]) {
+      for (let y = 0.28; y < 3.2; y += 0.36) {
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(3.15, 0.06, 0.05), barMat);
+        bar.position.set(0, y - 1.7, faceZ);
+        g.add(bar);
+      }
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(3.15, 0.2, 0.05), stripeMat);
+      stripe.position.set(0, 0.32, faceZ);
+      g.add(stripe);
     }
-    const stripe = new THREE.Mesh(
-      new THREE.BoxGeometry(3.0, 0.18, 0.04),
-      new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 }),
-    );
-    stripe.position.set(0, 0.35, 0.1);
-    g.add(stripe);
   }
 
   prison.addCollider(-6.4, 2.0, -54.5, -53.9, 'kpp-gate');
