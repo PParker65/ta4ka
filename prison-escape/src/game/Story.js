@@ -126,6 +126,31 @@ const BEATS = [
     when: (s) => s.stage === 'life' && s.hope < 14,
     text: 'Если погаснет и это — останется только распорядок. Так и сажают навсегда.',
   },
+  {
+    id: 'night-stash',
+    when: (s) => s.stage === 'life' && s.seenNight1 && s.stash === 'bunk' && s.day === 1,
+    text: 'Матрас помнит руки. Завтра чужие руки будут первыми.',
+  },
+  {
+    id: 'malyava-hold',
+    when: (s) => s.malyava === 'hold',
+    text: 'Бумага жжёт бедро. Не чеши. Не читай вслух.',
+  },
+  {
+    id: 'snitch',
+    when: (s) => s.malyava === 'admin' || s.path === 'red',
+    text: 'Чайник щелкает громче, чем слова. Хата уже не смотрит — считает.',
+  },
+  {
+    id: 'day4-debt',
+    when: (s) => s.stage === 'life' && s.day === 4,
+    text: 'Кормушка помнит чай. Долг здесь не про расписку.',
+  },
+  {
+    id: 'day5-sled',
+    when: (s) => s.stage === 'life' && s.day >= 5,
+    text: 'Следователь — не хата. Хата спросит раньше, чем он.',
+  },
 ];
 
 export function storyLine(sim, pos, introT) {

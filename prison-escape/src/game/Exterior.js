@@ -304,6 +304,24 @@ function addKpp(prison) {
   booth.add(kppSign);
 
   prison.box(1.5, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a3530 }), 3.2, 1.05, -56.4);
+  const paper = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
+  prison.box(0.22, 0.01, 0.16, paper, 2.85, 1.1, -56.55);
+  prison.box(0.18, 0.01, 0.14, paper, 3.05, 1.11, -56.48);
+  const mug = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.04, 0.035, 0.07, 8),
+    new THREE.MeshStandardMaterial({ color: 0x6a2020, roughness: 0.55 }),
+  );
+  mug.position.set(3.35, 1.14, -56.45);
+  prison.group.add(mug);
+  const lamp = new THREE.PointLight(0xffd7a0, 0.55, 5, 1.8);
+  lamp.position.set(3.5, 1.7, -56.6);
+  prison.group.add(lamp);
+  const stamp = new THREE.Mesh(
+    new THREE.BoxGeometry(0.08, 0.04, 0.08),
+    new THREE.MeshStandardMaterial({ color: 0x1a3a6a, roughness: 0.5 }),
+  );
+  stamp.position.set(2.7, 1.12, -56.35);
+  prison.group.add(stamp);
 
   const steel = new THREE.MeshStandardMaterial({ color: 0x6a727c, metalness: 0.22, roughness: 0.62 });
   const left = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.4, 0.16), steel);
@@ -445,6 +463,14 @@ function addProcessing(prison) {
     radius: 1.8,
   });
   prison.box(1.6, 0.45, 0.55, new THREE.MeshStandardMaterial({ color: 0xe8e4dc }), -1.4, 0.55, -22.2);
+  const jar = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.05, 0.12, 8),
+    new THREE.MeshStandardMaterial({ color: 0xc8d8c8, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.7 }),
+  );
+  jar.position.set(-1.15, 0.84, -22.05);
+  prison.group.add(jar);
+  const tray = new THREE.MeshStandardMaterial({ color: 0xb0b4b0, metalness: 0.4, roughness: 0.45 });
+  prison.box(0.28, 0.03, 0.18, tray, -0.95, 0.8, -22.15);
 
   prison.interactables.push({
     id: 'bath',
@@ -457,6 +483,29 @@ function addProcessing(prison) {
   const chair = new THREE.MeshStandardMaterial({ color: 0x2a2a28 });
   prison.box(0.42, 0.08, 0.42, chair, 1.2, 0.48, -15.2);
   prison.box(0.08, 0.7, 0.08, chair, 1.2, 0.7, -15.38);
+  const clip = new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.55, roughness: 0.35 });
+  prison.box(0.16, 0.06, 0.05, clip, 1.35, 0.55, -15.05);
+  prison.box(0.04, 0.04, 0.12, clip, 1.42, 0.55, -14.98);
+  const hair = new THREE.Mesh(
+    new THREE.CircleGeometry(0.18, 8),
+    new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.95 }),
+  );
+  hair.rotation.x = -Math.PI / 2;
+  hair.position.set(1.15, 0.04, -15.15);
+  prison.group.add(hair);
+  const drain = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.08, 0.09, 0.03, 10),
+    new THREE.MeshStandardMaterial({ color: 0x2a2a28, metalness: 0.6, roughness: 0.4 }),
+  );
+  drain.position.set(1.6, 0.04, -15.7);
+  prison.group.add(drain);
+  const bathWet = new THREE.Mesh(
+    new THREE.CircleGeometry(0.7, 10),
+    new THREE.MeshStandardMaterial({ color: 0x6a7a78, roughness: 0.18, metalness: 0.15 }),
+  );
+  bathWet.rotation.x = -Math.PI / 2;
+  bathWet.position.set(1.3, 0.035, -15.4);
+  prison.group.add(bathWet);
 
   prison.interactables.push({
     id: 'robe',
