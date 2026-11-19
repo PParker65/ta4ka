@@ -37,7 +37,9 @@ import {
   DAY5_WAKE_GONE,
   DAY6_WALK,
   DAY6_WALK_GONE,
+  DAY6_WALK_RED,
   DAY6_NIGHT_GONE,
+  DAY6_NIGHT_RED,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -73,6 +75,17 @@ function ambientFor(g) {
       () => g.subtitle('Карман жжёт. Бумага шуршит громче шагов на коряке.'),
       () => g.subtitle('Лёха шепчет: «Не в матрас. Чаша. Или жги.»'),
       () => g.subtitle('Валера не свистит. Свист сейчас — как малява вслух.'),
+    ];
+  }
+  if (s.malyava === 'gone') {
+    return [
+      () => g.subtitle('Щель пустая с пятого. Бумагу взяли без тебя.'),
+      () => g.subtitle('Лёха смотрит мимо. Пустая щель громче полного кармана.'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Ключ. Не пайка. Папка уже толще.');
+        s.stress = Math.min(100, s.stress + 5);
+      },
     ];
   }
   if (s.malyava === 'found') {
@@ -461,7 +474,9 @@ export class CellLife {
     if (id === 'cellmate') {
       g.unlockLook();
       const leha =
-        g.sim.day >= 6 && g.sim.malyava === 'gone'
+        g.sim.day >= 6 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
+          ? DAY6_NIGHT_RED
+          : g.sim.day >= 6 && g.sim.malyava === 'gone'
           ? DAY6_NIGHT_GONE
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
@@ -486,7 +501,9 @@ export class CellLife {
       g.unlockLook();
       const valera =
         g.sim.phase.id === 'walk' && g.sim.day >= 6
-          ? g.sim.malyava === 'gone'
+          ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+            ? DAY6_WALK_RED
+            : g.sim.malyava === 'gone'
             ? DAY6_WALK_GONE
             : DAY6_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 5

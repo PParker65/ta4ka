@@ -1418,6 +1418,7 @@ export class Prison {
     this.box(0.04, 0.015, 2.2, crack, 2.35, 0.075, 2.5, g);
     this.box(2.1, 0.015, 0.03, crack, 1.8, 0.075, -2.4, g);
     this.box(9, 3.4, 0.3, plaster, 0, 1.7, 4.45, g);
+    this.box(9, 1.15, 0.04, dado, 0, 0.57, 4.28, g);
     for (const x of [-4.45, 4.45]) {
       this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);
       this.box(0.3, 2.25, 9, plaster, x, 2.27, 0, g);
@@ -1704,9 +1705,14 @@ export class Prison {
     }
     this.box(0.02, 1.1, 2.2, damp, 0.6, 2.4, 4.22, g);
     this.box(0.02, 0.7, 1.4, peel, -1.1, 2.5, 4.22, g);
+    const dadoStain = new THREE.MeshStandardMaterial({ color: 0x2a4a44, roughness: 0.8, transparent: true, opacity: 0.55 });
+    for (const side of [-1, 1]) {
+      this.box(0.04, 0.85, 1.6, dadoStain, side * 4.28, 0.62, -0.8, g);
+      this.box(0.04, 0.55, 0.9, dadoStain, side * 4.28, 0.48, 1.4, g);
+    }
     const stand = wallScratch('СТОЙ');
-    stand.scale.set(1.4, 1.4, 1.4);
-    stand.position.set(4.2, 1.85, -0.8);
+    stand.scale.set(1.6, 1.6, 1.6);
+    stand.position.set(4.18, 1.55, -0.8);
     stand.rotation.y = -Math.PI / 2;
     g.add(stand);
     const hushYard = wallScratch('НЕ СВИСТИ');
