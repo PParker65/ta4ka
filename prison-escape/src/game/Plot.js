@@ -9,7 +9,10 @@ import {
   DAY3_NIGHT,
   DAY3_MORNING,
   DAY4_LEHA,
+  DAY4_WALK,
   DAY5_COURT,
+  DAY5_WAKE,
+  DAY6_NIGHT,
   WEEK_HELD,
   HOLD_NIGHT,
   BURN_NIGHT,
@@ -38,8 +41,11 @@ export function plotObjective(sim) {
   if (d >= 3 && sim.malyava === 'burn') return 'Бумага зола. Хата напротив тише, чем надо.';
   if (d >= 3 && sim.malyava === 'admin') return 'Хата молчит. Красный ход. Пайка не греет.';
   if (d >= 3 && sim.malyava === 'found') return 'Нашли бумагу. Жар. Хата это уже знает.';
+  if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
-  if (d >= 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
+  if (d === 5 && ph === 'wake') return 'С коряка шепчут список. Вечером хата спросит про вас.';
+  if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
+  if (d === 6) return 'Шестой день. Свежак кончается. Не ори про волю.';
   return null;
 }
 
@@ -54,7 +60,10 @@ export function onPhaseEnter(game, id) {
     g.audio.clang();
     g.subtitle('Конвой: «Прогулка. Шагом. Дворик — круг. КПП — не твоё.»');
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
-    if (s.day >= 2 && !s.heardYard) {
+    if (s.day >= 4 && !s.heardDay4Yard) {
+      s.heardDay4Yard = true;
+      pickDialog(g, DAY4_WALK);
+    } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY2_YARD);
     }
@@ -93,9 +102,12 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
       pickDialog(g, DAY4_LEHA);
-    } else if (s.day >= 5 && !s.seenDay5) {
+    } else if (s.day === 5 && !s.seenDay5) {
       s.seenDay5 = true;
       pickDialog(g, DAY5_COURT);
+    } else if (s.day === 6 && !s.seenDay6) {
+      s.seenDay6 = true;
+      pickDialog(g, DAY6_NIGHT);
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
       pickDialog(g, WEEK_HELD);
@@ -155,6 +167,11 @@ export function onPhaseEnter(game, id) {
     if (s.day === 3 && !s.seenDay3Morning) {
       s.seenDay3Morning = true;
       pickDialog(g, DAY3_MORNING);
+      return;
+    }
+    if (s.day === 5 && !s.seenDay5Wake) {
+      s.seenDay5Wake = true;
+      pickDialog(g, DAY5_WAKE);
       return;
     }
     g.subtitle(wakeLine(s));

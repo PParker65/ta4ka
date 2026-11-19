@@ -759,10 +759,22 @@ function alcove(prison, x, z, title) {
     g.add(hiv);
   }
   if (title === 'БАНЯ') {
+    const dado = new THREE.MeshStandardMaterial({ color: 0x3a5a54, roughness: 0.72 });
+    const tile = new THREE.MeshStandardMaterial({ color: 0xd4ddd8, roughness: 0.48 });
+    const wallX = (x < 0 ? -1 : 1) * 1.68;
+    prison.box(3.4, 1.12, 0.05, dado, 0, 0.56, 1.62, g);
+    prison.box(3.4, 1.12, 0.05, dado, 0, 0.56, -1.62, g);
+    prison.box(0.05, 1.12, 3.2, dado, wallX, 0.56, 0, g);
+    prison.box(3.4, 1.55, 0.04, tile, 0, 1.92, 1.62, g);
+    prison.box(3.4, 1.55, 0.04, tile, 0, 1.92, -1.62, g);
     const chrome = new THREE.MeshStandardMaterial({ color: 0xb0b4b8, metalness: 0.7, roughness: 0.3 });
     const head = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, 0.1, 8), chrome);
     head.position.set(0.5, 1.55, 0.8);
     g.add(head);
+    prison.box(0.06, 2.1, 0.06, chrome, 0.85, 1.15, 1.55, g);
+    prison.box(0.7, 0.08, 0.36, wood, 0.55, 0.42, -1.15, g);
+    prison.box(0.08, 0.4, 0.08, wood, 0.1, 0.2, -1.05, g);
+    prison.box(0.08, 0.4, 0.08, wood, 1.0, 0.2, -1.05, g);
     prison.box(0.45, 0.9, 0.45, wood, -0.4, 0.5, 0, g);
     const cloth = new THREE.MeshStandardMaterial({ color: 0x8a8a4a, roughness: 0.85 });
     const band = new THREE.MeshStandardMaterial({ color: 0x1e1e1c, roughness: 0.8 });

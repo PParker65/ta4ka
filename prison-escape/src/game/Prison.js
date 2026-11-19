@@ -614,6 +614,13 @@ export class Prison {
     );
     blanket.position.set(-0.28, 0.58, 0);
     g.add(blanket);
+    const rumple = new THREE.Mesh(
+      new THREE.BoxGeometry(0.55, 0.07, 0.62),
+      new THREE.MeshStandardMaterial({ color: 0x3e4a56, roughness: 0.93 }),
+    );
+    rumple.position.set(-0.5, 0.61, 0.04);
+    rumple.rotation.z = 0.12;
+    g.add(rumple);
     return g;
   }
 
@@ -931,6 +938,19 @@ export class Prison {
       );
       mug.position.set(0.55, 0.72, 0.4);
       g.add(mug);
+      const line = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
+      this.box(1.6, 0.01, 0.01, line, 0, 1.85, 1.55, g);
+      const rag2 = rag.clone();
+      rag2.material = new THREE.MeshStandardMaterial({ color: 0x8a8a82, roughness: 0.9 });
+      rag2.position.set(0.2, 1.55, 1.55);
+      g.add(rag2);
+      const glow = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.22, 0.14),
+        new THREE.MeshBasicMaterial({ color: 0xd4b878 }),
+      );
+      glow.position.set(2.05, 1.52, 0);
+      glow.rotation.y = Math.PI / 2;
+      g.add(glow);
     }
   }
 
@@ -1362,9 +1382,9 @@ export function makeSeats(ox, oz) {
     sedoyStool: { x: ox + 1.08, z: oz + 0.18, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
     stoolS: { x: ox + 0.18, z: oz - 0.4, yaw: 0, sit: true, seatY: 0.5 },
     stoolN: { x: ox + 0.22, z: oz + 0.74, yaw: Math.PI, sit: true, seatY: 0.5 },
-    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: -Math.PI / 2, sit: true, seatY: 0.56, sitStyle: 'bunk' },
+    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: -Math.PI / 2, sit: true, seatY: 0.62, sitStyle: 'bunk' },
     lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
-    valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.56, sitStyle: 'bunk' },
+    valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },
     valeraLie: { x: ox - 0.15, z: oz + 2.35, yaw: 0, lie: true },
     hatch: { x: ox - w / 2 + 0.82, z: 3.42, yaw: -Math.PI / 2, lean: true },
     window: { x: ox - 1.35, z: oz + d / 2 - 0.92, yaw: 0 },

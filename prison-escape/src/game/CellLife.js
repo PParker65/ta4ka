@@ -14,6 +14,7 @@ import {
   DAY2_YARD,
   DAY3_NOTE,
   DAY4_LEHA,
+  DAY4_WALK,
   DAY5_COURT,
 } from './Dialogue.js';
 import { onPhaseEnter, plotObjective, hatchReady } from './Plot.js';
@@ -395,7 +396,12 @@ export class CellLife {
     }
     if (id === 'bunk-bro') {
       g.unlockLook();
-      const valera = g.sim.day >= 2 && g.sim.phase.id === 'walk' ? DAY2_YARD : TALK_VALERA;
+      const valera =
+        g.sim.phase.id === 'walk' && g.sim.day >= 4
+          ? DAY4_WALK
+          : g.sim.day >= 2 && g.sim.phase.id === 'walk'
+            ? DAY2_YARD
+            : TALK_VALERA;
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);

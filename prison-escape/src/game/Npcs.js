@@ -228,12 +228,13 @@ export class Npcs {
       limbs.hips.position.y = n.seatY ?? 0.5;
       limbs.hips.rotation.x = 0;
       const bunk = n.sitStyle === 'bunk';
-      if (thighs[0]) thighs[0].rotation.x = bunk ? 0.08 : -1.15;
-      if (thighs[1]) thighs[1].rotation.x = bunk ? 0.04 : -1.1;
-      if (shins[0]) shins[0].rotation.x = bunk ? 0.05 : 1.22;
-      if (shins[1]) shins[1].rotation.x = bunk ? 0.02 : 1.18;
-      limbs.arms[0].rotation.x = bunk ? 0.35 : 1.05;
-      limbs.arms[1].rotation.x = bunk ? 0.28 : 0.95;
+      if (bunk) limbs.hips.rotation.x = 0.12;
+      if (thighs[0]) thighs[0].rotation.x = bunk ? -0.42 : -1.15;
+      if (thighs[1]) thighs[1].rotation.x = bunk ? -0.38 : -1.1;
+      if (shins[0]) shins[0].rotation.x = bunk ? 0.85 : 1.22;
+      if (shins[1]) shins[1].rotation.x = bunk ? 0.78 : 1.18;
+      limbs.arms[0].rotation.x = bunk ? 0.22 : 1.05;
+      limbs.arms[1].rotation.x = bunk ? 0.18 : 0.95;
       n.root.traverse((c) => {
         if (c.userData.billboard) c.position.y = 1.22;
       });
