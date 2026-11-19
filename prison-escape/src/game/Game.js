@@ -221,6 +221,7 @@ export class Game {
     const look = params.get('look');
     const o = this.prison.cellOrigin;
     if (!o) return;
+    this.hands.position.set(0, 0, 0);
     if (look === 'hatch') {
       this.player.position.set(o.x + 0.15, 0, 3.42);
       this.input.yaw = -Math.PI / 2;
@@ -239,9 +240,10 @@ export class Game {
       this.input.pitch = -0.28;
     } else if (look === 'hands') {
       this.player.position.set(o.x - 1.15, 0, o.z - 0.2);
-      this.input.yaw = 0.35;
-      this.input.pitch = -0.48;
+      this.input.yaw = 0.15;
+      this.input.pitch = -0.62;
       this.sim.cuffed = false;
+      this.hands.position.set(0, 0.08, 0.05);
       if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
         this.hands.userData.holdNote.visible = true;
       }

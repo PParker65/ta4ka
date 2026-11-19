@@ -27,7 +27,7 @@ export function makeHands() {
     arms.push(arm);
   }
   const note = new THREE.Mesh(
-    new THREE.BoxGeometry(0.16, 0.022, 0.11),
+    new THREE.BoxGeometry(0.1, 0.012, 0.07),
     new THREE.MeshStandardMaterial({
       color: 0xf4e6b0,
       roughness: 0.78,
@@ -35,8 +35,14 @@ export function makeHands() {
       emissiveIntensity: 0.55,
     }),
   );
-  note.position.set(0.02, 0.02, -0.1);
-  note.rotation.set(-1.05, 0.15, 0.35);
+  note.position.set(0.01, 0.035, -0.08);
+  note.rotation.set(-1.15, 0.08, 0.2);
+  const fold = new THREE.Mesh(
+    new THREE.BoxGeometry(0.003, 0.014, 0.068),
+    new THREE.MeshBasicMaterial({ color: 0xb8a878 }),
+  );
+  fold.position.y = 0.002;
+  note.add(fold);
   note.visible = false;
   arms[0].add(note);
   g.userData.holdNote = note;
@@ -68,7 +74,7 @@ export function makeHands() {
     const freq = run ? 11 : 7;
     const amp = mag * (run ? 0.04 : 0.022);
     arms.forEach((arm, i) => {
-      const s = i === 0 ? 1 : -1;
+      const s = i === 0 ? -1 : 1;
       const swing = Math.sin(t * freq) * amp * (cuffed ? 0.35 : 1) * s;
       arm.rotation.x = 0.12 + swing;
       arm.position.y = -0.22 + Math.abs(Math.sin(t * freq)) * mag * 0.01;
