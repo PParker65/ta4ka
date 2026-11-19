@@ -27,16 +27,16 @@ export function makeHands() {
     arms.push(arm);
   }
   const note = new THREE.Mesh(
-    new THREE.BoxGeometry(0.09, 0.012, 0.06),
+    new THREE.BoxGeometry(0.13, 0.018, 0.09),
     new THREE.MeshStandardMaterial({
       color: 0xf0e6c8,
       roughness: 0.82,
-      emissive: 0x3a3418,
-      emissiveIntensity: 0.28,
+      emissive: 0x4a4018,
+      emissiveIntensity: 0.42,
     }),
   );
-  note.position.set(0.02, -0.04, -0.11);
-  note.rotation.set(0.4, 0.2, 0.5);
+  note.position.set(0.03, -0.035, -0.12);
+  note.rotation.set(0.5, 0.25, 0.55);
   note.visible = false;
   arms[0].add(note);
   g.userData.holdNote = note;

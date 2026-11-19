@@ -233,9 +233,9 @@ export class Game {
       this.input.yaw = 0.18;
       this.input.pitch = 0.18;
     } else if (look === 'bunk') {
-      this.player.position.set(o.x + 0.15, 0, o.z - 0.85);
-      this.input.yaw = Math.atan2(1.7, -1.5);
-      this.input.pitch = -0.34;
+      this.player.position.set(o.x - 0.2, 0, o.z - 0.4);
+      this.input.yaw = Math.atan2(2.05, -1.95);
+      this.input.pitch = -0.28;
     } else if (look === 'hands') {
       this.player.position.set(o.x - 0.4, 0, o.z);
       this.input.yaw = Math.PI / 2;
