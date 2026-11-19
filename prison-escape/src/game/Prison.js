@@ -523,14 +523,19 @@ export class Prison {
 
   addStoryProps(ox, oz, w) {
     const paper = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 0.012, 0.11),
-      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.88 }),
+      new THREE.BoxGeometry(0.24, 0.018, 0.16),
+      new THREE.MeshStandardMaterial({
+        color: 0xf0e6c8,
+        roughness: 0.82,
+        emissive: 0x3a3418,
+        emissiveIntensity: 0.35,
+      }),
     );
     const fold = new THREE.Mesh(
-      new THREE.BoxGeometry(0.07, 0.008, 0.11),
-      new THREE.MeshStandardMaterial({ color: 0xcfc4a4, roughness: 0.9 }),
+      new THREE.BoxGeometry(0.1, 0.012, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xd4c49a, roughness: 0.88 }),
     );
-    fold.position.set(0.045, 0.006, 0);
+    fold.position.set(0.07, 0.01, 0);
     paper.add(fold);
     paper.visible = false;
     this.group.add(paper);
@@ -553,7 +558,7 @@ export class Prison {
     this.group.add(extra);
     this.storyExtra = extra;
     this._storyAnchors = {
-      hatch: new THREE.Vector3(ox - w / 2 + 0.4, 1.5, 3.42),
+      hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
       wash: new THREE.Vector3(ox + 2.05, 0.97, oz + 2.48),
       bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
     };

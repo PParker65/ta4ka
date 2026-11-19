@@ -138,12 +138,23 @@ export class Game {
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
     const params = new URLSearchParams(location.search);
-    if (params.has('cell')) {
+    const at = params.get('at');
+    if (at) {
+      this.skipToPlace(at);
+      this.applySkipFlags(params);
+    } else if (params.has('cell')) {
       this.skipToCell();
       this.applySkipFlags(params);
       const ph = params.get('phase');
+      const story =
+        Number(params.get('day') || 0) >= 2 ||
+        params.get('malyava') ||
+        params.get('court') ||
+        params.get('look');
       if (ph) this.forcePhase(ph);
-    } else if (params.get('at')) this.skipToPlace(params.get('at'));
+      else if (story) this.forcePhase('wake');
+      this.applyLook(params);
+    }
   }
 
   skipToCell() {
@@ -199,17 +210,20 @@ export class Game {
     if (mal === 'hold' || mal === 'burn' || mal === 'admin' || mal === 'found') this.sim.malyava = mal;
     const talk = params.get('court');
     if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
+  }
+
+  applyLook(params) {
     const look = params.get('look');
-    if (look === 'hatch' && this.prison.cellOrigin) {
-      const o = this.prison.cellOrigin;
-      this.player.position.set(o.x - LAYOUT.cellW / 2 + 1.2, 0, 3.42);
+    const o = this.prison.cellOrigin;
+    if (!o) return;
+    if (look === 'hatch') {
+      this.player.position.set(o.x + 0.15, 0, 3.42);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = 0.1;
-    } else if (look === 'table' && this.prison.cellOrigin) {
-      const o = this.prison.cellOrigin;
-      this.player.position.set(o.x - 0.4, 0, o.z - 1.1);
-      this.input.yaw = 0.15;
-      this.input.pitch = -0.28;
+      this.input.pitch = 0.06;
+    } else if (look === 'table') {
+      this.player.position.set(o.x - 0.35, 0, o.z - 1.15);
+      this.input.yaw = 0.12;
+      this.input.pitch = -0.22;
     }
   }
 
