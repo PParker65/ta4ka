@@ -1,7 +1,7 @@
 /**
  * Week in хата 4. Not an escape. Choices stick until Tuesday's player comes back.
  */
-import { NIGHT1, DAY2_SEDOY } from './Dialogue.js';
+import { NIGHT1, DAY2_SEDOY, DAY4_LEHA, DAY5_COURT } from './Dialogue.js';
 
 export function plotObjective(sim) {
   if (sim.stage !== 'life' || !sim.propiska) return null;
@@ -19,6 +19,8 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d >= 3 && ph === 'wake') return 'Третий день. Хата уже не спрашивает имя — спрашивает дело.';
   if (d >= 3 && sim.malyava === 'hold') return 'Малява жжёт карман. Несу, жгу или к куму — это уже сюжет, не квест.';
+  if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
+  if (d >= 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
   return null;
 }
 
@@ -59,14 +61,13 @@ export function onPhaseEnter(game, id) {
       };
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
-      g.unlockLook();
-      g.dialog.show(DAY2_SEDOY.who, DAY2_SEDOY.text, DAY2_SEDOY.options);
-      g.dialog.onPick = (opt) => {
-        s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
-        if (opt.hope) s.hope = Math.min(100, s.hope + opt.hope);
-        if (opt.heat) s.heat = Math.min(100, s.heat + opt.heat);
-        g.toast(opt.reply);
-      };
+      pickDialog(g, DAY2_SEDOY);
+    } else if (s.day === 4 && !s.seenDay4) {
+      s.seenDay4 = true;
+      pickDialog(g, DAY4_LEHA);
+    } else if (s.day >= 5 && !s.seenDay5) {
+      s.seenDay5 = true;
+      pickDialog(g, DAY5_COURT);
     } else {
       g.subtitle('Отбой. Своя койка. Чужую не занимай.');
     }
@@ -108,6 +109,24 @@ export function onPhaseEnter(game, id) {
         : `Подъём. День ${s.day}. Хата уже знает, как ты дышишь.`,
     );
   }
+}
+
+function pickDialog(g, pack) {
+  const s = g.sim;
+  g.unlockLook();
+  g.dialog.show(pack.who, pack.text, pack.options);
+  g.dialog.onPick = (opt) => {
+    s.shift(opt.black || 0, opt.red || 0, opt.men || 0);
+    if (opt.hope) s.hope = Math.min(100, s.hope + opt.hope);
+    if (opt.heat) s.heat = Math.min(100, Math.max(0, s.heat + opt.heat));
+    if (opt.stress) s.stress = Math.min(100, s.stress + opt.stress);
+    if (opt.stash) s.stash = opt.stash;
+    if (opt.passTea && s.inv.tea > 0) {
+      s.inv.tea -= 1;
+      s.rep += 1;
+    }
+    g.toast(opt.reply);
+  };
 }
 
 export function walkLine(sim) {

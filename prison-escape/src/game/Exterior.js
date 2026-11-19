@@ -470,6 +470,22 @@ function addProcessing(prison) {
   prison.box(0.46, 0.08, 0.3, kaz, -0.88, 0.2, -13.58);
   prison.box(0.5, 0.02, 0.34, stripe, -0.9, 0.16, -13.6);
   prison.box(0.22, 0.08, 0.22, new THREE.MeshStandardMaterial({ color: 0x3a3a38 }), -0.55, 0.08, -13.35);
+  const mist = new THREE.MeshStandardMaterial({
+    color: 0xc8d4d0,
+    transparent: true,
+    opacity: 0.16,
+    depthWrite: false,
+    roughness: 1,
+  });
+  for (const [x, y, z, w, h] of [
+    [1.05, 1.15, -15.35, 1.3, 1.0],
+    [0.4, 0.85, -14.6, 0.9, 0.7],
+  ]) {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mist);
+    p.position.set(x, y, z);
+    p.rotation.y = 0.4;
+    prison.group.add(p);
+  }
 
   for (let z = -50; z < -2; z += 6) {
     const tube = new THREE.Mesh(

@@ -523,9 +523,27 @@ function makeDog(x, z, phase) {
   };
 }
 
+function faceOf(spec) {
+  if (spec.id === 'starosta') return { skin: 0xc4926a, hair: 0x9a9a98, iris: 0x2a241c, bags: true, stubble: true };
+  if (spec.id === 'cellmate') return { skin: 0xd8b08a, hair: 0x1a1814, iris: 0x3a2a1c, thin: true };
+  if (spec.id === 'bunk-bro') return { skin: 0xc4a078, hair: 0x3a2a1c, iris: 0x3a4a38 };
+  if (kindGuard(spec)) return { skin: 0xb8926a, hair: 0x1a1814, iris: 0x2a241c };
+  return { skin: 0xd4a07a, hair: 0x2a221c, iris: 0x2a241c };
+}
+
+function kindGuard(spec) {
+  return spec.id === 'convoy' || spec.id === 'kpp-officer' || spec.id === 'shmon-off' || spec.id === 'medic';
+}
+
 function human(kind, spec) {
   const root = new THREE.Group();
-  const skin = new THREE.MeshStandardMaterial({ color: 0xd4a07a, roughness: 0.55, emissive: 0x3a2010, emissiveIntensity: 0.08 });
+  const look = faceOf(spec);
+  const skin = new THREE.MeshStandardMaterial({
+    color: look.skin,
+    roughness: 0.55,
+    emissive: 0x3a2010,
+    emissiveIntensity: 0.08,
+  });
   const cloth =
     kind === 'guard'
       ? new THREE.MeshStandardMaterial({ color: 0x1c2228, roughness: 0.55, metalness: 0.08 })
@@ -573,7 +591,7 @@ function human(kind, spec) {
     hips.add(ear);
   }
   const white = new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.35 });
-  const iris = new THREE.MeshStandardMaterial({ color: 0x2a241c });
+  const iris = new THREE.MeshStandardMaterial({ color: look.iris });
   for (const x of [-0.04, 0.04]) {
     const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), white);
     eye.scale.set(1, 0.75, 0.7);
@@ -589,6 +607,30 @@ function human(kind, spec) {
   );
   mouth.position.set(0, 0.425, 0.12);
   hips.add(mouth);
+  if (look.bags) {
+    const bag = new THREE.MeshStandardMaterial({ color: 0x8a6a58, roughness: 0.7 });
+    for (const x of [-0.04, 0.04]) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.008, 0.01), bag);
+      m.position.set(x, 0.495, 0.112);
+      hips.add(m);
+    }
+  }
+  if (look.stubble) {
+    const stub = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: 0.95 }),
+    );
+    stub.scale.set(0.95, 0.45, 0.8);
+    stub.position.set(0, 0.415, 0.04);
+    hips.add(stub);
+  }
+  if (look.thin) {
+    torso.scale.set(0.9, 1, 0.92);
+    head.scale.set(0.95, 1.04, 0.95);
+  }
+  const collar = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.06, 0.22), cloth);
+  collar.position.y = 0.28;
+  hips.add(collar);
 
   if (kind === 'guard') {
     const cap = new THREE.Mesh(
@@ -624,7 +666,7 @@ function human(kind, spec) {
   } else {
     const buzz = new THREE.Mesh(
       new THREE.SphereGeometry(0.128, 10, 8, 0, Math.PI * 2, 0, 1.05),
-      new THREE.MeshStandardMaterial({ color: spec.tattoos ? 0x9a9a98 : 0x2a221c, roughness: 0.85 }),
+      new THREE.MeshStandardMaterial({ color: look.hair, roughness: 0.85 }),
     );
     buzz.position.set(0, 0.5, 0);
     hips.add(buzz);

@@ -13,6 +13,8 @@ import {
   DAY2_SEDOY,
   DAY2_YARD,
   DAY3_NOTE,
+  DAY4_LEHA,
+  DAY5_COURT,
 } from './Dialogue.js';
 import { onPhaseEnter, plotObjective } from './Plot.js';
 
@@ -330,14 +332,15 @@ export class CellLife {
         return true;
       }
       g.unlockLook();
-      const sedoy = g.sim.day >= 2 ? DAY2_SEDOY : TALK_STAROSTA;
+      const sedoy = g.sim.day >= 5 ? DAY5_COURT : g.sim.day >= 2 ? DAY2_SEDOY : TALK_STAROSTA;
       g.dialog.show(sedoy.who, sedoy.text, sedoy.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
       return true;
     }
     if (id === 'cellmate') {
       g.unlockLook();
-      g.dialog.show(TALK_LEHA.who, TALK_LEHA.text, TALK_LEHA.options);
+      const leha = g.sim.day >= 4 ? DAY4_LEHA : TALK_LEHA;
+      g.dialog.show(leha.who, leha.text, leha.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
       return true;
     }
@@ -384,6 +387,10 @@ export class CellLife {
     if (opt.heat) g.sim.heat = Math.max(0, Math.min(100, g.sim.heat + opt.heat));
     if (opt.stash) g.sim.stash = opt.stash;
     if (opt.malyava) g.sim.malyava = opt.malyava;
+    if (opt.passTea && g.sim.inv.tea > 0) {
+      g.sim.inv.tea -= 1;
+      g.sim.rep += 1;
+    }
     g.toast(opt.reply);
   }
 

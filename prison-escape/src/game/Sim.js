@@ -48,6 +48,8 @@ export class Sim {
     this.stash = 'none';
     this.seenNight1 = false;
     this.seenDay2 = false;
+    this.seenDay4 = false;
+    this.seenDay5 = false;
     this.heardYard = false;
     this.malyava = null;
   }
@@ -97,7 +99,7 @@ export class Sim {
   tick(dt) {
     if (this.stage !== 'life') return;
     this.phaseT += dt;
-    if (this.phaseT > 52) {
+    if (this.phaseT > 80) {
       this.phaseT = 0;
       this.phaseIndex = (this.phaseIndex + 1) % PHASES.length;
       if (this.phaseIndex === 0) this.day += 1;
