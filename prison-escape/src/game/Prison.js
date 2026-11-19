@@ -1156,6 +1156,28 @@ export class Prison {
       p.position.set(-0.2 + (i % 2) * 0.28, 0.042, -2.2 + i * 0.55);
       g.add(p);
     }
+    const circle = wallScratch('КРУГ');
+    circle.scale.setScalar(1.3);
+    circle.rotation.x = -Math.PI / 2;
+    circle.position.set(0, 0.055, 0.2);
+    g.add(circle);
+    this.box(1.4, 0.08, 0.34, bench, 2.4, 0.42, 1.8, g);
+    this.box(0.08, 0.4, 0.08, bench, 1.85, 0.2, 1.68, g);
+    this.box(0.08, 0.4, 0.08, bench, 2.95, 0.2, 1.68, g);
+    const wire = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.55, roughness: 0.4 });
+    for (let i = -7; i <= 7; i++) {
+      this.box(8.6, 0.02, 0.02, wire, 0, 3.42, i * 0.55, g);
+    }
+    const tower = new THREE.MeshStandardMaterial({ color: 0x6a665c, roughness: 0.88 });
+    this.box(1.1, 4.2, 1.1, tower, 5.6, 2.1, -3.8, g);
+    this.box(1.6, 0.18, 1.6, tower, 5.6, 4.25, -3.8, g);
+    const slit = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.35, 0.18),
+      new THREE.MeshBasicMaterial({ color: 0xc4a060 }),
+    );
+    slit.position.set(5.05, 3.7, -3.8);
+    slit.rotation.y = -Math.PI / 2;
+    g.add(slit);
   }
 
   addPipesAndProps() {

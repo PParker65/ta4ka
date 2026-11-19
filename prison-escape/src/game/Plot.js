@@ -10,6 +10,8 @@ import {
   DAY3_MORNING,
   DAY4_LEHA,
   DAY4_WALK,
+  DAY4_FOOD,
+  FOUND_NIGHT,
   DAY5_COURT,
   DAY5_WAKE,
   DAY6_NIGHT,
@@ -93,6 +95,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
       pickDialog(g, DAY2_SEDOY);
+    } else if (s.malyava === 'found' && !s.seenFoundNight) {
+      s.seenFoundNight = true;
+      pickDialog(g, FOUND_NIGHT);
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
       if (s.malyava === 'admin') pickDialog(g, SNITCH_NIGHT);
@@ -146,6 +151,11 @@ export function onPhaseEnter(game, id) {
     if (s.day === 2 && !s.seenDay2Food) {
       s.seenDay2Food = true;
       pickDialog(g, DAY2_FOOD);
+      return;
+    }
+    if (s.day === 4 && !s.seenDay4Food) {
+      s.seenDay4Food = true;
+      pickDialog(g, DAY4_FOOD);
       return;
     }
     if (s.day >= 3 && !s.malyava) {

@@ -207,6 +207,13 @@ export class Game {
     this.cellLife._phase = null;
     this.cellLife._npcPhase = null;
     this.dialog.hide();
+    if (id === 'walk') {
+      const door = this.prison.interactables.find((it) => it.type === 'cell-door');
+      if (door && !door.open) this.prison.openDoor(door);
+      this.player.position.set(0.18, 0, 5.2);
+      this.input.yaw = 0;
+      this.input.pitch = 0.02;
+    }
   }
 
   skipToArrival() {
@@ -463,6 +470,12 @@ export class Game {
     if (this.sim.stage === 'life' && !onWalk && !inOwnCell && (guardHit || camHit)) {
       this.alarmHold = 3.5;
       this.sim.heat = Math.min(100, this.sim.heat + dt * 18);
+      if (!this._guardSee || performance.now() - this._guardSee > 2800) {
+        this._guardSee = performance.now();
+        this.subtitle(guardHit ? 'Конвой: «Стой! В хату! Руки!»' : 'Камера вела. Свет красный.');
+        this.audio.clang();
+        this.toast('Мурчики не чай пьют.');
+      }
     }
     this.alarmHold = Math.max(0, this.alarmHold - dt);
     this.setAlarm(this.alarmHold > 0);
@@ -1150,6 +1163,17 @@ export class Game {
     }
     const walk = s.stage === 'life' && s.phase.id === 'walk';
     const inCell = p.x > 1.55;
+    if (walk && inCell && s.phaseT > 8) {
+      p.x -= dt * 2.2;
+      if (p.z < 3.2) p.z += dt * 1.2;
+      if (p.z > 3.7) p.z -= dt * 1.2;
+      if (!this._walkYell || performance.now() - this._walkYell > 3800) {
+        this._walkYell = performance.now();
+        this.subtitle('Конвой: «Прогулка! Шагом на коряк! Не дрыхни.»');
+        this.audio.clang();
+      }
+      return;
+    }
     if (walk || inCell) return;
     this.alarmHold = Math.max(this.alarmHold, 2.4);
     s.heat = Math.min(100, s.heat + dt * 32);
