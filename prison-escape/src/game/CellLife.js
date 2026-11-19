@@ -14,6 +14,8 @@ import {
   DAY2_SEDOY_CAUGHT,
   DAY2_SEDOY_WASH,
   DAY2_YARD,
+  DAY2_YARD_CAUGHT,
+  DAY2_YARD_WASH,
   DAY3_NOTE,
   DAY3_WALK,
   DAY3_WALK_HOLD,
@@ -474,7 +476,11 @@ export class CellLife {
                 : g.sim.phase.id === 'walk' && g.sim.day === 3
                   ? DAY3_WALK
                   : g.sim.day >= 2 && g.sim.phase.id === 'walk'
-                    ? DAY2_YARD
+                    ? g.sim.stash === 'bunk'
+                      ? DAY2_YARD_CAUGHT
+                      : g.sim.stash === 'wash'
+                        ? DAY2_YARD_WASH
+                        : DAY2_YARD
                     : TALK_VALERA;
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {

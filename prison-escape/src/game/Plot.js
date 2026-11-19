@@ -7,6 +7,8 @@ import {
   DAY2_SEDOY_CAUGHT,
   DAY2_SEDOY_WASH,
   DAY2_YARD,
+  DAY2_YARD_CAUGHT,
+  DAY2_YARD_WASH,
   DAY2_FOOD,
   DAY2_SHMON,
   DAY2_WAKE,
@@ -62,7 +64,12 @@ export function plotObjective(sim) {
       : 'Шмон. К стенам. Руки видно. Нычку в матрасе не клади.';
   }
   if (d === 2 && ph === 'food') return 'Баланда. Очередь. В сортир, пока едят, не ходи.';
-  if (d === 2 && ph === 'walk') return 'Дворик. Валера знает слух. Через стену не ори.';
+  if (d === 2 && ph === 'walk')
+    return sim.stash === 'bunk'
+      ? 'Круг после шмона. Матрас знают. Через стену не ори.'
+      : sim.stash === 'wash'
+        ? 'Круг. Матрас чистый. Через стену не рассказывай про чашу.'
+        : 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening')
     return sim.stash === 'bunk'
       ? 'Отбой. Матрас знают. Не объясняйся. Оправдания — вторая нычка.'
@@ -141,7 +148,7 @@ export function onPhaseEnter(game, id) {
       else pickDialog(g, DAY3_WALK);
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
-      pickDialog(g, DAY2_YARD);
+      pickDialog(g, s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
     }
     return;
   }

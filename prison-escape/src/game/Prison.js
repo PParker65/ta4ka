@@ -707,6 +707,13 @@ export class Prison {
       glass.position.set(x, 2.15, d / 2 - 0.2);
       glass.rotation.y = Math.PI;
       cell.add(glass);
+      const grime = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.98, 0.38),
+        new THREE.MeshBasicMaterial({ color: 0x6a6558, transparent: true, opacity: 0.28, depthWrite: false }),
+      );
+      grime.position.set(x, 1.68, d / 2 - 0.19);
+      grime.rotation.y = Math.PI;
+      cell.add(grime);
       for (let i = -3; i <= 3; i++) {
         this.box(0.03, 1.12, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.16, cell);
       }
