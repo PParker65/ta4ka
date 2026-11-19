@@ -61,26 +61,31 @@ import {
   DAY6_NIGHT_RED,
   DAY6_NIGHT_FOUND,
   DAY6_NIGHT_BURN,
+  DAY6_NIGHT_HOLD,
   DAY6_FOOD,
   DAY6_FOOD_GONE,
   DAY6_FOOD_RED,
   DAY6_FOOD_FOUND,
   DAY6_FOOD_BURN,
+  DAY6_FOOD_HOLD,
   DAY6_WALK,
   DAY6_WALK_GONE,
   DAY6_WALK_RED,
   DAY6_WALK_FOUND,
   DAY6_WALK_BURN,
+  DAY6_WALK_HOLD,
   DAY7_WAKE,
   DAY7_WAKE_GONE,
   DAY7_WAKE_RED,
   DAY7_WAKE_FOUND,
   DAY7_WAKE_BURN,
+  DAY7_WAKE_HOLD,
   WEEK_HELD,
   WEEK_HELD_GONE,
   WEEK_HELD_RED,
   WEEK_HELD_FOUND,
   WEEK_HELD_BURN,
+  WEEK_HELD_HOLD,
   HOLD_NIGHT,
   BURN_NIGHT,
   SNITCH_NIGHT,
@@ -164,7 +169,9 @@ export function plotObjective(sim) {
           ? 'Шестая пайка. Жар с шмона. Ложка после смотрящего. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Шестая пайка. Пахнет золой. Ложка после смотрящего. Про дым — ни слова.'
-            : 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
+            : sim.malyava === 'hold'
+              ? 'Шестая пайка. Карман жжёт. Ложка после смотрящего. Бумагу за столом не читай.'
+              : 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
   if (d === 6 && ph === 'walk')
     return weekRed(sim)
       ? 'Шестой круг. Свист кончился в щели. Через стену — ни звука.'
@@ -174,7 +181,9 @@ export function plotObjective(sim) {
           ? 'Шестой круг. Нашли в кармане. Через стену не ори про шмон.'
           : sim.malyava === 'burn'
             ? 'Шестой круг. Зола в хате. Не ори про дым.'
-            : 'Шестой круг. Завтра не ори про волю.';
+            : sim.malyava === 'hold'
+              ? 'Шестой круг. Карман жжёт даже на бетоне. Через стену — ни звука.'
+              : 'Шестой круг. Завтра не ори про волю.';
   if (d === 5 && ph === 'wake')
     return sim.malyava === 'gone'
       ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
@@ -197,7 +206,9 @@ export function plotObjective(sim) {
           ? 'Шестой день. Жар с кармана. Свежак кончается. Не оправдывайся.'
           : sim.malyava === 'burn'
             ? 'Шестой день. Зола. Свежак кончается. Про дым — ни слова.'
-            : 'Шестой день. Свежак кончается. Не ори про волю.';
+            : sim.malyava === 'hold'
+              ? 'Шестой день. Карман жжёт. Свежак кончается. Неси или жги.'
+              : 'Шестой день. Свежак кончается. Не ори про волю.';
   if (d === 7)
     return weekRed(sim)
       ? 'Неделя. Свежак кончился красным. Молчи. Ешь последним.'
@@ -207,7 +218,9 @@ export function plotObjective(sim) {
           ? 'Неделя. Нашли. Не выселили. Свежак кончился на карандаше.'
           : sim.malyava === 'burn'
             ? 'Неделя. Бумага зола. Свежак кончился. Про дым — ни слова.'
-            : 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
+            : sim.malyava === 'hold'
+              ? 'Неделя. Свежак кончился. Карман нет. Неси или жги.'
+              : 'Неделя. Свежак кончился. Молчи. Ешь. Неси, если несут.';
   if (d >= 3 && !sim.malyava && (ph === 'food' || ph === 'wake' || ph === 'evening')) {
     return 'Кормушка стучит. Бумага: нести, жечь или к куму.';
   }
@@ -234,7 +247,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, s.malyava === 'gone' ? DAY5_WALK_GONE : DAY5_WALK);
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
-      pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, ok: DAY6_WALK }));
+      pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: DAY6_WALK_HOLD, ok: DAY6_WALK }));
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, DAY4_WALK);
@@ -292,10 +305,10 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day5Evening(s));
     } else if (s.day === 6 && !s.seenDay6) {
       s.seenDay6 = true;
-      pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, ok: DAY6_NIGHT }));
+      pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, hold: DAY6_NIGHT_HOLD, ok: DAY6_NIGHT }));
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
-      pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, ok: WEEK_HELD }));
+      pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: WEEK_HELD_HOLD, ok: WEEK_HELD }));
     } else {
       g.subtitle(eveningLine(s));
     }
@@ -371,7 +384,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 6 && !s.seenDay6Food) {
       s.seenDay6Food = true;
-      pickDialog(g, weekPick(s, { red: DAY6_FOOD_RED, gone: DAY6_FOOD_GONE, found: DAY6_FOOD_FOUND, burn: DAY6_FOOD_BURN, ok: DAY6_FOOD }));
+      pickDialog(g, weekPick(s, { red: DAY6_FOOD_RED, gone: DAY6_FOOD_GONE, found: DAY6_FOOD_FOUND, burn: DAY6_FOOD_BURN, hold: DAY6_FOOD_HOLD, ok: DAY6_FOOD }));
       return;
     }
     if (s.day === 4 && !s.seenDay4Food) {
@@ -428,7 +441,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 7 && !s.seenDay7Morning) {
       s.seenDay7Morning = true;
-      pickDialog(g, weekPick(s, { red: DAY7_WAKE_RED, gone: DAY7_WAKE_GONE, found: DAY7_WAKE_FOUND, burn: DAY7_WAKE_BURN, ok: DAY7_WAKE }));
+      pickDialog(g, weekPick(s, { red: DAY7_WAKE_RED, gone: DAY7_WAKE_GONE, found: DAY7_WAKE_FOUND, burn: DAY7_WAKE_BURN, hold: DAY7_WAKE_HOLD, ok: DAY7_WAKE }));
       return;
     }
     g.subtitle(wakeLine(s));
@@ -444,6 +457,7 @@ function weekPick(s, packs) {
   if (s.malyava === 'gone' && packs.gone) return packs.gone;
   if (s.malyava === 'found' && packs.found) return packs.found;
   if (s.malyava === 'burn' && packs.burn) return packs.burn;
+  if (s.malyava === 'hold' && packs.hold) return packs.hold;
   return packs.ok;
 }
 

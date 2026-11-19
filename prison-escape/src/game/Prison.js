@@ -964,6 +964,15 @@ export class Prison {
     );
     mug.position.set(0.15, 0.78, 0.05);
     cell.add(mug);
+    const mug2 = mug.clone();
+    mug2.position.set(0.42, 0.78, -0.02);
+    cell.add(mug2);
+    const sugar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.05, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.75 }),
+    );
+    sugar.position.set(-0.02, 0.77, 0.28);
+    cell.add(sugar);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),
