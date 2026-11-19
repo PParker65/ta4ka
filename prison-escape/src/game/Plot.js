@@ -54,6 +54,7 @@ import {
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
   DAY5_WALK,
+  DAY5_WALK_GONE,
   DAY6_NIGHT,
   DAY6_FOOD,
   DAY6_WALK,
@@ -173,7 +174,7 @@ export function onPhaseEnter(game, id) {
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
     if (s.day === 5 && !s.heardDay5Yard) {
       s.heardDay5Yard = true;
-      pickDialog(g, DAY5_WALK);
+      pickDialog(g, s.malyava === 'gone' ? DAY5_WALK_GONE : DAY5_WALK);
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
       pickDialog(g, DAY6_WALK);

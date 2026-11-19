@@ -628,7 +628,7 @@ export class Prison {
     this.storyFound = found;
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
-      wash: new THREE.Vector3(ox + 2.22, 0.12, oz + 2.62),
+      wash: new THREE.Vector3(ox + 2.25, 1.1, oz + 2.7),
       bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
     };
   }
