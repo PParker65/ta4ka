@@ -64,6 +64,24 @@ export class Npcs {
       if (plate) plate.visible = false;
       this.fresh = fresh;
     }
+    await this.add('inmate', {
+      id: 'queue',
+      name: 'Очередь',
+      x: -1.85,
+      z: -42,
+      yaw: Math.PI / 2,
+      robe: 0x4a4a48,
+      zone: 'proc',
+    });
+    await this.add('guard', { id: 'shmon-off', name: 'Надзор', x: -2.35, z: -36.0, yaw: Math.PI / 2, follow: null });
+    await this.add('guard', { id: 'medic', name: 'Фельдшер', x: -2.2, z: -22.0, yaw: Math.PI / 2, follow: null });
+    const queue = this.byId('queue');
+    if (queue) {
+      queue.zone = 'proc';
+      queue.seatY = 0.42;
+      queue.sitStyle = 'chair';
+      this.pose(queue, 'sit');
+    }
     this.dogs = [makeDog(-3.6, -73.2, 0.4), makeDog(2.4, -71.4, -0.3), makeDog(-1.2, -75.5, 0.9)];
     for (const d of this.dogs) {
       this.scene.add(d.root);
@@ -112,6 +130,7 @@ export class Npcs {
       follow: spec.follow,
       home: new THREE.Vector3(spec.x, 0, spec.z),
       bob: true,
+      zone: spec.zone || null,
     });
     return root;
   }
@@ -246,7 +265,7 @@ export class Npcs {
   }
 
   keepInCell(n) {
-    if (!n || n.kind !== 'inmate' || n.id === 'hatch' || n.gone) return;
+    if (!n || n.kind !== 'inmate' || n.id === 'hatch' || n.gone || n.zone === 'proc') return;
     const o = this.cellOrigin;
     if (!o) return;
     n.root.position.x = Math.max(o.x - 2.55, Math.min(o.x + 2.7, n.root.position.x));

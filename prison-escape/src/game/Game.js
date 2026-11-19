@@ -10,7 +10,7 @@ import { Guards } from './Guards.js';
 import { CCTV } from './CCTV.js';
 import { updateFlickerMaterials } from '../shaders/environment.js';
 import { Sim } from './Sim.js';
-import { Dialogue, KPP_DOCS, GREETING, ARTICLE_Q, TEA_Q } from './Dialogue.js';
+import { Dialogue, KPP_DOCS, PHOTO_Q, MED_Q, BATH_Q, GREETING, ARTICLE_Q, TEA_Q } from './Dialogue.js';
 import { Npcs } from './Npcs.js';
 import { Minigames } from './Minigames.js';
 import { AudioFx } from './AudioFx.js';
@@ -185,38 +185,65 @@ export class Game {
     this.finishEscort();
   }
 
+  skipToArrival() {
+    this.hands.visible = true;
+    this.introT = 22;
+    this._introHud = true;
+    this._introControl = true;
+    this._introOut = true;
+    this._introDoors = true;
+    this._introLook = true;
+    this.renderer.toneMappingExposure = 1.18;
+    this.camera.fov = 62;
+    this.camera.updateProjectionMatrix();
+    const fade = document.getElementById('fade');
+    if (fade) {
+      fade.style.opacity = '0';
+      fade.style.display = 'none';
+    }
+    document.getElementById('hud')?.classList.remove('hud-quiet');
+    document.getElementById('quest')?.classList.remove('hidden');
+    this.audio.stopRumble();
+    if (this.prison.vanDoors) {
+      this.prison.vanDoors.left.rotation.y = 1.28;
+      this.prison.vanDoors.right.rotation.y = -1.28;
+    }
+    this.input.pitch = 0;
+  }
+
   skipToPlace(at) {
-    if (at === 'kpp' || at === 'van') {
-      this.hands.visible = true;
-      this.introT = 22;
-      this._introHud = true;
-      this._introControl = true;
-      this._introOut = true;
-      this._introDoors = true;
-      this._introLook = true;
-      this.renderer.toneMappingExposure = 1.18;
-      this.camera.fov = 62;
-      this.camera.updateProjectionMatrix();
-      const fade = document.getElementById('fade');
-      if (fade) {
-        fade.style.opacity = '0';
-        fade.style.display = 'none';
-      }
-      document.getElementById('hud')?.classList.remove('hud-quiet');
-      document.getElementById('quest')?.classList.remove('hidden');
-      this.audio.stopRumble();
-      if (this.prison.vanDoors) {
-        this.prison.vanDoors.left.rotation.y = 1.28;
-        this.prison.vanDoors.right.rotation.y = -1.28;
-      }
-      this.input.pitch = 0;
-      this.npcs.dogsAlert?.(true);
+    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath') {
+      this.skipToArrival();
       if (at === 'kpp') {
         this.player.position.set(1.55, 0, -59.2);
         this.input.yaw = 0.55;
-      } else {
+        this.npcs.dogsAlert?.(true);
+      } else if (at === 'van') {
         this.player.position.set(0, 0, -80.8);
         this.input.yaw = 0;
+        this.npcs.dogsAlert?.(true);
+      } else if (at === 'shmon') {
+        this.sim.docs = true;
+        this.sim.stage = 'shmon';
+        this.prison.openKpp();
+        this.player.position.set(0, 0, -36.4);
+        this.input.yaw = -Math.PI / 2;
+      } else if (at === 'photo') {
+        this.sim.docs = true;
+        this.sim.pending = [];
+        this.sim.stage = 'photo';
+        this.prison.openKpp();
+        this.player.position.set(0.35, 0, -28.2);
+        this.input.yaw = Math.PI / 2;
+      } else if (at === 'bath') {
+        this.sim.docs = true;
+        this.sim.pending = [];
+        this.sim.photo = true;
+        this.sim.med = true;
+        this.sim.stage = 'bath';
+        this.prison.openKpp();
+        this.player.position.set(0.4, 0, -15.4);
+        this.input.yaw = Math.PI / 2;
       }
       return;
     }
@@ -829,32 +856,48 @@ export class Game {
       return;
     }
     if (item.type === 'photo') {
-      this.sim.photo = true;
-      this.sim.stage = 'med';
-      this.toast('Анфас, профиль. Отпечатки. Ты теперь номер, не имя.');
-      this.subtitle('Дальше фельдшер. Ищут вшей, побои, заразу.');
-      this.guide = new THREE.Vector3(-1.0, 0, -22.2);
-      this.audio.buzz();
-      this.flashPhoto();
-      this.audio.voiceOnce('photo', 'Не моргай. Ещё раз. Боком.', 'Конвой');
+      this.unlockLook();
+      this.dialog.show(PHOTO_Q.who, PHOTO_Q.text, PHOTO_Q.options);
+      this.dialog.onPick = (opt) => {
+        this.sim.photo = true;
+        this.sim.stage = 'med';
+        this.sim.shift(opt.black, opt.red, opt.men);
+        this.toast(opt.reply);
+        this.subtitle('Дальше фельдшер. Ищут вшей, побои, заразу.');
+        this.guide = new THREE.Vector3(-1.0, 0, -22.2);
+        this.audio.buzz();
+        this.flashPhoto();
+        this.audio.voiceOnce('photo', 'Не моргай. Ещё раз. Боком.', 'Конвой');
+      };
       return;
     }
     if (item.type === 'med') {
-      this.sim.med = true;
-      this.sim.stage = 'bath';
-      this.toast('Температура норма. Наружных ран нет. В баню.');
-      this.subtitle('Санитарная обработка: машинка и помывка. Как в кино — с тебя делают зэка.');
-      this.guide = new THREE.Vector3(1.2, 0, -15.4);
+      this.unlockLook();
+      this.dialog.show(MED_Q.who, MED_Q.text, MED_Q.options);
+      this.dialog.onPick = (opt) => {
+        this.sim.med = true;
+        this.sim.stage = 'bath';
+        this.sim.shift(opt.black, opt.red, opt.men);
+        this.toast(opt.reply);
+        this.subtitle('Санитарная обработка: машинка и помывка. Как в кино — с тебя делают зэка.');
+        this.guide = new THREE.Vector3(1.2, 0, -15.4);
+        this.audio.voiceOnce('med', 'В баню. Машинка ждёт.', 'Фельдшер');
+      };
       return;
     }
     if (item.type === 'bath') {
-      this.player.shave();
-      this.sim.haircut = true;
-      this.sim.hygiene = Math.min(100, this.sim.hygiene + 25);
-      this.toast('Машинка. Волосы на пол. Так встречают всех.');
-      this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
-      this.audio.clippers();
-      this.guide = new THREE.Vector3(-0.9, 0, -13.6);
+      this.unlockLook();
+      this.dialog.show(BATH_Q.who, BATH_Q.text, BATH_Q.options);
+      this.dialog.onPick = (opt) => {
+        this.player.shave();
+        this.sim.haircut = true;
+        this.sim.hygiene = Math.min(100, this.sim.hygiene + 25);
+        this.sim.shift(opt.black, opt.red, opt.men);
+        this.toast(opt.reply);
+        this.subtitle('Казёнку бери слева — серая полосатая, тапочки.');
+        this.audio.clippers();
+        this.guide = new THREE.Vector3(-0.9, 0, -13.6);
+      };
       return;
     }
     if (item.type === 'robe') {
