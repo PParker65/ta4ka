@@ -165,6 +165,7 @@ export class Game {
     this.sim.med = true;
     this.sim.haircut = true;
     this.sim.robe = 'kazenka';
+    this.sim.cuffed = false;
     this.sim.inv.tea = Math.max(1, this.sim.inv.tea);
     this.sim.inv.cigs = Math.max(1, this.sim.inv.cigs);
     this.player.shave();
@@ -237,9 +238,10 @@ export class Game {
       this.input.yaw = Math.atan2(2.05, -1.95);
       this.input.pitch = -0.28;
     } else if (look === 'hands') {
-      this.player.position.set(o.x - 0.35, 0, o.z);
-      this.input.yaw = 0.2;
-      this.input.pitch = -1.05;
+      this.player.position.set(o.x - 1.15, 0, o.z - 0.2);
+      this.input.yaw = 0.35;
+      this.input.pitch = -0.48;
+      this.sim.cuffed = false;
       if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
         this.hands.userData.holdNote.visible = true;
       }
