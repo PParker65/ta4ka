@@ -9,7 +9,7 @@ import { Prison, LAYOUT } from './Prison.js';
 import { Guards } from './Guards.js';
 import { CCTV } from './CCTV.js';
 import { updateFlickerMaterials } from '../shaders/environment.js';
-import { Sim } from './Sim.js';
+import { Sim, PHASES } from './Sim.js';
 import { Dialogue, KPP_DOCS, PHOTO_Q, MED_Q, BATH_Q, GREETING, ARTICLE_Q, TEA_Q } from './Dialogue.js';
 import { Npcs } from './Npcs.js';
 import { Minigames } from './Minigames.js';
@@ -138,8 +138,11 @@ export class Game {
     window.addEventListener('resize', () => this.onResize());
     this.renderer.setAnimationLoop(() => this.loop());
     const params = new URLSearchParams(location.search);
-    if (params.has('cell')) this.skipToCell();
-    else if (params.get('at')) this.skipToPlace(params.get('at'));
+    if (params.has('cell')) {
+      this.skipToCell();
+      const ph = params.get('phase');
+      if (ph) this.forcePhase(ph);
+    } else if (params.get('at')) this.skipToPlace(params.get('at'));
   }
 
   skipToCell() {
@@ -149,6 +152,8 @@ export class Game {
     this.sim.med = true;
     this.sim.haircut = true;
     this.sim.robe = 'kazenka';
+    this.sim.inv.tea = Math.max(1, this.sim.inv.tea);
+    this.sim.inv.cigs = Math.max(1, this.sim.inv.cigs);
     this.player.shave();
     this.player.applyKazenka();
     this.hands.userData.setKazenka?.();
@@ -183,6 +188,24 @@ export class Game {
     const door = this.prison.interactables.find((it) => it.type === 'cell-door');
     if (door) this.prison.openDoor(door);
     this.finishEscort();
+  }
+
+  forcePhase(id) {
+    const i = PHASES.findIndex((p) => p.id === id);
+    if (i < 0) return;
+    this.sim.propiska = true;
+    this.sim.locked = false;
+    this.sim.stage = 'life';
+    this.sim.phaseIndex = i;
+    this.sim.phaseT = 2;
+    this.sim.attended = true;
+    this.cellLife.active = true;
+    this.cellLife.seen.add('greet');
+    this.cellLife.convoyGone = true;
+    this.cellLife.lifeT = this.cellLife.t;
+    this.cellLife._phase = null;
+    this.cellLife._npcPhase = null;
+    this.dialog.hide();
   }
 
   skipToArrival() {
@@ -958,6 +981,7 @@ export class Game {
     }
     if (item.type === 'cards') {
       this.minigames.playCards();
+      this.cellLife.completeTask('cards');
       return;
     }
     if (item.type === 'malyava') {

@@ -22,6 +22,7 @@ const TASKS = [
   { id: 'hatch', label: 'Кормушка стучит. Подойди к двери хаты — послушай.' },
   { id: 'window', label: 'Посмотри в окно. Не махай — считай дни.' },
   { id: 'kettle', label: 'Чайник на столе. Чифир — общий, не твой карман.' },
+  { id: 'cards', label: 'Валера кличет на карты. Подойди — сыграй или откажи.' },
   { id: 'bunk', label: 'Своя шконка — нижняя у окна. Лечь. Чужую не занимай.' },
 ];
 
@@ -149,12 +150,15 @@ export class CellLife {
       g.subtitle('Баланда в кормушку. Не лезь без очереди. В сортир, пока едят, не ходи.');
     } else if (id === 'walk') {
       g.audio.clang();
+      this.setCellDoor(true);
       g.subtitle('Прогулка. Круг по бетону. Через стену не ори — уши у всех. Седой уже у двери.');
     } else if (id === 'evening') {
-      g.fill.intensity = 0.22;
+      g.fill.intensity = 0.12;
+      this.setCellDoor(false);
       g.subtitle('Отбой. Своя койка. Чужую не занимай. Завтра опять шмон.');
     } else if (id === 'wake') {
       g.fill.intensity = 0.5;
+      this.setCellDoor(false);
       g.audio.buzz();
       g.subtitle('Подъём. Мат с коряка. День не спрашивает, готов ты или нет.');
     }
@@ -201,39 +205,32 @@ export class CellLife {
     if (phase === 'walk') {
       this.hold(starosta, 'walk', s.aisle, 99);
       this.hold(leha, 'walk', s.hatch, 99);
-      this.hold(valera, 'walk', s.window, 99);
+      this.hold(valera, 'walk', s.doorQueue, 99);
       return;
     }
 
-    this.cycle(starosta, [
-      { name: 'throne', spot: s.sedoyStool, hold: 26 },
-      {
-        name: 'ask',
-        spot: 'ask',
-        hold: 10,
-        line: 'Седой: «Статья. Первый раз? Цигарка — на стол, не в карман.»',
-      },
-    ]);
+    this.cycle(starosta, [{ name: 'throne', spot: s.sedoyStool, hold: 48, line: 'Седой, не глядя: «Цигарка — на стол, не в карман.»' }]);
     this.cycle(leha, [
-      { name: 'bunk', spot: s.lehaSit, hold: 24 },
-      { name: 'hatch', spot: s.hatch, hold: 12 },
-      {
-        name: 'ask',
-        spot: 'ask',
-        hold: 9,
-        line: 'Лёха тихо: «Свежак. Кормушку без команды не открывай.»',
-      },
+      { name: 'bunk', spot: s.lehaSit, hold: 38 },
+      { name: 'hatch', spot: s.hatch, hold: 14, line: 'Лёха тихо: «Кормушку без команды не открывай.»' },
     ]);
     this.cycle(valera, [
-      { name: 'bunk', spot: s.valeraSit, hold: 22 },
-      { name: 'window', spot: s.window, hold: 14 },
-      {
-        name: 'ask',
-        spot: 'ask',
-        hold: 9,
-        line: 'Валера: «Карты вечером, если цигарка есть. Пока хата смотрит.»',
-      },
+      { name: 'bunk', spot: s.valeraSit, hold: 34 },
+      { name: 'window', spot: s.window, hold: 16, line: 'Валера: «Карты вечером, если цигарка есть.»' },
     ]);
+  }
+
+  setCellDoor(open) {
+    const door = this.g.prison.interactables.find((it) => it.type === 'cell-door');
+    if (!door) return;
+    if (open && !door.open) {
+      this.g.prison.openDoor(door);
+      this.g.audio.clang();
+    }
+    if (!open && door.open) {
+      this.g.prison.closeDoor(door);
+      this.g.audio.clang();
+    }
   }
 
   hold(n, name, spot, hold) {
@@ -320,7 +317,10 @@ export class CellLife {
       g.dialog.show(TALK_VALERA.who, TALK_VALERA.text, TALK_VALERA.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);
-        if (opt.minigame === 'cards') g.minigames.playCards();
+        if (opt.minigame === 'cards') {
+          g.minigames.playCards();
+          this.completeTask('cards');
+        }
       };
       return true;
     }

@@ -1098,6 +1098,7 @@ export function makeSeats(ox, oz) {
     shmonLeha: { x: ox - 1.2, z: oz + 1.2, yaw: -Math.PI / 2 },
     shmonValera: { x: ox - 1.2, z: oz - 0.5, yaw: -Math.PI / 2 },
     aisle: { x: ox - 1.05, z: oz + 0.08, yaw: Math.PI / 2 },
+    doorQueue: { x: ox - 1.35, z: oz - 0.55, yaw: -Math.PI / 2 },
   };
 }
 
