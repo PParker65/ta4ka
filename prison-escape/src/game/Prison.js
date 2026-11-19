@@ -157,6 +157,7 @@ export class Prison {
     }
 
     this.box(hw * 2 + 0.4, 0.28, 0.2, this.mat(this.tex.cPlaster), 0, 2.28, 0.05);
+    this.box(hw * 2 + 0.5, 0.1, L, this.mat(this.tex.cPlaster, { repeat: [2, 8] }), 0, h + 0.12, L / 2);
     this.addCollider(-hw - 1, -0.55, -0.25, 0.22, 'start-l');
     this.addCollider(0.55, hw + 1, -0.25, 0.22, 'start-r');
     this.addBlockDoor();
@@ -1090,9 +1091,13 @@ export class Prison {
       }
     }
     for (let i = -8; i <= 8; i++) {
+      if (Math.abs(i) < 2) continue;
       this.box(0.03, 3.2, 0.03, mesh, i * 0.5, 1.7, 4.28, g);
     }
     const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
+    this.box(1.6, 0.08, 0.36, bench, 0.15, 0.42, 1.15, g);
+    this.box(0.08, 0.4, 0.08, bench, -0.45, 0.2, 1.05, g);
+    this.box(0.08, 0.4, 0.08, bench, 0.75, 0.2, 1.05, g);
     this.box(1.8, 0.08, 0.38, bench, -2.2, 0.42, 2.6, g);
     this.box(0.08, 0.4, 0.08, bench, -2.95, 0.2, 2.48, g);
     this.box(0.08, 0.4, 0.08, bench, -1.45, 0.2, 2.48, g);

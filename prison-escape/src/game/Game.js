@@ -210,9 +210,9 @@ export class Game {
     if (id === 'walk') {
       const door = this.prison.interactables.find((it) => it.type === 'cell-door');
       if (door && !door.open) this.prison.openDoor(door);
-      this.player.position.set(0.2, 0, LAYOUT.corridorLen - 5.2);
+      this.player.position.set(0.15, 0, LAYOUT.corridorLen - 2.2);
       this.input.yaw = 0;
-      this.input.pitch = 0.06;
+      this.input.pitch = -0.16;
     }
   }
 
@@ -245,6 +245,14 @@ export class Game {
   skipToPlace(at) {
     if (at === 'propiska') {
       this.skipToCell();
+      return;
+    }
+    if (at === 'yard') {
+      this.skipToCell();
+      this.forcePhase('walk');
+      this.player.position.set(0.4, 0, LAYOUT.corridorLen + 4.2);
+      this.input.yaw = 0.72;
+      this.input.pitch = -0.12;
       return;
     }
     if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'med' || at === 'bath' || at === 'neck' || at === 'escort') {
