@@ -280,9 +280,9 @@ export class Game {
         this.sim.med = true;
         this.sim.stage = 'bath';
         this.prison.openKpp();
-        this.player.position.set(0.35, 0, -15.4);
+        this.player.position.set(0.45, 0, -15.4);
         this.input.yaw = Math.PI / 2;
-        this.input.pitch = 0.08;
+        this.input.pitch = -0.22;
       } else if (at === 'escort') {
         this.sim.docs = true;
         this.sim.pending = [];
@@ -994,7 +994,7 @@ export class Game {
         this.toast(opt.reply);
         this.subtitle('Казёнка у стула. Полосатая роба, тапочки. Не через коридор.');
         this.audio.clippers();
-        this.guide = new THREE.Vector3(2.05, 0, -14.55);
+        this.guide = new THREE.Vector3(2.35, 0, -15.32);
       };
       return;
     }

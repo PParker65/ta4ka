@@ -510,16 +510,10 @@ function addProcessing(prison) {
   prison.interactables.push({
     id: 'robe',
     type: 'robe',
-    position: new THREE.Vector3(2.05, 1, -14.55),
-    radius: 1.8,
+    position: new THREE.Vector3(2.35, 1, -15.32),
+    radius: 1.7,
   });
-  const kaz = new THREE.MeshStandardMaterial({ color: 0x8a8a4a, roughness: 0.82 });
-  const stripe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.8 });
-  prison.box(0.55, 0.14, 0.4, kaz, 2.05, 0.14, -14.55);
-  prison.box(0.5, 0.12, 0.36, kaz, 2.08, 0.26, -14.52);
-  prison.box(0.55, 0.03, 0.4, stripe, 2.05, 0.2, -14.55);
-  prison.box(0.5, 0.03, 0.36, stripe, 2.08, 0.32, -14.52);
-  prison.box(0.24, 0.09, 0.24, new THREE.MeshStandardMaterial({ color: 0x3a3a38 }), 1.7, 0.08, -14.35);
+  kazenkaPile(prison, 2.35, -15.32);
   const mist = new THREE.MeshStandardMaterial({
     color: 0xc8d4d0,
     transparent: true,
@@ -645,6 +639,25 @@ function addVestibule(prison) {
   prison.group.add(tube);
 }
 
+function kazenkaPile(prison, x, z) {
+  const cloth = new THREE.MeshStandardMaterial({ color: 0x9a9a52, roughness: 0.82 });
+  const band = new THREE.MeshStandardMaterial({ color: 0x1a1a18, roughness: 0.8 });
+  const slip = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 });
+  const layers = [
+    [0.62, 0.16, 0.44, 0.08],
+    [0.58, 0.14, 0.4, 0.23],
+    [0.54, 0.14, 0.38, 0.37],
+    [0.5, 0.12, 0.34, 0.5],
+  ];
+  for (const [w, h, d, y] of layers) {
+    prison.box(w, h, d, cloth, x, y, z);
+    prison.box(w + 0.02, 0.035, d + 0.02, band, x, y + h * 0.15, z);
+    prison.box(w + 0.02, 0.035, d + 0.02, band, x, y - h * 0.2, z);
+  }
+  prison.box(0.22, 0.08, 0.22, slip, x - 0.38, 0.06, z + 0.18);
+  prison.box(0.22, 0.08, 0.22, slip, x - 0.28, 0.06, z + 0.32);
+}
+
 function alcove(prison, x, z, title) {
   const g = new THREE.Group();
   g.position.set(x, 0, z);
@@ -751,19 +764,24 @@ function alcove(prison, x, z, title) {
     head.position.set(0.5, 1.55, 0.8);
     g.add(head);
     prison.box(0.45, 0.9, 0.45, wood, -0.4, 0.5, 0, g);
-    const robe = new THREE.Mesh(
-      new THREE.BoxGeometry(0.32, 0.7, 0.06),
-      new THREE.MeshStandardMaterial({ color: 0x5a5a56, roughness: 0.85 }),
-    );
-    robe.position.set(-0.9, 1.35, 0.6);
-    g.add(robe);
-    const kaz = new THREE.Mesh(
-      new THREE.BoxGeometry(0.34, 0.75, 0.05),
-      new THREE.MeshStandardMaterial({ color: 0x6a6a62, roughness: 0.8 }),
-    );
-    kaz.position.set(-1.15, 1.32, 0.2);
-    kaz.rotation.y = 0.2;
-    g.add(kaz);
+    const cloth = new THREE.MeshStandardMaterial({ color: 0x8a8a4a, roughness: 0.85 });
+    const band = new THREE.MeshStandardMaterial({ color: 0x1e1e1c, roughness: 0.8 });
+    for (const [lx, ly, lz, rot] of [
+      [-0.55, 1.15, 0.15, 0.12],
+      [-0.75, 1.12, -0.25, -0.18],
+    ]) {
+      const robe = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.85, 0.07), cloth);
+      robe.position.set(lx, ly, lz);
+      robe.rotation.y = rot;
+      g.add(robe);
+      const s1 = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.07, 0.08), band);
+      s1.position.set(lx, ly + 0.12, lz);
+      s1.rotation.y = rot;
+      g.add(s1);
+      const s2 = s1.clone();
+      s2.position.y = ly - 0.18;
+      g.add(s2);
+    }
     const clip = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.06, 0.05), chrome);
     clip.position.set(-0.2, 0.98, 0.05);
     g.add(clip);
