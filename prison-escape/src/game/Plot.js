@@ -5,6 +5,7 @@ import {
   NIGHT1,
   DAY2_SEDOY,
   DAY2_SEDOY_CAUGHT,
+  DAY2_SEDOY_WASH,
   DAY2_YARD,
   DAY2_FOOD,
   DAY2_SHMON,
@@ -65,7 +66,9 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'evening')
     return sim.stash === 'bunk'
       ? 'Отбой. Матрас знают. Не объясняйся. Оправдания — вторая нычка.'
-      : 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
+      : sim.stash === 'wash'
+        ? 'Отбой. Чаша сегодня не их дело. Завтра бумага. Не зевай.'
+        : 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d === 3 && ph === 'wake')
     return sim.path === 'red'
       ? 'Третий подъём. Вчера слово село. Кормушка днём живая. Не зевай.'
@@ -166,7 +169,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, NIGHT1);
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
-      pickDialog(g, s.stash === 'bunk' ? DAY2_SEDOY_CAUGHT : DAY2_SEDOY);
+      pickDialog(g, s.stash === 'bunk' ? DAY2_SEDOY_CAUGHT : s.stash === 'wash' ? DAY2_SEDOY_WASH : DAY2_SEDOY);
     } else if (s.malyava === 'found' && !s.seenFoundNight) {
       s.seenFoundNight = true;
       pickDialog(g, FOUND_NIGHT);

@@ -1411,6 +1411,22 @@ export class Prison {
     puddle.rotation.x = -Math.PI / 2;
     puddle.position.set(1.4, 0.045, -1.1);
     g.add(puddle);
+    const plate = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.11, 0.02, 10),
+      new THREE.MeshStandardMaterial({ color: 0x6a7068, metalness: 0.4, roughness: 0.5 }),
+    );
+    plate.position.set(-2.55, 0.48, -1.5);
+    g.add(plate);
+    const mud = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.95 });
+    this.box(0.55, 0.02, 0.28, mud, -0.8, 0.05, 1.4, g);
+    this.box(0.4, 0.018, 0.22, mud, 0.6, 0.05, -2.0, g);
+    const sockYard = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.28, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x4a4a46, roughness: 0.94 }),
+    );
+    sockYard.position.set(4.12, 1.15, 0.4);
+    sockYard.rotation.z = 0.2;
+    g.add(sockYard);
     const grate = this.box(0.42, 0.02, 0.42, mesh, 1.4, 0.05, -1.1, g);
     grate.rotation.y = 0.2;
     const stain = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95, transparent: true, opacity: 0.55 });

@@ -12,6 +12,7 @@ import {
   TALK_VALERA,
   DAY2_SEDOY,
   DAY2_SEDOY_CAUGHT,
+  DAY2_SEDOY_WASH,
   DAY2_YARD,
   DAY3_NOTE,
   DAY3_WALK,
@@ -435,7 +436,9 @@ export class CellLife {
                 : g.sim.day >= 2
                   ? g.sim.stash === 'bunk'
                     ? DAY2_SEDOY_CAUGHT
-                    : DAY2_SEDOY
+                    : g.sim.stash === 'wash'
+                      ? DAY2_SEDOY_WASH
+                      : DAY2_SEDOY
                   : TALK_STAROSTA;
       g.dialog.show(sedoy.who, sedoy.text, sedoy.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
