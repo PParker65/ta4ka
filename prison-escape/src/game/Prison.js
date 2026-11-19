@@ -494,6 +494,23 @@ export class Prison {
       position: new THREE.Vector3(ox - w / 2 + 0.55, 1, 3.42),
       radius: 1.5,
     });
+    const tray = new THREE.Group();
+    tray.position.set(ox - w / 2 + 0.42, 0.92, 3.42);
+    const tin = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.04, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.45, roughness: 0.4 }),
+    );
+    tray.add(tin);
+    const mash = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0xb8a070, roughness: 0.9 }),
+    );
+    mash.scale.set(1.4, 0.4, 1.1);
+    mash.position.y = 0.04;
+    tray.add(mash);
+    tray.visible = false;
+    this.group.add(tray);
+    this.foodTray = tray;
     this.interactables.push({
       id: 'calendar',
       type: 'calendar',
@@ -523,6 +540,8 @@ export class Prison {
         cell,
       );
       glass.material.toneMapped = true;
+      this.windowGlass = this.windowGlass || [];
+      this.windowGlass.push(glass.material);
       const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
       for (let i = -3; i <= 3; i++) {
         this.box(0.03, 1.15, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.01, cell);
@@ -857,6 +876,21 @@ export class Prison {
       bunk.scale.setScalar(0.85);
       bunk.position.set(0.2, 0, 0);
       g.add(bunk);
+      const lamp = new THREE.PointLight(0xffc070, 0.35, 4.5, 2);
+      lamp.position.set(0.2, 1.7, 0);
+      g.add(lamp);
+      const rag = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 0.35, 0.04),
+        new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.92 }),
+      );
+      rag.position.set(-0.6, 1.1, 1.5);
+      g.add(rag);
+      const mug = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.03, 0.06, 8),
+        new THREE.MeshStandardMaterial({ color: 0xc4b49a, roughness: 0.6 }),
+      );
+      mug.position.set(0.55, 0.72, 0.4);
+      g.add(mug);
     }
   }
 

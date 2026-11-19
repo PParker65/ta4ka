@@ -29,6 +29,7 @@ export function onPhaseEnter(game, id) {
   const s = g.sim;
   const door = g.prison.interactables.find((it) => it.type === 'cell-door');
   if (id === 'walk') {
+    if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.prison.closeDoor(g.prison.blockDoor);
     if (door && !door.open) g.prison.openDoor(door);
     g.audio.clang();
@@ -49,6 +50,8 @@ export function onPhaseEnter(game, id) {
   if (id === 'evening') {
     g.fill.intensity = 0.12;
     for (const l of g.prison.windowFills || []) l.intensity = 0.08;
+    for (const m of g.prison.windowGlass || []) m.emissiveIntensity = 0.05;
+    if (g.prison.foodTray) g.prison.foodTray.visible = false;
     if (s.day === 1 && !s.seenNight1) {
       s.seenNight1 = true;
       g.unlockLook();
@@ -77,6 +80,7 @@ export function onPhaseEnter(game, id) {
     return;
   }
   if (id === 'shmon') {
+    if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.clang();
     if (s.malyava === 'hold' && s.day >= 3) {
       s.malyava = 'found';
@@ -99,12 +103,15 @@ export function onPhaseEnter(game, id) {
     return;
   }
   if (id === 'food') {
+    if (g.prison.foodTray) g.prison.foodTray.visible = true;
     g.subtitle('Баланда в кормушку. Не лезь без очереди. В сортир, пока едят, не ходи.');
     return;
   }
   if (id === 'wake') {
     g.fill.intensity = 0.5;
     for (const l of g.prison.windowFills || []) l.intensity = 0.4;
+    for (const m of g.prison.windowGlass || []) m.emissiveIntensity = 0.22;
+    if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.buzz();
     g.subtitle(
       s.day === 1
