@@ -260,9 +260,9 @@ export class CellLife {
       return;
     }
     if (phase === 'shmon') {
-      this.hold(starosta, 'shmon', s.shmonSedoy, 99);
-      this.hold(leha, 'shmon', s.shmonLeha, 99);
-      this.hold(valera, 'shmon', s.shmonValera, 99);
+      this.snap(starosta, 'shmon', s.shmonSedoy);
+      this.snap(leha, 'shmon', s.shmonLeha);
+      this.snap(valera, 'shmon', s.shmonValera);
       return;
     }
     if (phase === 'food') {
