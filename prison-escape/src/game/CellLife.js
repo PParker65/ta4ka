@@ -13,6 +13,12 @@ import {
   DAY2_SEDOY,
   DAY2_YARD,
   DAY3_NOTE,
+  DAY3_WALK,
+  DAY3_WALK_HOLD,
+  DAY3_WALK_RED,
+  DAY3_MORNING,
+  DAY3_MORNING_RED,
+  DAY2_WAKE,
   DAY4_LEHA,
   DAY4_HATCH,
   DAY4_WALK,
@@ -69,6 +75,17 @@ function ambientFor(g) {
     return [
       () => g.subtitle('Пахнет золой. Соседи тише, чем вчера.'),
       () => g.subtitle('Валера свистит короче. Песня обгорела с краю.'),
+    ];
+  }
+  if (s.day === 2) {
+    return [
+      () => g.subtitle('Лёха: «Шмон до пайки. Чаша, не матрас.»'),
+      () => g.subtitle('Седой не смотрит. Значит, сутки ещё не человек и не пустое место.'),
+      () => {
+        g.audio.clang();
+        g.subtitle('Шаги на коряке. Не пайка. Шмон будет раньше ложки.');
+        s.stress = Math.min(100, s.stress + 4);
+      },
     ];
   }
   if (s.day >= 3) {
@@ -423,7 +440,16 @@ export class CellLife {
     }
     if (id === 'cellmate') {
       g.unlockLook();
-      const leha = g.sim.day >= 4 ? DAY4_LEHA : TALK_LEHA;
+      const leha =
+        g.sim.day >= 4
+          ? DAY4_LEHA
+          : g.sim.day >= 3
+            ? g.sim.path === 'red'
+              ? DAY3_MORNING_RED
+              : DAY3_MORNING
+            : g.sim.day >= 2
+              ? DAY2_WAKE
+              : TALK_LEHA;
       g.dialog.show(leha.who, leha.text, leha.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
       return true;
@@ -435,9 +461,15 @@ export class CellLife {
           ? DAY5_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 4
             ? DAY4_WALK
-            : g.sim.day >= 2 && g.sim.phase.id === 'walk'
-              ? DAY2_YARD
-              : TALK_VALERA;
+            : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
+              ? DAY3_WALK_RED
+              : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'hold'
+                ? DAY3_WALK_HOLD
+                : g.sim.phase.id === 'walk' && g.sim.day === 3
+                  ? DAY3_WALK
+                  : g.sim.day >= 2 && g.sim.phase.id === 'walk'
+                    ? DAY2_YARD
+                    : TALK_VALERA;
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);

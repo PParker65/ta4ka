@@ -228,6 +228,10 @@ export class Game {
       this.player.position.set(o.x - 0.35, 0, o.z - 1.15);
       this.input.yaw = 0.12;
       this.input.pitch = -0.22;
+    } else if (look === 'steam') {
+      this.player.position.set(o.x - 0.55, 0, o.z - 0.5);
+      this.input.yaw = 0.18;
+      this.input.pitch = 0.18;
     } else if (look === 'bunk') {
       this.player.position.set(o.x + 0.15, 0, o.z - 0.85);
       this.input.yaw = Math.atan2(1.7, -1.5);
@@ -534,6 +538,14 @@ export class Game {
       this.prison.kettleSteam.children.forEach((p, i) => {
         p.position.y = ((t * 0.32 + i * 0.18) % 0.5);
         p.material.opacity = Math.max(0.04, 0.3 - p.position.y * 0.45);
+      });
+    }
+    if (this.prison.cigSmoke?.visible) {
+      const t = this.clock.elapsedTime;
+      this.prison.cigSmoke.children.forEach((p, i) => {
+        p.position.y = ((t * 0.22 + i * 0.14) % 0.36);
+        p.position.x = Math.sin(t * 0.7 + i) * 0.03;
+        p.material.opacity = Math.max(0.03, 0.2 - p.position.y * 0.4);
       });
     }
     const inOwnCell = this.player.position.x > 1.55;

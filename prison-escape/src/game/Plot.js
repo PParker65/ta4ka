@@ -7,9 +7,15 @@ import {
   DAY2_YARD,
   DAY2_FOOD,
   DAY2_SHMON,
+  DAY2_WAKE,
+  DAY2_WAKE_BUNK,
   DAY3_NIGHT,
   DAY3_MORNING,
+  DAY3_MORNING_RED,
   DAY3_FOOD,
+  DAY3_WALK,
+  DAY3_WALK_HOLD,
+  DAY3_WALK_RED,
   DAY4_LEHA,
   DAY4_WALK,
   DAY4_FOOD,
@@ -41,6 +47,10 @@ export function plotObjective(sim) {
   const ph = sim.phase.id;
   if (d === 1 && ph === 'evening') return 'Отбой. Лёха шепчет про шмон. Своя койка, не чужая.';
   if (d === 1 && ph === 'walk') return 'Конвой вывел. Круг по дворику. Назад сам не пойдёшь — заведут.';
+  if (d === 2 && ph === 'wake')
+    return sim.stash === 'bunk'
+      ? 'Второй подъём. Нычка в матрасе. Шмон будет до пайки. К стене.'
+      : 'Второй подъём. Шмон до пайки. Чаша, не матрас.';
   if (d === 2 && ph === 'shmon') {
     return sim.stash === 'bunk'
       ? 'Шмон. Нычка в матрасе — плохое место. Стой. Руки видно.'
@@ -49,7 +59,16 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'food') return 'Баланда. Очередь. В сортир, пока едят, не ходи.';
   if (d === 2 && ph === 'walk') return 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening') return 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
-  if (d === 3 && ph === 'wake') return 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d === 3 && ph === 'wake')
+    return sim.path === 'red'
+      ? 'Третий подъём. Вчера слово село. Кормушка днём живая. Не зевай.'
+      : 'Третий день. Кормушка днём живая. Не зевай.';
+  if (d === 3 && ph === 'walk') {
+    if (sim.malyava === 'admin') return 'Третий круг без свиста. Хата уже считает.';
+    if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
+    if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
+    return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
+  }
   if (d === 4 && ph === 'wake' && sim.malyava === 'hold' && !sim.teaPaid)
     return 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
   if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
@@ -95,6 +114,11 @@ export function onPhaseEnter(game, id) {
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, DAY4_WALK);
+    } else if (s.day === 3 && !s.heardDay3Yard) {
+      s.heardDay3Yard = true;
+      if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_WALK_RED);
+      else if (s.malyava === 'hold') pickDialog(g, DAY3_WALK_HOLD);
+      else pickDialog(g, DAY3_WALK);
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY2_YARD);
@@ -113,6 +137,7 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'evening') {
     g.fill.intensity = 0.12;
+    if (g.prison.cellLamp) g.prison.cellLamp.intensity = 0.18;
     for (const l of g.prison.windowFills || []) l.intensity = 0.08;
     for (const m of g.prison.windowGlass || []) {
       if ('emissiveIntensity' in m) m.emissiveIntensity = 0.05;
@@ -218,6 +243,7 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'wake') {
     g.fill.intensity = 0.5;
+    if (g.prison.cellLamp) g.prison.cellLamp.intensity = 0.7;
     for (const l of g.prison.windowFills || []) l.intensity = 0.4;
     for (const m of g.prison.windowGlass || []) {
       if ('emissiveIntensity' in m) m.emissiveIntensity = 0.22;
@@ -225,9 +251,14 @@ export function onPhaseEnter(game, id) {
     }
     if (g.prison.foodTray) g.prison.foodTray.visible = false;
     g.audio.buzz();
+    if (s.day === 2 && !s.seenDay2Wake) {
+      s.seenDay2Wake = true;
+      pickDialog(g, s.stash === 'bunk' ? DAY2_WAKE_BUNK : DAY2_WAKE);
+      return;
+    }
     if (s.day === 3 && !s.seenDay3Morning) {
       s.seenDay3Morning = true;
-      pickDialog(g, DAY3_MORNING);
+      pickDialog(g, s.path === 'red' ? DAY3_MORNING_RED : DAY3_MORNING);
       return;
     }
     if (s.day === 4 && !s.seenDay4Wake) {

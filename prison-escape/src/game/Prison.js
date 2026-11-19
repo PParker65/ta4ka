@@ -682,6 +682,10 @@ export class Prison {
       const cold = sim.malyava === 'admin' || sim.courtTalk === 'cell';
       this.kettleSteam.visible = sim.stage === 'life' && !cold;
     }
+    if (this.cigSmoke) {
+      const cold = sim.malyava === 'admin' || sim.courtTalk === 'cell';
+      this.cigSmoke.visible = sim.stage === 'life' && !cold && sim.phase?.id !== 'shmon';
+    }
   }
 
   addWindows(cell, w, d, h) {
@@ -925,6 +929,7 @@ export class Prison {
     const lamp = new THREE.PointLight(0xffd7a0, 0.7, 7, 2);
     lamp.position.set(0.2, 1.6, 0.2);
     cell.add(lamp);
+    this.cellLamp = lamp;
     const windowFill = new THREE.PointLight(0x9bb4c4, 0.4, 8, 2);
     windowFill.position.set(-1.2, 2.15, LAYOUT.cellD / 2 - 0.5);
     cell.add(windowFill);
@@ -997,6 +1002,36 @@ export class Prison {
     );
     ash.position.set(0.48, 0.755, 0.02);
     cell.add(ash);
+    const cigSmoke = new THREE.Group();
+    cigSmoke.position.set(0.48, 0.82, 0.02);
+    cell.add(cigSmoke);
+    for (let i = 0; i < 3; i++) {
+      const puff = new THREE.Mesh(
+        new THREE.SphereGeometry(0.022 + i * 0.01, 6, 6),
+        new THREE.MeshBasicMaterial({ color: 0xb8b4ac, transparent: true, opacity: 0.18, depthWrite: false }),
+      );
+      puff.position.set(i * 0.02, i * 0.05, 0);
+      cigSmoke.add(puff);
+    }
+    this.cigSmoke = cigSmoke;
+    const stain = new THREE.Mesh(
+      new THREE.CircleGeometry(0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a2418, roughness: 0.95 }),
+    );
+    stain.rotation.x = -Math.PI / 2;
+    stain.position.set(-0.12, 0.746, 0.12);
+    cell.add(stain);
+    const butts = new THREE.MeshStandardMaterial({ color: 0xd8c8a0, roughness: 0.7 });
+    for (const [bx, bz, ry] of [
+      [0.52, 0.06, 0.4],
+      [0.44, -0.04, -0.7],
+      [0.5, 0.0, 1.1],
+    ]) {
+      const butt = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.04, 5), butts);
+      butt.rotation.set(1.2, ry, 0.4);
+      butt.position.set(bx, 0.76, bz);
+      cell.add(butt);
+    }
     const slip = new THREE.Mesh(
       new THREE.BoxGeometry(0.22, 0.04, 0.1),
       new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 }),
@@ -1078,6 +1113,12 @@ export class Prison {
     const peel = new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.92 });
     this.box(0.55, 0.38, 0.02, peel, -1.1, 1.55, LAYOUT.cellD / 2 - 0.14, cell);
     this.box(0.32, 0.22, 0.02, peel, -0.7, 1.38, LAYOUT.cellD / 2 - 0.14, cell);
+    const leak = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.55, metalness: 0.05 });
+    this.box(0.18, 1.15, 0.015, leak, -1.35, 1.55, LAYOUT.cellD / 2 - 0.135, cell);
+    this.box(0.28, 0.55, 0.012, leak, -1.22, 0.85, LAYOUT.cellD / 2 - 0.135, cell);
+    const rust = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.9 });
+    this.box(0.22, 0.16, 0.02, rust, -1.55, 0.18, LAYOUT.cellD / 2 - 0.16, cell);
+    this.box(0.14, 0.1, 0.02, rust, -1.18, 0.14, LAYOUT.cellD / 2 - 0.16, cell);
     const shelf = new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.86 });
     this.box(0.55, 0.04, 0.18, shelf, 2.55, 1.35, 0.4, cell);
     this.box(0.04, 0.35, 0.04, shelf, 2.35, 1.16, 0.48, cell);
