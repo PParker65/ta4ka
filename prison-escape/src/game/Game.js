@@ -142,6 +142,7 @@ export class Game {
     if (at) {
       this.skipToPlace(at);
       this.applySkipFlags(params);
+      this.applyLook(params);
     } else if (params.has('cell')) {
       this.skipToCell();
       this.applySkipFlags(params);
@@ -219,6 +220,18 @@ export class Game {
 
   applyLook(params) {
     const look = params.get('look');
+    if (look === 'yardwall') {
+      this.player.position.set(1.35, 0, LAYOUT.corridorLen + 6.4);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = 0.18;
+      return;
+    }
+    if (look === 'krug') {
+      this.player.position.set(-0.2, 0, LAYOUT.corridorLen + 5.2);
+      this.input.yaw = 0.08;
+      this.input.pitch = -0.72;
+      return;
+    }
     const o = this.prison.cellOrigin;
     if (!o) return;
     this.hands.position.set(0, 0, 0);
@@ -247,6 +260,10 @@ export class Game {
       if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
         this.hands.userData.holdNote.visible = true;
       }
+    } else if (look === 'window') {
+      this.player.position.set(o.x - 1.35, 0, o.z + 1.55);
+      this.input.yaw = 0;
+      this.input.pitch = 0.18;
     }
   }
 

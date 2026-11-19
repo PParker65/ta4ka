@@ -714,6 +714,38 @@ export class Prison {
       grime.position.set(x, 1.68, d / 2 - 0.19);
       grime.rotation.y = Math.PI;
       cell.add(grime);
+      const haze = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.96, 0.28),
+        new THREE.MeshBasicMaterial({ color: 0x8a8680, transparent: true, opacity: 0.18, depthWrite: false }),
+      );
+      haze.position.set(x, 2.52, d / 2 - 0.19);
+      haze.rotation.y = Math.PI;
+      cell.add(haze);
+      const dropMat = new THREE.MeshBasicMaterial({
+        color: 0xa8b8c0,
+        transparent: true,
+        opacity: 0.42,
+        depthWrite: false,
+      });
+      for (const [dx, dy] of [
+        [-0.32, 0.38],
+        [-0.18, 0.22],
+        [0.08, 0.42],
+        [0.24, 0.28],
+        [0.36, 0.12],
+        [-0.05, 0.08],
+      ]) {
+        const drop = new THREE.Mesh(new THREE.SphereGeometry(0.028, 5, 4), dropMat);
+        drop.position.set(x + dx, 2.15 + dy, d / 2 - 0.175);
+        cell.add(drop);
+      }
+      const stuffed = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 0.28, 0.014),
+        new THREE.MeshStandardMaterial({ color: 0xc8b896, roughness: 0.9 }),
+      );
+      stuffed.position.set(x + 0.34, 1.78, d / 2 - 0.17);
+      stuffed.rotation.z = 0.18;
+      cell.add(stuffed);
       for (let i = -3; i <= 3; i++) {
         this.box(0.03, 1.12, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.16, cell);
       }
@@ -1590,6 +1622,32 @@ export class Prison {
     for (let y = 0.5; y <= 2.6; y += 0.22) {
       this.box(0.22, 0.04, 0.04, chain, 4.18, y, 2.2, g);
     }
+    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.5 });
+    const moss = new THREE.MeshStandardMaterial({ color: 0x4a5a48, roughness: 0.9, transparent: true, opacity: 0.4 });
+    for (const side of [-1, 1]) {
+      this.box(0.02, 1.35, 1.8, damp, side * 4.22, 2.15, -0.4, g);
+      this.box(0.02, 0.9, 0.85, damp, side * 4.22, 2.55, 1.6, g);
+      this.box(0.02, 0.55, 1.1, peel, side * 4.21, 2.35, 0.7, g);
+      this.box(0.02, 0.42, 0.7, peel, side * 4.21, 1.85, -1.8, g);
+      this.box(0.02, 0.7, 0.35, moss, side * 4.21, 1.35, 2.4, g);
+      this.box(0.02, 1.6, 0.18, wetWall, side * 4.22, 1.7, -2.6, g);
+    }
+    this.box(0.02, 1.1, 2.2, damp, 0.6, 2.4, 4.22, g);
+    this.box(0.02, 0.7, 1.4, peel, -1.1, 2.5, 4.22, g);
+    const stand = wallScratch('СТОЙ');
+    stand.scale.set(1.4, 1.4, 1.4);
+    stand.position.set(4.2, 1.85, -0.8);
+    stand.rotation.y = -Math.PI / 2;
+    g.add(stand);
+    const hushYard = wallScratch('НЕ СВИСТИ');
+    hushYard.scale.set(1.1, 1.1, 1.1);
+    hushYard.position.set(-4.2, 1.7, 1.2);
+    hushYard.rotation.y = Math.PI / 2;
+    g.add(hushYard);
+    this.box(0.7, 0.02, 0.35, mud, 3.6, 0.05, -0.6, g);
+    this.box(0.5, 0.018, 0.28, mud, -3.5, 0.05, 0.9, g);
+    this.box(0.38, 0.016, 0.5, mud, 3.7, 0.05, 2.1, g);
   }
 
   addPipesAndProps() {
