@@ -1,7 +1,7 @@
 /**
  * Week in хата 4. Not an escape. Choices stick until Tuesday's player comes back.
  */
-import { NIGHT1, DAY2_SEDOY, DAY3_NIGHT, DAY4_LEHA, DAY5_COURT } from './Dialogue.js';
+import { NIGHT1, DAY2_SEDOY, DAY3_NIGHT, DAY4_LEHA, DAY5_COURT, WEEK_HELD } from './Dialogue.js';
 
 export function plotObjective(sim) {
   if (sim.stage !== 'life' || !sim.propiska) return null;
@@ -74,6 +74,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day >= 5 && !s.seenDay5) {
       s.seenDay5 = true;
       pickDialog(g, DAY5_COURT);
+    } else if (s.day >= 7 && !s.seenWeek) {
+      s.seenWeek = true;
+      pickDialog(g, WEEK_HELD);
     } else {
       g.subtitle('Отбой. Своя койка. Чужую не занимай.');
     }

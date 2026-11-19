@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { LAYOUT } from './Prison.js';
 
 export class Guards {
   constructor(scene, prison) {
@@ -30,6 +31,14 @@ export class Guards {
       this.makeGuard(
         [new THREE.Vector3(3.55, 0, -57.4), new THREE.Vector3(2.4, 0, -55.8), new THREE.Vector3(3.55, 0, -57.4)],
         0.42,
+      ),
+      this.makeGuard(
+        [
+          new THREE.Vector3(-2.1, 0, LAYOUT.corridorLen + 3.4),
+          new THREE.Vector3(2.2, 0, LAYOUT.corridorLen + 5.6),
+          new THREE.Vector3(0.2, 0, LAYOUT.corridorLen + 4.2),
+        ],
+        0.48,
       ),
     );
   }
