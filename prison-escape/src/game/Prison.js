@@ -277,12 +277,14 @@ export class Prison {
       door,
     );
 
-    const hatch = new THREE.Mesh(
-      new THREE.BoxGeometry(0.04, 0.16, 0.22),
-      new THREE.MeshStandardMaterial({ color: 0x0f5a24, metalness: 0.3, roughness: 0.45 }),
-    );
-    hatch.position.set(side * 0.05, 1.52, LAYOUT.doorW / 2);
-    door.add(hatch);
+    if (!isPlayer) {
+      const hatch = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.16, 0.22),
+        new THREE.MeshStandardMaterial({ color: 0x0f5a24, metalness: 0.3, roughness: 0.45 }),
+      );
+      hatch.position.set(side * 0.05, 1.52, LAYOUT.doorW / 2);
+      door.add(hatch);
+    }
     if (isPlayer) {
       const dark = new THREE.MeshStandardMaterial({ color: 0x120e0a, roughness: 0.9 });
       const recess = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.24, 0.38), dark);
@@ -300,6 +302,23 @@ export class Prison {
       anchor.position.set(side * 0.2, 1.52, LAYOUT.doorW / 2);
       door.add(anchor);
       this.hatchAnchor = anchor;
+      const judas = new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.65, roughness: 0.35 });
+      this.box(0.04, 0.09, 0.09, judas, side * 0.09, 1.82, LAYOUT.doorW / 2, door);
+      const hole = new THREE.Mesh(
+        new THREE.CircleGeometry(0.028, 10),
+        new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.5 }),
+      );
+      hole.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+      hole.position.set(side * 0.12, 1.82, LAYOUT.doorW / 2);
+      door.add(hole);
+      const eye = new THREE.Mesh(
+        new THREE.SphereGeometry(0.022, 8, 6),
+        new THREE.MeshStandardMaterial({ color: 0x3a2418, roughness: 0.7 }),
+      );
+      eye.position.set(side * 0.11, 1.82, LAYOUT.doorW / 2);
+      eye.visible = false;
+      door.add(eye);
+      this.judasEye = eye;
     }
 
     const lock = new THREE.Mesh(
@@ -657,6 +676,7 @@ export class Prison {
     }
     if (this.storyRummage) this.storyRummage.visible = searching;
     if (this.storyFound) this.storyFound.visible = sim.malyava === 'found';
+    if (this.judasEye) this.judasEye.visible = searching;
   }
 
   addWindows(cell, w, d, h) {
@@ -1210,9 +1230,6 @@ export class Prison {
       this.box(0.05, 0.05, 8.8, cage, i, 3.38, 0, g);
       this.box(8.8, 0.05, 0.05, cage, 0, 3.38, i, g);
     }
-    const ring = new THREE.MeshStandardMaterial({ color: 0x5a5e58, roughness: 0.92 });
-    this.box(5.2, 0.02, 0.18, ring, 0, 0.06, 0, g);
-    this.box(0.18, 0.02, 5.2, ring, 0, 0.06, 0, g);
     this.addYardLife(g);
 
     const doorW = 1.28;
@@ -1290,9 +1307,9 @@ export class Prison {
       this.box(8.6, 0.03, 0.03, mesh, 0, y, 4.28, g);
     }
     const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
-    this.box(1.6, 0.08, 0.36, bench, 0.15, 0.42, 1.15, g);
-    this.box(0.08, 0.4, 0.08, bench, -0.45, 0.2, 1.05, g);
-    this.box(0.08, 0.4, 0.08, bench, 0.75, 0.2, 1.05, g);
+    this.box(1.6, 0.08, 0.36, bench, -2.7, 0.42, -1.55, g);
+    this.box(0.08, 0.4, 0.08, bench, -3.3, 0.2, -1.65, g);
+    this.box(0.08, 0.4, 0.08, bench, -2.1, 0.2, -1.65, g);
     this.box(1.8, 0.08, 0.38, bench, -2.2, 0.42, 2.6, g);
     this.box(0.08, 0.4, 0.08, bench, -2.95, 0.2, 2.48, g);
     this.box(0.08, 0.4, 0.08, bench, -1.45, 0.2, 2.48, g);
@@ -1371,7 +1388,8 @@ export class Prison {
     }
     const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
-    circle.position.set(0, 0.075, 1.55);
+    circle.rotation.z = Math.PI;
+    circle.position.set(0, 0.082, 0.9);
     g.add(circle);
     const wallKrug = wallScratch('КРУГ');
     wallKrug.scale.set(1.7, 1.7, 1.7);

@@ -9,6 +9,7 @@ import {
   DAY2_SHMON,
   DAY3_NIGHT,
   DAY3_MORNING,
+  DAY3_FOOD,
   DAY4_LEHA,
   DAY4_WALK,
   DAY4_FOOD,
@@ -179,6 +180,11 @@ export function onPhaseEnter(game, id) {
     if (s.day === 2 && !s.seenDay2Food) {
       s.seenDay2Food = true;
       pickDialog(g, DAY2_FOOD);
+      return;
+    }
+    if (s.day === 3 && !s.malyava && !s.seenDay3Food) {
+      s.seenDay3Food = true;
+      pickDialog(g, DAY3_FOOD);
       return;
     }
     if (s.day === 5 && !s.seenDay5Sled) {
