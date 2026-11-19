@@ -452,6 +452,13 @@ export class Game {
     if (ev === 'voice') {
       this.subtitle('Из кормушки: «Свежак! Масть какая? Не здоровайся за руку вслепую.»');
     }
+    if (ev === 'doors') {
+      this.subtitle('Зелёные номера. За каждой — своя масть, свой воздух. Свою не пропусти.');
+    }
+    if (ev === 'duty') {
+      this.audio.clang();
+      this.subtitle('Дежурка справа. Свет другой. Сюда без команды — как на вышку.');
+    }
     if (ev === 'cell') {
       const door = this.prison.interactables.find((it) => it.type === 'cell-door');
       if (door) this.prison.openDoor(door);
@@ -475,7 +482,7 @@ export class Game {
       pts: [
         { x: this.player.position.x, z: this.player.position.z },
         { x: 0, z: -0.85, event: 'block' },
-        { x: 0, z: 1.2 },
+        { x: 0, z: 1.2, event: 'doors' },
         { x: 0, z: 2.45, event: 'voice' },
         { x: 0, z: 3.2, event: 'cell' },
         { x: LAYOUT.corridorHalf + 0.12, z: 3.4 },
@@ -608,8 +615,13 @@ export class Game {
     if (dEl) dEl.textContent = dist < 1.4 ? w.hint : `${Math.round(dist)} м · ${w.hint}`;
     if (this.beacon) {
       this.beacon.position.set(w.x, 1.7 + Math.sin(this.clock.elapsedTime * 2.2) * 0.12, w.z);
-      const inCell = this.player.position.x > 1.55 && this.player.position.z > 1.5;
-      this.beacon.visible = dist > 1.1 && !this.escort && !inCell;
+      const guiding =
+        this.sim.stage === 'kpp' ||
+        this.sim.stage === 'shmon' ||
+        this.sim.stage === 'photo' ||
+        this.sim.stage === 'med' ||
+        this.sim.stage === 'bath';
+      this.beacon.visible = guiding && dist > 1.6 && !this.escort;
       this.beacon.rotation.y += dt * 1.4;
     }
     this.guide = new THREE.Vector3(w.x, 0, w.z);

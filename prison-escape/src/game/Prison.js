@@ -748,6 +748,11 @@ export class Prison {
     book.position.set(1.4, 0.58, 2.0);
     book.rotation.y = 0.4;
     cell.add(book);
+    const days = cellSign('18  Х  Х');
+    days.scale.setScalar(0.7);
+    days.position.set(-2.15, 1.45, 1.1);
+    days.rotation.y = Math.PI / 2;
+    cell.add(days);
   }
 
   addCat(cell) {
@@ -932,6 +937,23 @@ export class Prison {
     this.group.add(extinguisher);
 
     const box = this.box(0.18, 0.28, 0.08, new THREE.MeshStandardMaterial({ color: 0x4a5560, metalness: 0.4 }), LAYOUT.corridorHalf - 0.18, 1.55, 10.2);
+
+    const wet = new THREE.MeshStandardMaterial({ color: 0x3a2420, roughness: 0.22, metalness: 0.35 });
+    for (const [x, z, s] of [
+      [0.35, 7.2, 0.55],
+      [-0.4, 19.4, 0.7],
+      [0.2, 31.5, 0.45],
+    ]) {
+      const p = new THREE.Mesh(new THREE.CircleGeometry(s, 8), wet);
+      p.rotation.x = -Math.PI / 2;
+      p.position.set(x, 0.045, z);
+      this.group.add(p);
+    }
+    const quiet = cellSign('ТИХО');
+    quiet.scale.set(0.55, 0.55, 0.55);
+    quiet.rotation.x = -Math.PI / 2;
+    quiet.position.set(-0.55, 0.05, 11.2);
+    this.group.add(quiet);
   }
 
   addLamps() {
