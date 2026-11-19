@@ -235,8 +235,10 @@ export class Game {
   }
 
   skipToPlace(at) {
-    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath') {
+    if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'bath' || at === 'neck') {
       this.skipToArrival();
+      this.sim.locked = false;
+      this.sim.cuffed = false;
       if (at === 'kpp') {
         this.player.position.set(1.55, 0, -59.2);
         this.input.yaw = 0.55;
@@ -256,7 +258,7 @@ export class Game {
         this.sim.pending = [];
         this.sim.stage = 'photo';
         this.prison.openKpp();
-        this.player.position.set(0.35, 0, -28.2);
+        this.player.position.set(-0.2, 0, -28.2);
         this.input.yaw = Math.PI / 2;
       } else if (at === 'bath') {
         this.sim.docs = true;
@@ -265,8 +267,21 @@ export class Game {
         this.sim.med = true;
         this.sim.stage = 'bath';
         this.prison.openKpp();
-        this.player.position.set(0.4, 0, -15.4);
+        this.player.position.set(-0.2, 0, -15.4);
         this.input.yaw = Math.PI / 2;
+      } else if (at === 'neck') {
+        this.sim.docs = true;
+        this.sim.pending = [];
+        this.sim.photo = true;
+        this.sim.med = true;
+        this.sim.haircut = true;
+        this.sim.robe = 'kazenka';
+        this.sim.stage = 'escort';
+        this.escort = null;
+        this.prison.openKpp();
+        this.prison.openDoor(this.prison.blockDoor);
+        this.player.position.set(0, 0, 1.35);
+        this.input.yaw = 0;
       }
       return;
     }

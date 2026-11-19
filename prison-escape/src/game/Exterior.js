@@ -433,7 +433,6 @@ function addProcessing(prison) {
   const chart = plaque('180\n170\n160', 0.5, 1.1);
   chart.position.set(2.3, 1.4, -28.2);
   prison.group.add(chart);
-  prison.box(0.35, 0.45, 0.18, new THREE.MeshStandardMaterial({ color: 0x1a1a1c }), 0.7, 1.35, -28.0);
 
   prison.interactables.push({
     id: 'med',

@@ -128,7 +128,7 @@ export class Input {
 
   applyLook(dx, dy, sens) {
     this.yaw -= dx * sens;
-    this.pitch = clamp(this.pitch - dy * sens, -1.15, 1.2);
+    this.pitch = clamp(this.pitch - dy * sens, -0.72, 0.42);
   }
 
   onPointerUp(e) {
