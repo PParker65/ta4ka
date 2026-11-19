@@ -14,7 +14,7 @@ import {
   greenMetalTex,
   createFlickerMaterial,
 } from '../shaders/environment.js';
-import { buildArrival, openKppGate } from './Exterior.js';
+import { buildArrival, openKppGate, tickKppGate } from './Exterior.js';
 
 export const LAYOUT = {
   corridorHalf: 1.42,
@@ -202,6 +202,10 @@ export class Prison {
 
   openKpp() {
     openKppGate(this);
+  }
+
+  tickArrival(dt) {
+    tickKppGate(this, dt);
   }
 
   addVault() {

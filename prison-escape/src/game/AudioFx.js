@@ -82,16 +82,30 @@ export class AudioFx {
     this.unlock();
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
-    const o = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    o.type = 'square';
-    o.frequency.setValueAtTime(190, t);
-    o.frequency.exponentialRampToValueAtTime(80, t + 0.14);
-    g.gain.setValueAtTime(0.16, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-    o.connect(g).connect(this.ctx.destination);
-    o.start(t);
-    o.stop(t + 0.22);
+    const yap = (at, freq, dur) => {
+      const o = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      o.type = 'square';
+      o.frequency.setValueAtTime(freq, at);
+      o.frequency.exponentialRampToValueAtTime(freq * 0.42, at + dur);
+      g.gain.setValueAtTime(0.17, at);
+      g.gain.exponentialRampToValueAtTime(0.001, at + dur);
+      o.connect(g).connect(this.ctx.destination);
+      o.start(at);
+      o.stop(at + dur + 0.02);
+    };
+    yap(t, 210, 0.16);
+    yap(t + 0.18, 160, 0.22);
+    const growl = this.ctx.createOscillator();
+    const gg = this.ctx.createGain();
+    growl.type = 'sawtooth';
+    growl.frequency.setValueAtTime(90, t);
+    growl.frequency.exponentialRampToValueAtTime(48, t + 0.4);
+    gg.gain.setValueAtTime(0.05, t);
+    gg.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+    growl.connect(gg).connect(this.ctx.destination);
+    growl.start(t);
+    growl.stop(t + 0.44);
   }
 
   ambient() {

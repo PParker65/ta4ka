@@ -27,6 +27,10 @@ export class Guards {
         ],
         0.95,
       ),
+      this.makeGuard(
+        [new THREE.Vector3(3.55, 0, -57.4), new THREE.Vector3(2.4, 0, -55.8), new THREE.Vector3(3.55, 0, -57.4)],
+        0.42,
+      ),
     );
   }
 

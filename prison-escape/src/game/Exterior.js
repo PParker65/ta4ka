@@ -198,6 +198,19 @@ function addVan(prison) {
   prison.box(2.2, 0.55, 1.5, dark, 0, 1.55, 2.15, van);
   prison.box(0.55, 0.12, 4.6, rust, -0.55, 0.55, 0.2, van);
   prison.box(0.55, 0.12, 4.6, rust, 0.55, 0.55, 0.2, van);
+  prison.box(0.36, 0.07, 2.35, rust, -0.62, 0.52, 0.05, van);
+  prison.box(0.36, 0.07, 2.35, rust, 0.62, 0.52, 0.05, van);
+  prison.box(1.85, 1.05, 0.05, dark, 0, 1.15, 1.72, van);
+  const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.55, 5), steel);
+  chain.position.set(-0.55, 1.15, -0.4);
+  van.add(chain);
+  const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.01, 6, 10), steel);
+  cuff.position.set(-0.55, 0.86, -0.4);
+  cuff.rotation.x = Math.PI / 2;
+  van.add(cuff);
+  const cabin = new THREE.PointLight(0xffc27a, 0.42, 4.2, 1.8);
+  cabin.position.set(0, 1.62, 0.2);
+  van.add(cabin);
 
   for (const [x, z] of [
     [-1.05, -1.6],
@@ -246,18 +259,25 @@ function addVan(prison) {
 }
 
 function addRain(prison) {
-  const n = 700;
+  const n = 1100;
   const pos = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
-    pos[i * 3] = (Math.random() - 0.5) * 70;
-    pos[i * 3 + 1] = Math.random() * 16;
-    pos[i * 3 + 2] = -90 + Math.random() * 70;
+    pos[i * 3] = (Math.random() - 0.5) * 56;
+    pos[i * 3 + 1] = Math.random() * 14;
+    pos[i * 3 + 2] = -92 + Math.random() * 42;
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const rain = new THREE.Points(
     g,
-    new THREE.PointsMaterial({ color: 0xb8c4ce, size: 0.045, transparent: true, opacity: 0.45, depthWrite: false }),
+    new THREE.PointsMaterial({
+      color: 0xd0d8e0,
+      size: 0.11,
+      transparent: true,
+      opacity: 0.72,
+      depthWrite: false,
+      sizeAttenuation: true,
+    }),
   );
   rain.name = 'Rain';
   prison.group.add(rain);
@@ -309,19 +329,34 @@ function addKpp(prison) {
   prison.interactables.push({
     id: 'kpp',
     type: 'kpp',
-    position: new THREE.Vector3(3.4, 1, -56.2),
-    radius: 2.6,
+    position: new THREE.Vector3(2.4, 1, -58.6),
+    radius: 2.5,
   });
+  prison.addCollider(2.65, 6.15, -58.05, -54.95, 'kpp-booth');
 }
 
 export function openKppGate(prison) {
   const g = prison.kppGate;
   if (!g || g.open) return;
   g.open = true;
-  g.left.position.x -= 3.1;
-  g.right.position.x += 3.1;
-  const col = prison.colliders.find((c) => c.id === g.colliderId);
-  if (col) col.active = false;
+  g.k = 0;
+  g.leftFrom = g.left.position.x;
+  g.rightFrom = g.right.position.x;
+  g.leftTo = g.left.position.x - 3.1;
+  g.rightTo = g.right.position.x + 3.1;
+}
+
+export function tickKppGate(prison, dt) {
+  const g = prison.kppGate;
+  if (!g || !g.open || g.k >= 1) return;
+  g.k = Math.min(1, (g.k || 0) + dt * 0.85);
+  const e = g.k * g.k * (3 - 2 * g.k);
+  g.left.position.x = g.leftFrom + (g.leftTo - g.leftFrom) * e;
+  g.right.position.x = g.rightFrom + (g.rightTo - g.rightFrom) * e;
+  if (g.k > 0.55) {
+    const col = prison.colliders.find((c) => c.id === g.colliderId);
+    if (col) col.active = false;
+  }
 }
 
 function addProcessing(prison) {

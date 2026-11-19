@@ -186,6 +186,40 @@ export class Game {
   }
 
   skipToPlace(at) {
+    if (at === 'kpp' || at === 'van') {
+      this.hands.visible = true;
+      this.introT = 22;
+      this._introHud = true;
+      this._introControl = true;
+      this._introOut = true;
+      this._introDoors = true;
+      this._introLook = true;
+      this.renderer.toneMappingExposure = 1.18;
+      this.camera.fov = 62;
+      this.camera.updateProjectionMatrix();
+      const fade = document.getElementById('fade');
+      if (fade) {
+        fade.style.opacity = '0';
+        fade.style.display = 'none';
+      }
+      document.getElementById('hud')?.classList.remove('hud-quiet');
+      document.getElementById('quest')?.classList.remove('hidden');
+      this.audio.stopRumble();
+      if (this.prison.vanDoors) {
+        this.prison.vanDoors.left.rotation.y = 1.28;
+        this.prison.vanDoors.right.rotation.y = -1.28;
+      }
+      this.input.pitch = 0;
+      this.npcs.dogsAlert?.(true);
+      if (at === 'kpp') {
+        this.player.position.set(1.55, 0, -59.2);
+        this.input.yaw = 0.55;
+      } else {
+        this.player.position.set(0, 0, -80.8);
+        this.input.yaw = 0;
+      }
+      return;
+    }
     this.skipToCell();
     this.cellLife.active = false;
     this.cellLife.seen.add('greet');
@@ -272,6 +306,8 @@ export class Game {
 
   tick(dt) {
     this.input.yaw += this.input.turnRate() * dt;
+    this.prison.tickArrival?.(dt);
+    this.stepFlash(dt);
     if (this.overlaysOpen()) {
       this.updateCamera(this.input.crouchHeld, dt);
       this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
@@ -316,7 +352,6 @@ export class Game {
       const t = this.clock.elapsedTime;
       for (const p of lights) p.rotation.y = t * 0.18 + (p.userData.phase || 0);
     }
-
     this.hands.userData.step?.(this.clock.elapsedTime, move.mag, move.run, this.sim.cuffed);
     this.cellLife?.tick(dt);
     lifeTick(this, dt);
@@ -539,6 +574,7 @@ export class Game {
     if (!this._introLook && t > 4.2) {
       this._introLook = true;
       this.audio.bark();
+      this.npcs.dogsAlert?.(true);
     }
     if (!this._introOut && t > 7.2) {
       this._introOut = true;
@@ -569,6 +605,28 @@ export class Game {
       this.camera.fov = 48 + lookK * 14;
       this.camera.updateProjectionMatrix();
       this.renderer.toneMappingExposure = 0.38 + lookK * 0.8;
+    }
+  }
+
+  flashPhoto() {
+    const fade = document.getElementById('fade');
+    if (!fade) return;
+    fade.style.display = 'block';
+    fade.style.backgroundColor = '#f3ead4';
+    fade.style.opacity = '1';
+    this._flashT = 0.7;
+  }
+
+  stepFlash(dt) {
+    if (!(this._flashT > 0)) return;
+    this._flashT -= dt;
+    const fade = document.getElementById('fade');
+    if (!fade) return;
+    fade.style.opacity = String(Math.max(0, this._flashT / 0.7));
+    if (this._flashT <= 0) {
+      fade.style.display = 'none';
+      fade.style.backgroundColor = '';
+      fade.style.opacity = '0';
     }
   }
 
@@ -757,7 +815,11 @@ export class Game {
         this.toast(opt.reply);
         this.prison.openKpp();
         this.audio.clang();
-        this.subtitle('Ворота. Дальше сборник: шмон, фото, врач, стрижка. В хату — потом.');
+        this.audio.voiceOnce('kpp', 'Ворота. Шагом. Вещи на стол.', 'Конвой');
+        this.npcs.dogsAlert?.(false);
+        this.input.yaw = Math.atan2(-this.player.position.x, -54.2 - this.player.position.z);
+        this.input.pitch = 0.05;
+        this.subtitle('Створки разъезжаются. Не стой в проёме. Дальше сборник: шмон, фото, врач, стрижка.');
         this.guide = new THREE.Vector3(-1.2, 0, -36.2);
       };
       return;
@@ -773,6 +835,8 @@ export class Game {
       this.subtitle('Дальше фельдшер. Ищут вшей, побои, заразу.');
       this.guide = new THREE.Vector3(-1.0, 0, -22.2);
       this.audio.buzz();
+      this.flashPhoto();
+      this.audio.voiceOnce('photo', 'Не моргай. Ещё раз. Боком.', 'Конвой');
       return;
     }
     if (item.type === 'med') {

@@ -29,9 +29,11 @@ export class Minigames {
     if (win) {
       this.sim.inv.cigs += 1;
       this.sim.shift(1, 0, 0);
+      this.sim.hope = Math.min(100, this.sim.hope + 4);
     } else {
       this.sim.inv.cigs -= 1;
       this.sim.stress = Math.min(100, this.sim.stress + 8);
+      this.sim.hope = Math.max(0, this.sim.hope - 3);
     }
   }
 

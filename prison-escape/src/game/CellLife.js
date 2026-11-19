@@ -197,6 +197,12 @@ export class CellLife {
       this.hold(valera, 'food', s.stoolN, 99);
       return;
     }
+    if (phase === 'walk') {
+      this.hold(starosta, 'walk', s.aisle, 99);
+      this.hold(leha, 'walk', s.hatch, 99);
+      this.hold(valera, 'walk', s.window, 99);
+      return;
+    }
 
     this.cycle(starosta, [
       { name: 'throne', spot: s.sedoyStool, hold: 26 },

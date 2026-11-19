@@ -442,6 +442,7 @@ export class Npcs {
 function makeDog(x, z, phase) {
   const root = new THREE.Group();
   root.position.set(x, 0, z);
+  root.scale.setScalar(1.22);
   const fur = new THREE.MeshStandardMaterial({ color: 0x5a3a22, roughness: 0.85 });
   const dark = new THREE.MeshStandardMaterial({ color: 0x1a120e, roughness: 0.8 });
   const tan = new THREE.MeshStandardMaterial({ color: 0x8a6a44, roughness: 0.85 });
