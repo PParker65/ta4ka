@@ -964,6 +964,8 @@ export class Game {
   }
 
   label(item) {
+    if (item.type === 'hatch' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
+    if (item.type === 'malyava' && this.sim.day >= 3 && !this.sim.malyava) return 'Бумага в кормушке';
     const map = {
       kpp: 'Сверка документов · КПП',
       shmon: 'Сдать вещи на опись',

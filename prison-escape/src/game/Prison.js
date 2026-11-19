@@ -283,6 +283,24 @@ export class Prison {
     );
     hatch.position.set(side * 0.05, 1.52, LAYOUT.doorW / 2);
     door.add(hatch);
+    if (isPlayer) {
+      const dark = new THREE.MeshStandardMaterial({ color: 0x120e0a, roughness: 0.9 });
+      const recess = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.24, 0.38), dark);
+      recess.position.set(side * 0.09, 1.52, LAYOUT.doorW / 2);
+      door.add(recess);
+      const rim = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.5, roughness: 0.4 });
+      this.box(0.03, 0.28, 0.42, rim, side * 0.13, 1.52, LAYOUT.doorW / 2, door);
+      this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.66, LAYOUT.doorW / 2, door);
+      this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.38, LAYOUT.doorW / 2, door);
+      const flap = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.2, 0.34), rim);
+      flap.position.set(side * 0.15, 1.63, LAYOUT.doorW / 2);
+      door.add(flap);
+      this.hatchFlap = flap;
+      const anchor = new THREE.Object3D();
+      anchor.position.set(side * 0.2, 1.52, LAYOUT.doorW / 2);
+      door.add(anchor);
+      this.hatchAnchor = anchor;
+    }
 
     const lock = new THREE.Mesh(
       new THREE.BoxGeometry(0.1, 0.22, 0.16),
@@ -541,11 +559,11 @@ export class Prison {
     this.group.add(paper);
     this.storyNote = paper;
     const ash = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 8, 6),
-      new THREE.MeshStandardMaterial({ color: 0x1a1a16, roughness: 0.96 }),
+      new THREE.SphereGeometry(0.08, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0x141410, roughness: 0.96 }),
     );
-    ash.scale.set(1.7, 0.38, 1.25);
-    ash.position.set(ox + 0.02, 0.785, oz + 0.14);
+    ash.scale.set(2.1, 0.42, 1.6);
+    ash.position.set(ox + 0.08, 0.79, oz + 0.16);
     ash.visible = false;
     this.group.add(ash);
     this.storyAsh = ash;
@@ -569,10 +587,16 @@ export class Prison {
     const a = this._storyAnchors;
     const waiting = sim.day >= 3 && !sim.malyava;
     const hold = sim.malyava === 'hold';
+    if (this.hatchFlap) this.hatchFlap.rotation.z = waiting ? -0.7 : 0;
     if (waiting) {
       this.storyNote.visible = true;
-      this.storyNote.position.copy(a.hatch);
-      this.storyNote.rotation.set(0.2, 0.5, 0.12);
+      if (this.hatchAnchor) {
+        this.hatchAnchor.getWorldPosition(this.storyNote.position);
+        this.storyNote.rotation.set(0.15, 1.2, 0.35);
+      } else {
+        this.storyNote.position.copy(a.hatch);
+        this.storyNote.rotation.set(0.2, 0.5, 0.12);
+      }
     } else if (hold && sim.stash === 'wash') {
       this.storyNote.visible = true;
       this.storyNote.position.copy(a.wash);
