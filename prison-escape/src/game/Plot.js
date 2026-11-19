@@ -262,6 +262,11 @@ function wakeLine(s) {
 
 function pickDialog(g, pack) {
   const s = g.sim;
+  if (g._skipPlotDialog) {
+    g._skipPlotDialog = false;
+    g.subtitle(`${pack.who}: ${pack.text.slice(0, 88)}`);
+    return;
+  }
   g.unlockLook();
   g.dialog.show(pack.who, pack.text, pack.options);
   g.dialog.onPick = (opt) => {

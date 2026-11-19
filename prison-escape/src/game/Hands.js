@@ -26,6 +26,20 @@ export function makeHands() {
     }
     arms.push(arm);
   }
+  const note = new THREE.Mesh(
+    new THREE.BoxGeometry(0.09, 0.012, 0.06),
+    new THREE.MeshStandardMaterial({
+      color: 0xf0e6c8,
+      roughness: 0.82,
+      emissive: 0x3a3418,
+      emissiveIntensity: 0.28,
+    }),
+  );
+  note.position.set(0.02, -0.04, -0.11);
+  note.rotation.set(0.4, 0.2, 0.5);
+  note.visible = false;
+  arms[0].add(note);
+  g.userData.holdNote = note;
   const cuff = new THREE.Mesh(
     new THREE.TorusGeometry(0.04, 0.008, 8, 12),
     new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.82, roughness: 0.28 }),

@@ -675,7 +675,8 @@ export class Prison {
       this.playerMattress.position.y = searching ? 0.64 : 0.5;
     }
     if (this.storyRummage) this.storyRummage.visible = searching;
-    if (this.storyFound) this.storyFound.visible = sim.malyava === 'found';
+    if (this.storyFound)
+      this.storyFound.visible = sim.malyava === 'found' || (searching && sim.stash === 'bunk');
     if (this.judasEye) this.judasEye.visible = searching;
   }
 

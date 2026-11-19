@@ -154,6 +154,7 @@ export class Game {
       if (ph) this.forcePhase(ph);
       else if (story) this.forcePhase('wake');
       this.applyLook(params);
+      if (params.get('look')) this._skipPlotDialog = true;
     }
   }
 
@@ -228,9 +229,13 @@ export class Game {
       this.input.yaw = 0.12;
       this.input.pitch = -0.22;
     } else if (look === 'bunk') {
-      this.player.position.set(o.x + 0.55, 0, o.z - 1.35);
-      this.input.yaw = 1.15;
-      this.input.pitch = -0.28;
+      this.player.position.set(o.x + 0.4, 0, o.z - 2.05);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = -0.52;
+    } else if (look === 'hands') {
+      this.player.position.set(o.x - 0.4, 0, o.z);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = 0.55;
     }
   }
 
@@ -511,6 +516,10 @@ export class Game {
       for (const p of lights) p.rotation.y = t * 0.18 + (p.userData.phase || 0);
     }
     this.hands.userData.step?.(this.clock.elapsedTime, move.mag, move.run, this.sim.cuffed);
+    if (this.hands.userData.holdNote) {
+      const pocket = this.sim.malyava === 'hold' && this.sim.stash !== 'wash' && this.sim.stash !== 'bunk';
+      this.hands.userData.holdNote.visible = pocket && this.sim.stage === 'life';
+    }
     this.cellLife?.tick(dt);
     lifeTick(this, dt);
 
