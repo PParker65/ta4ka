@@ -586,13 +586,18 @@ export class Game {
     const npc = this.npcs.nearestPerson(this.player.position, 1.9);
     const near = this.nearestUsable();
     const prompt = document.getElementById('prompt');
+    const searching = this.sim.stage === 'life' && this.sim.phase.id === 'shmon';
     const npcD = npc
       ? Math.hypot(this.player.position.x - npc.root.position.x, this.player.position.z - npc.root.position.z)
       : 99;
     const itemD = near
       ? Math.hypot(this.player.position.x - near.position.x, this.player.position.z - near.position.z)
       : 99;
-    if (npc && npcD <= itemD && (this.sim.stage === 'propiska' || this.sim.stage === 'life')) {
+    if (searching) {
+      prompt.classList.remove('hidden');
+      prompt.textContent = 'К стене. Руки видно.';
+      this.input.consumeInteract();
+    } else if (npc && npcD <= itemD && (this.sim.stage === 'propiska' || this.sim.stage === 'life')) {
       prompt.classList.remove('hidden');
       prompt.textContent = `${npc.name} · говорить`;
       if (this.input.consumeInteract()) this.cellLife.talkTo(npc.id);

@@ -44,8 +44,8 @@ export class Guards {
     const o = this.prison.cellOrigin || new THREE.Vector3(4.7, 0, 5.2);
     this.shmonOut = [new THREE.Vector3(0.12, 0, 3.2), new THREE.Vector3(0.12, 0, 3.9)];
     this.shmonIn = [
-      new THREE.Vector3(o.x + 1.55, 0, o.z - 2.55),
-      new THREE.Vector3(o.x + 1.7, 0, o.z - 2.15),
+      new THREE.Vector3(o.x + 0.48, 0, o.z - 1.92),
+      new THREE.Vector3(o.x + 0.52, 0, o.z - 2.48),
     ];
     this.shmonGuard = this.makeGuard(this.shmonOut, 0.9);
     const band = new THREE.Mesh(

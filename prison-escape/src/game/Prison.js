@@ -1461,6 +1461,22 @@ export class Prison {
     this.box(1.4, 0.08, 0.34, bench, 2.4, 0.42, 1.8, g);
     this.box(0.08, 0.4, 0.08, bench, 1.85, 0.2, 1.68, g);
     this.box(0.08, 0.4, 0.08, bench, 2.95, 0.2, 1.68, g);
+    const tin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.035, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.55, roughness: 0.4 }),
+    );
+    tin.position.set(2.55, 0.5, 1.78);
+    g.add(tin);
+    const shoe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
+    for (const [sx, sz] of [
+      [2.05, 1.55],
+      [2.22, 1.62],
+    ]) {
+      const galosh = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.07, 0.1), shoe);
+      galosh.position.set(sx, 0.08, sz);
+      galosh.rotation.y = 0.3;
+      g.add(galosh);
+    }
     const wire = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.55, roughness: 0.4 });
     for (let i = -7; i <= 7; i++) {
       this.box(8.6, 0.02, 0.02, wire, 0, 3.42, i * 0.55, g);
