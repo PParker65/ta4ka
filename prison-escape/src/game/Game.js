@@ -210,9 +210,9 @@ export class Game {
     if (id === 'walk') {
       const door = this.prison.interactables.find((it) => it.type === 'cell-door');
       if (door && !door.open) this.prison.openDoor(door);
-      this.player.position.set(0.2, 0, 22.4);
+      this.player.position.set(0.2, 0, LAYOUT.corridorLen - 5.2);
       this.input.yaw = 0;
-      this.input.pitch = 0.04;
+      this.input.pitch = 0.06;
     }
   }
 
@@ -465,6 +465,13 @@ export class Game {
     this.guards.update(dt);
     const inOwnCell = this.player.position.x > 1.55;
     const onWalk = this.sim.stage === 'life' && this.sim.phase.id === 'walk';
+    if (onWalk && this.player.position.z > LAYOUT.corridorLen + 0.6) {
+      if (!this._inYard) {
+        this._inYard = true;
+        this.subtitle(walkLine(this.sim));
+        this.audio.buzz();
+      }
+    } else if (!onWalk) this._inYard = false;
     const guardHit = this.sim.stage === 'life' && !onWalk && !inOwnCell && this.guards.sees(this.player.position, crouch);
     const camHit = this.cctv.update(dt, this.player.position, crouch, this.alarm);
     if (this.sim.stage === 'life' && !onWalk && !inOwnCell && (guardHit || camHit)) {

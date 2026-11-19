@@ -98,7 +98,7 @@ export class Npcs {
       if (d.type !== 'locked-door' || d.num === 'Д') continue;
       const face = hatchFace();
       const side = d.side || 1;
-      face.position.set(d.position.x + side * 0.12, 1.52, d.position.z);
+      face.position.set(d.position.x + side * 0.04, 1.52, d.position.z);
       face.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
       this.scene.add(face);
       this.list.push({
@@ -768,13 +768,13 @@ function nameplate(text) {
 
 function hatchFace() {
   const g = new THREE.Group();
-  const skin = new THREE.MeshStandardMaterial({ color: 0xb8926c });
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), skin);
+  const skin = new THREE.MeshStandardMaterial({ color: 0x8a6a50, roughness: 0.85 });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 6), skin);
   g.add(head);
   const eye = new THREE.MeshStandardMaterial({ color: 0x1a120e });
-  for (const x of [-0.03, 0.03]) {
-    const e = new THREE.Mesh(new THREE.SphereGeometry(0.015, 6, 4), eye);
-    e.position.set(x, 0.01, 0.08);
+  for (const x of [-0.018, 0.018]) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.01, 5, 4), eye);
+    e.position.set(x, 0.006, 0.048);
     g.add(e);
   }
   return g;

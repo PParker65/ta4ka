@@ -1000,7 +1000,12 @@ export class Prison {
       roughness: 0.75,
       side: THREE.DoubleSide,
     });
-    this.box(9, 0.08, 9, new THREE.MeshStandardMaterial({ color: 0x6a6e66, roughness: 0.95 }), 0, 0.03, 0, g);
+    const dirt = new THREE.MeshStandardMaterial({ color: 0x5a584e, roughness: 0.96 });
+    this.box(9, 0.08, 9, dirt, 0, 0.03, 0, g);
+    const crack = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.9 });
+    this.box(3.4, 0.015, 0.04, crack, -0.6, 0.075, 0.8, g);
+    this.box(0.04, 0.015, 2.2, crack, 1.1, 0.075, -0.4, g);
+    this.box(2.1, 0.015, 0.03, crack, 0.4, 0.075, 2.2, g);
     this.box(9, 3.4, 0.3, plaster, 0, 1.7, 4.45, g);
     for (const x of [-4.45, 4.45]) {
       this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);
@@ -1178,6 +1183,18 @@ export class Prison {
     slit.position.set(5.05, 3.7, -3.8);
     slit.rotation.y = -Math.PI / 2;
     g.add(slit);
+    const pole = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.4, roughness: 0.5 });
+    this.box(0.08, 2.6, 0.08, pole, -3.5, 1.3, -3.4, g);
+    const bucket = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.14, 0.12, 0.28, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a2020, roughness: 0.55, metalness: 0.2 }),
+    );
+    bucket.position.set(3.4, 0.18, -2.8);
+    g.add(bucket);
+    const chain = new THREE.MeshStandardMaterial({ color: 0x5a5e58, metalness: 0.55, roughness: 0.4 });
+    for (let y = 0.5; y <= 2.6; y += 0.22) {
+      this.box(0.22, 0.04, 0.04, chain, 4.18, y, 2.2, g);
+    }
   }
 
   addPipesAndProps() {
@@ -1251,7 +1268,7 @@ export class Prison {
     const paper = this.box(0.01, 0.22, 0.16, new THREE.MeshStandardMaterial({ color: 0xe8e0cc }), LAYOUT.corridorHalf - 0.11, 1.62, 16.05);
     paper.rotation.z = 0.08;
     for (const z of [6.95, 10.5, 14.05]) {
-      const leak = new THREE.PointLight(0xffc070, 0.22, 2.4, 2);
+      const leak = new THREE.PointLight(0xffc070, 0.08, 1.6, 2);
       leak.position.set(-LAYOUT.corridorHalf + 0.25, 1.52, z);
       this.group.add(leak);
     }
