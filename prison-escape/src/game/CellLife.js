@@ -75,7 +75,7 @@ import {
   DAY3_LEHA_HOLD_WASH,
   DAY3_LEHA_HOLD_BUNK,
   DAY3_MORNING_HOLD_WASH,
-  DAY3_MORNING_HOLD_BUNK,
+  DAY3_SEDOY_HOLD_BUNK,
   DAY3_VALERA_BURN,
   DAY3_VALERA_FOUND,
   DAY3_VALERA_FOUND_BUNK,
@@ -994,7 +994,7 @@ export class CellLife {
                         ? DAY3_MORNING_FOUND_BUNK
                         : DAY3_MORNING_FOUND
                       : g.sim.malyava === 'hold'
-                        ? holdStash(g.sim, { pocket: DAY3_MORNING_HOLD, wash: DAY3_MORNING_HOLD_WASH, bunk: DAY3_MORNING_HOLD_BUNK })
+                        ? holdStash(g.sim, { pocket: DAY3_MORNING_HOLD, wash: DAY3_MORNING_HOLD_WASH, bunk: DAY3_SEDOY_HOLD_BUNK })
                         : g.sim.malyava === 'burn'
                           ? DAY3_MORNING_BURN
                           : g.sim.stash === 'bunk'

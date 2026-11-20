@@ -1017,6 +1017,12 @@ export class Prison {
       );
       winDrip.position.set(x - 0.06, 1.51, d / 2 - 0.18);
       cell.add(winDrip);
+      const winStreak = new THREE.Mesh(
+        new THREE.BoxGeometry(0.028, 0.24, 0.012),
+        new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.9, transparent: true, opacity: 0.62 }),
+      );
+      winStreak.position.set(x - 0.06, 1.66, d / 2 - 0.145);
+      cell.add(winStreak);
       for (let i = -2; i <= 2; i++) {
         this.box(0.022, 1.12, 0.022, bars, x + i * 0.18, 2.15, d / 2 - 0.16, cell);
       }
