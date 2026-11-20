@@ -120,6 +120,7 @@ import {
   DAY5_VALERA_GONE,
   DAY5_VALERA_HOLD,
   DAY5_VALERA_FOUND,
+  DAY5_VALERA_FOUND_BUNK,
   DAY5_VALERA_BURN,
   DAY5_VALERA_RED,
   WEEK_VALERA,
@@ -133,6 +134,7 @@ import {
   DAY7_VALERA_GONE,
   DAY7_VALERA_HOLD,
   DAY7_VALERA_FOUND,
+  DAY7_VALERA_FOUND_BUNK,
   DAY7_VALERA_BURN,
   DAY7_VALERA_RED,
   DAY3_NOTE,
@@ -249,6 +251,7 @@ import {
   DAY4_WALK_PAID_WASH,
   DAY4_WALK_PAID_BUNK,
   DAY4_WALK_FOUND,
+  DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
   DAY4_WALK_RED,
   DAY4_FOOD,
@@ -348,7 +351,7 @@ function valeraInCell(s) {
     return weekPick(s, {
       red: DAY7_VALERA_RED,
       gone: DAY7_VALERA_GONE,
-      found: DAY7_VALERA_FOUND,
+      found: s.stash === 'bunk' ? DAY7_VALERA_FOUND_BUNK : DAY7_VALERA_FOUND,
       burn: DAY7_VALERA_BURN,
       hold: DAY7_VALERA_HOLD,
       ok: DAY7_VALERA,
@@ -388,7 +391,7 @@ function valeraInCell(s) {
     return weekPick(s, {
       red: DAY5_VALERA_RED,
       gone: DAY5_VALERA_GONE,
-      found: DAY5_VALERA_FOUND,
+      found: s.stash === 'bunk' ? DAY5_VALERA_FOUND_BUNK : DAY5_VALERA_FOUND,
       burn: DAY5_VALERA_BURN,
       hold: DAY5_VALERA_HOLD,
       ok: DAY5_VALERA,
@@ -1201,7 +1204,9 @@ export class CellLife {
               : !g.sim.malyava
                 ? DAY4_WALK_WAIT
                 : g.sim.malyava === 'found'
-                  ? DAY4_WALK_FOUND
+                  ? g.sim.stash === 'bunk'
+                    ? DAY4_WALK_FOUND_BUNK
+                    : DAY4_WALK_FOUND
                   : g.sim.malyava === 'burn'
                     ? DAY4_WALK_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid

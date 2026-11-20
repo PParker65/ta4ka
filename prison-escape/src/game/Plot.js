@@ -100,6 +100,7 @@ import {
   DAY4_WALK_PAID_WASH,
   DAY4_WALK_PAID_BUNK,
   DAY4_WALK_FOUND,
+  DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
   DAY4_WALK_RED,
   DAY4_FOOD,
@@ -338,7 +339,9 @@ export function plotObjective(sim) {
       : !sim.malyava
         ? 'Четвёртый круг. Бумага в щели. Не зевай вечером.'
         : sim.malyava === 'found'
-          ? 'Четвёртый круг. Нашли. Через стену не ори про шмон.'
+          ? sim.stash === 'bunk'
+            ? 'Четвёртый круг. Нашли в матрасе. Через стену не ори про шмон.'
+            : 'Четвёртый круг. Нашли. Через стену не ори про шмон.'
           : sim.malyava === 'burn'
             ? 'Четвёртый круг. Зола в хате. Про дым — ни звука.'
             : sim.malyava === 'hold' && sim.teaPaid
@@ -464,7 +467,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
         : sim.malyava === 'found'
-          ? 'Пятый подъём. Нашли. Жар не сняли. Днём щель станет кабинетом.'
+          ? sim.stash === 'bunk'
+            ? 'Пятый подъём. Нашли в матрасе. Жар не сняли. Днём щель станет кабинетом.'
+            : 'Пятый подъём. Нашли. Жар не сняли. Днём щель станет кабинетом.'
           : sim.malyava === 'burn'
             ? 'Пятый подъём. Зола ещё пахнет. Днём щель станет кабинетом.'
             : sim.malyava === 'hold'
@@ -606,7 +611,10 @@ export function plotObjective(sim) {
     });
   if (d >= 3 && sim.malyava === 'burn') return 'Бумага зола. Хата напротив тише, чем надо.';
   if (d >= 3 && sim.malyava === 'admin') return 'Хата молчит. Красный ход. Пайка не греет.';
-  if (d >= 3 && sim.malyava === 'found') return 'Нашли бумагу. Жар. Хата это уже знает.';
+  if (d >= 3 && sim.malyava === 'found')
+    return sim.stash === 'bunk'
+      ? 'Нашли в матрасе. Жар. Хата это уже знает.'
+      : 'Нашли бумагу. Жар. Хата это уже знает.';
   return null;
 }
 
@@ -882,7 +890,7 @@ export function onPhaseEnter(game, id) {
 function day4Walk(s) {
   if (weekRed(s)) return DAY4_WALK_RED;
   if (!s.malyava) return DAY4_WALK_WAIT;
-  if (s.malyava === 'found') return DAY4_WALK_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_WALK_FOUND_BUNK : DAY4_WALK_FOUND;
   if (s.malyava === 'burn') return DAY4_WALK_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK });

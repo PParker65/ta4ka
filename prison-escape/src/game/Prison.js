@@ -1324,6 +1324,34 @@ export class Prison {
     );
     kettle.position.set(-0.15, 0.84, 0.15);
     cell.add(kettle);
+    const soot = new THREE.Mesh(
+      new THREE.CircleGeometry(0.11, 10),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.95, transparent: true, opacity: 0.55 }),
+    );
+    soot.rotation.x = -Math.PI / 2;
+    soot.position.set(-0.15, 0.748, 0.15);
+    cell.add(soot);
+    const ashPile = new THREE.Mesh(
+      new THREE.SphereGeometry(0.04, 6, 5),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 1 }),
+    );
+    ashPile.scale.set(1.4, 0.35, 1.1);
+    ashPile.position.set(-0.28, 0.76, 0.28);
+    cell.add(ashPile);
+    const charPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.008, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.92 }),
+    );
+    charPaper.position.set(-0.02, 0.752, 0.32);
+    charPaper.rotation.y = 0.6;
+    cell.add(charPaper);
+    const kettleRust = new THREE.Mesh(
+      new THREE.CircleGeometry(0.035, 7),
+      new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.8, transparent: true, opacity: 0.55 }),
+    );
+    kettleRust.rotation.x = -Math.PI / 2;
+    kettleRust.position.set(-0.12, 0.922, 0.12);
+    cell.add(kettleRust);
     const steam = new THREE.Group();
     steam.position.set(-0.15, 1.02, 0.15);
     cell.add(steam);
