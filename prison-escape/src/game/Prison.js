@@ -1658,6 +1658,37 @@ export class Prison {
     this.box(doorW, 3.4 - doorH, 0.32, plaster, 0, doorH + (3.4 - doorH) / 2, wallZ, g);
     this.box(0.12, doorH, 0.32, plaster, -doorW / 2, doorH / 2, wallZ, g);
     this.box(0.12, doorH, 0.32, plaster, doorW / 2, doorH / 2, wallZ, g);
+    const gateDado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
+    this.box(wing - 0.1, 1.15, 0.04, gateDado, -wingX, 0.57, wallZ + 0.18, g);
+    this.box(wing - 0.1, 1.15, 0.04, gateDado, wingX, 0.57, wallZ + 0.18, g);
+    const gatePeel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const gateDamp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.5 });
+    this.box(1.4, 0.7, 0.03, gateDamp, -2.4, 2.15, wallZ + 0.18, g);
+    this.box(1.1, 0.55, 0.03, gateDamp, 2.6, 2.35, wallZ + 0.18, g);
+    this.box(0.7, 0.4, 0.03, gatePeel, -1.8, 2.55, wallZ + 0.18, g);
+    this.box(0.85, 0.35, 0.03, gatePeel, 2.1, 1.85, wallZ + 0.18, g);
+    const gateRust = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.7, metalness: 0.22 });
+    this.box(1.6, 0.06, 0.06, gateRust, -2.6, 2.05, wallZ + 0.2, g);
+    this.box(0.07, 0.55, 0.07, gateRust, -3.3, 1.75, wallZ + 0.2, g);
+    this.box(1.4, 0.06, 0.06, gateRust, 2.5, 2.22, wallZ + 0.2, g);
+    const gateWet = new THREE.MeshStandardMaterial({ color: 0x4a524c, roughness: 0.35, transparent: true, opacity: 0.45 });
+    this.box(0.22, 1.5, 0.03, gateWet, -3.5, 1.0, wallZ + 0.18, g);
+    this.box(0.18, 1.2, 0.03, gateWet, 3.4, 0.9, wallZ + 0.18, g);
+    const hushGate = wallScratch('ТИХО');
+    hushGate.scale.set(1.2, 1.2, 1.2);
+    hushGate.position.set(-2.5, 1.65, wallZ + 0.22);
+    g.add(hushGate);
+    const gateNum = wallScratch('4');
+    gateNum.scale.setScalar(1.4);
+    gateNum.position.set(2.4, 1.7, wallZ + 0.22);
+    g.add(gateNum);
+    const gateRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.55, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.94 }),
+    );
+    gateRag.position.set(3.55, 1.25, wallZ + 0.28);
+    gateRag.rotation.z = 0.12;
+    g.add(gateRag);
 
     const hw = LAYOUT.corridorHalf;
     const neckZ = z0 - 0.2;
@@ -1944,8 +1975,10 @@ export class Prison {
     const cornerDamp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.5, transparent: true, opacity: 0.62 });
     this.box(1.8, 1.7, 0.03, cornerDamp, 3.4, 2.15, 4.22, g);
     this.box(0.03, 1.9, 1.6, cornerDamp, 4.22, 2.2, 3.5, g);
-    this.box(1.1, 0.9, 0.03, peel, 3.7, 2.55, 4.21, g);
-    this.box(0.03, 0.8, 0.9, peel, 4.21, 2.45, 3.85, g);
+    this.box(0.55, 0.42, 0.03, peel, 3.55, 2.35, 4.21, g);
+    this.box(0.03, 0.38, 0.48, peel, 4.21, 2.28, 3.7, g);
+    this.box(0.7, 0.22, 0.03, peel, 3.9, 2.72, 4.21, g);
+    this.box(0.03, 0.55, 0.22, moss, 4.21, 1.55, 3.55, g);
     const piss = new THREE.MeshStandardMaterial({ color: 0x7a6a38, roughness: 0.35, transparent: true, opacity: 0.45 });
     this.box(0.55, 0.95, 0.03, piss, 4.05, 0.7, 4.2, g);
     this.box(0.03, 1.05, 0.7, piss, 4.26, 0.72, 3.95, g);

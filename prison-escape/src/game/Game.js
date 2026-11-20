@@ -239,6 +239,12 @@ export class Game {
       this.input.pitch = 0.18;
       return;
     }
+    if (look === 'yardgate') {
+      this.player.position.set(-0.15, 0, LAYOUT.corridorLen + 6.4);
+      this.input.yaw = Math.PI;
+      this.input.pitch = 0.08;
+      return;
+    }
     if (look === 'shall') {
       this.player.position.set(0.15, 0, -36.4);
       this.input.yaw = 0;
