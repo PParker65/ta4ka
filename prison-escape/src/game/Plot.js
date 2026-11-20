@@ -210,6 +210,8 @@ import {
   WEEK_HELD_HOLD,
   WEEK_HELD_HOLD_WASH,
   WEEK_HELD_HOLD_BUNK,
+  DAY7_SEDOY_NIGHT_HOLD_BUNK,
+  DAY7_SEDOY_NIGHT_FOUND_BUNK,
   HOLD_NIGHT,
   BURN_NIGHT,
   SNITCH_NIGHT,
@@ -611,6 +613,24 @@ export function plotObjective(sim) {
                   bunk: 'Седьмой круг. Свежак кончился. Бумага в матрасе. Через стену про койку — ни звука.',
                 })
               : 'Седьмой круг. Свежак кончился. Сетка та же. Не ори про волю.';
+  if (d === 7 && ph === 'evening')
+    return weekRed(sim)
+      ? 'Седьмой отбой. Свежак кончился красным. Молчи. Не рассказывай сон.'
+      : sim.malyava === 'gone'
+        ? 'Седьмой отбой. Бумагу взяли без тебя. Свежак кончился. Молчи.'
+        : sim.malyava === 'found'
+          ? sim.stash === 'bunk'
+            ? 'Седьмой отбой. Нашли в матрасе. Не выселили. Свежак кончился на карандаше.'
+            : 'Седьмой отбой. Нашли. Не выселили. Свежак кончился на карандаше.'
+          : sim.malyava === 'burn'
+            ? 'Седьмой отбой. Бумага зола. Свежак кончился. Про дым — ни слова.'
+            : sim.malyava === 'hold'
+              ? holdStash(sim, {
+                  pocket: 'Седьмой отбой. Свежак кончился. Карман нет. Неси или жги.',
+                  wash: 'Седьмой отбой. Свежак кончился. Чаша знает. Неси или жги.',
+                  bunk: 'Седьмой отбой. Свежак кончился. Бумага в матрасе. Чаша, или жги.',
+                })
+              : 'Седьмой отбой. Свежак кончился. Молчи. Не ори про волю.';
   if (d === 7)
     return weekRed(sim)
       ? 'Неделя. Свежак кончился красным. Молчи. Ешь последним.'
@@ -726,7 +746,14 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: s.stash === 'bunk' ? DAY6_NIGHT_FOUND_BUNK : DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, hold: holdStash(s, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }), ok: DAY6_NIGHT }));
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
-      pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: s.stash === 'bunk' ? WEEK_HELD_FOUND_BUNK : WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: holdStash(s, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }), ok: WEEK_HELD }));
+      pickDialog(
+        g,
+        s.malyava === 'found' && s.stash === 'bunk'
+          ? DAY7_SEDOY_NIGHT_FOUND_BUNK
+          : s.malyava === 'hold' && s.stash === 'bunk'
+            ? DAY7_SEDOY_NIGHT_HOLD_BUNK
+            : weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: s.stash === 'bunk' ? WEEK_HELD_FOUND_BUNK : WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: holdStash(s, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }), ok: WEEK_HELD }),
+      );
     } else {
       g.subtitle(eveningLine(s));
     }
