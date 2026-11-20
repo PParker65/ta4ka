@@ -1705,6 +1705,29 @@ export class Prison {
     );
     calPail.position.set(-LAYOUT.cellW / 2 + 0.28, 0.14, 0.58);
     cell.add(calPail);
+    const calPailRust = new THREE.MeshStandardMaterial({ color: 0x5a2a18, roughness: 0.85, metalness: 0.15 });
+    this.box(0.04, 0.08, 0.03, calPailRust, -LAYOUT.cellW / 2 + 0.36, 0.16, 0.52, cell);
+    this.box(0.03, 0.06, 0.03, calPailRust, -LAYOUT.cellW / 2 + 0.22, 0.12, 0.62, cell);
+    const calSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.22, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    calSock.position.set(-LAYOUT.cellW / 2 + 0.24, 0.58, 0.72);
+    calSock.rotation.set(0.18, 0.1, 0.32);
+    cell.add(calSock);
+    const calTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    calTin.position.set(-LAYOUT.cellW / 2 + 0.42, 0.07, 0.48);
+    cell.add(calTin);
+    const calScrap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.008, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    calScrap.position.set(-LAYOUT.cellW / 2 + 0.48, 0.055, 0.92);
+    calScrap.rotation.y = 0.45;
+    cell.add(calScrap);
     const calWet = new THREE.Mesh(
       new THREE.CircleGeometry(0.28, 8),
       new THREE.MeshStandardMaterial({ color: 0x3a423c, roughness: 0.18, metalness: 0.12, transparent: true, opacity: 0.45 }),
