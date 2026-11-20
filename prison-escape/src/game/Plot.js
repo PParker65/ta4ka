@@ -22,22 +22,30 @@ import {
   DAY3_NIGHT_WAIT,
   DAY3_NIGHT_FOUND,
   DAY3_NIGHT_HOLD,
+  DAY3_NIGHT_HOLD_WASH,
+  DAY3_NIGHT_HOLD_BUNK,
   DAY3_NIGHT_BURN,
   DAY3_NIGHT_RED,
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
   DAY3_MORNING_HOLD,
+  DAY3_MORNING_HOLD_WASH,
+  DAY3_MORNING_HOLD_BUNK,
   DAY3_MORNING_BURN,
   DAY3_MORNING_FOUND,
   DAY3_FOOD,
   DAY3_FOOD_HOLD,
+  DAY3_FOOD_HOLD_WASH,
+  DAY3_FOOD_HOLD_BUNK,
   DAY3_FOOD_BURN,
   DAY3_FOOD_RED,
   DAY3_FOOD_FOUND,
   DAY3_WALK,
   DAY3_WALK_WAIT,
   DAY3_WALK_HOLD,
+  DAY3_WALK_HOLD_WASH,
+  DAY3_WALK_HOLD_BUNK,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
   DAY3_WALK_FOUND,
@@ -222,7 +230,11 @@ export function plotObjective(sim) {
   if (d === 3 && ph === 'food' && !sim.malyava)
     return 'Пайка. Два коротких в щель — бумага, не ложка. Не зевай.';
   if (d === 3 && ph === 'food' && sim.malyava === 'hold')
-    return 'Пайка. Карман жжёт. Ешь. Не читай вслух.';
+    return sim.stash === 'bunk'
+      ? 'Пайка. Бумага в матрасе. Ешь. Койку за столом не вспоминай.'
+      : sim.stash === 'wash'
+        ? 'Пайка. Чаша, не карман. Ешь. Не смотри на неё.'
+        : 'Пайка. Карман жжёт. Ешь. Не читай вслух.';
   if (d === 3 && ph === 'food' && sim.malyava === 'burn')
     return 'Пайка пахнет золой. Ешь. Не свисти.';
   if (d === 3 && ph === 'food' && sim.malyava === 'found')
@@ -236,12 +248,21 @@ export function plotObjective(sim) {
   if (d === 3 && ph === 'evening' && (sim.malyava === 'admin' || sim.path === 'red'))
     return 'Третий отбой. Чайник не щёлкнул. Слово село. Не оправдывайся.';
   if (d === 3 && ph === 'evening' && sim.malyava === 'hold')
-    return 'Третий отбой. Карман жжёт. Чаша, не матрас. Или жги.';
+    return sim.stash === 'bunk'
+      ? 'Третий отбой. Бумага в матрасе. Завтра шмон. Чаша, или жги.'
+      : sim.stash === 'wash'
+        ? 'Третий отбой. Чаша знает. Не шарь при лампе. Или жги.'
+        : 'Третий отбой. Карман жжёт. Чаша, не матрас. Или жги.';
   if (d === 3 && ph === 'evening' && sim.malyava === 'burn')
     return 'Третий отбой. Дым ещё в хате. Не свисти в полный голос.';
   if (d === 3 && ph === 'walk') {
     if (sim.malyava === 'admin') return 'Третий круг без свиста. Хата уже считает.';
-    if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
+    if (sim.malyava === 'hold')
+      return sim.stash === 'bunk'
+        ? 'Третий круг. Бумага в матрасе. Через стену — ни звука.'
+        : sim.stash === 'wash'
+          ? 'Третий круг. Чаша осталась в хате. Через стену не ори про неё.'
+          : 'Карман жжёт даже на круге. Через стену — ни звука.';
     if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
     if (sim.malyava === 'found') return 'Третий круг. Нашли. Через стену не ори про шмон.';
     if (!sim.malyava) return 'Третий круг. Бумага ещё в щели. К щели — после. Через стену не ори.';
@@ -759,7 +780,7 @@ function day4Shmon(s) {
 function day3Walk(s) {
   if (s.malyava === 'admin' || s.path === 'red') return DAY3_WALK_RED;
   if (!s.malyava) return DAY3_WALK_WAIT;
-  if (s.malyava === 'hold') return DAY3_WALK_HOLD;
+  if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_WALK_HOLD, wash: DAY3_WALK_HOLD_WASH, bunk: DAY3_WALK_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_WALK_BURN;
   if (s.malyava === 'found') return DAY3_WALK_FOUND;
   return DAY3_WALK;
@@ -767,7 +788,7 @@ function day3Walk(s) {
 
 function day3Food(s) {
   if (!s.malyava) return DAY3_FOOD;
-  if (s.malyava === 'hold') return DAY3_FOOD_HOLD;
+  if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_FOOD_HOLD, wash: DAY3_FOOD_HOLD_WASH, bunk: DAY3_FOOD_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_FOOD_BURN;
   if (s.malyava === 'found') return DAY3_FOOD_FOUND;
   return DAY3_FOOD_RED;
@@ -776,7 +797,7 @@ function day3Food(s) {
 function day3Morning(s) {
   if (s.malyava === 'admin' || s.path === 'red') return DAY3_MORNING_RED;
   if (s.malyava === 'found') return DAY3_MORNING_FOUND;
-  if (s.malyava === 'hold') return DAY3_MORNING_HOLD;
+  if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_MORNING_HOLD, wash: DAY3_MORNING_HOLD_WASH, bunk: DAY3_MORNING_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_MORNING_BURN;
   if (s.stash === 'bunk') return DAY3_MORNING_CAUGHT;
   return DAY3_MORNING;
@@ -784,6 +805,12 @@ function day3Morning(s) {
 
 export function weekRed(s) {
   return s.courtTalk === 'cell' || s.malyava === 'admin';
+}
+
+export function holdStash(s, packs) {
+  if (s.stash === 'bunk') return packs.bunk;
+  if (s.stash === 'wash') return packs.wash;
+  return packs.pocket;
 }
 
 export function weekPick(s, packs) {

@@ -57,6 +57,16 @@ import {
   DAY3_VALERA,
   DAY3_VALERA_WAIT,
   DAY3_VALERA_HOLD,
+  DAY3_FOOD_HOLD_WASH,
+  DAY3_FOOD_HOLD_BUNK,
+  DAY3_NIGHT_HOLD_WASH,
+  DAY3_NIGHT_HOLD_BUNK,
+  DAY3_WALK_HOLD_WASH,
+  DAY3_WALK_HOLD_BUNK,
+  DAY3_LEHA_HOLD_WASH,
+  DAY3_LEHA_HOLD_BUNK,
+  DAY3_MORNING_HOLD_WASH,
+  DAY3_MORNING_HOLD_BUNK,
   DAY3_VALERA_BURN,
   DAY3_VALERA_FOUND,
   DAY3_VALERA_RED,
@@ -262,7 +272,7 @@ import {
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
 } from './Dialogue.js';
-import { onPhaseEnter, plotObjective, hatchReady, weekPick, weekRed } from './Plot.js';
+import { onPhaseEnter, plotObjective, hatchReady, weekPick, weekRed, holdStash } from './Plot.js';
 
 function valeraInCell(s) {
   if (s.day >= 7) {
@@ -873,7 +883,7 @@ export class CellLife {
                     : g.sim.malyava === 'found'
                       ? DAY3_MORNING_FOUND
                       : g.sim.malyava === 'hold'
-                        ? DAY3_MORNING_HOLD
+                        ? holdStash(g.sim, { pocket: DAY3_MORNING_HOLD, wash: DAY3_MORNING_HOLD_WASH, bunk: DAY3_MORNING_HOLD_BUNK })
                         : g.sim.malyava === 'burn'
                           ? DAY3_MORNING_BURN
                           : g.sim.stash === 'bunk'
@@ -980,7 +990,7 @@ export class CellLife {
             ? !g.sim.malyava
               ? DAY3_FOOD
               : g.sim.malyava === 'hold'
-                ? DAY3_FOOD_HOLD
+                ? holdStash(g.sim, { pocket: DAY3_FOOD_HOLD, wash: DAY3_FOOD_HOLD_WASH, bunk: DAY3_FOOD_HOLD_BUNK })
                 : g.sim.malyava === 'burn'
                   ? DAY3_FOOD_BURN
                   : g.sim.malyava === 'found'
@@ -994,7 +1004,7 @@ export class CellLife {
               : g.sim.malyava === 'found'
                 ? DAY3_NIGHT_FOUND
                 : g.sim.malyava === 'hold'
-                  ? DAY3_NIGHT_HOLD
+                  ? holdStash(g.sim, { pocket: DAY3_NIGHT_HOLD, wash: DAY3_NIGHT_HOLD_WASH, bunk: DAY3_NIGHT_HOLD_BUNK })
                   : g.sim.malyava === 'burn'
                     ? DAY3_NIGHT_BURN
                     : !g.sim.malyava
@@ -1022,7 +1032,7 @@ export class CellLife {
               : g.sim.malyava === 'found'
                 ? DAY3_LEHA_FOUND
                 : g.sim.malyava === 'hold'
-                  ? DAY3_LEHA_HOLD
+                  ? holdStash(g.sim, { pocket: DAY3_LEHA_HOLD, wash: DAY3_LEHA_HOLD_WASH, bunk: DAY3_LEHA_HOLD_BUNK })
                   : g.sim.malyava === 'burn'
                     ? DAY3_LEHA_BURN
                     : g.sim.stash === 'bunk'
@@ -1108,7 +1118,7 @@ export class CellLife {
             : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
               ? DAY3_WALK_RED
               : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'hold'
-                ? DAY3_WALK_HOLD
+                ? holdStash(g.sim, { pocket: DAY3_WALK_HOLD, wash: DAY3_WALK_HOLD_WASH, bunk: DAY3_WALK_HOLD_BUNK })
                 : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'burn'
                   ? DAY3_WALK_BURN
                   : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'found'

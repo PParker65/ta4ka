@@ -1427,6 +1427,26 @@ export class Prison {
     calRag.position.set(-1.45, 0.04, 0.95);
     calRag.rotation.y = 0.35;
     cell.add(calRag);
+    const calPail = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.11, 0.09, 0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a7068, roughness: 0.55, metalness: 0.25 }),
+    );
+    calPail.position.set(-LAYOUT.cellW / 2 + 0.42, 0.13, 0.82);
+    cell.add(calPail);
+    const calWet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.28, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a423c, roughness: 0.18, metalness: 0.12, transparent: true, opacity: 0.45 }),
+    );
+    calWet.rotation.x = -Math.PI / 2;
+    calWet.position.set(-LAYOUT.cellW / 2 + 0.48, 0.042, 0.95);
+    cell.add(calWet);
+    const calFloorRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.03, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x4a3a32, roughness: 0.94 }),
+    );
+    calFloorRag.position.set(-LAYOUT.cellW / 2 + 0.55, 0.04, 1.22);
+    calFloorRag.rotation.y = -0.5;
+    cell.add(calFloorRag);
     const calButt = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.82 });
     for (const [bx, bz] of [
       [-1.32, 0.82],
@@ -2172,6 +2192,30 @@ export class Prison {
     paperYard.position.set(0.22, 0.07, 0.95);
     paperYard.rotation.y = 0.55;
     g.add(paperYard);
+    const paperYard2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.012, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xb8a888, roughness: 0.93 }),
+    );
+    paperYard2.position.set(-0.28, 0.065, 0.52);
+    paperYard2.rotation.y = -0.7;
+    g.add(paperYard2);
+    const krugRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.32, 0.04, 0.2),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.95 }),
+    );
+    krugRag.position.set(0.18, 0.05, 0.42);
+    krugRag.rotation.y = 0.45;
+    g.add(krugRag);
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(0.045, 6, 5),
+      new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.9 }),
+    );
+    core.scale.set(1, 0.45, 1);
+    core.position.set(-0.12, 0.05, 0.68);
+    g.add(core);
+    const krugPrint = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.96 });
+    this.box(0.16, 0.012, 0.28, krugPrint, -0.35, 0.045, 0.58, g);
+    this.box(0.14, 0.01, 0.24, krugPrint, 0.08, 0.044, 0.78, g);
     this.box(0.62, 0.024, 0.32, limeMud, -0.15, 0.06, 1.05, g);
     this.box(0.4, 0.02, 0.22, limeMud, 0.55, 0.058, 1.12, g);
     const buttKrug = new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 });
