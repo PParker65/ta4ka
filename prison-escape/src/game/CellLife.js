@@ -85,6 +85,18 @@ import {
   DAY5_VALERA_SHMON_FOUND,
   DAY5_VALERA_SHMON_BURN,
   DAY5_VALERA_SHMON_RED,
+  DAY6_VALERA_SHMON,
+  DAY6_VALERA_SHMON_GONE,
+  DAY6_VALERA_SHMON_HOLD,
+  DAY6_VALERA_SHMON_FOUND,
+  DAY6_VALERA_SHMON_BURN,
+  DAY6_VALERA_SHMON_RED,
+  DAY7_VALERA_SHMON,
+  DAY7_VALERA_SHMON_GONE,
+  DAY7_VALERA_SHMON_HOLD,
+  DAY7_VALERA_SHMON_FOUND,
+  DAY7_VALERA_SHMON_BURN,
+  DAY7_VALERA_SHMON_RED,
   DAY5_VALERA,
   DAY5_VALERA_GONE,
   DAY5_VALERA_HOLD,
@@ -176,6 +188,12 @@ import {
   DAY6_LEHA_SHMON_FOUND,
   DAY6_LEHA_SHMON_BURN,
   DAY6_LEHA_SHMON_RED,
+  DAY7_LEHA_SHMON,
+  DAY7_LEHA_SHMON_GONE,
+  DAY7_LEHA_SHMON_HOLD,
+  DAY7_LEHA_SHMON_FOUND,
+  DAY7_LEHA_SHMON_BURN,
+  DAY7_LEHA_SHMON_RED,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -221,7 +239,37 @@ import {
 import { onPhaseEnter, plotObjective, hatchReady, weekPick, weekRed } from './Plot.js';
 
 function valeraInCell(s) {
+  if (s.day >= 7) {
+    if (s.phase.id === 'shmon') {
+      return weekPick(s, {
+        red: DAY7_VALERA_SHMON_RED,
+        gone: DAY7_VALERA_SHMON_GONE,
+        found: DAY7_VALERA_SHMON_FOUND,
+        burn: DAY7_VALERA_SHMON_BURN,
+        hold: DAY7_VALERA_SHMON_HOLD,
+        ok: DAY7_VALERA_SHMON,
+      });
+    }
+    return weekPick(s, {
+      red: WEEK_VALERA_RED,
+      gone: WEEK_VALERA_GONE,
+      found: WEEK_VALERA_FOUND,
+      burn: WEEK_VALERA_BURN,
+      hold: WEEK_VALERA_HOLD,
+      ok: WEEK_VALERA,
+    });
+  }
   if (s.day >= 6) {
+    if (s.phase.id === 'shmon') {
+      return weekPick(s, {
+        red: DAY6_VALERA_SHMON_RED,
+        gone: DAY6_VALERA_SHMON_GONE,
+        found: DAY6_VALERA_SHMON_FOUND,
+        burn: DAY6_VALERA_SHMON_BURN,
+        hold: DAY6_VALERA_SHMON_HOLD,
+        ok: DAY6_VALERA_SHMON,
+      });
+    }
     return weekPick(s, {
       red: WEEK_VALERA_RED,
       gone: WEEK_VALERA_GONE,
@@ -816,7 +864,16 @@ export class CellLife {
     if (id === 'cellmate') {
       g.unlockLook();
       const leha =
-        g.sim.day >= 6 && g.sim.phase.id === 'shmon'
+        g.sim.day >= 7 && g.sim.phase.id === 'shmon'
+          ? weekPick(g.sim, {
+              red: DAY7_LEHA_SHMON_RED,
+              gone: DAY7_LEHA_SHMON_GONE,
+              found: DAY7_LEHA_SHMON_FOUND,
+              burn: DAY7_LEHA_SHMON_BURN,
+              hold: DAY7_LEHA_SHMON_HOLD,
+              ok: DAY7_LEHA_SHMON,
+            })
+          : g.sim.day >= 6 && g.sim.phase.id === 'shmon'
           ? weekPick(g.sim, {
               red: DAY6_LEHA_SHMON_RED,
               gone: DAY6_LEHA_SHMON_GONE,

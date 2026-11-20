@@ -991,6 +991,53 @@ export class Prison {
     ragWash.position.set(0.18, 1.125, 0.02);
     ragWash.rotation.set(0.04, 0.55, 0.08);
     g.add(ragWash);
+    const tooth = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.007, 0.008, 0.11, 5),
+      new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.55 }),
+    );
+    tooth.position.set(-0.42, 1.2, 0.18);
+    tooth.rotation.z = 0.35;
+    g.add(tooth);
+    const toothHead = new THREE.Mesh(
+      new THREE.BoxGeometry(0.018, 0.012, 0.028),
+      new THREE.MeshStandardMaterial({ color: 0xe8e0d4, roughness: 0.7 }),
+    );
+    toothHead.position.set(-0.38, 1.255, 0.18);
+    toothHead.rotation.z = 0.35;
+    g.add(toothHead);
+    const bottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.022, 0.026, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.35, metalness: 0.08 }),
+    );
+    bottle.position.set(0.38, 1.18, -0.08);
+    g.add(bottle);
+    const bottleCap = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.016, 0.016, 0.018, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1a2a20, roughness: 0.5 }),
+    );
+    bottleCap.position.set(0.38, 1.258, -0.08);
+    g.add(bottleCap);
+    const hangTowel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.38, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0x8a7a68, roughness: 0.94 }),
+    );
+    hangTowel.position.set(0.62, 0.72, 0.12);
+    hangTowel.rotation.z = 0.12;
+    g.add(hangTowel);
+    const mold = new THREE.MeshStandardMaterial({ color: 0x4a5248, roughness: 0.9, transparent: true, opacity: 0.55 });
+    this.box(0.18, 0.22, 0.02, mold, 0.62, 0.28, 0.54, g);
+    this.box(0.12, 0.14, 0.02, mold, -0.48, 0.22, 0.54, g);
+    const printMat = new THREE.MeshStandardMaterial({ color: 0x3a3a32, roughness: 0.25, metalness: 0.08, transparent: true, opacity: 0.35 });
+    for (const [px, pz, ry] of [
+      [-0.12, -0.42, 0.4],
+      [0.08, -0.58, -0.2],
+      [0.22, -0.38, 0.7],
+    ]) {
+      const print = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.008, 0.18), printMat);
+      print.position.set(px, 0.045, pz);
+      print.rotation.y = ry;
+      g.add(print);
+    }
     const wetTile = new THREE.Mesh(
       new THREE.CircleGeometry(0.16, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8880, roughness: 0.2, metalness: 0.08, transparent: true, opacity: 0.45 }),
