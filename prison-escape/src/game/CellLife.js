@@ -51,6 +51,11 @@ import {
   DAY4_VALERA_FOUND,
   DAY4_VALERA_BURN,
   DAY4_VALERA_RED,
+  DAY4_VALERA_SHMON_WAIT,
+  DAY4_VALERA_SHMON_WASH,
+  DAY4_VALERA_SHMON_FOUND,
+  DAY4_VALERA_SHMON_BURN,
+  DAY4_VALERA_SHMON_RED,
   DAY5_VALERA,
   DAY5_VALERA_GONE,
   DAY5_VALERA_HOLD,
@@ -125,6 +130,11 @@ import {
   DAY4_LEHA_FOUND,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
+  DAY4_LEHA_SHMON_WAIT,
+  DAY4_LEHA_SHMON_WASH,
+  DAY4_LEHA_SHMON_FOUND,
+  DAY4_LEHA_SHMON_BURN,
+  DAY4_LEHA_SHMON_RED,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -191,6 +201,15 @@ function valeraInCell(s) {
     });
   }
   if (s.day >= 4) {
+    if (s.phase.id === 'shmon') {
+      return day4ShmonTalk(s, {
+        red: DAY4_VALERA_SHMON_RED,
+        found: DAY4_VALERA_SHMON_FOUND,
+        burn: DAY4_VALERA_SHMON_BURN,
+        wash: DAY4_VALERA_SHMON_WASH,
+        wait: DAY4_VALERA_SHMON_WAIT,
+      });
+    }
     if (weekRed(s)) return DAY4_VALERA_RED;
     if (!s.malyava) return DAY4_VALERA_WAIT;
     if (s.malyava === 'found') return DAY4_VALERA_FOUND;
@@ -227,6 +246,14 @@ function valeraInCell(s) {
     return DAY2_VALERA;
   }
   return TALK_VALERA;
+}
+
+function day4ShmonTalk(s, packs) {
+  if (weekRed(s)) return packs.red;
+  if (s.malyava === 'found') return packs.found;
+  if (s.malyava === 'burn') return packs.burn;
+  if (s.malyava === 'hold') return packs.wash;
+  return packs.wait;
 }
 
 function ambientFor(g) {
@@ -725,6 +752,14 @@ export class CellLife {
           ? DAY5_WAKE_HOLD
           : g.sim.day >= 5
           ? DAY5_WAKE
+          : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
+            ? day4ShmonTalk(g.sim, {
+                red: DAY4_LEHA_SHMON_RED,
+                found: DAY4_LEHA_SHMON_FOUND,
+                burn: DAY4_LEHA_SHMON_BURN,
+                wash: DAY4_LEHA_SHMON_WASH,
+                wait: DAY4_LEHA_SHMON_WAIT,
+              })
           : g.sim.day >= 4
             ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
               ? DAY4_LEHA_RED

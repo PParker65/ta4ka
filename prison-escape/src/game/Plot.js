@@ -46,6 +46,11 @@ import {
   DAY3_SHMON_HATCH,
   DAY3_SHMON_BURN,
   DAY3_SHMON_RED,
+  DAY4_SHMON_WAIT,
+  DAY4_SHMON_WASH,
+  DAY4_SHMON_FOUND,
+  DAY4_SHMON_BURN,
+  DAY4_SHMON_RED,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -459,12 +464,20 @@ export function onPhaseEnter(game, id) {
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
-      if (!s.seenDay3Shmon) {
+      if (s.day === 4 && !s.seenDay4Shmon) {
+        s.seenDay4Shmon = true;
+        pickDialog(g, DAY4_SHMON_FOUND);
+      } else if (!s.seenDay3Shmon) {
         s.seenDay3Shmon = true;
         pickDialog(g, DAY3_SHMON_FOUND);
       } else {
         g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       }
+      return;
+    }
+    if (s.day === 4 && !s.seenDay4Shmon) {
+      s.seenDay4Shmon = true;
+      pickDialog(g, day4Shmon(s));
       return;
     }
     if (s.day === 3 && !s.seenDay3Shmon) {
@@ -609,6 +622,14 @@ function day4Wake(s) {
   if (s.malyava === 'burn') return DAY4_WAKE_BURN;
   if (s.malyava === 'hold' && s.teaPaid) return DAY4_WAKE_HOLD;
   return DAY4_WAKE;
+}
+
+function day4Shmon(s) {
+  if (weekRed(s)) return DAY4_SHMON_RED;
+  if (s.malyava === 'found') return DAY4_SHMON_FOUND;
+  if (s.malyava === 'burn') return DAY4_SHMON_BURN;
+  if (s.malyava === 'hold') return DAY4_SHMON_WASH;
+  return DAY4_SHMON_WAIT;
 }
 
 function day3Walk(s) {
