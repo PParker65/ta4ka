@@ -124,6 +124,7 @@ import {
   DAY4_WAKE_HOLD,
   DAY4_WAKE_HOLD_WASH,
   DAY4_WAKE_HOLD_BUNK,
+  DAY4_WAKE_HOLD_BUNK_WAIT,
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_COURT_GONE,
@@ -420,6 +421,8 @@ export function plotObjective(sim) {
                   wash: 'Четвёртый подъём. Чай ушёл. Чаша, не карман. Не шарь при лампе.',
                   bunk: 'Четвёртый подъём. Чай ушёл. Бумага в матрасе. Шмон это любит.',
                 })
+              : sim.malyava === 'hold' && sim.stash === 'bunk'
+                ? 'Четвёртый подъём. Бумага в матрасе. Чай ещё в щели. Шмон это любит.'
               : 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
   if (d === 4 && !sim.malyava)
     return 'Четвёртый день. Бумага вчера не ушла. Щель всё ещё живая.';
@@ -956,6 +959,7 @@ function day4Wake(s) {
   if (s.malyava === 'burn') return DAY4_WAKE_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_WAKE_HOLD, wash: DAY4_WAKE_HOLD_WASH, bunk: DAY4_WAKE_HOLD_BUNK });
+  if (s.malyava === 'hold' && s.stash === 'bunk') return DAY4_WAKE_HOLD_BUNK_WAIT;
   return DAY4_WAKE;
 }
 

@@ -1037,6 +1037,13 @@ export class Prison {
       );
       winTin.position.set(x + 0.18, 1.56, d / 2 - 0.2);
       cell.add(winTin);
+      const winBottle = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.028, 0.032, 0.12, 8),
+        new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+      );
+      winBottle.position.set(x + 0.02, 1.58, d / 2 - 0.19);
+      winBottle.rotation.z = 1.12;
+      cell.add(winBottle);
       const winSock = new THREE.Mesh(
         new THREE.BoxGeometry(0.06, 0.22, 0.05),
         new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),

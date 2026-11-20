@@ -75,6 +75,8 @@ import {
   DAY3_SEDOY_NIGHT_HOLD_BUNK,
   DAY4_SEDOY_NIGHT_HOLD_BUNK,
   DAY4_SEDOY_NIGHT_FOUND_BUNK,
+  DAY4_SEDOY_WAKE_HOLD_BUNK,
+  DAY4_SEDOY_WAKE_FOUND_BUNK,
   DAY3_WALK_HOLD_WASH,
   DAY3_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_HOLD_BUNK,
@@ -233,6 +235,7 @@ import {
   DAY4_WAKE_HOLD,
   DAY4_WAKE_HOLD_WASH,
   DAY4_WAKE_HOLD_BUNK,
+  DAY4_WAKE_HOLD_BUNK_WAIT,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
   DAY4_LEHA_SHMON_WAIT,
@@ -1001,6 +1004,10 @@ export class CellLife {
                   ? DAY3_FOOD_FOUND_BUNK
                   : g.sim.day >= 3 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                     ? DAY3_SEDOY_FOOD_HOLD_BUNK
+                  : g.sim.day === 4 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                    ? DAY4_SEDOY_WAKE_FOUND_BUNK
+                    : g.sim.day === 4 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                      ? DAY4_SEDOY_WAKE_HOLD_BUNK
                   : g.sim.day === 4 && g.sim.phase.id === 'evening' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
                     ? DAY4_SEDOY_NIGHT_FOUND_BUNK
                     : g.sim.day === 4 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
@@ -1125,6 +1132,8 @@ export class CellLife {
                     ? DAY4_WAKE_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? holdStash(g.sim, { pocket: DAY4_WAKE_HOLD, wash: DAY4_WAKE_HOLD_WASH, bunk: DAY4_WAKE_HOLD_BUNK })
+                      : g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                        ? DAY4_WAKE_HOLD_BUNK_WAIT
                       : DAY4_WAKE
           : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
             ? day4ShmonTalk(g.sim, {
