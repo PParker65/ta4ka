@@ -646,14 +646,25 @@ export class Prison {
     this.group.add(paper);
     this.storyNote = paper;
     const ash = new THREE.Mesh(
-      new THREE.SphereGeometry(0.08, 8, 6),
-      new THREE.MeshStandardMaterial({ color: 0x141410, roughness: 0.96 }),
+      new THREE.SphereGeometry(0.07, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0x1a1814, roughness: 0.96 }),
     );
-    ash.scale.set(2.1, 0.42, 1.6);
-    ash.position.set(ox + 0.08, 0.79, oz + 0.16);
+    ash.scale.set(1.8, 0.38, 1.35);
+    ash.position.set(ox + 0.02, 0.775, oz + 0.18);
     ash.visible = false;
     this.group.add(ash);
     this.storyAsh = ash;
+    const char = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.9 });
+    for (const [ax, az, ry] of [
+      [0.06, 0.04, 0.5],
+      [-0.05, 0.02, -0.4],
+      [0.02, -0.05, 1.1],
+    ]) {
+      const bit = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.012, 0.018), char);
+      bit.position.set(ax, 0.02, az);
+      bit.rotation.y = ry;
+      ash.add(bit);
+    }
     const extra = new THREE.Mesh(
       new THREE.BoxGeometry(0.11, 0.045, 0.08),
       new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.88 }),
@@ -697,7 +708,7 @@ export class Prison {
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
       wash: new THREE.Vector3(ox + 2.28, 1.125, oz + 2.62),
-      bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
+      bunk: new THREE.Vector3(ox + 1.18, 0.66, oz - 2.02),
     };
   }
 
@@ -744,8 +755,9 @@ export class Prison {
       }
     }
     if (this.playerMattress) {
-      this.playerMattress.rotation.z = searching ? 0.85 : 0;
-      this.playerMattress.position.y = searching ? 0.72 : 0.5;
+      const peek = hold && sim.stash === 'bunk' && !searching;
+      this.playerMattress.rotation.z = searching ? 0.85 : peek ? 0.28 : 0;
+      this.playerMattress.position.y = searching ? 0.72 : peek ? 0.58 : 0.5;
     }
     if (this.storyRummage) this.storyRummage.visible = searching;
     if (this.storyFound)

@@ -27,22 +27,32 @@ export function makeHands() {
     arms.push(arm);
   }
   const note = new THREE.Mesh(
-    new THREE.BoxGeometry(0.12, 0.012, 0.08),
+    new THREE.BoxGeometry(0.052, 0.005, 0.034),
     new THREE.MeshStandardMaterial({
-      color: 0xf4e6b0,
-      roughness: 0.78,
-      emissive: 0x6a5420,
-      emissiveIntensity: 0.68,
+      color: 0xe8d9b0,
+      roughness: 0.82,
+      emissive: 0x4a3a12,
+      emissiveIntensity: 0.18,
     }),
   );
-  note.position.set(0.03, 0.048, -0.055);
-  note.rotation.set(-1.1, 0.1, 0.24);
+  note.position.set(0.012, 0.018, -0.072);
+  note.rotation.set(-0.85, 0.18, 0.28);
   const fold = new THREE.Mesh(
-    new THREE.BoxGeometry(0.003, 0.014, 0.068),
-    new THREE.MeshBasicMaterial({ color: 0xb8a878 }),
+    new THREE.BoxGeometry(0.024, 0.004, 0.03),
+    new THREE.MeshBasicMaterial({ color: 0xc8b890 }),
   );
-  fold.position.y = 0.002;
+  fold.position.set(0.012, 0.003, 0);
   note.add(fold);
+  const ink = new THREE.MeshBasicMaterial({ color: 0x2a2418 });
+  for (const [ix, iz, iw] of [
+    [-0.006, 0.008, 0.028],
+    [-0.004, 0.001, 0.022],
+    [0.002, -0.007, 0.016],
+  ]) {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(iw, 0.0015, 0.002), ink);
+    line.position.set(ix, 0.003, iz);
+    note.add(line);
+  }
   note.visible = false;
   arms[0].add(note);
   g.userData.holdNote = note;

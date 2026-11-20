@@ -267,15 +267,15 @@ export class Game {
       this.input.yaw = Math.atan2(0.55, 1.0);
       this.input.pitch = -0.36;
     } else if (look === 'bunk') {
-      this.player.position.set(o.x - 0.2, 0, o.z - 0.4);
-      this.input.yaw = Math.atan2(2.05, -1.95);
-      this.input.pitch = -0.28;
+      this.player.position.set(o.x + 0.48, 0, o.z - 1.08);
+      this.input.yaw = Math.atan2(1.08, -1.18);
+      this.input.pitch = -0.58;
     } else if (look === 'hands') {
-      this.player.position.set(o.x - 1.15, 0, o.z - 0.2);
-      this.input.yaw = 0.15;
-      this.input.pitch = -0.7;
+      this.player.position.set(o.x - 0.85, 0, o.z - 0.15);
+      this.input.yaw = 0.22;
+      this.input.pitch = -0.42;
       this.sim.cuffed = false;
-      this.hands.position.set(0, 0.1, 0.08);
+      this.hands.position.set(0.04, 0.16, 0.12);
       if (this.hands.userData.holdNote && this.sim.malyava === 'hold') {
         this.hands.userData.holdNote.visible = true;
       }
