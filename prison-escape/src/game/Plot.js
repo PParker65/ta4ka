@@ -135,6 +135,12 @@ import {
   DAY6_WALK_FOUND,
   DAY6_WALK_BURN,
   DAY6_WALK_HOLD,
+  DAY7_WALK,
+  DAY7_WALK_GONE,
+  DAY7_WALK_RED,
+  DAY7_WALK_FOUND,
+  DAY7_WALK_BURN,
+  DAY7_WALK_HOLD,
   DAY7_WAKE,
   DAY7_WAKE_GONE,
   DAY7_WAKE_RED,
@@ -404,6 +410,18 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold'
               ? 'Седьмой шмон. Чашу не смотри. Свежак кончился. Карман нет.'
               : 'Седьмой шмон. Свежак кончился. Шарят как в первый. К стене.';
+  if (d === 7 && ph === 'walk')
+    return weekRed(sim)
+      ? 'Седьмой круг. Свежак кончился красным. Сетка та же. Через стену — ни звука.'
+      : sim.malyava === 'gone'
+        ? 'Седьмой круг. Свежак кончился. Бумагу взяли без тебя. Не ори про волю.'
+        : sim.malyava === 'found'
+          ? 'Седьмой круг. Нашли. Свежак кончился на карандаше. Через стену не ори.'
+          : sim.malyava === 'burn'
+            ? 'Седьмой круг. Зола в хате. Свежак кончился. Про дым — ни звука.'
+            : sim.malyava === 'hold'
+              ? 'Седьмой круг. Свежак кончился. Карман жжёт даже на бетоне. Ни звука.'
+              : 'Седьмой круг. Свежак кончился. Сетка та же. Не ори про волю.';
   if (d === 7)
     return weekRed(sim)
       ? 'Неделя. Свежак кончился красным. Молчи. Ешь последним.'
@@ -443,6 +461,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: DAY6_WALK_HOLD, ok: DAY6_WALK }));
+    } else if (s.day === 7 && !s.heardDay7Yard) {
+      s.heardDay7Yard = true;
+      pickDialog(g, weekPick(s, { red: DAY7_WALK_RED, gone: DAY7_WALK_GONE, found: DAY7_WALK_FOUND, burn: DAY7_WALK_BURN, hold: DAY7_WALK_HOLD, ok: DAY7_WALK }));
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, day4Walk(s));

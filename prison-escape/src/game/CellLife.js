@@ -109,6 +109,12 @@ import {
   WEEK_VALERA_FOUND,
   WEEK_VALERA_BURN,
   WEEK_VALERA_RED,
+  DAY7_VALERA,
+  DAY7_VALERA_GONE,
+  DAY7_VALERA_HOLD,
+  DAY7_VALERA_FOUND,
+  DAY7_VALERA_BURN,
+  DAY7_VALERA_RED,
   DAY3_NOTE,
   DAY3_WALK,
   DAY3_WALK_WAIT,
@@ -194,6 +200,12 @@ import {
   DAY7_LEHA_SHMON_FOUND,
   DAY7_LEHA_SHMON_BURN,
   DAY7_LEHA_SHMON_RED,
+  DAY7_LEHA,
+  DAY7_LEHA_GONE,
+  DAY7_LEHA_HOLD,
+  DAY7_LEHA_FOUND,
+  DAY7_LEHA_BURN,
+  DAY7_LEHA_RED,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -227,11 +239,24 @@ import {
   DAY6_WALK_FOUND,
   DAY6_WALK_BURN,
   DAY6_WALK_HOLD,
+  DAY7_WALK,
+  DAY7_WALK_GONE,
+  DAY7_WALK_RED,
+  DAY7_WALK_FOUND,
+  DAY7_WALK_BURN,
+  DAY7_WALK_HOLD,
+  DAY6_NIGHT,
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
   DAY6_NIGHT_FOUND,
   DAY6_NIGHT_BURN,
   DAY6_NIGHT_HOLD,
+  WEEK_HELD,
+  WEEK_HELD_GONE,
+  WEEK_HELD_RED,
+  WEEK_HELD_FOUND,
+  WEEK_HELD_BURN,
+  WEEK_HELD_HOLD,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -251,12 +276,12 @@ function valeraInCell(s) {
       });
     }
     return weekPick(s, {
-      red: WEEK_VALERA_RED,
-      gone: WEEK_VALERA_GONE,
-      found: WEEK_VALERA_FOUND,
-      burn: WEEK_VALERA_BURN,
-      hold: WEEK_VALERA_HOLD,
-      ok: WEEK_VALERA,
+      red: DAY7_VALERA_RED,
+      gone: DAY7_VALERA_GONE,
+      found: DAY7_VALERA_FOUND,
+      burn: DAY7_VALERA_BURN,
+      hold: DAY7_VALERA_HOLD,
+      ok: DAY7_VALERA,
     });
   }
   if (s.day >= 6) {
@@ -786,6 +811,15 @@ export class CellLife {
                 hold: DAY5_SEDOY_SHMON_HOLD,
                 ok: DAY5_SEDOY_SHMON,
               })
+          : g.sim.day >= 7
+            ? weekPick(g.sim, {
+                red: WEEK_HELD_RED,
+                gone: WEEK_HELD_GONE,
+                found: WEEK_HELD_FOUND,
+                burn: WEEK_HELD_BURN,
+                hold: WEEK_HELD_HOLD,
+                ok: WEEK_HELD,
+              })
           : g.sim.day >= 5 && g.sim.courtTalk === 'cell'
           ? DAY5_BACK_CELL
           : g.sim.day >= 5 && g.sim.courtTalk === 'silent'
@@ -891,16 +925,24 @@ export class CellLife {
               hold: DAY5_LEHA_SHMON_HOLD,
               ok: DAY5_LEHA_SHMON,
             })
-          : g.sim.day >= 6 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
-          ? DAY6_NIGHT_RED
-          : g.sim.day >= 6 && g.sim.malyava === 'gone'
-          ? DAY6_NIGHT_GONE
-          : g.sim.day >= 6 && g.sim.malyava === 'found'
-          ? DAY6_NIGHT_FOUND
-          : g.sim.day >= 6 && g.sim.malyava === 'burn'
-          ? DAY6_NIGHT_BURN
-          : g.sim.day >= 6 && g.sim.malyava === 'hold'
-          ? DAY6_NIGHT_HOLD
+          : g.sim.day >= 7
+          ? weekPick(g.sim, {
+              red: DAY7_LEHA_RED,
+              gone: DAY7_LEHA_GONE,
+              found: DAY7_LEHA_FOUND,
+              burn: DAY7_LEHA_BURN,
+              hold: DAY7_LEHA_HOLD,
+              ok: DAY7_LEHA,
+            })
+          : g.sim.day >= 6
+          ? weekPick(g.sim, {
+              red: DAY6_NIGHT_RED,
+              gone: DAY6_NIGHT_GONE,
+              found: DAY6_NIGHT_FOUND,
+              burn: DAY6_NIGHT_BURN,
+              hold: DAY6_NIGHT_HOLD,
+              ok: DAY6_NIGHT,
+            })
           : g.sim.day >= 5 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
           ? DAY5_WAKE_RED
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
@@ -1017,7 +1059,16 @@ export class CellLife {
     if (id === 'bunk-bro') {
       g.unlockLook();
       const valera =
-        g.sim.phase.id === 'walk' && g.sim.day >= 6
+        g.sim.phase.id === 'walk' && g.sim.day >= 7
+          ? weekPick(g.sim, {
+              red: DAY7_WALK_RED,
+              gone: DAY7_WALK_GONE,
+              found: DAY7_WALK_FOUND,
+              burn: DAY7_WALK_BURN,
+              hold: DAY7_WALK_HOLD,
+              ok: DAY7_WALK,
+            })
+          : g.sim.phase.id === 'walk' && g.sim.day >= 6
           ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
             ? DAY6_WALK_RED
             : g.sim.malyava === 'gone'

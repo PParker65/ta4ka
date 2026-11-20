@@ -2056,6 +2056,44 @@ export class Prison {
       const seg = this.box(0.78, 0.03, 0.22, lime, Math.cos(a) * 2.4, 0.06, Math.sin(a) * 2.4, g);
       seg.rotation.y = -a;
     }
+    const limeMud = new THREE.MeshStandardMaterial({ color: 0x4a4638, roughness: 0.96 });
+    this.box(0.42, 0.02, 0.18, limeMud, 0.55, 0.055, 2.15, g);
+    this.box(0.28, 0.018, 0.14, limeMud, -0.7, 0.055, 1.85, g);
+    this.box(0.22, 0.016, 0.2, limeMud, 0.15, 0.055, 2.55, g);
+    const spit = new THREE.MeshStandardMaterial({ color: 0x5a5848, roughness: 0.22, metalness: 0.08, transparent: true, opacity: 0.4 });
+    for (const [sx, sz] of [
+      [0.35, 1.45],
+      [-0.22, 1.95],
+      [0.08, 2.35],
+    ]) {
+      const s = new THREE.Mesh(new THREE.CircleGeometry(0.07, 6), spit);
+      s.rotation.x = -Math.PI / 2;
+      s.position.set(sx, 0.048, sz);
+      g.add(s);
+    }
+    const paperYard = new THREE.Mesh(
+      new THREE.BoxGeometry(0.34, 0.014, 0.24),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    paperYard.position.set(0.22, 0.07, 0.95);
+    paperYard.rotation.y = 0.55;
+    g.add(paperYard);
+    this.box(0.62, 0.024, 0.32, limeMud, -0.15, 0.06, 1.05, g);
+    this.box(0.4, 0.02, 0.22, limeMud, 0.55, 0.058, 1.12, g);
+    const buttKrug = new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 });
+    for (const [bx, bz, ry] of [
+      [0.42, 1.62, 0.6],
+      [-0.18, 2.05, -0.4],
+      [0.12, 1.38, 1.1],
+      [0.08, 1.78, 0.9],
+      [-0.32, 1.48, -0.7],
+    ]) {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.035, 5), buttKrug);
+      c.rotation.z = Math.PI / 2;
+      c.rotation.y = ry;
+      c.position.set(bx, 0.055, bz);
+      g.add(c);
+    }
     const circle = floorPaint('КРУГ');
     circle.rotation.x = -Math.PI / 2;
     circle.rotation.z = Math.PI;
@@ -2171,6 +2209,29 @@ export class Prison {
     stand.position.set(4.18, 1.55, -0.8);
     stand.rotation.y = -Math.PI / 2;
     g.add(stand);
+    const wallRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.42, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.94 }),
+    );
+    wallRag.position.set(4.12, 1.05, -0.35);
+    wallRag.rotation.x = 0.15;
+    g.add(wallRag);
+    const wallDrip = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.85, transparent: true, opacity: 0.55 });
+    this.box(0.03, 1.15, 0.08, wallDrip, 4.22, 1.85, -1.15, g);
+    this.box(0.03, 0.85, 0.06, wallDrip, 4.22, 1.55, -0.55, g);
+    const wallBox = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.28, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x3a4238, metalness: 0.35, roughness: 0.55 }),
+    );
+    wallBox.position.set(4.18, 1.35, 0.15);
+    g.add(wallBox);
+    const wallWire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.01, 0.01, 0.85, 5),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.85 }),
+    );
+    wallWire.position.set(4.16, 2.05, 0.15);
+    wallWire.rotation.z = 0.15;
+    g.add(wallWire);
     const hushYard = wallScratch('НЕ СВИСТИ');
     hushYard.scale.set(1.1, 1.1, 1.1);
     hushYard.position.set(-4.2, 1.7, 1.2);
