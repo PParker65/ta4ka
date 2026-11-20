@@ -76,6 +76,7 @@ import {
   DAY7_SHMON_GONE,
   DAY7_SHMON_HOLD,
   DAY7_SHMON_FOUND,
+  DAY7_SHMON_FOUND_BUNK,
   DAY7_SHMON_BURN,
   DAY7_SHMON_RED,
   DAY4_LEHA,
@@ -502,7 +503,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Седьмой шмон. Щель пустая с пятого. Бумагу взяли без тебя. К стене.'
         : sim.malyava === 'found'
-          ? 'Седьмой шмон. Нашли. Жар. Свежак кончился. Рот на замок.'
+          ? sim.stash === 'bunk'
+            ? 'Седьмой шмон. Нашли в матрасе. Свежак кончился. Рот на замок.'
+            : 'Седьмой шмон. Нашли в кармане. Свежак кончился. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Седьмой шмон. Пахнет золой. Свежак кончился. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -661,7 +664,7 @@ export function onPhaseEnter(game, id) {
       );
       if (s.day === 7 && !s.seenDay7Shmon) {
         s.seenDay7Shmon = true;
-        pickDialog(g, DAY7_SHMON_FOUND);
+        pickDialog(g, s.stash === 'bunk' ? DAY7_SHMON_FOUND_BUNK : DAY7_SHMON_FOUND);
       } else if (s.day === 6 && !s.seenDay6Shmon) {
         s.seenDay6Shmon = true;
         pickDialog(g, DAY6_SHMON_FOUND);

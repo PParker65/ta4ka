@@ -43,6 +43,7 @@ import {
   DAY7_SEDOY_SHMON_GONE,
   DAY7_SEDOY_SHMON_HOLD,
   DAY7_SEDOY_SHMON_FOUND,
+  DAY7_SEDOY_SHMON_FOUND_BUNK,
   DAY7_SEDOY_SHMON_BURN,
   DAY7_SEDOY_SHMON_RED,
   DAY2_YARD,
@@ -78,6 +79,7 @@ import {
   DAY3_VALERA_SHMON_HOLD,
   DAY3_VALERA_SHMON_WASH,
   DAY3_VALERA_SHMON_FOUND,
+  DAY3_VALERA_SHMON_FOUND_BUNK,
   DAY3_VALERA_SHMON_BURN,
   DAY3_VALERA_SHMON_RED,
   DAY3_VALERA_SHMON_CAUGHT,
@@ -394,7 +396,7 @@ function valeraInCell(s) {
   if (s.day >= 3) {
     if (s.phase.id === 'shmon') {
       if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_SHMON_RED;
-      if (s.malyava === 'found') return DAY3_VALERA_SHMON_FOUND;
+      if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_SHMON_FOUND_BUNK : DAY3_VALERA_SHMON_FOUND;
       if (s.malyava === 'hold' && s.stash === 'wash') return DAY3_VALERA_SHMON_WASH;
       if (s.malyava === 'hold' && s.stash === 'bunk') return DAY3_VALERA_SHMON_HOLD_BUNK;
       if (s.malyava === 'hold') return DAY3_VALERA_SHMON_HOLD;
@@ -839,7 +841,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY7_SEDOY_SHMON_RED,
               gone: DAY7_SEDOY_SHMON_GONE,
-              found: DAY7_SEDOY_SHMON_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY7_SEDOY_SHMON_FOUND_BUNK : DAY7_SEDOY_SHMON_FOUND,
               burn: DAY7_SEDOY_SHMON_BURN,
               hold: DAY7_SEDOY_SHMON_HOLD,
               ok: DAY7_SEDOY_SHMON,

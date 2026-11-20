@@ -2173,15 +2173,37 @@ export class Prison {
     this.box(0.07, 0.04, 1.2, cageRust, 1.15, 3.34, -0.25, g);
     this.box(0.9, 0.035, 0.06, cageRust, 0.2, 3.34, -1.4, g);
     const cageTarp = new THREE.MeshStandardMaterial({
-      color: 0x6a6860,
+      color: 0x5c5a52,
       roughness: 0.94,
-      transparent: true,
-      opacity: 0.78,
       side: THREE.DoubleSide,
     });
-    this.box(2.6, 0.025, 1.9, cageTarp, -1.35, 3.355, 0.55, g);
-    this.box(2.1, 0.025, 2.3, cageTarp, 1.55, 3.355, -0.85, g);
-    this.box(1.7, 0.022, 1.5, cageTarp, 0.15, 3.355, 1.85, g);
+    this.box(2.6, 0.04, 1.9, cageTarp, -1.35, 3.32, 0.55, g);
+    this.box(2.1, 0.04, 2.3, cageTarp, 1.55, 3.32, -0.85, g);
+    this.box(1.7, 0.038, 1.5, cageTarp, 0.15, 3.32, 1.85, g);
+    const cageTarpDark = new THREE.MeshStandardMaterial({
+      color: 0x3e3c36,
+      roughness: 0.96,
+      side: THREE.DoubleSide,
+    });
+    this.box(2.8, 0.045, 2.2, cageTarpDark, 0.05, 3.31, -0.15, g);
+    this.box(2.2, 0.04, 1.7, cageTarp, -2.05, 3.32, -1.75, g);
+    this.box(2.0, 0.04, 1.6, cageTarp, 2.15, 3.32, 1.65, g);
+    this.box(1.8, 0.038, 1.4, cageTarpDark, -0.9, 3.31, 2.35, g);
+    this.box(2.4, 0.042, 1.8, cageTarpDark, -0.8, 3.31, -2.65, g);
+    this.box(2.2, 0.04, 1.6, cageTarp, 1.4, 3.32, -3.15, g);
+    this.box(1.9, 0.038, 1.5, cageTarp, -2.2, 3.32, -3.35, g);
+    const cageTarpHang = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.55, 0.03), cageTarpDark);
+    cageTarpHang.position.set(-0.4, 3.08, 0.2);
+    cageTarpHang.rotation.x = 0.18;
+    g.add(cageTarpHang);
+    const cageTarpHang2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.42, 0.03), cageTarp);
+    cageTarpHang2.position.set(1.1, 3.1, -0.55);
+    cageTarpHang2.rotation.x = -0.14;
+    g.add(cageTarpHang2);
+    const cageTarpHang3 = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.48, 0.03), cageTarpDark);
+    cageTarpHang3.position.set(0.2, 3.05, -2.4);
+    cageTarpHang3.rotation.x = 0.22;
+    g.add(cageTarpHang3);
     const cageDrop = new THREE.MeshStandardMaterial({ color: 0xd4ccc0, roughness: 0.72, transparent: true, opacity: 0.5 });
     this.box(0.1, 0.02, 0.55, cageDrop, -0.55, 3.345, 0.15, g);
     this.box(0.08, 0.02, 0.4, cageDrop, 1.25, 3.345, -1.05, g);
@@ -2282,10 +2304,10 @@ export class Prison {
       const seg = this.box(0.78, 0.03, 0.22, lime, Math.cos(a) * 2.4, 0.06, Math.sin(a) * 2.4, g);
       seg.rotation.y = -a;
     }
-    const limeMud = new THREE.MeshStandardMaterial({ color: 0x4a4638, roughness: 0.96 });
-    this.box(0.42, 0.02, 0.18, limeMud, 0.55, 0.055, 2.15, g);
-    this.box(0.28, 0.018, 0.14, limeMud, -0.7, 0.055, 1.85, g);
-    this.box(0.22, 0.016, 0.2, limeMud, 0.15, 0.055, 2.55, g);
+    const limeMud = new THREE.MeshStandardMaterial({ color: 0x3a2414, roughness: 0.98 });
+    this.box(0.62, 0.04, 0.28, limeMud, 0.55, 0.09, 2.15, g);
+    this.box(0.48, 0.036, 0.22, limeMud, -0.7, 0.088, 1.85, g);
+    this.box(0.4, 0.034, 0.3, limeMud, 0.15, 0.087, 2.55, g);
     const spit = new THREE.MeshStandardMaterial({ color: 0x5a5848, roughness: 0.22, metalness: 0.08, transparent: true, opacity: 0.4 });
     for (const [sx, sz] of [
       [0.35, 1.45],
@@ -2315,7 +2337,7 @@ export class Prison {
       new THREE.BoxGeometry(0.32, 0.04, 0.2),
       new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.95 }),
     );
-    krugRag.position.set(0.18, 0.05, 0.42);
+    krugRag.position.set(0.18, 0.1, 0.42);
     krugRag.rotation.y = 0.45;
     g.add(krugRag);
     const core = new THREE.Mesh(
@@ -2323,28 +2345,29 @@ export class Prison {
       new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.9 }),
     );
     core.scale.set(1, 0.45, 1);
-    core.position.set(-0.12, 0.05, 0.68);
+    core.position.set(-0.12, 0.1, 0.68);
     g.add(core);
-    const krugPrint = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.96 });
-    this.box(0.16, 0.012, 0.28, krugPrint, -0.35, 0.045, 0.58, g);
-    this.box(0.14, 0.01, 0.24, krugPrint, 0.08, 0.044, 0.78, g);
-    this.box(0.62, 0.024, 0.32, limeMud, -0.15, 0.06, 1.05, g);
-    this.box(0.4, 0.02, 0.22, limeMud, 0.55, 0.058, 1.12, g);
-    this.box(0.55, 0.022, 0.28, limeMud, -0.65, 0.058, 1.55, g);
-    this.box(0.38, 0.02, 0.34, limeMud, 0.72, 0.056, 1.85, g);
-    this.box(0.48, 0.018, 0.22, limeMud, 0.15, 0.054, 2.15, g);
+    const krugPrint = new THREE.MeshStandardMaterial({ color: 0x2a1810, roughness: 0.96 });
+    this.box(0.22, 0.02, 0.34, krugPrint, -0.35, 0.086, 0.58, g);
+    this.box(0.2, 0.018, 0.3, krugPrint, 0.08, 0.085, 0.78, g);
+    this.box(0.78, 0.042, 0.4, limeMud, -0.15, 0.092, 1.05, g);
+    this.box(0.55, 0.038, 0.3, limeMud, 0.55, 0.09, 1.12, g);
+    this.box(0.7, 0.04, 0.36, limeMud, -0.65, 0.09, 1.55, g);
+    this.box(0.5, 0.036, 0.42, limeMud, 0.72, 0.088, 1.85, g);
+    this.box(0.62, 0.034, 0.3, limeMud, 0.15, 0.087, 2.15, g);
+    this.box(0.9, 0.045, 0.38, limeMud, 0.05, 0.094, 1.7, g);
     const paperKrug3 = new THREE.Mesh(
       new THREE.BoxGeometry(0.16, 0.01, 0.11),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
     );
-    paperKrug3.position.set(-0.55, 0.055, 1.42);
+    paperKrug3.position.set(-0.55, 0.1, 1.42);
     paperKrug3.rotation.y = 0.4;
     g.add(paperKrug3);
     const krugRag2 = new THREE.Mesh(
       new THREE.BoxGeometry(0.26, 0.035, 0.16),
       new THREE.MeshStandardMaterial({ color: 0x4a3c32, roughness: 0.95 }),
     );
-    krugRag2.position.set(0.48, 0.048, 1.55);
+    krugRag2.position.set(0.48, 0.1, 1.55);
     krugRag2.rotation.y = -0.55;
     g.add(krugRag2);
     const buttKrug = new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 });
