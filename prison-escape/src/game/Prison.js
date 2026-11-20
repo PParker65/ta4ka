@@ -451,7 +451,7 @@ export class Prison {
     this.addLivedIn(cell);
     this.addCat(cell);
     this.addCellLamp(cell, 0, h - 0.12, 0);
-    const ceilDamp = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.45 });
+    const ceilDamp = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.72 });
     this.box(1.4, 0.02, 0.55, ceilDamp, -0.4, h - 0.05, 0.8, cell);
     this.box(0.7, 0.02, 0.9, ceilDamp, 0.85, h - 0.05, -0.4, cell);
     this.box(0.35, 0.02, 1.6, ceilDamp, -1.1, h - 0.05, 0.2, cell);
@@ -487,6 +487,58 @@ export class Prison {
     peel.position.set(0.6, h - 0.08, 1.1);
     peel.rotation.z = 0.12;
     cell.add(peel);
+    const ceilPeel2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.9, 0.045, 0.48),
+      new THREE.MeshStandardMaterial({ color: 0xb8b09c, roughness: 0.94 }),
+    );
+    ceilPeel2.position.set(-0.12, h - 0.055, 0.32);
+    ceilPeel2.rotation.z = -0.1;
+    cell.add(ceilPeel2);
+    const ceilPeel3 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.52, 0.038, 0.72),
+      new THREE.MeshStandardMaterial({ color: 0xc4bcac, roughness: 0.92 }),
+    );
+    ceilPeel3.position.set(0.42, h - 0.06, -0.12);
+    ceilPeel3.rotation.y = 0.28;
+    cell.add(ceilPeel3);
+    const ceilRust = new THREE.MeshStandardMaterial({ color: 0x5a3a28, roughness: 0.88 });
+    this.box(0.14, 0.025, 0.62, ceilRust, 0.08, h - 0.04, 0.18, cell);
+    this.box(0.1, 0.022, 0.38, ceilRust, -0.38, h - 0.04, 0.52, cell);
+    const ceilCord = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.01, 0.01, 0.42, 5),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a26, roughness: 0.9 }),
+    );
+    ceilCord.position.set(0.22, h - 0.28, 0.08);
+    ceilCord.rotation.z = 0.22;
+    cell.add(ceilCord);
+    const ceilPeel4 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.82, 0.042, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0xa89a82, roughness: 0.94 }),
+    );
+    ceilPeel4.position.set(-0.4, h - 0.048, 0.04);
+    ceilPeel4.rotation.z = 0.08;
+    cell.add(ceilPeel4);
+    const ceilBlotch = new THREE.MeshStandardMaterial({ color: 0x4a3828, roughness: 0.9 });
+    this.box(1.05, 0.03, 0.82, ceilBlotch, -0.06, h - 0.03, 0.1, cell);
+    this.box(0.48, 0.028, 0.58, ceilBlotch, 0.52, h - 0.03, 0.38, cell);
+    this.box(1.15, 0.032, 0.9, ceilBlotch, 0.12, h - 0.03, 0.88, cell);
+    this.box(0.72, 0.028, 0.58, ceilBlotch, -0.48, h - 0.03, 0.68, cell);
+    const ceilPeel5 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.7, 0.045, 0.5),
+      new THREE.MeshStandardMaterial({ color: 0xb0a48c, roughness: 0.94 }),
+    );
+    ceilPeel5.position.set(0.18, h - 0.05, 0.92);
+    ceilPeel5.rotation.z = -0.06;
+    cell.add(ceilPeel5);
+    const ceilRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.44, 0.045),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3c, roughness: 0.96 }),
+    );
+    ceilRag.position.set(0.12, h - 0.34, 0.58);
+    ceilRag.rotation.z = 0.28;
+    cell.add(ceilRag);
+    const ceilRing = new THREE.MeshStandardMaterial({ color: 0x6a4a32, roughness: 0.82, metalness: 0.12 });
+    this.box(0.42, 0.022, 0.42, ceilRing, 0.02, h - 0.038, 0.02, cell);
     const lintelPeel = new THREE.Mesh(
       new THREE.BoxGeometry(0.025, 0.22, 0.48),
       new THREE.MeshStandardMaterial({ color: 0xb8b09c, roughness: 0.94 }),
@@ -1994,6 +2046,16 @@ export class Prison {
     this.box(0.1, 1.05, 0.03, gateDamp, 2.72, 2.18, wallZ + 0.18, g);
     this.box(0.1, 0.22, 0.03, gatePeel, -1.85, 2.52, wallZ + 0.18, g);
     this.box(0.11, 0.18, 0.03, gatePeel, 2.18, 1.88, wallZ + 0.18, g);
+    this.box(1.2, 0.58, 0.03, gatePeel, -1.55, 2.78, wallZ + 0.18, g);
+    this.box(0.92, 0.45, 0.03, gatePeel, 1.48, 2.7, wallZ + 0.18, g);
+    this.box(0.62, 0.32, 0.03, gatePeel, 0.05, 2.92, wallZ + 0.18, g);
+    const gateLintelRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.52, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x4a3a32, roughness: 0.95 }),
+    );
+    gateLintelRag.position.set(0.58, 2.38, wallZ + 0.3);
+    gateLintelRag.rotation.z = 0.2;
+    g.add(gateLintelRag);
     const gateFuse = new THREE.MeshStandardMaterial({ color: 0x3a4238, metalness: 0.38, roughness: 0.52 });
     this.box(0.32, 0.42, 0.08, gateFuse, -3.15, 1.55, wallZ + 0.22, g);
     this.box(0.08, 0.06, 0.04, gateFuse, -3.15, 1.68, wallZ + 0.28, g);
@@ -2001,6 +2063,8 @@ export class Prison {
     const gateDrip = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.85, transparent: true, opacity: 0.55 });
     this.box(0.08, 0.85, 0.03, gateDrip, -2.52, 2.15, wallZ + 0.18, g);
     this.box(0.07, 0.7, 0.03, gateDrip, 2.68, 2.22, wallZ + 0.18, g);
+    this.box(0.2, 1.45, 0.03, gateDrip, -1.12, 2.45, wallZ + 0.18, g);
+    this.box(0.16, 1.2, 0.03, gateDrip, 1.28, 2.52, wallZ + 0.18, g);
     const haltYard = wallScratch('СТОЙ');
     haltYard.scale.set(1.1, 1.1, 1.1);
     haltYard.position.set(-3.15, 2.05, wallZ + 0.22);
@@ -2091,6 +2155,23 @@ export class Prison {
     for (let y = 0.4; y <= 3.1; y += 0.38) {
       this.box(8.6, 0.03, 0.03, mesh, 0, y, 4.28, g);
     }
+    const cageRagMat = new THREE.MeshStandardMaterial({ color: 0x4a3e34, roughness: 0.95 });
+    const cageRagA = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.58, 0.04), cageRagMat);
+    cageRagA.position.set(-1.15, 3.02, 1.35);
+    cageRagA.rotation.z = 0.22;
+    g.add(cageRagA);
+    const cageRagB = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.44, 0.04), cageRagMat);
+    cageRagB.position.set(1.55, 3.08, -0.75);
+    cageRagB.rotation.z = -0.16;
+    g.add(cageRagB);
+    const cageRagC = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.5, 0.04), cageRagMat);
+    cageRagC.position.set(0.35, 3.04, 0.55);
+    cageRagC.rotation.z = 0.12;
+    g.add(cageRagC);
+    const cageRust = new THREE.MeshStandardMaterial({ color: 0x5a3824, roughness: 0.7, metalness: 0.2 });
+    this.box(1.55, 0.04, 0.07, cageRust, -0.35, 3.34, 0.55, g);
+    this.box(0.07, 0.04, 1.2, cageRust, 1.15, 3.34, -0.25, g);
+    this.box(0.9, 0.035, 0.06, cageRust, 0.2, 3.34, -1.4, g);
     const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
     this.box(1.6, 0.08, 0.36, bench, -2.7, 0.42, -1.55, g);
     this.box(0.08, 0.4, 0.08, bench, -3.3, 0.2, -1.65, g);

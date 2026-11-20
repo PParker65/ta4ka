@@ -50,6 +50,7 @@ import {
   DAY3_WALK_BURN,
   DAY3_WALK_FOUND,
   DAY3_SHMON_FOUND,
+  DAY3_SHMON_FOUND_BUNK,
   DAY3_SHMON_WASH,
   DAY3_SHMON_HATCH,
   DAY3_SHMON_BURN,
@@ -220,7 +221,10 @@ export function plotObjective(sim) {
               ? 'Третий подъём. Вчера матрас пел. Щель уже тихая. Два коротких — после пайки. Не зевай.'
               : 'Третий день. Щель уже тихая. Два коротких — после пайки. Не зевай.';
   if (d === 3 && ph === 'shmon') {
-    if (sim.malyava === 'found') return 'Нашли бумагу. К стене. Руки видно. Рот на замок.';
+    if (sim.malyava === 'found')
+      return sim.stash === 'bunk'
+        ? 'Нашли в матрасе. К стене. Руки видно. Рот на замок.'
+        : 'Нашли в кармане. К стене. Руки видно. Рот на замок.';
     if (sim.malyava === 'admin' || sim.path === 'red') return 'Шмон. Вчера слово село. К стене. Не оправдывайся.';
     if (sim.malyava === 'hold' && sim.stash === 'wash') return 'Шмон. Чаша сегодня не их дело. Не смотри на неё.';
     if (sim.malyava === 'hold' && sim.stash === 'bunk') return 'Шмон. Матрас первым. Не смотри на койку. Руки видно.';
@@ -534,7 +538,8 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
       if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_NIGHT_RED);
-      else if (s.malyava === 'hold') pickDialog(g, DAY3_NIGHT_HOLD);
+      else if (s.malyava === 'hold')
+        pickDialog(g, holdStash(s, { pocket: DAY3_NIGHT_HOLD, wash: DAY3_NIGHT_HOLD_WASH, bunk: DAY3_NIGHT_HOLD_BUNK }));
       else if (s.malyava === 'burn') pickDialog(g, DAY3_NIGHT_BURN);
       else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
@@ -564,7 +569,11 @@ export function onPhaseEnter(game, id) {
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
-      g.toast('Нашли бумагу. Карман пустой, жар полный.');
+      g.toast(
+        s.stash === 'bunk'
+          ? 'Нашли в матрасе. Койка пустая, жар полный.'
+          : 'Нашли бумагу. Карман пустой, жар полный.',
+      );
       if (s.day === 7 && !s.seenDay7Shmon) {
         s.seenDay7Shmon = true;
         pickDialog(g, DAY7_SHMON_FOUND);
@@ -579,7 +588,7 @@ export function onPhaseEnter(game, id) {
         pickDialog(g, DAY4_SHMON_FOUND);
       } else if (!s.seenDay3Shmon) {
         s.seenDay3Shmon = true;
-        pickDialog(g, DAY3_SHMON_FOUND);
+        pickDialog(g, s.stash === 'bunk' ? DAY3_SHMON_FOUND_BUNK : DAY3_SHMON_FOUND);
       } else {
         g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       }
