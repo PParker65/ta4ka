@@ -37,6 +37,14 @@ import {
   DAY3_VALERA_BURN,
   DAY3_VALERA_FOUND,
   DAY3_VALERA_RED,
+  DAY3_VALERA_SHMON,
+  DAY3_VALERA_SHMON_HATCH,
+  DAY3_VALERA_SHMON_HOLD,
+  DAY3_VALERA_SHMON_WASH,
+  DAY3_VALERA_SHMON_FOUND,
+  DAY3_VALERA_SHMON_BURN,
+  DAY3_VALERA_SHMON_RED,
+  DAY3_VALERA_SHMON_CAUGHT,
   DAY4_VALERA,
   DAY4_VALERA_WAIT,
   DAY4_VALERA_PAID,
@@ -103,6 +111,14 @@ import {
   DAY3_LEHA_FOUND,
   DAY3_LEHA_RED,
   DAY3_LEHA_CAUGHT,
+  DAY3_LEHA_SHMON,
+  DAY3_LEHA_SHMON_HATCH,
+  DAY3_LEHA_SHMON_HOLD,
+  DAY3_LEHA_SHMON_WASH,
+  DAY3_LEHA_SHMON_FOUND,
+  DAY3_LEHA_SHMON_BURN,
+  DAY3_LEHA_SHMON_RED,
+  DAY3_LEHA_SHMON_CAUGHT,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -183,6 +199,16 @@ function valeraInCell(s) {
     return DAY4_VALERA;
   }
   if (s.day >= 3) {
+    if (s.phase.id === 'shmon') {
+      if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_SHMON_RED;
+      if (s.malyava === 'found') return DAY3_VALERA_SHMON_FOUND;
+      if (s.malyava === 'hold' && s.stash === 'wash') return DAY3_VALERA_SHMON_WASH;
+      if (s.malyava === 'hold') return DAY3_VALERA_SHMON_HOLD;
+      if (s.malyava === 'burn') return DAY3_VALERA_SHMON_BURN;
+      if (!s.malyava) return DAY3_VALERA_SHMON_HATCH;
+      if (s.stash === 'bunk') return DAY3_VALERA_SHMON_CAUGHT;
+      return DAY3_VALERA_SHMON;
+    }
     if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
     if (s.malyava === 'found') return DAY3_VALERA_FOUND;
     if (s.malyava === 'hold') return DAY3_VALERA_HOLD;
@@ -735,6 +761,22 @@ export class CellLife {
                     : !g.sim.malyava
                       ? DAY3_NIGHT_WAIT
                       : DAY3_NIGHT
+          : g.sim.day >= 3 && g.sim.phase.id === 'shmon'
+            ? g.sim.malyava === 'admin' || g.sim.path === 'red'
+              ? DAY3_LEHA_SHMON_RED
+              : g.sim.malyava === 'found'
+                ? DAY3_LEHA_SHMON_FOUND
+                : g.sim.malyava === 'hold' && g.sim.stash === 'wash'
+                  ? DAY3_LEHA_SHMON_WASH
+                  : g.sim.malyava === 'hold'
+                    ? DAY3_LEHA_SHMON_HOLD
+                    : g.sim.malyava === 'burn'
+                      ? DAY3_LEHA_SHMON_BURN
+                      : !g.sim.malyava
+                        ? DAY3_LEHA_SHMON_HATCH
+                        : g.sim.stash === 'bunk'
+                          ? DAY3_LEHA_SHMON_CAUGHT
+                          : DAY3_LEHA_SHMON
           : g.sim.day >= 3
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_LEHA_RED

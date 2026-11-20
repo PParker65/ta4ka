@@ -259,9 +259,9 @@ export class Game {
       this.input.yaw = -Math.PI / 2;
       this.input.pitch = 0.02;
     } else if (look === 'table') {
-      this.player.position.set(o.x - 0.35, 0, o.z - 1.15);
-      this.input.yaw = 0.12;
-      this.input.pitch = -0.22;
+      this.player.position.set(o.x - 0.05, 0, o.z - 0.55);
+      this.input.yaw = 0.18;
+      this.input.pitch = -0.58;
     } else if (look === 'steam') {
       this.player.position.set(o.x - 0.7, 0, o.z - 0.85);
       this.input.yaw = Math.atan2(0.55, 1.0);
