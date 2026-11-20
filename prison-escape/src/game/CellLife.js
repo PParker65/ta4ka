@@ -61,7 +61,12 @@ import {
   DAY5_WALK_FOUND,
   DAY5_WALK_BURN,
   DAY5_WALK_RED,
+  DAY5_WAKE,
   DAY5_WAKE_GONE,
+  DAY5_WAKE_FOUND,
+  DAY5_WAKE_BURN,
+  DAY5_WAKE_HOLD,
+  DAY5_WAKE_RED,
   DAY6_WALK,
   DAY6_WALK_GONE,
   DAY6_WALK_RED,
@@ -529,8 +534,18 @@ export class CellLife {
           ? DAY6_NIGHT_BURN
           : g.sim.day >= 6 && g.sim.malyava === 'hold'
           ? DAY6_NIGHT_HOLD
+          : g.sim.day >= 5 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
+          ? DAY5_WAKE_RED
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
+          : g.sim.day >= 5 && g.sim.malyava === 'found'
+          ? DAY5_WAKE_FOUND
+          : g.sim.day >= 5 && g.sim.malyava === 'burn'
+          ? DAY5_WAKE_BURN
+          : g.sim.day >= 5 && g.sim.malyava === 'hold'
+          ? DAY5_WAKE_HOLD
+          : g.sim.day >= 5
+          ? DAY5_WAKE
           : g.sim.day >= 4
             ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
               ? DAY4_LEHA_RED

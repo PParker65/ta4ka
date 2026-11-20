@@ -1073,6 +1073,33 @@ export class Prison {
     );
     sugar.position.set(-0.02, 0.77, 0.28);
     cell.add(sugar);
+    const spoon = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.012, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.55, roughness: 0.4 }),
+    );
+    spoon.position.set(0.22, 0.755, 0.22);
+    spoon.rotation.y = 0.6;
+    cell.add(spoon);
+    const crust = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.04, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.85 }),
+    );
+    crust.position.set(0.58, 0.77, 0.08);
+    crust.rotation.y = -0.3;
+    cell.add(crust);
+    const stain = new THREE.Mesh(
+      new THREE.CircleGeometry(0.09, 7),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a40, roughness: 0.9, transparent: true, opacity: 0.45 }),
+    );
+    stain.rotation.x = -Math.PI / 2;
+    stain.position.set(0.08, 0.748, 0.18);
+    cell.add(stain);
+    const ashtray = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.038, 0.025, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.7 }),
+    );
+    ashtray.position.set(0.48, 0.76, 0.28);
+    cell.add(ashtray);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),

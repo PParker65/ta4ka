@@ -67,9 +67,16 @@ import {
   DAY5_COURT_GONE,
   DAY5_WAKE,
   DAY5_WAKE_GONE,
+  DAY5_WAKE_FOUND,
+  DAY5_WAKE_BURN,
+  DAY5_WAKE_HOLD,
+  DAY5_WAKE_RED,
   DAY5_SLED,
   DAY5_SLED_GONE,
   DAY5_SLED_RED,
+  DAY5_SLED_FOUND,
+  DAY5_SLED_BURN,
+  DAY5_SLED_HOLD,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -258,13 +265,29 @@ export function plotObjective(sim) {
               ? 'Шестой круг. Карман жжёт даже на бетоне. Через стену — ни звука.'
               : 'Шестой круг. Завтра не ори про волю.';
   if (d === 5 && ph === 'wake')
-    return sim.malyava === 'gone'
-      ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
-      : 'С коряка шепчут список. Днём щель станет кабинетом.';
+    return weekRed(sim)
+      ? 'Пятый подъём. Чайник молчит. Список всё равно дойдёт.'
+      : sim.malyava === 'gone'
+        ? 'Щель пустая. Бумагу взяли без тебя. Днём щель станет кабинетом.'
+        : sim.malyava === 'found'
+          ? 'Пятый подъём. Нашли. Жар не сняли. Днём щель станет кабинетом.'
+          : sim.malyava === 'burn'
+            ? 'Пятый подъём. Зола ещё пахнет. Днём щель станет кабинетом.'
+            : sim.malyava === 'hold'
+              ? 'Пятый подъём. Карман жжёт. Днём щель станет кабинетом. Не шарь.'
+              : 'С коряка шепчут список. Днём щель станет кабинетом.';
   if (d === 5 && ph === 'food' && !sim.courtTalk)
-    return sim.malyava === 'gone'
-      ? 'Вызов. Бумага уже в папке. Следователь знает щель. Про хату — или про срок.'
-      : 'Вызов. Следователь в щели. Про хату — или про срок.';
+    return weekRed(sim)
+      ? 'Вызов. Имена уже в щели. Следователь просит ещё.'
+      : sim.malyava === 'gone'
+        ? 'Вызов. Бумага уже в папке. Следователь знает щель. Про хату — или про срок.'
+        : sim.malyava === 'found'
+          ? 'Вызов. Карман нашли. Теперь имена. Про хату — или про срок.'
+          : sim.malyava === 'burn'
+            ? 'Вызов. Нос казённый. Про дым — или про хату.'
+            : sim.malyava === 'hold'
+              ? 'Вызов. Карман шуршит. Следователь слышит. Про хату — или про срок.'
+              : 'Вызов. Следователь в щели. Про хату — или про срок.';
   if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
   if (d === 5 && sim.courtTalk === 'silent') return 'Про хату — ничего. Жар есть. Хата ещё дышит.';
   if (d === 5 && sim.courtTalk === 'self') return '«Ничего не видел.» Хата слышала тон. Не рассказывай сон.';
@@ -458,7 +481,7 @@ export function onPhaseEnter(game, id) {
         s.malyava = 'gone';
         s.heat = Math.min(100, s.heat + 12);
       }
-      pickDialog(g, s.malyava === 'admin' ? DAY5_SLED_RED : s.malyava === 'gone' ? DAY5_SLED_GONE : DAY5_SLED);
+      pickDialog(g, weekPick(s, { red: DAY5_SLED_RED, gone: DAY5_SLED_GONE, found: DAY5_SLED_FOUND, burn: DAY5_SLED_BURN, hold: DAY5_SLED_HOLD, ok: DAY5_SLED }));
       return;
     }
     if (s.day === 6 && !s.seenDay6Food) {
@@ -509,10 +532,8 @@ export function onPhaseEnter(game, id) {
         s.malyava = 'gone';
         s.heat = Math.min(100, s.heat + 12);
         s.hope = Math.max(0, s.hope - 6);
-        pickDialog(g, DAY5_WAKE_GONE);
-      } else {
-        pickDialog(g, DAY5_WAKE);
       }
+      pickDialog(g, weekPick(s, { red: DAY5_WAKE_RED, gone: DAY5_WAKE_GONE, found: DAY5_WAKE_FOUND, burn: DAY5_WAKE_BURN, hold: DAY5_WAKE_HOLD, ok: DAY5_WAKE }));
       return;
     }
     if (s.day === 7 && !s.seenDay7Morning) {
