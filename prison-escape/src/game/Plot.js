@@ -22,14 +22,18 @@ import {
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
+  DAY3_MORNING_HOLD,
+  DAY3_MORNING_BURN,
   DAY3_FOOD,
   DAY3_FOOD_HOLD,
   DAY3_FOOD_BURN,
   DAY3_FOOD_RED,
+  DAY3_FOOD_FOUND,
   DAY3_WALK,
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
+  DAY3_WALK_FOUND,
   DAY3_SHMON_FOUND,
   DAY3_SHMON_WASH,
   DAY3_SHMON_HATCH,
@@ -162,6 +166,8 @@ export function plotObjective(sim) {
     return 'Пайка. Карман жжёт. Ешь. Не читай вслух.';
   if (d === 3 && ph === 'food' && sim.malyava === 'burn')
     return 'Пайка пахнет золой. Ешь. Не свисти.';
+  if (d === 3 && ph === 'food' && sim.malyava === 'found')
+    return 'Третья пайка. Нашли. Жар ест вместе с баландой. Рот на замок.';
   if (d === 3 && ph === 'food' && sim.malyava === 'admin')
     return 'Пайка лишняя. Красному ложку дают последним.';
   if (d === 3 && ph === 'evening' && !sim.malyava)
@@ -170,6 +176,7 @@ export function plotObjective(sim) {
     if (sim.malyava === 'admin') return 'Третий круг без свиста. Хата уже считает.';
     if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
     if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
+    if (sim.malyava === 'found') return 'Третий круг. Нашли. Через стену не ори про шмон.';
     return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
   }
   if (d === 4 && ph === 'walk')
@@ -331,10 +338,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day4Walk(s));
     } else if (s.day === 3 && !s.heardDay3Yard) {
       s.heardDay3Yard = true;
-      if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_WALK_RED);
-      else if (s.malyava === 'hold') pickDialog(g, DAY3_WALK_HOLD);
-      else if (s.malyava === 'burn') pickDialog(g, DAY3_WALK_BURN);
-      else pickDialog(g, DAY3_WALK);
+      pickDialog(g, day3Walk(s));
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
@@ -445,10 +449,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 3 && !s.seenDay3Food) {
       s.seenDay3Food = true;
-      if (!s.malyava) pickDialog(g, DAY3_FOOD);
-      else if (s.malyava === 'hold') pickDialog(g, DAY3_FOOD_HOLD);
-      else if (s.malyava === 'burn') pickDialog(g, DAY3_FOOD_BURN);
-      else pickDialog(g, DAY3_FOOD_RED);
+      pickDialog(g, day3Food(s));
       return;
     }
     if (s.day === 5 && !s.seenDay5Sled) {
@@ -494,7 +495,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 3 && !s.seenDay3Morning) {
       s.seenDay3Morning = true;
-      pickDialog(g, s.path === 'red' ? DAY3_MORNING_RED : s.stash === 'bunk' ? DAY3_MORNING_CAUGHT : DAY3_MORNING);
+      pickDialog(g, day3Morning(s));
       return;
     }
     if (s.day === 4 && !s.seenDay4Wake) {
@@ -557,6 +558,30 @@ function day4Wake(s) {
   if (s.malyava === 'burn') return DAY4_WAKE_BURN;
   if (s.malyava === 'hold' && s.teaPaid) return DAY4_WAKE_HOLD;
   return DAY4_WAKE;
+}
+
+function day3Walk(s) {
+  if (s.malyava === 'admin' || s.path === 'red') return DAY3_WALK_RED;
+  if (s.malyava === 'hold') return DAY3_WALK_HOLD;
+  if (s.malyava === 'burn') return DAY3_WALK_BURN;
+  if (s.malyava === 'found') return DAY3_WALK_FOUND;
+  return DAY3_WALK;
+}
+
+function day3Food(s) {
+  if (!s.malyava) return DAY3_FOOD;
+  if (s.malyava === 'hold') return DAY3_FOOD_HOLD;
+  if (s.malyava === 'burn') return DAY3_FOOD_BURN;
+  if (s.malyava === 'found') return DAY3_FOOD_FOUND;
+  return DAY3_FOOD_RED;
+}
+
+function day3Morning(s) {
+  if (s.malyava === 'admin' || s.path === 'red') return DAY3_MORNING_RED;
+  if (s.malyava === 'hold') return DAY3_MORNING_HOLD;
+  if (s.malyava === 'burn') return DAY3_MORNING_BURN;
+  if (s.stash === 'bunk') return DAY3_MORNING_CAUGHT;
+  return DAY3_MORNING;
 }
 
 function weekRed(s) {

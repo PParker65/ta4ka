@@ -27,9 +27,12 @@ import {
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
+  DAY3_WALK_FOUND,
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
+  DAY3_MORNING_HOLD,
+  DAY3_MORNING_BURN,
   DAY2_WAKE,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
@@ -541,11 +544,15 @@ export class CellLife {
                       ? DAY4_LEHA_HOLD
                       : DAY4_LEHA
           : g.sim.day >= 3
-            ? g.sim.path === 'red'
+            ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_MORNING_RED
-              : g.sim.stash === 'bunk'
-                ? DAY3_MORNING_CAUGHT
-                : DAY3_MORNING
+              : g.sim.malyava === 'hold'
+                ? DAY3_MORNING_HOLD
+                : g.sim.malyava === 'burn'
+                  ? DAY3_MORNING_BURN
+                  : g.sim.stash === 'bunk'
+                    ? DAY3_MORNING_CAUGHT
+                    : DAY3_MORNING
             : g.sim.day >= 2
               ? DAY2_WAKE
               : TALK_LEHA;
@@ -598,8 +605,10 @@ export class CellLife {
                 ? DAY3_WALK_HOLD
                 : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'burn'
                   ? DAY3_WALK_BURN
-                  : g.sim.phase.id === 'walk' && g.sim.day === 3
-                    ? DAY3_WALK
+                  : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'found'
+                    ? DAY3_WALK_FOUND
+                    : g.sim.phase.id === 'walk' && g.sim.day === 3
+                      ? DAY3_WALK
                     : g.sim.day >= 2 && g.sim.phase.id === 'walk'
                     ? g.sim.stash === 'bunk'
                       ? DAY2_YARD_CAUGHT

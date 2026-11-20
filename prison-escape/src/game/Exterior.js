@@ -556,6 +556,53 @@ function addProcessing(prison) {
     prison.box(0.06, 0.42, 0.06, benchMat, -1.85, 0.21, z - 0.55);
     prison.box(0.06, 0.42, 0.06, benchMat, -1.85, 0.21, z + 0.55);
   }
+  const hallPipe = new THREE.MeshStandardMaterial({ color: 0x6a7068, metalness: 0.35, roughness: 0.55 });
+  const hallConduit = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.04, 0.04, 40, 6),
+    hallPipe,
+  );
+  hallConduit.rotation.x = Math.PI / 2;
+  hallConduit.position.set(-2.15, 2.72, -28);
+  prison.group.add(hallConduit);
+  const hallConduit2 = hallConduit.clone();
+  hallConduit2.position.set(2.15, 2.68, -28);
+  prison.group.add(hallConduit2);
+  const hallDamp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.5 });
+  const hallPeel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+  for (const [x, z, w, hh] of [
+    [-2.52, -38.4, 1.4, 1.1],
+    [2.52, -34.2, 1.8, 0.9],
+    [-2.52, -30.5, 1.1, 1.3],
+    [2.52, -40.1, 0.9, 0.7],
+  ]) {
+    prison.box(0.03, hh, w, hallDamp, x, 2.05, z);
+  }
+  prison.box(0.03, 0.55, 0.8, hallPeel, 2.5, 2.35, -36.4);
+  prison.box(0.03, 0.7, 1.1, hallPeel, -2.5, 2.4, -33.2);
+  const hallPaper = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
+  prison.box(0.16, 0.01, 0.22, hallPaper, 0.35, 0.055, -35.4);
+  prison.box(0.12, 0.01, 0.18, hallPaper, -0.2, 0.055, -37.1);
+  const hallBag = new THREE.Mesh(
+    new THREE.BoxGeometry(0.28, 0.16, 0.22),
+    new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.88 }),
+  );
+  hallBag.position.set(-1.55, 0.12, -31.6);
+  hallBag.rotation.y = 0.4;
+  prison.group.add(hallBag);
+  const hallShoe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
+  for (const [sx, sz] of [
+    [-1.7, -41.6],
+    [-1.52, -41.45],
+  ]) {
+    const galosh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.07, 0.1), hallShoe);
+    galosh.position.set(sx, 0.08, sz);
+    galosh.rotation.y = 0.5;
+    prison.group.add(galosh);
+  }
+  const rules = plaque('СДАТЬ ВСЁ', 0.9, 0.28);
+  rules.position.set(2.48, 1.7, -36.4);
+  rules.rotation.y = -Math.PI / 2;
+  prison.group.add(rules);
   const line = new THREE.Mesh(
     new THREE.BoxGeometry(0.08, 0.01, 40),
     new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 }),
