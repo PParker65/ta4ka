@@ -3,9 +3,9 @@
  */
 import {
   NIGHT1,
-  DAY2_SEDOY,
-  DAY2_SEDOY_CAUGHT,
-  DAY2_SEDOY_WASH,
+  DAY2_NIGHT,
+  DAY2_NIGHT_CAUGHT,
+  DAY2_NIGHT_WASH,
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
@@ -420,7 +420,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, NIGHT1);
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
-      pickDialog(g, s.stash === 'bunk' ? DAY2_SEDOY_CAUGHT : s.stash === 'wash' ? DAY2_SEDOY_WASH : DAY2_SEDOY);
+      pickDialog(g, s.stash === 'bunk' ? DAY2_NIGHT_CAUGHT : s.stash === 'wash' ? DAY2_NIGHT_WASH : DAY2_NIGHT);
     } else if (s.day <= 3 && s.malyava === 'found' && !s.seenFoundNight) {
       s.seenFoundNight = true;
       if (s.day === 3) s.seenDay3 = true;

@@ -869,8 +869,8 @@ function alcove(prison, x, z, title) {
   prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, 1.61, g);
   prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, -1.61, g);
   const darkBoard = new THREE.MeshStandardMaterial({ color: 0x3e423c, roughness: 0.72 });
-  prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, -1.58, g);
-  prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, 1.58, g);
+  prison.box(2.4, 1.35, 0.05, darkBoard, 0.1, 1.95, -1.58, g);
+  prison.box(2.4, 1.35, 0.05, darkBoard, 0.1, 1.95, 1.58, g);
   const farFace = (x < 0 ? -1 : 1) * 1.68;
   prison.box(0.08, 2.6, 2.8, darkBoard, farFace, 1.4, 0, g);
   const lamp = new THREE.PointLight(0xf2ead0, 0.16, 4.2, 2.0);
@@ -906,7 +906,7 @@ function alcove(prison, x, z, title) {
     const tags = plaque('№ 4417', 0.55, 0.16);
     tags.position.set(0.2, 1.22, 0.55);
     g.add(tags);
-    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const peel = new THREE.MeshStandardMaterial({ color: 0x6a5240, roughness: 0.92 });
     prison.box(0.03, 0.7, 1.1, peel, -1.68, 2.15, 0.2, g);
     prison.box(0.03, 0.45, 0.6, peel, -1.68, 1.55, -0.8, g);
     const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.45 });
