@@ -328,6 +328,19 @@ export class Prison {
       hatchCrust.position.set(side * 0.132, 1.4, LAYOUT.doorW / 2 + 0.09);
       hatchCrust.rotation.y = -0.5;
       door.add(hatchCrust);
+      const hatchTin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.028, 0.03, 0.055, 8),
+        new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+      );
+      hatchTin.position.set(side * 0.16, 1.43, LAYOUT.doorW / 2 + 0.12);
+      door.add(hatchTin);
+      const hatchSock = new THREE.Mesh(
+        new THREE.BoxGeometry(0.05, 0.2, 0.04),
+        new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+      );
+      hatchSock.position.set(side * 0.16, 1.22, LAYOUT.doorW / 2 - 0.12);
+      hatchSock.rotation.z = 0.25;
+      door.add(hatchSock);
       const rim = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.5, roughness: 0.4 });
       this.box(0.03, 0.28, 0.42, rim, side * 0.13, 1.52, LAYOUT.doorW / 2, door);
       this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.66, LAYOUT.doorW / 2, door);

@@ -68,6 +68,8 @@ import {
   DAY3_VALERA_SHMON_HOLD_BUNK,
   DAY3_FOOD_HOLD_WASH,
   DAY3_FOOD_HOLD_BUNK,
+  DAY3_SEDOY_FOOD_HOLD_BUNK,
+  DAY3_FOOD_FOUND_BUNK,
   DAY3_NIGHT_HOLD_WASH,
   DAY3_NIGHT_HOLD_BUNK,
   DAY3_WALK_HOLD_WASH,
@@ -986,6 +988,10 @@ export class CellLife {
                               : g.sim.stash === 'bunk'
                                 ? DAY3_SEDOY_SHMON_CAUGHT
                                 : DAY3_SEDOY_SHMON
+                : g.sim.day >= 3 && g.sim.phase.id === 'food' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                  ? DAY3_FOOD_FOUND_BUNK
+                  : g.sim.day >= 3 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                    ? DAY3_SEDOY_FOOD_HOLD_BUNK
                 : g.sim.day >= 3
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
                     ? DAY3_MORNING_RED
