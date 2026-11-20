@@ -21,6 +21,9 @@ import {
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
   DAY3_NIGHT_FOUND,
+  DAY3_NIGHT_HOLD,
+  DAY3_NIGHT_BURN,
+  DAY3_NIGHT_RED,
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
@@ -197,6 +200,12 @@ export function plotObjective(sim) {
     return 'Отбой. Бумага ещё в щели. Завтра либо твоя, либо кума.';
   if (d === 3 && ph === 'evening' && sim.malyava === 'found')
     return 'Третий отбой. Нашли днём. Молчи. Оправдания — вторая малява.';
+  if (d === 3 && ph === 'evening' && (sim.malyava === 'admin' || sim.path === 'red'))
+    return 'Третий отбой. Чайник не щёлкнул. Слово село. Не оправдывайся.';
+  if (d === 3 && ph === 'evening' && sim.malyava === 'hold')
+    return 'Третий отбой. Карман жжёт. Чаша, не матрас. Или жги.';
+  if (d === 3 && ph === 'evening' && sim.malyava === 'burn')
+    return 'Третий отбой. Дым ещё в хате. Не свисти в полный голос.';
   if (d === 3 && ph === 'walk') {
     if (sim.malyava === 'admin') return 'Третий круг без свиста. Хата уже считает.';
     if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
@@ -418,9 +427,9 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, s.day === 3 ? DAY3_NIGHT_FOUND : FOUND_NIGHT);
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
-      if (s.malyava === 'admin') pickDialog(g, SNITCH_NIGHT);
-      else if (s.malyava === 'hold') pickDialog(g, HOLD_NIGHT);
-      else if (s.malyava === 'burn') pickDialog(g, BURN_NIGHT);
+      if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_NIGHT_RED);
+      else if (s.malyava === 'hold') pickDialog(g, DAY3_NIGHT_HOLD);
+      else if (s.malyava === 'burn') pickDialog(g, DAY3_NIGHT_BURN);
       else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;

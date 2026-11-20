@@ -961,6 +961,54 @@ function alcove(prison, x, z, title) {
     const hiv = plaque('АНАЛИЗ', 0.7, 0.2);
     hiv.position.set(0, 2.15, 1.62);
     g.add(hiv);
+    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.45 });
+    prison.box(0.03, 0.65, 0.9, peel, -1.68, 2.15, 0.2, g);
+    prison.box(0.03, 0.5, 0.7, damp, -1.68, 1.9, -0.7, g);
+    prison.box(1.0, 0.02, 0.45, damp, 0.1, 2.96, 0.3, g);
+    const ceilPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.1, 6), metal);
+    ceilPipe.rotation.z = Math.PI / 2;
+    ceilPipe.position.set(0, 2.84, -0.3);
+    g.add(ceilPipe);
+    const papers = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
+    prison.box(0.18, 0.01, 0.14, papers, 0.25, 0.79, 0.05, g);
+    prison.box(0.14, 0.01, 0.12, papers, -0.15, 0.79, 0.12, g);
+    const cotton = new THREE.Mesh(
+      new THREE.SphereGeometry(0.04, 6, 6),
+      new THREE.MeshStandardMaterial({ color: 0xe8e4dc, roughness: 0.95 }),
+    );
+    cotton.position.set(0.45, 0.82, -0.08);
+    g.add(cotton);
+    const tray = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.02, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0xb0b4b0, metalness: 0.4, roughness: 0.45 }),
+    );
+    tray.position.set(0.55, 0.79, 0.15);
+    g.add(tray);
+    const cab = new THREE.MeshStandardMaterial({ color: 0x4a4e46, metalness: 0.3, roughness: 0.55 });
+    prison.box(0.42, 1.1, 0.38, cab, -1.15, 0.56, -1.1, g);
+    const coat = new THREE.Mesh(
+      new THREE.BoxGeometry(0.26, 0.8, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.9 }),
+    );
+    coat.position.set(1.15, 1.3, 0.4);
+    g.add(coat);
+    const exam = plaque('ОСМОТР', 0.75, 0.2);
+    exam.position.set(0, 2.2, -1.55);
+    g.add(exam);
+    const wet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.28, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.22, metalness: 0.12 }),
+    );
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(-0.2, 0.05, 0.4);
+    g.add(wet);
+    const jar2 = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.1, 8),
+      new THREE.MeshStandardMaterial({ color: 0xc8d8c8, roughness: 0.3, metalness: 0.1, transparent: true, opacity: 0.7 }),
+    );
+    jar2.position.set(0.15, 0.86, -0.12);
+    g.add(jar2);
   }
   if (title === 'БАНЯ') {
     const dado = new THREE.MeshStandardMaterial({ color: 0x3a5a54, roughness: 0.72 });
