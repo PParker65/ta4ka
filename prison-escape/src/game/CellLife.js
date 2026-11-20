@@ -27,6 +27,24 @@ import {
   DAY4_SEDOY_SHMON_FOUND,
   DAY4_SEDOY_SHMON_BURN,
   DAY4_SEDOY_SHMON_RED,
+  DAY5_SEDOY_SHMON,
+  DAY5_SEDOY_SHMON_GONE,
+  DAY5_SEDOY_SHMON_HOLD,
+  DAY5_SEDOY_SHMON_FOUND,
+  DAY5_SEDOY_SHMON_BURN,
+  DAY5_SEDOY_SHMON_RED,
+  DAY6_SEDOY_SHMON,
+  DAY6_SEDOY_SHMON_GONE,
+  DAY6_SEDOY_SHMON_HOLD,
+  DAY6_SEDOY_SHMON_FOUND,
+  DAY6_SEDOY_SHMON_BURN,
+  DAY6_SEDOY_SHMON_RED,
+  DAY7_SEDOY_SHMON,
+  DAY7_SEDOY_SHMON_GONE,
+  DAY7_SEDOY_SHMON_HOLD,
+  DAY7_SEDOY_SHMON_FOUND,
+  DAY7_SEDOY_SHMON_BURN,
+  DAY7_SEDOY_SHMON_RED,
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
@@ -61,6 +79,12 @@ import {
   DAY4_VALERA_SHMON_FOUND,
   DAY4_VALERA_SHMON_BURN,
   DAY4_VALERA_SHMON_RED,
+  DAY5_VALERA_SHMON,
+  DAY5_VALERA_SHMON_GONE,
+  DAY5_VALERA_SHMON_HOLD,
+  DAY5_VALERA_SHMON_FOUND,
+  DAY5_VALERA_SHMON_BURN,
+  DAY5_VALERA_SHMON_RED,
   DAY5_VALERA,
   DAY5_VALERA_GONE,
   DAY5_VALERA_HOLD,
@@ -140,6 +164,18 @@ import {
   DAY4_LEHA_SHMON_FOUND,
   DAY4_LEHA_SHMON_BURN,
   DAY4_LEHA_SHMON_RED,
+  DAY5_LEHA_SHMON,
+  DAY5_LEHA_SHMON_GONE,
+  DAY5_LEHA_SHMON_HOLD,
+  DAY5_LEHA_SHMON_FOUND,
+  DAY5_LEHA_SHMON_BURN,
+  DAY5_LEHA_SHMON_RED,
+  DAY6_LEHA_SHMON,
+  DAY6_LEHA_SHMON_GONE,
+  DAY6_LEHA_SHMON_HOLD,
+  DAY6_LEHA_SHMON_FOUND,
+  DAY6_LEHA_SHMON_BURN,
+  DAY6_LEHA_SHMON_RED,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -196,6 +232,16 @@ function valeraInCell(s) {
     });
   }
   if (s.day >= 5) {
+    if (s.phase.id === 'shmon') {
+      return weekPick(s, {
+        red: DAY5_VALERA_SHMON_RED,
+        gone: DAY5_VALERA_SHMON_GONE,
+        found: DAY5_VALERA_SHMON_FOUND,
+        burn: DAY5_VALERA_SHMON_BURN,
+        hold: DAY5_VALERA_SHMON_HOLD,
+        ok: DAY5_VALERA_SHMON,
+      });
+    }
     return weekPick(s, {
       red: DAY5_VALERA_RED,
       gone: DAY5_VALERA_GONE,
@@ -665,7 +711,34 @@ export class CellLife {
       }
       g.unlockLook();
       const sedoy =
-        g.sim.day >= 5 && g.sim.courtTalk === 'cell'
+        g.sim.day >= 7 && g.sim.phase.id === 'shmon'
+          ? weekPick(g.sim, {
+              red: DAY7_SEDOY_SHMON_RED,
+              gone: DAY7_SEDOY_SHMON_GONE,
+              found: DAY7_SEDOY_SHMON_FOUND,
+              burn: DAY7_SEDOY_SHMON_BURN,
+              hold: DAY7_SEDOY_SHMON_HOLD,
+              ok: DAY7_SEDOY_SHMON,
+            })
+          : g.sim.day >= 6 && g.sim.phase.id === 'shmon'
+            ? weekPick(g.sim, {
+                red: DAY6_SEDOY_SHMON_RED,
+                gone: DAY6_SEDOY_SHMON_GONE,
+                found: DAY6_SEDOY_SHMON_FOUND,
+                burn: DAY6_SEDOY_SHMON_BURN,
+                hold: DAY6_SEDOY_SHMON_HOLD,
+                ok: DAY6_SEDOY_SHMON,
+              })
+          : g.sim.day >= 5 && g.sim.phase.id === 'shmon'
+            ? weekPick(g.sim, {
+                red: DAY5_SEDOY_SHMON_RED,
+                gone: DAY5_SEDOY_SHMON_GONE,
+                found: DAY5_SEDOY_SHMON_FOUND,
+                burn: DAY5_SEDOY_SHMON_BURN,
+                hold: DAY5_SEDOY_SHMON_HOLD,
+                ok: DAY5_SEDOY_SHMON,
+              })
+          : g.sim.day >= 5 && g.sim.courtTalk === 'cell'
           ? DAY5_BACK_CELL
           : g.sim.day >= 5 && g.sim.courtTalk === 'silent'
             ? DAY5_BACK_SILENT
@@ -743,7 +816,25 @@ export class CellLife {
     if (id === 'cellmate') {
       g.unlockLook();
       const leha =
-        g.sim.day >= 6 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
+        g.sim.day >= 6 && g.sim.phase.id === 'shmon'
+          ? weekPick(g.sim, {
+              red: DAY6_LEHA_SHMON_RED,
+              gone: DAY6_LEHA_SHMON_GONE,
+              found: DAY6_LEHA_SHMON_FOUND,
+              burn: DAY6_LEHA_SHMON_BURN,
+              hold: DAY6_LEHA_SHMON_HOLD,
+              ok: DAY6_LEHA_SHMON,
+            })
+          : g.sim.day >= 5 && g.sim.phase.id === 'shmon'
+          ? weekPick(g.sim, {
+              red: DAY5_LEHA_SHMON_RED,
+              gone: DAY5_LEHA_SHMON_GONE,
+              found: DAY5_LEHA_SHMON_FOUND,
+              burn: DAY5_LEHA_SHMON_BURN,
+              hold: DAY5_LEHA_SHMON_HOLD,
+              ok: DAY5_LEHA_SHMON,
+            })
+          : g.sim.day >= 6 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
           ? DAY6_NIGHT_RED
           : g.sim.day >= 6 && g.sim.malyava === 'gone'
           ? DAY6_NIGHT_GONE

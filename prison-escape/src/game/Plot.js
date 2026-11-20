@@ -57,6 +57,18 @@ import {
   DAY5_SHMON_FOUND,
   DAY5_SHMON_BURN,
   DAY5_SHMON_RED,
+  DAY6_SHMON,
+  DAY6_SHMON_GONE,
+  DAY6_SHMON_HOLD,
+  DAY6_SHMON_FOUND,
+  DAY6_SHMON_BURN,
+  DAY6_SHMON_RED,
+  DAY7_SHMON,
+  DAY7_SHMON_GONE,
+  DAY7_SHMON_HOLD,
+  DAY7_SHMON_FOUND,
+  DAY7_SHMON_BURN,
+  DAY7_SHMON_RED,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -291,6 +303,18 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold'
               ? 'Шестая пайка. Карман жжёт. Ложка после смотрящего. Бумагу за столом не читай.'
               : 'Шестая пайка. Ложка после смотрящего. Завтра свежак кончается.';
+  if (d === 6 && ph === 'shmon')
+    return weekRed(sim)
+      ? 'Шестой шмон. Свежак кончается красным. К стене. Не оправдывайся.'
+      : sim.malyava === 'gone'
+        ? 'Шестой шмон. Щель пустая с пятого. Папка уже не пустая. К стене.'
+        : sim.malyava === 'found'
+          ? 'Шестой шмон. Нашли. Жар. Свежак кончается на карандаше. Рот на замок.'
+          : sim.malyava === 'burn'
+            ? 'Шестой шмон. Пахнет золой. Свежак кончается. Про дым — ни слова.'
+            : sim.malyava === 'hold'
+              ? 'Шестой шмон. Чашу не смотри. Свежак кончается. Руки пустые.'
+              : 'Шестой шмон. Свежак кончается. Койки для порядка. К стене.';
   if (d === 6 && ph === 'walk')
     return weekRed(sim)
       ? 'Шестой круг. Свист кончился в щели. Через стену — ни звука.'
@@ -315,6 +339,18 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold'
               ? 'Пятый подъём. Карман жжёт. Днём щель станет кабинетом. Не шарь.'
               : 'С коряка шепчут список. Днём щель станет кабинетом.';
+  if (d === 5 && ph === 'shmon')
+    return weekRed(sim)
+      ? 'Пятый шмон. Тебя записали. Сегодня вызов. К стене. Не оправдывайся.'
+      : sim.malyava === 'gone'
+        ? 'Пятый шмон. Щель пустая с утра. Следак уже забрал бумагу. К стене.'
+        : sim.malyava === 'found'
+          ? 'Пятый шмон. Нашли. Жар полный. Сегодня вызов. Рот на замок.'
+          : sim.malyava === 'burn'
+            ? 'Пятый шмон. Пахнет золой. Сегодня вызов. Не объясняй чайник.'
+            : sim.malyava === 'hold'
+              ? 'Пятый шмон. Чашу не смотри. Сегодня вызов. Руки пустые.'
+              : 'Пятый шмон. Сегодня вызов. Койки для порядка. К стене.';
   if (d === 5 && ph === 'food' && !sim.courtTalk)
     return weekRed(sim)
       ? 'Вызов. Имена уже в щели. Следователь просит ещё.'
@@ -356,6 +392,18 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold'
               ? 'Шестой день. Карман жжёт. Свежак кончается. Неси или жги.'
               : 'Шестой день. Свежак кончается. Не ори про волю.';
+  if (d === 7 && ph === 'shmon')
+    return weekRed(sim)
+      ? 'Седьмой шмон. Свежак кончился красным. К стене. Не оправдывайся.'
+      : sim.malyava === 'gone'
+        ? 'Седьмой шмон. Щель пустая с пятого. Бумагу взяли без тебя. К стене.'
+        : sim.malyava === 'found'
+          ? 'Седьмой шмон. Нашли. Жар. Свежак кончился. Рот на замок.'
+          : sim.malyava === 'burn'
+            ? 'Седьмой шмон. Пахнет золой. Свежак кончился. Про дым — ни слова.'
+            : sim.malyava === 'hold'
+              ? 'Седьмой шмон. Чашу не смотри. Свежак кончился. Карман нет.'
+              : 'Седьмой шмон. Свежак кончился. Шарят как в первый. К стене.';
   if (d === 7)
     return weekRed(sim)
       ? 'Неделя. Свежак кончился красным. Молчи. Ешь последним.'
@@ -470,7 +518,13 @@ export function onPhaseEnter(game, id) {
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
-      if (s.day === 5 && !s.seenDay5Shmon) {
+      if (s.day === 7 && !s.seenDay7Shmon) {
+        s.seenDay7Shmon = true;
+        pickDialog(g, DAY7_SHMON_FOUND);
+      } else if (s.day === 6 && !s.seenDay6Shmon) {
+        s.seenDay6Shmon = true;
+        pickDialog(g, DAY6_SHMON_FOUND);
+      } else if (s.day === 5 && !s.seenDay5Shmon) {
         s.seenDay5Shmon = true;
         pickDialog(g, DAY5_SHMON_FOUND);
       } else if (s.day === 4 && !s.seenDay4Shmon) {
@@ -482,6 +536,30 @@ export function onPhaseEnter(game, id) {
       } else {
         g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       }
+      return;
+    }
+    if (s.day === 7 && !s.seenDay7Shmon) {
+      s.seenDay7Shmon = true;
+      pickDialog(g, weekPick(s, {
+        red: DAY7_SHMON_RED,
+        gone: DAY7_SHMON_GONE,
+        found: DAY7_SHMON_FOUND,
+        burn: DAY7_SHMON_BURN,
+        hold: DAY7_SHMON_HOLD,
+        ok: DAY7_SHMON,
+      }));
+      return;
+    }
+    if (s.day === 6 && !s.seenDay6Shmon) {
+      s.seenDay6Shmon = true;
+      pickDialog(g, weekPick(s, {
+        red: DAY6_SHMON_RED,
+        gone: DAY6_SHMON_GONE,
+        found: DAY6_SHMON_FOUND,
+        burn: DAY6_SHMON_BURN,
+        hold: DAY6_SHMON_HOLD,
+        ok: DAY6_SHMON,
+      }));
       return;
     }
     if (s.day === 5 && !s.seenDay5Shmon) {

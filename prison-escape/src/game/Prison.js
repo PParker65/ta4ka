@@ -1301,6 +1301,47 @@ export class Prison {
     this.box(0.02, 0.45, 0.22, dampCal, -LAYOUT.cellW / 2 + 0.21, 0.48, 1.28, cell);
     const calShelf = new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.88 });
     this.box(0.16, 0.035, 0.42, calShelf, -LAYOUT.cellW / 2 + 0.32, 0.92, 1.1, cell);
+    const chalkStick = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.009, 0.055, 6),
+      new THREE.MeshStandardMaterial({ color: 0xe8e0d0, roughness: 0.78 }),
+    );
+    chalkStick.rotation.z = Math.PI / 2;
+    chalkStick.rotation.y = 0.35;
+    chalkStick.position.set(-LAYOUT.cellW / 2 + 0.34, 0.955, 1.18);
+    cell.add(chalkStick);
+    const chalkDust = new THREE.Mesh(
+      new THREE.CircleGeometry(0.035, 6),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.95, transparent: true, opacity: 0.45 }),
+    );
+    chalkDust.rotation.x = -Math.PI / 2;
+    chalkDust.position.set(-LAYOUT.cellW / 2 + 0.36, 0.94, 1.18);
+    cell.add(chalkDust);
+    const powderBox = new THREE.Mesh(
+      new THREE.BoxGeometry(0.055, 0.07, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0xd4c8b4, roughness: 0.88 }),
+    );
+    powderBox.position.set(-LAYOUT.cellW / 2 + 0.34, 0.975, 1.06);
+    powderBox.rotation.y = 0.18;
+    cell.add(powderBox);
+    const powderLid = new THREE.Mesh(
+      new THREE.BoxGeometry(0.058, 0.01, 0.043),
+      new THREE.MeshStandardMaterial({ color: 0xb8aa94, roughness: 0.82 }),
+    );
+    powderLid.position.set(-LAYOUT.cellW / 2 + 0.34, 1.012, 1.06);
+    powderLid.rotation.y = 0.18;
+    cell.add(powderLid);
+    const comb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.09, 0.008, 0.022),
+      new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.7 }),
+    );
+    comb.position.set(-LAYOUT.cellW / 2 + 0.33, 0.948, 0.9);
+    comb.rotation.y = -0.45;
+    cell.add(comb);
+    const chalkTallies = wallScratch('|||| ||');
+    chalkTallies.scale.set(0.7, 0.7, 0.7);
+    chalkTallies.position.set(-LAYOUT.cellW / 2 + 0.22, 1.18, 1.02);
+    chalkTallies.rotation.y = Math.PI / 2;
+    cell.add(chalkTallies);
     const stuffedNews = new THREE.Mesh(
       new THREE.BoxGeometry(0.04, 0.16, 0.12),
       new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: 0.92 }),
