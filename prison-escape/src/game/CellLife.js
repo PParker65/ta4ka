@@ -99,12 +99,14 @@ import {
   DAY5_VALERA_SHMON_GONE,
   DAY5_VALERA_SHMON_HOLD,
   DAY5_VALERA_SHMON_FOUND,
+  DAY5_VALERA_SHMON_FOUND_BUNK,
   DAY5_VALERA_SHMON_BURN,
   DAY5_VALERA_SHMON_RED,
   DAY6_VALERA_SHMON,
   DAY6_VALERA_SHMON_GONE,
   DAY6_VALERA_SHMON_HOLD,
   DAY6_VALERA_SHMON_FOUND,
+  DAY6_VALERA_SHMON_FOUND_BUNK,
   DAY6_VALERA_SHMON_BURN,
   DAY6_VALERA_SHMON_RED,
   DAY7_VALERA_SHMON,
@@ -158,6 +160,7 @@ import {
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
   DAY3_NIGHT_FOUND,
+  DAY3_NIGHT_FOUND_BUNK,
   DAY3_NIGHT_HOLD,
   DAY3_NIGHT_BURN,
   DAY3_NIGHT_RED,
@@ -197,6 +200,7 @@ import {
   DAY4_LEHA_HOLD_WASH,
   DAY4_LEHA_HOLD_BUNK,
   DAY4_LEHA_FOUND,
+  DAY4_LEHA_FOUND_BUNK,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
   DAY4_LEHA_SHMON_WAIT,
@@ -349,7 +353,7 @@ function valeraInCell(s) {
       return weekPick(s, {
         red: DAY6_VALERA_SHMON_RED,
         gone: DAY6_VALERA_SHMON_GONE,
-        found: DAY6_VALERA_SHMON_FOUND,
+        found: s.stash === 'bunk' ? DAY6_VALERA_SHMON_FOUND_BUNK : DAY6_VALERA_SHMON_FOUND,
         burn: DAY6_VALERA_SHMON_BURN,
         hold: DAY6_VALERA_SHMON_HOLD,
         ok: DAY6_VALERA_SHMON,
@@ -369,7 +373,7 @@ function valeraInCell(s) {
       return weekPick(s, {
         red: DAY5_VALERA_SHMON_RED,
         gone: DAY5_VALERA_SHMON_GONE,
-        found: DAY5_VALERA_SHMON_FOUND,
+        found: s.stash === 'bunk' ? DAY5_VALERA_SHMON_FOUND_BUNK : DAY5_VALERA_SHMON_FOUND,
         burn: DAY5_VALERA_SHMON_BURN,
         hold: DAY5_VALERA_SHMON_HOLD,
         ok: DAY5_VALERA_SHMON,
@@ -1050,7 +1054,9 @@ export class CellLife {
               : !g.sim.malyava
                 ? DAY4_NIGHT_WAIT
                 : g.sim.malyava === 'found'
-                  ? DAY4_LEHA_FOUND
+                  ? g.sim.stash === 'bunk'
+                    ? DAY4_LEHA_FOUND_BUNK
+                    : DAY4_LEHA_FOUND
                   : g.sim.malyava === 'burn'
                     ? DAY4_LEHA_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
@@ -1072,7 +1078,9 @@ export class CellLife {
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_NIGHT_RED
               : g.sim.malyava === 'found'
-                ? DAY3_NIGHT_FOUND
+                ? g.sim.stash === 'bunk'
+                  ? DAY3_NIGHT_FOUND_BUNK
+                  : DAY3_NIGHT_FOUND
                 : g.sim.malyava === 'hold'
                   ? holdStash(g.sim, { pocket: DAY3_NIGHT_HOLD, wash: DAY3_NIGHT_HOLD_WASH, bunk: DAY3_NIGHT_HOLD_BUNK })
                   : g.sim.malyava === 'burn'

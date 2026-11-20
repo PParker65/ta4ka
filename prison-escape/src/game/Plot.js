@@ -21,6 +21,7 @@ import {
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
   DAY3_NIGHT_FOUND,
+  DAY3_NIGHT_FOUND_BUNK,
   DAY3_NIGHT_HOLD,
   DAY3_NIGHT_HOLD_WASH,
   DAY3_NIGHT_HOLD_BUNK,
@@ -647,7 +648,7 @@ export function onPhaseEnter(game, id) {
     } else if (s.day <= 3 && s.malyava === 'found' && !s.seenFoundNight) {
       s.seenFoundNight = true;
       if (s.day === 3) s.seenDay3 = true;
-      pickDialog(g, s.day === 3 ? DAY3_NIGHT_FOUND : FOUND_NIGHT);
+      pickDialog(g, s.day === 3 && s.stash === 'bunk' ? DAY3_NIGHT_FOUND_BUNK : s.day === 3 ? DAY3_NIGHT_FOUND : FOUND_NIGHT);
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
       if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_NIGHT_RED);

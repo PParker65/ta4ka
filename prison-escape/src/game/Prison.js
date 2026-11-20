@@ -1377,6 +1377,31 @@ export class Prison {
     );
     salt.position.set(0.32, 0.79, -0.12);
     cell.add(salt);
+    const matchbox = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.018, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x8a2a22, roughness: 0.7 }),
+    );
+    matchbox.position.set(0.08, 0.752, 0.32);
+    matchbox.rotation.y = 0.35;
+    cell.add(matchbox);
+    const teaRing = new THREE.Mesh(
+      new THREE.CircleGeometry(0.045, 10),
+      new THREE.MeshStandardMaterial({ color: 0x5a3a22, roughness: 0.85, transparent: true, opacity: 0.55 }),
+    );
+    teaRing.rotation.x = -Math.PI / 2;
+    teaRing.position.set(0.18, 0.748, -0.02);
+    cell.add(teaRing);
+    const crumb = new THREE.MeshStandardMaterial({ color: 0xb89058, roughness: 0.9 });
+    this.box(0.04, 0.012, 0.03, crumb, 0.62, 0.752, 0.18, cell);
+    this.box(0.03, 0.01, 0.025, crumb, 0.52, 0.751, 0.02, cell);
+    this.box(0.035, 0.011, 0.028, crumb, 0.28, 0.751, 0.32, cell);
+    const foilWrap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.02, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xa8b090, metalness: 0.35, roughness: 0.45 }),
+    );
+    foilWrap.position.set(-0.32, 0.752, 0.28);
+    foilWrap.rotation.y = -0.5;
+    cell.add(foilWrap);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),
