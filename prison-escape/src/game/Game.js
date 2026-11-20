@@ -293,9 +293,9 @@ export class Game {
       this.input.yaw = -Math.PI / 2 + 0.22;
       this.input.pitch = -0.28;
     } else if (look === 'wash') {
-      this.player.position.set(o.x + 2.72, 0, o.z + 2.82);
-      this.input.yaw = Math.atan2(-0.47, -0.12);
-      this.input.pitch = -0.72;
+      this.player.position.set(o.x + 1.48, 0, o.z + 2.38);
+      this.input.yaw = Math.atan2(0.78, 0.32);
+      this.input.pitch = -0.46;
     } else if (look === 'rad') {
       this.player.position.set(o.x - 1.35, 0, o.z + 1.65);
       this.input.yaw = 0.08;

@@ -979,11 +979,34 @@ export class Prison {
     soapWash.scale.set(1.6, 1.4, 1.6);
     g.add(soapWash);
     const mugWash = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.028, 0.026, 0.08, 8),
+      new THREE.CylinderGeometry(0.042, 0.038, 0.11, 8),
       new THREE.MeshStandardMaterial({ color: 0xc4b49a, roughness: 0.6 }),
     );
-    mugWash.position.set(-0.42, 1.14, 0.18);
+    mugWash.position.set(-0.42, 1.16, 0.18);
     g.add(mugWash);
+    const pasteTube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.016, 0.02, 0.12, 6),
+      new THREE.MeshStandardMaterial({ color: 0xe8e4d8, roughness: 0.55 }),
+    );
+    pasteTube.position.set(-0.12, 1.14, 0.28);
+    pasteTube.rotation.z = 1.15;
+    pasteTube.rotation.y = 0.35;
+    g.add(pasteTube);
+    const pasteCap = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 0.022, 6),
+      new THREE.MeshStandardMaterial({ color: 0x2a5a38, roughness: 0.5 }),
+    );
+    pasteCap.position.set(-0.05, 1.155, 0.32);
+    pasteCap.rotation.z = 1.15;
+    pasteCap.rotation.y = 0.35;
+    g.add(pasteCap);
+    const pasteBlob = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018, 6, 5),
+      new THREE.MeshStandardMaterial({ color: 0xf2efe6, roughness: 0.35 }),
+    );
+    pasteBlob.position.set(-0.22, 1.128, 0.2);
+    pasteBlob.scale.set(1.4, 0.45, 1.1);
+    g.add(pasteBlob);
     const ragWash = new THREE.Mesh(
       new THREE.BoxGeometry(0.22, 0.03, 0.14),
       new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.94 }),
