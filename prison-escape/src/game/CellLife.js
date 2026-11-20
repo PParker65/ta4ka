@@ -33,6 +33,7 @@ import {
   DAY3_MORNING_CAUGHT,
   DAY3_MORNING_HOLD,
   DAY3_MORNING_BURN,
+  DAY3_MORNING_FOUND,
   DAY2_WAKE,
   DAY2_WAKE_WASH,
   DAY2_WAKE_BUNK,
@@ -563,13 +564,15 @@ export class CellLife {
           : g.sim.day >= 3
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_MORNING_RED
-              : g.sim.malyava === 'hold'
-                ? DAY3_MORNING_HOLD
-                : g.sim.malyava === 'burn'
-                  ? DAY3_MORNING_BURN
-                  : g.sim.stash === 'bunk'
-                    ? DAY3_MORNING_CAUGHT
-                    : DAY3_MORNING
+              : g.sim.malyava === 'found'
+                ? DAY3_MORNING_FOUND
+                : g.sim.malyava === 'hold'
+                  ? DAY3_MORNING_HOLD
+                  : g.sim.malyava === 'burn'
+                    ? DAY3_MORNING_BURN
+                    : g.sim.stash === 'bunk'
+                      ? DAY3_MORNING_CAUGHT
+                      : DAY3_MORNING
             : g.sim.day >= 2
               ? g.sim.stash === 'bunk'
                 ? DAY2_WAKE_BUNK

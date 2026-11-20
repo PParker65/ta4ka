@@ -25,6 +25,7 @@ import {
   DAY3_MORNING_CAUGHT,
   DAY3_MORNING_HOLD,
   DAY3_MORNING_BURN,
+  DAY3_MORNING_FOUND,
   DAY3_FOOD,
   DAY3_FOOD_HOLD,
   DAY3_FOOD_BURN,
@@ -158,11 +159,17 @@ export function plotObjective(sim) {
         ? 'Отбой. Чаша сегодня не их дело. Завтра бумага. Не зевай.'
         : 'Седой смотрит, кем ты стал за сутки. Не ври зря.';
   if (d === 3 && ph === 'wake')
-    return sim.path === 'red'
+    return sim.path === 'red' || sim.malyava === 'admin'
       ? 'Третий подъём. Вчера слово село. Кормушка днём живая. Не зевай.'
-      : sim.stash === 'bunk'
-        ? 'Третий подъём. Вчера матрас пел. Кормушка днём живая. Не зевай.'
-        : 'Третий день. Кормушка днём живая. Не зевай.';
+      : sim.malyava === 'found'
+        ? 'Третий подъём. Вчера нашли. Молчи. Оправдания — вторая малява.'
+        : sim.malyava === 'hold'
+          ? 'Третий подъём. Карман жжёт. Шмон до пайки. Чаша, не матрас.'
+          : sim.malyava === 'burn'
+            ? 'Третий подъём. Зола ещё пахнет. Не свисти в полный голос.'
+            : sim.stash === 'bunk'
+              ? 'Третий подъём. Вчера матрас пел. Кормушка днём живая. Не зевай.'
+              : 'Третий день. Кормушка днём живая. Не зевай.';
   if (d === 3 && ph === 'shmon') {
     if (sim.malyava === 'found') return 'Нашли бумагу. К стене. Руки видно. Рот на замок.';
     if (sim.malyava === 'hold' && sim.stash === 'wash') return 'Шмон. Чаша сегодня не их дело. Не смотри на неё.';
@@ -602,6 +609,7 @@ function day3Food(s) {
 
 function day3Morning(s) {
   if (s.malyava === 'admin' || s.path === 'red') return DAY3_MORNING_RED;
+  if (s.malyava === 'found') return DAY3_MORNING_FOUND;
   if (s.malyava === 'hold') return DAY3_MORNING_HOLD;
   if (s.malyava === 'burn') return DAY3_MORNING_BURN;
   if (s.stash === 'bunk') return DAY3_MORNING_CAUGHT;

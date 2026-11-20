@@ -556,6 +556,11 @@ function addProcessing(prison) {
     prison.box(0.06, 0.42, 0.06, benchMat, -1.85, 0.21, z - 0.55);
     prison.box(0.06, 0.42, 0.06, benchMat, -1.85, 0.21, z + 0.55);
   }
+  for (const z of [-38.4, -25.6, -11.2]) {
+    prison.box(0.38, 0.08, 1.2, benchMat, 1.85, 0.42, z);
+    prison.box(0.06, 0.42, 0.06, benchMat, 1.85, 0.21, z - 0.48);
+    prison.box(0.06, 0.42, 0.06, benchMat, 1.85, 0.21, z + 0.48);
+  }
   const hallPipe = new THREE.MeshStandardMaterial({ color: 0x6a7068, metalness: 0.35, roughness: 0.55 });
   const hallConduit = new THREE.Mesh(
     new THREE.CylinderGeometry(0.04, 0.04, 40, 6),
@@ -574,14 +579,54 @@ function addProcessing(prison) {
     [2.52, -34.2, 1.8, 0.9],
     [-2.52, -30.5, 1.1, 1.3],
     [2.52, -40.1, 0.9, 0.7],
+    [-2.52, -26.2, 1.6, 0.85],
+    [2.52, -21.4, 1.3, 1.05],
+    [-2.52, -17.8, 1.0, 0.7],
+    [2.52, -12.6, 1.5, 0.9],
   ]) {
     prison.box(0.03, hh, w, hallDamp, x, 2.05, z);
   }
   prison.box(0.03, 0.55, 0.8, hallPeel, 2.5, 2.35, -36.4);
   prison.box(0.03, 0.7, 1.1, hallPeel, -2.5, 2.4, -33.2);
+  prison.box(0.03, 0.45, 0.9, hallPeel, 2.5, 2.2, -27.5);
+  prison.box(0.03, 0.6, 0.7, hallPeel, -2.5, 2.15, -19.8);
+  const stainEye = new THREE.MeshStandardMaterial({ color: 0xb8b09c, roughness: 0.92 });
+  for (const [x, z, w, hh, y] of [
+    [-2.52, -34.6, 1.2, 0.55, 1.55],
+    [2.52, -32.1, 0.9, 0.7, 1.62],
+    [-2.52, -25.4, 1.4, 0.5, 1.48],
+    [2.52, -23.0, 1.1, 0.65, 1.7],
+    [-2.52, -14.8, 0.8, 0.55, 1.52],
+    [2.52, -10.4, 1.3, 0.48, 1.58],
+  ]) {
+    prison.box(0.03, hh, w, stainEye, x, y, z);
+  }
+  const ceilDampHall = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.42 });
+  prison.box(1.6, 0.02, 0.7, ceilDampHall, -0.4, h - 0.04, -33.2);
+  prison.box(0.9, 0.02, 1.4, ceilDampHall, 0.6, h - 0.04, -27.5);
+  prison.box(1.2, 0.02, 0.55, ceilDampHall, -0.2, h - 0.04, -20.4);
+  prison.box(0.7, 0.02, 1.1, ceilDampHall, 0.35, h - 0.04, -14.2);
+  const dropCable = new THREE.MeshStandardMaterial({ color: 0x1a1a18, roughness: 0.9 });
+  for (const z of [-34.8, -28.4, -21.6, -13.5]) {
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.95, 5), dropCable);
+    c.position.set(1.85, 2.35, z);
+    c.rotation.z = 0.42;
+    prison.group.add(c);
+  }
+  const rad = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.7, metalness: 0.22 });
+  for (const z of [-33.5, -24.8, -16.6, -8.4]) {
+    prison.box(0.1, 0.48, 0.85, rad, -2.42, 0.42, z);
+    for (let i = -3; i <= 3; i++) {
+      prison.box(0.04, 0.44, 0.04, rad, -2.46, 0.42, z + i * 0.11);
+    }
+  }
   const hallPaper = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
   prison.box(0.16, 0.01, 0.22, hallPaper, 0.35, 0.055, -35.4);
   prison.box(0.12, 0.01, 0.18, hallPaper, -0.2, 0.055, -37.1);
+  prison.box(0.18, 0.01, 0.14, hallPaper, 0.55, 0.055, -31.2);
+  prison.box(0.14, 0.01, 0.2, hallPaper, -0.45, 0.055, -26.6);
+  prison.box(0.2, 0.01, 0.16, hallPaper, 0.25, 0.055, -19.4);
+  prison.box(0.12, 0.01, 0.18, hallPaper, -0.3, 0.055, -12.8);
   const hallBag = new THREE.Mesh(
     new THREE.BoxGeometry(0.28, 0.16, 0.22),
     new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.88 }),
@@ -589,6 +634,14 @@ function addProcessing(prison) {
   hallBag.position.set(-1.55, 0.12, -31.6);
   hallBag.rotation.y = 0.4;
   prison.group.add(hallBag);
+  const hallBag2 = hallBag.clone();
+  hallBag2.position.set(1.55, 0.12, -25.2);
+  hallBag2.rotation.y = -0.55;
+  prison.group.add(hallBag2);
+  const hallBag3 = hallBag.clone();
+  hallBag3.position.set(-1.4, 0.12, -17.4);
+  hallBag3.rotation.y = 0.2;
+  prison.group.add(hallBag3);
   const hallShoe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
   for (const [sx, sz] of [
     [-1.7, -41.6],
@@ -613,11 +666,26 @@ function addProcessing(prison) {
   quiet.position.set(-2.48, 1.85, -40);
   quiet.rotation.y = Math.PI / 2;
   prison.group.add(quiet);
+  const arrow = plaque('→ ШМОН', 0.85, 0.22);
+  arrow.position.set(2.48, 1.55, -33.8);
+  arrow.rotation.y = -Math.PI / 2;
+  prison.group.add(arrow);
+  const halt = plaque('СТОЙ', 0.55, 0.22);
+  halt.position.set(-2.48, 1.58, -27.2);
+  halt.rotation.y = Math.PI / 2;
+  prison.group.add(halt);
+  const noTalk = plaque('НЕ ОРАТЬ', 0.95, 0.22);
+  noTalk.position.set(2.48, 1.62, -20.6);
+  noTalk.rotation.y = -Math.PI / 2;
+  prison.group.add(noTalk);
   const wet = new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.2, metalness: 0.28 });
   for (const [x, z, s] of [
     [0.4, -24, 0.45],
     [-0.6, -16.2, 0.55],
     [0.2, -38, 0.35],
+    [0.15, -32.4, 0.4],
+    [-0.35, -21.8, 0.32],
+    [0.5, -13.6, 0.38],
   ]) {
     const p = new THREE.Mesh(new THREE.CircleGeometry(s, 8), wet);
     p.rotation.x = -Math.PI / 2;
