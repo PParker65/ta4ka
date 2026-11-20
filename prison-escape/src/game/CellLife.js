@@ -22,6 +22,15 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY2_VALERA,
+  DAY2_VALERA_CAUGHT,
+  DAY2_VALERA_WASH,
+  DAY3_VALERA,
+  DAY3_VALERA_WAIT,
+  DAY3_VALERA_HOLD,
+  DAY3_VALERA_BURN,
+  DAY3_VALERA_FOUND,
+  DAY3_VALERA_RED,
   DAY3_NOTE,
   DAY3_WALK,
   DAY3_WALK_WAIT,
@@ -711,6 +720,24 @@ export class CellLife {
                       : g.sim.stash === 'wash'
                         ? DAY2_YARD_WASH
                         : DAY2_YARD
+                    : g.sim.day >= 3
+                      ? g.sim.malyava === 'admin' || g.sim.path === 'red'
+                        ? DAY3_VALERA_RED
+                        : g.sim.malyava === 'found'
+                          ? DAY3_VALERA_FOUND
+                          : g.sim.malyava === 'hold'
+                            ? DAY3_VALERA_HOLD
+                            : g.sim.malyava === 'burn'
+                              ? DAY3_VALERA_BURN
+                              : !g.sim.malyava
+                                ? DAY3_VALERA_WAIT
+                                : DAY3_VALERA
+                    : g.sim.day >= 2
+                      ? g.sim.stash === 'bunk'
+                        ? DAY2_VALERA_CAUGHT
+                        : g.sim.stash === 'wash'
+                          ? DAY2_VALERA_WASH
+                          : DAY2_VALERA
                     : TALK_VALERA;
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {

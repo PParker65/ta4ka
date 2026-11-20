@@ -296,6 +296,10 @@ export class Game {
       this.player.position.set(o.x + 2.72, 0, o.z + 2.82);
       this.input.yaw = Math.atan2(-0.47, -0.12);
       this.input.pitch = -0.72;
+    } else if (look === 'rad') {
+      this.player.position.set(o.x - 1.35, 0, o.z + 1.65);
+      this.input.yaw = 0.08;
+      this.input.pitch = -0.58;
     } else if (look === 'door') {
       this.player.position.set(o.x - 0.45, 0, 3.42);
       this.input.yaw = -Math.PI / 2;

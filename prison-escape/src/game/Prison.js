@@ -1467,6 +1467,38 @@ export class Prison {
     for (let i = -2; i <= 2; i++) {
       this.box(0.06, 0.38, 0.1, rad, -1.35 + i * 0.2, 0.38, LAYOUT.cellD / 2 - 0.2, cell);
     }
+    const radWet = new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.18, metalness: 0.35 });
+    this.box(0.08, 0.36, 0.11, radWet, -1.15, 0.38, LAYOUT.cellD / 2 - 0.19, cell);
+    const radRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.02, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.95 }),
+    );
+    radRag.position.set(-1.48, 0.61, LAYOUT.cellD / 2 - 0.28);
+    radRag.rotation.z = 0.35;
+    cell.add(radRag);
+    const dripMat = new THREE.MeshStandardMaterial({ color: 0x6a7a78, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.55 });
+    for (const [dx, dy] of [
+      [-1.15, 0.12],
+      [-1.12, 0.22],
+      [-1.18, 0.05],
+    ]) {
+      const drop = new THREE.Mesh(new THREE.SphereGeometry(0.012, 6, 4), dripMat);
+      drop.position.set(dx, dy, LAYOUT.cellD / 2 - 0.28);
+      cell.add(drop);
+    }
+    const radPuddle = new THREE.Mesh(
+      new THREE.CircleGeometry(0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.18, metalness: 0.22 }),
+    );
+    radPuddle.rotation.x = -Math.PI / 2;
+    radPuddle.position.set(-1.16, 0.045, LAYOUT.cellD / 2 - 0.55);
+    cell.add(radPuddle);
+    const tin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x7a7e72, metalness: 0.45, roughness: 0.4 }),
+    );
+    tin.position.set(-1.58, 0.64, LAYOUT.cellD / 2 - 0.28);
+    cell.add(tin);
     const hole = new THREE.Mesh(
       new THREE.CircleGeometry(0.035, 10),
       new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.4 }),
