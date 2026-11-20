@@ -2737,6 +2737,35 @@ export class Prison {
     wetSock.position.set(3.38, 0.06, 3.58);
     wetSock.rotation.y = -0.7;
     g.add(wetSock);
+    const drainTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.05, 0.12, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a6a3a, metalness: 0.35, roughness: 0.55 }),
+    );
+    drainTin.position.set(3.48, 0.09, 3.78);
+    drainTin.rotation.z = 1.15;
+    drainTin.rotation.y = 0.4;
+    g.add(drainTin);
+    const drainBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4a42, roughness: 0.45, transparent: true, opacity: 0.72 }),
+    );
+    drainBottle.position.set(3.68, 0.13, 3.42);
+    drainBottle.rotation.z = 1.35;
+    g.add(drainBottle);
+    const drainSplash = new THREE.Mesh(
+      new THREE.CircleGeometry(0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4238, roughness: 0.22, metalness: 0.12, transparent: true, opacity: 0.5 }),
+    );
+    drainSplash.rotation.x = -Math.PI / 2;
+    drainSplash.position.set(3.9, 0.048, 3.78);
+    g.add(drainSplash);
+    const drainWire = new THREE.Mesh(
+      new THREE.BoxGeometry(0.02, 0.55, 0.02),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a28, metalness: 0.4, roughness: 0.55 }),
+    );
+    drainWire.position.set(3.78, 1.55, 4.12);
+    drainWire.rotation.z = 0.18;
+    g.add(drainWire);
     const cornerNum = wallScratch('4');
     cornerNum.scale.setScalar(1.8);
     cornerNum.position.set(4.18, 1.85, 3.2);

@@ -35,6 +35,7 @@ import {
   DAY3_MORNING_HOLD_BUNK,
   DAY3_MORNING_BURN,
   DAY3_MORNING_FOUND,
+  DAY3_MORNING_FOUND_BUNK,
   DAY3_FOOD,
   DAY3_FOOD_HOLD,
   DAY3_FOOD_HOLD_WASH,
@@ -51,6 +52,7 @@ import {
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
   DAY3_WALK_FOUND,
+  DAY3_WALK_FOUND_BUNK,
   DAY3_SHMON_FOUND,
   DAY3_SHMON_FOUND_BUNK,
   DAY3_SHMON_WASH,
@@ -189,6 +191,7 @@ import {
   WEEK_HELD_GONE,
   WEEK_HELD_RED,
   WEEK_HELD_FOUND,
+  WEEK_HELD_FOUND_BUNK,
   WEEK_HELD_BURN,
   WEEK_HELD_HOLD,
   WEEK_HELD_HOLD_WASH,
@@ -306,7 +309,10 @@ export function plotObjective(sim) {
           ? 'Третий круг. Чаша осталась в хате. Через стену не ори про неё.'
           : 'Карман жжёт даже на круге. Через стену — ни звука.';
     if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
-    if (sim.malyava === 'found') return 'Третий круг. Нашли. Через стену не ори про шмон.';
+    if (sim.malyava === 'found')
+      return sim.stash === 'bunk'
+        ? 'Третий круг. Нашли в матрасе. Через стену не ори про шмон.'
+        : 'Третий круг. Нашли. Через стену не ори про шмон.';
     if (!sim.malyava) return 'Третий круг. Бумага ещё в щели. К щели — после. Через стену не ори.';
     return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
   }
@@ -577,7 +583,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Неделя. Бумагу взяли без тебя. Свежак кончился. Молчи. Ешь.'
         : sim.malyava === 'found'
-          ? 'Неделя. Нашли. Не выселили. Свежак кончился на карандаше.'
+          ? sim.stash === 'bunk'
+            ? 'Неделя. Нашли в матрасе. Не выселили. Свежак кончился на карандаше.'
+            : 'Неделя. Нашли. Не выселили. Свежак кончился на карандаше.'
           : sim.malyava === 'burn'
             ? 'Неделя. Бумага зола. Свежак кончился. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -681,7 +689,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: s.stash === 'bunk' ? DAY6_NIGHT_FOUND_BUNK : DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, hold: holdStash(s, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }), ok: DAY6_NIGHT }));
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
-      pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: holdStash(s, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }), ok: WEEK_HELD }));
+      pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: s.stash === 'bunk' ? WEEK_HELD_FOUND_BUNK : WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: holdStash(s, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }), ok: WEEK_HELD }));
     } else {
       g.subtitle(eveningLine(s));
     }
@@ -924,7 +932,7 @@ function day3Walk(s) {
   if (!s.malyava) return DAY3_WALK_WAIT;
   if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_WALK_HOLD, wash: DAY3_WALK_HOLD_WASH, bunk: DAY3_WALK_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_WALK_BURN;
-  if (s.malyava === 'found') return DAY3_WALK_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_WALK_FOUND_BUNK : DAY3_WALK_FOUND;
   return DAY3_WALK;
 }
 
@@ -938,7 +946,7 @@ function day3Food(s) {
 
 function day3Morning(s) {
   if (s.malyava === 'admin' || s.path === 'red') return DAY3_MORNING_RED;
-  if (s.malyava === 'found') return DAY3_MORNING_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_MORNING_FOUND_BUNK : DAY3_MORNING_FOUND;
   if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_MORNING_HOLD, wash: DAY3_MORNING_HOLD_WASH, bunk: DAY3_MORNING_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_MORNING_BURN;
   if (s.stash === 'bunk') return DAY3_MORNING_CAUGHT;
