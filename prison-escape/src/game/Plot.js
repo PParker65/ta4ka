@@ -36,6 +36,10 @@ import {
   DAY3_SHMON_BURN,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
+  DAY4_LEHA_HOLD,
+  DAY4_LEHA_FOUND,
+  DAY4_LEHA_BURN,
+  DAY4_LEHA_RED,
   DAY4_WALK,
   DAY4_WALK_WAIT,
   DAY4_WALK_PAID,
@@ -52,6 +56,8 @@ import {
   DAY4_WAKE_BURN,
   DAY4_WAKE_RED,
   DAY4_WAKE_WAIT,
+  DAY4_WAKE_FOUND,
+  DAY4_WAKE_HOLD,
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_COURT_GONE,
@@ -190,6 +196,30 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold' && sim.teaPaid
               ? 'Четвёртая пайка. Чай ушёл. Карман жжёт. За столом не читай.'
               : 'Четвёртая пайка. Кто не отдаёт чай в щель — пустое место.';
+  if (d === 4 && ph === 'evening')
+    return weekRed(sim)
+      ? 'Четвёртый отбой. Чайник молчит. Хата не здоровается.'
+      : !sim.malyava
+        ? 'Четвёртый отбой. Бумага в щели уже двое суток. Не зевай.'
+        : sim.malyava === 'found'
+          ? 'Четвёртый отбой. Нашли. Жар не сняли. Молчи.'
+          : sim.malyava === 'burn'
+            ? 'Четвёртый отбой. Зола ещё пахнет. Не свисти в полный голос.'
+            : sim.malyava === 'hold' && sim.teaPaid
+              ? 'Четвёртый отбой. Чай ушёл. Карман жжёт. Не читай при лампе.'
+              : 'Чай, что через кормушку ушёл, ждут обратно.';
+  if (d === 4 && ph === 'wake')
+    return weekRed(sim)
+      ? 'Четвёртый подъём. Чайник молчит. Пайка лишняя.'
+      : !sim.malyava
+        ? 'Четвёртый подъём. Бумага вчера не ушла. Щель всё ещё живая.'
+        : sim.malyava === 'found'
+          ? 'Четвёртый подъём. Нашли. Жар не сняли за ночь. Рот на замок.'
+          : sim.malyava === 'burn'
+            ? 'Четвёртый подъём. Зола ещё пахнет. Не свисти в полный голос.'
+            : sim.malyava === 'hold' && sim.teaPaid
+              ? 'Четвёртый подъём. Чай ушёл. Карман жжёт. Не шарь при лампе.'
+              : 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
   if (d === 4 && !sim.malyava)
     return 'Четвёртый день. Бумага вчера не ушла. Щель всё ещё живая.';
   if (d === 4 && ph === 'wake' && sim.malyava === 'hold' && !sim.teaPaid)
@@ -336,7 +366,7 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 2 && !s.seenDay2) {
       s.seenDay2 = true;
       pickDialog(g, s.stash === 'bunk' ? DAY2_SEDOY_CAUGHT : s.stash === 'wash' ? DAY2_SEDOY_WASH : DAY2_SEDOY);
-    } else if (s.malyava === 'found' && !s.seenFoundNight) {
+    } else if (s.day <= 3 && s.malyava === 'found' && !s.seenFoundNight) {
       s.seenFoundNight = true;
       pickDialog(g, FOUND_NIGHT);
     } else if (s.day === 3 && !s.seenDay3) {
@@ -347,7 +377,7 @@ export function onPhaseEnter(game, id) {
       else pickDialog(g, s.malyava ? DAY3_NIGHT : DAY3_NIGHT_WAIT);
     } else if (s.day === 4 && !s.seenDay4) {
       s.seenDay4 = true;
-      pickDialog(g, s.malyava && s.malyava !== 'gone' ? DAY4_LEHA : DAY4_NIGHT_WAIT);
+      pickDialog(g, day4Evening(s));
     } else if (s.day === 5 && !s.seenDay5) {
       s.seenDay5 = true;
       pickDialog(g, day5Evening(s));
@@ -469,10 +499,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 4 && !s.seenDay4Wake) {
       s.seenDay4Wake = true;
-      if (!s.malyava) pickDialog(g, DAY4_WAKE_WAIT);
-      else if (s.malyava === 'admin' || s.courtTalk === 'cell') pickDialog(g, DAY4_WAKE_RED);
-      else if (s.malyava === 'burn') pickDialog(g, DAY4_WAKE_BURN);
-      else pickDialog(g, DAY4_WAKE);
+      pickDialog(g, day4Wake(s));
       return;
     }
     if (s.day === 5 && !s.seenDay5Wake) {
@@ -512,6 +539,24 @@ function day4Food(s) {
   if (s.malyava === 'burn') return DAY4_FOOD_BURN;
   if (s.malyava === 'hold' && s.teaPaid) return DAY4_FOOD_HOLD;
   return DAY4_FOOD;
+}
+
+function day4Evening(s) {
+  if (weekRed(s)) return DAY4_LEHA_RED;
+  if (!s.malyava) return DAY4_NIGHT_WAIT;
+  if (s.malyava === 'found') return DAY4_LEHA_FOUND;
+  if (s.malyava === 'burn') return DAY4_LEHA_BURN;
+  if (s.malyava === 'hold' && s.teaPaid) return DAY4_LEHA_HOLD;
+  return DAY4_LEHA;
+}
+
+function day4Wake(s) {
+  if (weekRed(s)) return DAY4_WAKE_RED;
+  if (!s.malyava) return DAY4_WAKE_WAIT;
+  if (s.malyava === 'found') return DAY4_WAKE_FOUND;
+  if (s.malyava === 'burn') return DAY4_WAKE_BURN;
+  if (s.malyava === 'hold' && s.teaPaid) return DAY4_WAKE_HOLD;
+  return DAY4_WAKE;
 }
 
 function weekRed(s) {

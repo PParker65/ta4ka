@@ -1855,6 +1855,41 @@ export class Prison {
     this.box(0.7, 0.02, 0.35, mud, 3.6, 0.05, -0.6, g);
     this.box(0.5, 0.018, 0.28, mud, -3.5, 0.05, 0.9, g);
     this.box(0.38, 0.016, 0.5, mud, 3.7, 0.05, 2.1, g);
+    const cornerDamp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.5, transparent: true, opacity: 0.62 });
+    this.box(1.8, 1.7, 0.03, cornerDamp, 3.4, 2.15, 4.22, g);
+    this.box(0.03, 1.9, 1.6, cornerDamp, 4.22, 2.2, 3.5, g);
+    this.box(1.1, 0.9, 0.03, peel, 3.7, 2.55, 4.21, g);
+    this.box(0.03, 0.8, 0.9, peel, 4.21, 2.45, 3.85, g);
+    const piss = new THREE.MeshStandardMaterial({ color: 0x7a6a38, roughness: 0.35, transparent: true, opacity: 0.45 });
+    this.box(0.55, 0.95, 0.03, piss, 4.05, 0.7, 4.2, g);
+    this.box(0.03, 1.05, 0.7, piss, 4.26, 0.72, 3.95, g);
+    const drainPipe = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.045, 2.4, 6),
+      new THREE.MeshStandardMaterial({ color: 0x5a3a28, roughness: 0.7, metalness: 0.25 }),
+    );
+    drainPipe.position.set(4.05, 1.35, 4.05);
+    g.add(drainPipe);
+    const drainElbow = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.05, 0.35, 6),
+      drainPipe.material,
+    );
+    drainElbow.rotation.x = Math.PI / 2;
+    drainElbow.position.set(4.05, 0.22, 3.9);
+    g.add(drainElbow);
+    const cornerGrate = this.box(0.38, 0.03, 0.38, mesh, 3.85, 0.055, 3.85, g);
+    cornerGrate.rotation.y = 0.2;
+    const cornerRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.08, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.94 }),
+    );
+    cornerRag.position.set(3.55, 0.08, 3.95);
+    cornerRag.rotation.y = 0.5;
+    g.add(cornerRag);
+    const cornerNum = wallScratch('4');
+    cornerNum.scale.setScalar(1.8);
+    cornerNum.position.set(4.18, 1.85, 3.2);
+    cornerNum.rotation.y = -Math.PI / 2;
+    g.add(cornerNum);
   }
 
   addPipesAndProps() {

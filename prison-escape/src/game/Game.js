@@ -233,6 +233,12 @@ export class Game {
       this.input.pitch = -0.92;
       return;
     }
+    if (look === 'yardblank') {
+      this.player.position.set(2.15, 0, LAYOUT.corridorLen + 6.8);
+      this.input.yaw = 0.72;
+      this.input.pitch = 0.18;
+      return;
+    }
     const o = this.prison.cellOrigin;
     if (!o) return;
     this.hands.position.set(0, 0, 0);

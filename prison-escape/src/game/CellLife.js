@@ -33,6 +33,10 @@ import {
   DAY2_WAKE,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
+  DAY4_LEHA_HOLD,
+  DAY4_LEHA_FOUND,
+  DAY4_LEHA_BURN,
+  DAY4_LEHA_RED,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -525,9 +529,17 @@ export class CellLife {
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
           : g.sim.day >= 4
-            ? g.sim.malyava && g.sim.malyava !== 'gone'
-              ? DAY4_LEHA
-              : DAY4_NIGHT_WAIT
+            ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+              ? DAY4_LEHA_RED
+              : !g.sim.malyava
+                ? DAY4_NIGHT_WAIT
+                : g.sim.malyava === 'found'
+                  ? DAY4_LEHA_FOUND
+                  : g.sim.malyava === 'burn'
+                    ? DAY4_LEHA_BURN
+                    : g.sim.malyava === 'hold' && g.sim.teaPaid
+                      ? DAY4_LEHA_HOLD
+                      : DAY4_LEHA
           : g.sim.day >= 3
             ? g.sim.path === 'red'
               ? DAY3_MORNING_RED
