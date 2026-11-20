@@ -2377,6 +2377,19 @@ export class Prison {
     this.box(0.07, 0.7, 0.03, gateDrip, 2.68, 2.22, wallZ + 0.18, g);
     this.box(0.2, 1.45, 0.03, gateDrip, -1.12, 2.45, wallZ + 0.18, g);
     this.box(0.16, 1.2, 0.03, gateDrip, 1.28, 2.52, wallZ + 0.18, g);
+    const gateSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.22, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    gateSock.position.set(-0.42, 1.38, wallZ + 0.32);
+    gateSock.rotation.set(0.18, 0.12, 0.32);
+    g.add(gateSock);
+    const gateTinFloor = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    gateTinFloor.position.set(0.48, 0.08, wallZ + 0.55);
+    g.add(gateTinFloor);
     const haltYard = wallScratch('СТОЙ');
     haltYard.scale.set(1.1, 1.1, 1.1);
     haltYard.position.set(-3.15, 2.05, wallZ + 0.22);
@@ -2682,6 +2695,19 @@ export class Prison {
     krugRag2.position.set(0.48, 0.1, 1.55);
     krugRag2.rotation.y = -0.55;
     g.add(krugRag2);
+    const krugTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    krugTin.position.set(0.32, 0.08, 1.28);
+    g.add(krugTin);
+    const krugSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.22, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    krugSock.position.set(-0.42, 0.14, 1.22);
+    krugSock.rotation.set(1.15, 0.2, 0.35);
+    g.add(krugSock);
     const buttKrug = new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 });
     for (const [bx, bz, ry] of [
       [0.42, 1.62, 0.6],
