@@ -1204,6 +1204,44 @@ export class Prison {
       rag.rotation.z = (i - 1) * 0.08;
       cell.add(rag);
     });
+    const extraCloth = new THREE.Mesh(
+      new THREE.BoxGeometry(0.32, 0.5, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x4a5a48, roughness: 0.92 }),
+    );
+    extraCloth.position.set(0.85, 1.7, 2.9);
+    extraCloth.rotation.z = 0.12;
+    cell.add(extraCloth);
+    const sockLine = extraCloth.clone();
+    sockLine.scale.set(0.35, 0.55, 1);
+    sockLine.material = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.94 });
+    sockLine.position.set(-1.55, 1.55, 2.9);
+    cell.add(sockLine);
+    const shoeMat = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
+    for (const [sx, sz, ry] of [
+      [1.15, 1.55, 0.4],
+      [1.32, 1.62, 0.35],
+      [0.35, 1.85, -0.2],
+      [0.52, 1.92, -0.15],
+    ]) {
+      const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.07, 0.1), shoeMat);
+      shoe.position.set(sx, 0.08, sz);
+      shoe.rotation.y = ry;
+      cell.add(shoe);
+    }
+    const bunkRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.03, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95 }),
+    );
+    bunkRag.position.set(0.7, 0.04, 1.45);
+    bunkRag.rotation.y = 0.35;
+    cell.add(bunkRag);
+    const bunkBox = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.16, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x4a4030, roughness: 0.88 }),
+    );
+    bunkBox.position.set(1.55, 0.12, 1.7);
+    bunkBox.rotation.y = 0.2;
+    cell.add(bunkBox);
     const bottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),

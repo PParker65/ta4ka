@@ -35,6 +35,12 @@ import {
   DAY3_MORNING_HOLD,
   DAY3_MORNING_BURN,
   DAY3_MORNING_FOUND,
+  DAY3_NIGHT,
+  DAY3_NIGHT_WAIT,
+  DAY3_NIGHT_FOUND,
+  DAY3_NIGHT_HOLD,
+  DAY3_NIGHT_BURN,
+  DAY3_NIGHT_RED,
   DAY2_WAKE,
   DAY2_WAKE_WASH,
   DAY2_WAKE_BUNK,
@@ -562,6 +568,18 @@ export class CellLife {
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? DAY4_LEHA_HOLD
                       : DAY4_LEHA
+          : g.sim.day >= 3 && g.sim.phase.id === 'evening'
+            ? g.sim.malyava === 'admin' || g.sim.path === 'red'
+              ? DAY3_NIGHT_RED
+              : g.sim.malyava === 'found'
+                ? DAY3_NIGHT_FOUND
+                : g.sim.malyava === 'hold'
+                  ? DAY3_NIGHT_HOLD
+                  : g.sim.malyava === 'burn'
+                    ? DAY3_NIGHT_BURN
+                    : !g.sim.malyava
+                      ? DAY3_NIGHT_WAIT
+                      : DAY3_NIGHT
           : g.sim.day >= 3
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_MORNING_RED
