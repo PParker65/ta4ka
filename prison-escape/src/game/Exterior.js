@@ -582,35 +582,67 @@ function addProcessing(prison) {
   const hallConduit2 = hallConduit.clone();
   hallConduit2.position.set(2.15, 2.68, -28);
   prison.group.add(hallConduit2);
-  const hallDamp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.5 });
-  const hallPeel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+  const hallDamp = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.62, transparent: true, opacity: 0.42 });
+  const hallPeel = new THREE.MeshStandardMaterial({ color: 0xa89f8c, roughness: 0.92 });
   for (const [x, z, w, hh] of [
-    [-2.52, -38.4, 1.4, 1.1],
-    [2.52, -34.2, 1.8, 0.9],
-    [-2.52, -30.5, 1.1, 1.3],
-    [2.52, -40.1, 0.9, 0.7],
-    [-2.52, -26.2, 1.6, 0.85],
-    [2.52, -21.4, 1.3, 1.05],
-    [-2.52, -17.8, 1.0, 0.7],
-    [2.52, -12.6, 1.5, 0.9],
+    [-2.52, -38.4, 0.38, 1.1],
+    [2.52, -34.2, 0.32, 1.05],
+    [-2.52, -30.5, 0.34, 1.2],
+    [2.52, -40.1, 0.28, 0.7],
+    [-2.52, -26.2, 0.4, 0.85],
+    [2.52, -21.4, 0.3, 1.05],
+    [-2.52, -17.8, 0.26, 0.7],
+    [2.52, -12.6, 0.36, 0.9],
   ]) {
     prison.box(0.03, hh, w, hallDamp, x, 2.05, z);
   }
-  prison.box(0.03, 0.55, 0.8, hallPeel, 2.5, 2.35, -36.4);
-  prison.box(0.03, 0.7, 1.1, hallPeel, -2.5, 2.4, -33.2);
-  prison.box(0.03, 0.45, 0.9, hallPeel, 2.5, 2.2, -27.5);
-  prison.box(0.03, 0.6, 0.7, hallPeel, -2.5, 2.15, -19.8);
-  const stainEye = new THREE.MeshStandardMaterial({ color: 0xb8b09c, roughness: 0.92 });
+  prison.box(0.03, 0.35, 0.28, hallPeel, 2.5, 2.35, -36.4);
+  prison.box(0.03, 0.4, 0.32, hallPeel, -2.5, 2.4, -33.2);
+  prison.box(0.03, 0.28, 0.26, hallPeel, 2.5, 2.2, -27.5);
+  prison.box(0.03, 0.32, 0.24, hallPeel, -2.5, 2.15, -19.8);
+  const fuse = new THREE.MeshStandardMaterial({ color: 0x3a4238, metalness: 0.38, roughness: 0.52 });
+  prison.box(0.1, 0.38, 0.28, fuse, 2.46, 1.5, -34.15);
+  prison.box(0.04, 0.05, 0.07, fuse, 2.4, 1.58, -34.15);
+  const quiet2 = plaque('ТИХО', 0.55, 0.2);
+  quiet2.position.set(2.48, 1.88, -34.15);
+  quiet2.rotation.y = -Math.PI / 2;
+  prison.group.add(quiet2);
+  const stainEye = new THREE.MeshStandardMaterial({
+    color: 0x5a6054,
+    roughness: 0.7,
+    transparent: true,
+    opacity: 0.48,
+  });
   for (const [x, z, w, hh, y] of [
-    [-2.52, -34.6, 1.2, 0.55, 1.55],
-    [2.52, -32.1, 0.9, 0.7, 1.62],
-    [-2.52, -25.4, 1.4, 0.5, 1.48],
-    [2.52, -23.0, 1.1, 0.65, 1.7],
-    [-2.52, -14.8, 0.8, 0.55, 1.52],
-    [2.52, -10.4, 1.3, 0.48, 1.58],
+    [-2.52, -34.6, 0.22, 1.2, 1.72],
+    [2.52, -32.1, 0.18, 1.35, 1.78],
+    [-2.52, -25.4, 0.26, 1.05, 1.62],
+    [2.52, -23.0, 0.2, 1.18, 1.7],
+    [-2.52, -14.8, 0.16, 0.95, 1.58],
+    [2.52, -10.4, 0.24, 1.1, 1.64],
   ]) {
     prison.box(0.03, hh, w, stainEye, x, y, z);
   }
+  const rustDrip = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.85, transparent: true, opacity: 0.55 });
+  prison.box(0.03, 0.85, 0.08, rustDrip, 2.52, 2.15, -32.05);
+  prison.box(0.03, 0.7, 0.07, rustDrip, -2.52, 2.05, -34.55);
+  prison.box(0.03, 0.95, 0.09, rustDrip, 2.52, 2.22, -22.9);
+  prison.box(0.1, 0.42, 0.32, fuse, 2.46, 1.52, -32.05);
+  prison.box(0.04, 0.06, 0.08, fuse, 2.4, 1.62, -32.05);
+  prison.box(0.1, 0.36, 0.26, fuse, -2.46, 1.48, -25.35);
+  prison.box(0.04, 0.05, 0.07, fuse, -2.4, 1.56, -25.35);
+  const notice = new THREE.MeshStandardMaterial({ color: 0xe4d8b8, roughness: 0.92 });
+  prison.box(0.02, 0.28, 0.2, notice, 2.49, 1.78, -31.82);
+  prison.box(0.02, 0.22, 0.16, notice, 2.49, 1.68, -32.22);
+  prison.box(0.02, 0.24, 0.18, notice, -2.49, 1.72, -34.4);
+  const acct = plaque('УЧЁТ', 0.7, 0.22);
+  acct.position.set(2.48, 1.92, -32.05);
+  acct.rotation.y = -Math.PI / 2;
+  prison.group.add(acct);
+  const row = plaque('РЯД 1', 0.65, 0.2);
+  row.position.set(-2.48, 1.88, -34.55);
+  row.rotation.y = Math.PI / 2;
+  prison.group.add(row);
   const ceilDampHall = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.42 });
   prison.box(1.6, 0.02, 0.7, ceilDampHall, -0.4, h - 0.04, -33.2);
   prison.box(0.9, 0.02, 1.4, ceilDampHall, 0.6, h - 0.04, -27.5);
@@ -656,6 +688,22 @@ function addProcessing(prison) {
   prison.box(0.14, 0.01, 0.2, hallPaper, -0.45, 0.055, -26.6);
   prison.box(0.2, 0.01, 0.16, hallPaper, 0.25, 0.055, -19.4);
   prison.box(0.12, 0.01, 0.18, hallPaper, -0.3, 0.055, -12.8);
+  prison.box(0.15, 0.01, 0.2, hallPaper, 0.12, 0.055, -33.8);
+  prison.box(0.1, 0.01, 0.14, hallPaper, -0.55, 0.055, -29.6);
+  const hallRag = new THREE.Mesh(
+    new THREE.BoxGeometry(0.32, 0.02, 0.18),
+    new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.95 }),
+  );
+  hallRag.position.set(0.4, 0.05, -34.2);
+  hallRag.rotation.y = 0.35;
+  prison.group.add(hallRag);
+  const belt = new THREE.Mesh(
+    new THREE.BoxGeometry(0.42, 0.015, 0.05),
+    new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.8 }),
+  );
+  belt.position.set(-0.25, 0.05, -30.4);
+  belt.rotation.y = -0.4;
+  prison.group.add(belt);
   const hallBag = new THREE.Mesh(
     new THREE.BoxGeometry(0.28, 0.16, 0.22),
     new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.88 }),
@@ -814,6 +862,15 @@ function alcove(prison, x, z, title) {
   prison.box(3.6, 3.1, 0.14, wall, 0, 1.55, 1.7, g);
   prison.box(3.6, 3.1, 0.14, wall, 0, 1.55, -1.7, g);
   prison.box(0.14, 3.1, 3.4, wall, (x < 0 ? -1 : 1) * 1.75, 1.55, 0, g);
+  const dadoHall = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
+  prison.box(3.4, 1.12, 0.05, dadoHall, 0, 0.56, 1.61, g);
+  prison.box(3.4, 1.12, 0.05, dadoHall, 0, 0.56, -1.61, g);
+  const faceCover = new THREE.MeshStandardMaterial({ color: 0x7a7468, roughness: 0.9 });
+  prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, 1.61, g);
+  prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, -1.61, g);
+  const darkBoard = new THREE.MeshStandardMaterial({ color: 0x3e423c, roughness: 0.72 });
+  prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, -1.58, g);
+  prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, 1.58, g);
   const lamp = new THREE.PointLight(0xf2ead0, 0.85, 7, 1.6);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
@@ -899,7 +956,16 @@ function alcove(prison, x, z, title) {
     g.add(wet);
   }
   if (title === 'ФОТО') {
-    prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0xece8dc, roughness: 0.78 }), 0.2, 1.3, -1.55, g);
+    prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0xc8c2b4, roughness: 0.82 }), 0.2, 1.3, -1.55, g);
+    const grid = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.7 });
+    for (let i = 0; i < 8; i++) {
+      prison.box(2.05, 0.012, 0.02, grid, 0.2, 0.38 + i * 0.28, -1.52, g);
+    }
+    prison.box(0.012, 2.2, 0.02, grid, -0.75, 1.3, -1.52, g);
+    prison.box(0.012, 2.2, 0.02, grid, 1.15, 1.3, -1.52, g);
+    const frame = new THREE.MeshStandardMaterial({ color: 0x3a3a36, roughness: 0.6 });
+    prison.box(2.28, 0.05, 0.06, frame, 0.2, 2.48, -1.55, g);
+    prison.box(2.28, 0.05, 0.06, frame, 0.2, 0.12, -1.55, g);
     const marks = plaque('180\n170\n160', 0.42, 1.05);
     marks.position.set(-1.15, 1.45, -1.48);
     g.add(marks);
