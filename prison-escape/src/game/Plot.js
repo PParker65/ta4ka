@@ -20,6 +20,7 @@ import {
   DAY2_WAKE_WASH,
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
+  DAY3_NIGHT_FOUND,
   DAY3_MORNING,
   DAY3_MORNING_RED,
   DAY3_MORNING_CAUGHT,
@@ -194,6 +195,8 @@ export function plotObjective(sim) {
     return 'Пайка лишняя. Красному ложку дают последним.';
   if (d === 3 && ph === 'evening' && !sim.malyava)
     return 'Отбой. Бумага ещё в щели. Завтра либо твоя, либо кума.';
+  if (d === 3 && ph === 'evening' && sim.malyava === 'found')
+    return 'Третий отбой. Нашли днём. Молчи. Оправдания — вторая малява.';
   if (d === 3 && ph === 'walk') {
     if (sim.malyava === 'admin') return 'Третий круг без свиста. Хата уже считает.';
     if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
@@ -411,7 +414,8 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, s.stash === 'bunk' ? DAY2_SEDOY_CAUGHT : s.stash === 'wash' ? DAY2_SEDOY_WASH : DAY2_SEDOY);
     } else if (s.day <= 3 && s.malyava === 'found' && !s.seenFoundNight) {
       s.seenFoundNight = true;
-      pickDialog(g, FOUND_NIGHT);
+      if (s.day === 3) s.seenDay3 = true;
+      pickDialog(g, s.day === 3 ? DAY3_NIGHT_FOUND : FOUND_NIGHT);
     } else if (s.day === 3 && !s.seenDay3) {
       s.seenDay3 = true;
       if (s.malyava === 'admin') pickDialog(g, SNITCH_NIGHT);

@@ -1008,6 +1008,51 @@ function alcove(prison, x, z, title) {
     grate.rotation.x = -Math.PI / 2;
     grate.position.set(0.5, 0.04, 0.3);
     g.add(grate);
+    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.45 });
+    prison.box(0.03, 0.65, 0.9, peel, wallX, 2.15, 0.2, g);
+    prison.box(0.03, 0.5, 0.7, damp, wallX, 1.9, -0.6, g);
+    prison.box(1.0, 0.02, 0.4, damp, 0.15, 2.96, 0.3, g);
+    const ceilPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.0, 6), chrome);
+    ceilPipe.rotation.z = Math.PI / 2;
+    ceilPipe.position.set(0, 2.82, -0.4);
+    g.add(ceilPipe);
+    const hair = new THREE.Mesh(
+      new THREE.CircleGeometry(0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.95 }),
+    );
+    hair.rotation.x = -Math.PI / 2;
+    hair.position.set(0.15, 0.045, -0.35);
+    g.add(hair);
+    const wet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.45, 10),
+      new THREE.MeshStandardMaterial({ color: 0x6a7a78, roughness: 0.18, metalness: 0.12 }),
+    );
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(0.2, 0.04, 0.15);
+    g.add(wet);
+    const bucket = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.1, 0.22, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.3, roughness: 0.55 }),
+    );
+    bucket.position.set(0.85, 0.14, -0.55);
+    g.add(bucket);
+    const soap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.03, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.6 }),
+    );
+    soap.position.set(0.5, 0.48, -1.1);
+    g.add(soap);
+    const cut = plaque('СТРИЧКА', 0.85, 0.2);
+    cut.position.set(0, 2.2, 1.55);
+    g.add(cut);
+    const towel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.55, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.9 }),
+    );
+    towel.position.set(-0.9, 1.25, 0.7);
+    towel.rotation.z = 0.1;
+    g.add(towel);
   }
 }
 
