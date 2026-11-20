@@ -22,6 +22,11 @@ import {
   DAY2_SEDOY_SHMON,
   DAY2_SEDOY_SHMON_CAUGHT,
   DAY2_SEDOY_SHMON_WASH,
+  DAY4_SEDOY_SHMON_WAIT,
+  DAY4_SEDOY_SHMON_WASH,
+  DAY4_SEDOY_SHMON_FOUND,
+  DAY4_SEDOY_SHMON_BURN,
+  DAY4_SEDOY_SHMON_RED,
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
@@ -670,6 +675,14 @@ export class CellLife {
                 ? DAY5_COURT_GONE
               : g.sim.day >= 5
                 ? DAY5_COURT
+                : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
+                  ? day4ShmonTalk(g.sim, {
+                      red: DAY4_SEDOY_SHMON_RED,
+                      found: DAY4_SEDOY_SHMON_FOUND,
+                      burn: DAY4_SEDOY_SHMON_BURN,
+                      wash: DAY4_SEDOY_SHMON_WASH,
+                      wait: DAY4_SEDOY_SHMON_WAIT,
+                    })
                 : g.sim.day >= 4 && g.sim.phase.id === 'food'
                   ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
                     ? DAY4_FOOD_RED

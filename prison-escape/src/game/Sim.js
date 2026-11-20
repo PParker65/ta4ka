@@ -75,6 +75,7 @@ export class Sim {
     this.heardDay3Yard = false;
     this.seenDay3Shmon = false;
     this.seenDay4Shmon = false;
+    this.seenDay5Shmon = false;
   }
 
   objective() {

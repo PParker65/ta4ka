@@ -1538,6 +1538,25 @@ export class Prison {
     this.box(0.55, 0.04, 0.18, shelf, 2.55, 1.35, 0.4, cell);
     this.box(0.04, 0.35, 0.04, shelf, 2.35, 1.16, 0.48, cell);
     this.box(0.04, 0.35, 0.04, shelf, 2.72, 1.16, 0.32, cell);
+    const shelfRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.22, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.95 }),
+    );
+    shelfRag.position.set(2.62, 1.22, 0.42);
+    shelfRag.rotation.z = 0.18;
+    cell.add(shelfRag);
+    const matches = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.02, 0.035),
+      new THREE.MeshStandardMaterial({ color: 0x8a2020, roughness: 0.7 }),
+    );
+    matches.position.set(2.42, 1.38, 0.44);
+    cell.add(matches);
+    const shelfMug = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.028, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8070, roughness: 0.65 }),
+    );
+    shelfMug.position.set(2.68, 1.42, 0.36);
+    cell.add(shelfMug);
     const paste = new THREE.Mesh(
       new THREE.CylinderGeometry(0.018, 0.02, 0.11, 6),
       new THREE.MeshStandardMaterial({ color: 0xc8d0c4, roughness: 0.5 }),

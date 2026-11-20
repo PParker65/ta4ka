@@ -51,6 +51,12 @@ import {
   DAY4_SHMON_FOUND,
   DAY4_SHMON_BURN,
   DAY4_SHMON_RED,
+  DAY5_SHMON,
+  DAY5_SHMON_GONE,
+  DAY5_SHMON_HOLD,
+  DAY5_SHMON_FOUND,
+  DAY5_SHMON_BURN,
+  DAY5_SHMON_RED,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -464,7 +470,10 @@ export function onPhaseEnter(game, id) {
       s.stress = Math.min(100, s.stress + 16);
       s.hope = Math.max(0, s.hope - 10);
       g.toast('Нашли бумагу. Карман пустой, жар полный.');
-      if (s.day === 4 && !s.seenDay4Shmon) {
+      if (s.day === 5 && !s.seenDay5Shmon) {
+        s.seenDay5Shmon = true;
+        pickDialog(g, DAY5_SHMON_FOUND);
+      } else if (s.day === 4 && !s.seenDay4Shmon) {
         s.seenDay4Shmon = true;
         pickDialog(g, DAY4_SHMON_FOUND);
       } else if (!s.seenDay3Shmon) {
@@ -473,6 +482,18 @@ export function onPhaseEnter(game, id) {
       } else {
         g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
       }
+      return;
+    }
+    if (s.day === 5 && !s.seenDay5Shmon) {
+      s.seenDay5Shmon = true;
+      pickDialog(g, weekPick(s, {
+        red: DAY5_SHMON_RED,
+        gone: DAY5_SHMON_GONE,
+        found: DAY5_SHMON_FOUND,
+        burn: DAY5_SHMON_BURN,
+        hold: DAY5_SHMON_HOLD,
+        ok: DAY5_SHMON,
+      }));
       return;
     }
     if (s.day === 4 && !s.seenDay4Shmon) {
