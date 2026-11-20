@@ -77,6 +77,9 @@ import {
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
   DAY2_FOOD_WASH,
+  DAY2_LEHA_SHMON,
+  DAY2_LEHA_SHMON_CAUGHT,
+  DAY2_LEHA_SHMON_WASH,
   DAY3_FOOD,
   DAY3_FOOD_HOLD,
   DAY3_FOOD_BURN,
@@ -703,6 +706,12 @@ export class CellLife {
                     : g.sim.stash === 'bunk'
                       ? DAY3_LEHA_CAUGHT
                       : DAY3_LEHA
+            : g.sim.day >= 2 && g.sim.phase.id === 'shmon'
+              ? g.sim.stash === 'bunk'
+                ? DAY2_LEHA_SHMON_CAUGHT
+                : g.sim.stash === 'wash'
+                  ? DAY2_LEHA_SHMON_WASH
+                  : DAY2_LEHA_SHMON
             : g.sim.day >= 2 && g.sim.phase.id === 'food'
               ? g.sim.stash === 'bunk'
                 ? DAY2_FOOD_CAUGHT
