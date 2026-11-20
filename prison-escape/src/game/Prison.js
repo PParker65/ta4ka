@@ -2172,6 +2172,20 @@ export class Prison {
     this.box(1.55, 0.04, 0.07, cageRust, -0.35, 3.34, 0.55, g);
     this.box(0.07, 0.04, 1.2, cageRust, 1.15, 3.34, -0.25, g);
     this.box(0.9, 0.035, 0.06, cageRust, 0.2, 3.34, -1.4, g);
+    const cageTarp = new THREE.MeshStandardMaterial({
+      color: 0x6a6860,
+      roughness: 0.94,
+      transparent: true,
+      opacity: 0.78,
+      side: THREE.DoubleSide,
+    });
+    this.box(2.6, 0.025, 1.9, cageTarp, -1.35, 3.355, 0.55, g);
+    this.box(2.1, 0.025, 2.3, cageTarp, 1.55, 3.355, -0.85, g);
+    this.box(1.7, 0.022, 1.5, cageTarp, 0.15, 3.355, 1.85, g);
+    const cageDrop = new THREE.MeshStandardMaterial({ color: 0xd4ccc0, roughness: 0.72, transparent: true, opacity: 0.5 });
+    this.box(0.1, 0.02, 0.55, cageDrop, -0.55, 3.345, 0.15, g);
+    this.box(0.08, 0.02, 0.4, cageDrop, 1.25, 3.345, -1.05, g);
+    this.box(0.09, 0.02, 0.48, cageDrop, 0.4, 3.345, 1.1, g);
     const bench = new THREE.MeshStandardMaterial({ color: 0x5a4630, roughness: 0.88 });
     this.box(1.6, 0.08, 0.36, bench, -2.7, 0.42, -1.55, g);
     this.box(0.08, 0.4, 0.08, bench, -3.3, 0.2, -1.65, g);

@@ -263,6 +263,8 @@ import {
   DAY6_WALK_FOUND,
   DAY6_WALK_BURN,
   DAY6_WALK_HOLD,
+  DAY6_WALK_HOLD_WASH,
+  DAY6_WALK_HOLD_BUNK,
   DAY7_WALK,
   DAY7_WALK_GONE,
   DAY7_WALK_RED,
@@ -275,6 +277,16 @@ import {
   DAY6_NIGHT_FOUND,
   DAY6_NIGHT_BURN,
   DAY6_NIGHT_HOLD,
+  DAY6_NIGHT_HOLD_WASH,
+  DAY6_NIGHT_HOLD_BUNK,
+  DAY6_FOOD,
+  DAY6_FOOD_GONE,
+  DAY6_FOOD_RED,
+  DAY6_FOOD_FOUND,
+  DAY6_FOOD_BURN,
+  DAY6_FOOD_HOLD,
+  DAY6_FOOD_HOLD_WASH,
+  DAY6_FOOD_HOLD_BUNK,
   WEEK_HELD,
   WEEK_HELD_GONE,
   WEEK_HELD_RED,
@@ -845,6 +857,15 @@ export class CellLife {
                 hold: WEEK_HELD_HOLD,
                 ok: WEEK_HELD,
               })
+          : g.sim.day >= 6 && g.sim.phase.id === 'food'
+            ? weekPick(g.sim, {
+                red: DAY6_FOOD_RED,
+                gone: DAY6_FOOD_GONE,
+                found: DAY6_FOOD_FOUND,
+                burn: DAY6_FOOD_BURN,
+                hold: holdStash(g.sim, { pocket: DAY6_FOOD_HOLD, wash: DAY6_FOOD_HOLD_WASH, bunk: DAY6_FOOD_HOLD_BUNK }),
+                ok: DAY6_FOOD,
+              })
           : g.sim.day >= 5 && g.sim.courtTalk === 'cell'
           ? DAY5_BACK_CELL
           : g.sim.day >= 5 && g.sim.courtTalk === 'silent'
@@ -965,7 +986,7 @@ export class CellLife {
               gone: DAY6_NIGHT_GONE,
               found: DAY6_NIGHT_FOUND,
               burn: DAY6_NIGHT_BURN,
-              hold: DAY6_NIGHT_HOLD,
+              hold: holdStash(g.sim, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }),
               ok: DAY6_NIGHT,
             })
           : g.sim.day >= 5 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
@@ -1103,7 +1124,7 @@ export class CellLife {
             : g.sim.malyava === 'burn'
             ? DAY6_WALK_BURN
             : g.sim.malyava === 'hold'
-            ? DAY6_WALK_HOLD
+            ? holdStash(g.sim, { pocket: DAY6_WALK_HOLD, wash: DAY6_WALK_HOLD_WASH, bunk: DAY6_WALK_HOLD_BUNK })
             : DAY6_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 5
           ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
