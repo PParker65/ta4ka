@@ -2482,11 +2482,18 @@ export class Prison {
     gateSock.rotation.set(0.18, 0.12, 0.32);
     g.add(gateSock);
     const gateTinFloor = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.CylinderGeometry(0.05, 0.055, 0.1, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
     );
-    gateTinFloor.position.set(0.48, 0.08, wallZ + 0.55);
+    gateTinFloor.position.set(0.28, 0.1, -1.15);
     g.add(gateTinFloor);
+    const gateBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.038, 0.042, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    gateBottle.position.set(0.02, 0.06, -0.92);
+    gateBottle.rotation.z = 1.18;
+    g.add(gateBottle);
     const haltYard = wallScratch('СТОЙ');
     haltYard.scale.set(1.1, 1.1, 1.1);
     haltYard.position.set(-3.15, 2.05, wallZ + 0.22);
