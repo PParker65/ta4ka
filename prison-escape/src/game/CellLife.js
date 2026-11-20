@@ -219,6 +219,8 @@ import {
   DAY7_LEHA,
   DAY7_LEHA_GONE,
   DAY7_LEHA_HOLD,
+  DAY7_LEHA_HOLD_WASH,
+  DAY7_LEHA_HOLD_BUNK,
   DAY7_LEHA_FOUND,
   DAY7_LEHA_BURN,
   DAY7_LEHA_RED,
@@ -271,6 +273,8 @@ import {
   DAY7_WALK_FOUND,
   DAY7_WALK_BURN,
   DAY7_WALK_HOLD,
+  DAY7_WALK_HOLD_WASH,
+  DAY7_WALK_HOLD_BUNK,
   DAY6_NIGHT,
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
@@ -293,6 +297,16 @@ import {
   WEEK_HELD_FOUND,
   WEEK_HELD_BURN,
   WEEK_HELD_HOLD,
+  WEEK_HELD_HOLD_WASH,
+  WEEK_HELD_HOLD_BUNK,
+  DAY6_SEDOY,
+  DAY6_SEDOY_HOLD,
+  DAY6_SEDOY_HOLD_WASH,
+  DAY6_SEDOY_HOLD_BUNK,
+  DAY6_SEDOY_GONE,
+  DAY6_SEDOY_FOUND,
+  DAY6_SEDOY_BURN,
+  DAY6_SEDOY_RED,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -854,7 +868,7 @@ export class CellLife {
                 gone: WEEK_HELD_GONE,
                 found: WEEK_HELD_FOUND,
                 burn: WEEK_HELD_BURN,
-                hold: WEEK_HELD_HOLD,
+                hold: holdStash(g.sim, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }),
                 ok: WEEK_HELD,
               })
           : g.sim.day >= 6 && g.sim.phase.id === 'food'
@@ -865,6 +879,15 @@ export class CellLife {
                 burn: DAY6_FOOD_BURN,
                 hold: holdStash(g.sim, { pocket: DAY6_FOOD_HOLD, wash: DAY6_FOOD_HOLD_WASH, bunk: DAY6_FOOD_HOLD_BUNK }),
                 ok: DAY6_FOOD,
+              })
+          : g.sim.day >= 6
+            ? weekPick(g.sim, {
+                red: DAY6_SEDOY_RED,
+                gone: DAY6_SEDOY_GONE,
+                found: DAY6_SEDOY_FOUND,
+                burn: DAY6_SEDOY_BURN,
+                hold: holdStash(g.sim, { pocket: DAY6_SEDOY_HOLD, wash: DAY6_SEDOY_HOLD_WASH, bunk: DAY6_SEDOY_HOLD_BUNK }),
+                ok: DAY6_SEDOY,
               })
           : g.sim.day >= 5 && g.sim.courtTalk === 'cell'
           ? DAY5_BACK_CELL
@@ -977,7 +1000,7 @@ export class CellLife {
               gone: DAY7_LEHA_GONE,
               found: DAY7_LEHA_FOUND,
               burn: DAY7_LEHA_BURN,
-              hold: DAY7_LEHA_HOLD,
+              hold: holdStash(g.sim, { pocket: DAY7_LEHA_HOLD, wash: DAY7_LEHA_HOLD_WASH, bunk: DAY7_LEHA_HOLD_BUNK }),
               ok: DAY7_LEHA,
             })
           : g.sim.day >= 6
@@ -1111,7 +1134,7 @@ export class CellLife {
               gone: DAY7_WALK_GONE,
               found: DAY7_WALK_FOUND,
               burn: DAY7_WALK_BURN,
-              hold: DAY7_WALK_HOLD,
+              hold: holdStash(g.sim, { pocket: DAY7_WALK_HOLD, wash: DAY7_WALK_HOLD_WASH, bunk: DAY7_WALK_HOLD_BUNK }),
               ok: DAY7_WALK,
             })
           : g.sim.phase.id === 'walk' && g.sim.day >= 6
