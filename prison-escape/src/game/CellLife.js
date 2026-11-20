@@ -260,6 +260,7 @@ import {
   DAY4_FOOD_HOLD_WASH,
   DAY4_FOOD_HOLD_BUNK,
   DAY4_FOOD_FOUND,
+  DAY4_FOOD_FOUND_BUNK,
   DAY4_FOOD_BURN,
   DAY4_FOOD_RED,
   DAY5_COURT,
@@ -270,11 +271,13 @@ import {
   DAY5_WALK_HOLD_WASH,
   DAY5_WALK_HOLD_BUNK,
   DAY5_WALK_FOUND,
+  DAY5_WALK_FOUND_BUNK,
   DAY5_WALK_BURN,
   DAY5_WALK_RED,
   DAY5_WAKE,
   DAY5_WAKE_GONE,
   DAY5_WAKE_FOUND,
+  DAY5_WAKE_FOUND_BUNK,
   DAY5_WAKE_BURN,
   DAY5_WAKE_HOLD,
   DAY5_WAKE_HOLD_WASH,
@@ -936,7 +939,9 @@ export class CellLife {
                     : !g.sim.malyava
                       ? DAY4_FOOD_WAIT
                       : g.sim.malyava === 'found'
-                        ? DAY4_FOOD_FOUND
+                        ? g.sim.stash === 'bunk'
+                          ? DAY4_FOOD_FOUND_BUNK
+                          : DAY4_FOOD_FOUND
                         : g.sim.malyava === 'burn'
                           ? DAY4_FOOD_BURN
                           : g.sim.malyava === 'hold' && g.sim.teaPaid
@@ -1044,7 +1049,9 @@ export class CellLife {
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
           ? DAY5_WAKE_GONE
           : g.sim.day >= 5 && g.sim.malyava === 'found'
-          ? DAY5_WAKE_FOUND
+          ? g.sim.stash === 'bunk'
+            ? DAY5_WAKE_FOUND_BUNK
+            : DAY5_WAKE_FOUND
           : g.sim.day >= 5 && g.sim.malyava === 'burn'
           ? DAY5_WAKE_BURN
           : g.sim.day >= 5 && g.sim.malyava === 'hold'
@@ -1192,7 +1199,9 @@ export class CellLife {
             : g.sim.malyava === 'gone'
             ? DAY5_WALK_GONE
             : g.sim.malyava === 'found'
-            ? DAY5_WALK_FOUND
+            ? g.sim.stash === 'bunk'
+              ? DAY5_WALK_FOUND_BUNK
+              : DAY5_WALK_FOUND
             : g.sim.malyava === 'burn'
             ? DAY5_WALK_BURN
             : g.sim.malyava === 'hold'

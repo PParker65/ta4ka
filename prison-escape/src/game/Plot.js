@@ -109,6 +109,7 @@ import {
   DAY4_FOOD_HOLD_WASH,
   DAY4_FOOD_HOLD_BUNK,
   DAY4_FOOD_FOUND,
+  DAY4_FOOD_FOUND_BUNK,
   DAY4_FOOD_BURN,
   DAY4_FOOD_RED,
   DAY4_WAKE,
@@ -125,6 +126,7 @@ import {
   DAY5_WAKE,
   DAY5_WAKE_GONE,
   DAY5_WAKE_FOUND,
+  DAY5_WAKE_FOUND_BUNK,
   DAY5_WAKE_BURN,
   DAY5_WAKE_HOLD,
   DAY5_WAKE_HOLD_WASH,
@@ -145,6 +147,7 @@ import {
   DAY5_WALK_HOLD_WASH,
   DAY5_WALK_HOLD_BUNK,
   DAY5_WALK_FOUND,
+  DAY5_WALK_FOUND_BUNK,
   DAY5_WALK_BURN,
   DAY5_WALK_RED,
   DAY6_NIGHT,
@@ -393,7 +396,9 @@ export function plotObjective(sim) {
       : !sim.malyava
         ? 'Четвёртый подъём. Бумага вчера не ушла. Щель всё ещё живая.'
         : sim.malyava === 'found'
-          ? 'Четвёртый подъём. Нашли. Жар не сняли за ночь. Рот на замок.'
+          ? sim.stash === 'bunk'
+            ? 'Четвёртый подъём. Нашли в матрасе. Жар не сняли за ночь. Рот на замок.'
+            : 'Четвёртый подъём. Нашли. Жар не сняли за ночь. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Четвёртый подъём. Зола ещё пахнет. Не свисти в полный голос.'
             : sim.malyava === 'hold' && sim.teaPaid
@@ -503,7 +508,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Вызов. Бумага уже в папке. Следователь знает щель. Про хату — или про срок.'
         : sim.malyava === 'found'
-          ? 'Вызов. Карман нашли. Теперь имена. Про хату — или про срок.'
+          ? sim.stash === 'bunk'
+            ? 'Вызов. Нашли в матрасе. Теперь имена. Про хату — или про срок.'
+            : 'Вызов. Карман нашли. Теперь имена. Про хату — или про срок.'
           : sim.malyava === 'burn'
             ? 'Вызов. Нос казённый. Про дым — или про хату.'
             : sim.malyava === 'hold'
@@ -518,7 +525,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Пятый круг. Щель пустая. Через сетку не ори.'
         : sim.malyava === 'found'
-          ? 'Пятый круг. Нашли. Через сетку не ори про шмон.'
+          ? sim.stash === 'bunk'
+            ? 'Пятый круг. Нашли в матрасе. Через сетку не ори про шмон.'
+            : 'Пятый круг. Нашли. Через сетку не ори про шмон.'
           : sim.malyava === 'burn'
             ? 'Пятый круг. Зола в хате. Про дым — ни звука.'
             : sim.malyava === 'hold'
@@ -631,7 +640,7 @@ export function onPhaseEnter(game, id) {
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
     if (s.day === 5 && !s.heardDay5Yard) {
       s.heardDay5Yard = true;
-      pickDialog(g, weekPick(s, { red: DAY5_WALK_RED, gone: DAY5_WALK_GONE, found: DAY5_WALK_FOUND, burn: DAY5_WALK_BURN, hold: holdStash(s, { pocket: DAY5_WALK_HOLD, wash: DAY5_WALK_HOLD_WASH, bunk: DAY5_WALK_HOLD_BUNK }), ok: DAY5_WALK }));
+      pickDialog(g, weekPick(s, { red: DAY5_WALK_RED, gone: DAY5_WALK_GONE, found: s.stash === 'bunk' ? DAY5_WALK_FOUND_BUNK : DAY5_WALK_FOUND, burn: DAY5_WALK_BURN, hold: holdStash(s, { pocket: DAY5_WALK_HOLD, wash: DAY5_WALK_HOLD_WASH, bunk: DAY5_WALK_HOLD_BUNK }), ok: DAY5_WALK }));
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: holdStash(s, { pocket: DAY6_WALK_HOLD, wash: DAY6_WALK_HOLD_WASH, bunk: DAY6_WALK_HOLD_BUNK }), ok: DAY6_WALK }));
@@ -875,7 +884,7 @@ export function onPhaseEnter(game, id) {
         s.heat = Math.min(100, s.heat + 12);
         s.hope = Math.max(0, s.hope - 6);
       }
-      pickDialog(g, weekPick(s, { red: DAY5_WAKE_RED, gone: DAY5_WAKE_GONE, found: DAY5_WAKE_FOUND, burn: DAY5_WAKE_BURN, hold: holdStash(s, { pocket: DAY5_WAKE_HOLD, wash: DAY5_WAKE_HOLD_WASH, bunk: DAY5_WAKE_HOLD_BUNK }), ok: DAY5_WAKE }));
+      pickDialog(g, weekPick(s, { red: DAY5_WAKE_RED, gone: DAY5_WAKE_GONE, found: s.stash === 'bunk' ? DAY5_WAKE_FOUND_BUNK : DAY5_WAKE_FOUND, burn: DAY5_WAKE_BURN, hold: holdStash(s, { pocket: DAY5_WAKE_HOLD, wash: DAY5_WAKE_HOLD_WASH, bunk: DAY5_WAKE_HOLD_BUNK }), ok: DAY5_WAKE }));
       return;
     }
     if (s.day === 7 && !s.seenDay7Morning) {
@@ -900,7 +909,7 @@ function day4Walk(s) {
 function day4Food(s) {
   if (weekRed(s)) return DAY4_FOOD_RED;
   if (!s.malyava) return DAY4_FOOD_WAIT;
-  if (s.malyava === 'found') return DAY4_FOOD_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_FOOD_FOUND_BUNK : DAY4_FOOD_FOUND;
   if (s.malyava === 'burn') return DAY4_FOOD_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_FOOD_HOLD, wash: DAY4_FOOD_HOLD_WASH, bunk: DAY4_FOOD_HOLD_BUNK });

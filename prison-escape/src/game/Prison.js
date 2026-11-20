@@ -537,6 +537,23 @@ export class Prison {
     ceilRag.position.set(0.12, h - 0.34, 0.58);
     ceilRag.rotation.z = 0.28;
     cell.add(ceilRag);
+    const ceilRag2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.32, 0.035),
+      new THREE.MeshStandardMaterial({ color: 0x3e342c, roughness: 0.96 }),
+    );
+    ceilRag2.position.set(-0.28, h - 0.3, -0.18);
+    ceilRag2.rotation.z = -0.22;
+    cell.add(ceilRag2);
+    const flyStrip = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.55, 0.01),
+      new THREE.MeshStandardMaterial({ color: 0x3a2a18, roughness: 0.85, transparent: true, opacity: 0.7 }),
+    );
+    flyStrip.position.set(0.48, h - 0.36, 0.22);
+    flyStrip.rotation.z = 0.08;
+    cell.add(flyStrip);
+    const ceilDrip = new THREE.MeshStandardMaterial({ color: 0x6a5a40, roughness: 0.35, transparent: true, opacity: 0.45 });
+    this.box(0.04, 0.18, 0.04, ceilDrip, 0.08, h - 0.22, 0.18, cell);
+    this.box(0.03, 0.1, 0.03, ceilDrip, 0.08, h - 0.38, 0.18, cell);
     const ceilRing = new THREE.MeshStandardMaterial({ color: 0x6a4a32, roughness: 0.82, metalness: 0.12 });
     this.box(0.42, 0.022, 0.42, ceilRing, 0.02, h - 0.038, 0.02, cell);
     const lintelPeel = new THREE.Mesh(
