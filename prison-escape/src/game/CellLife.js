@@ -126,6 +126,7 @@ import {
   WEEK_VALERA_GONE,
   WEEK_VALERA_HOLD,
   WEEK_VALERA_FOUND,
+  WEEK_VALERA_FOUND_BUNK,
   WEEK_VALERA_BURN,
   WEEK_VALERA_RED,
   DAY7_VALERA,
@@ -183,6 +184,7 @@ import {
   DAY3_LEHA_HOLD,
   DAY3_LEHA_BURN,
   DAY3_LEHA_FOUND,
+  DAY3_LEHA_FOUND_BUNK,
   DAY3_LEHA_RED,
   DAY3_LEHA_CAUGHT,
   DAY3_LEHA_SHMON,
@@ -293,6 +295,7 @@ import {
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
   DAY6_NIGHT_FOUND,
+  DAY6_NIGHT_FOUND_BUNK,
   DAY6_NIGHT_BURN,
   DAY6_NIGHT_HOLD,
   DAY6_NIGHT_HOLD_WASH,
@@ -362,7 +365,7 @@ function valeraInCell(s) {
     return weekPick(s, {
       red: WEEK_VALERA_RED,
       gone: WEEK_VALERA_GONE,
-      found: WEEK_VALERA_FOUND,
+      found: s.stash === 'bunk' ? WEEK_VALERA_FOUND_BUNK : WEEK_VALERA_FOUND,
       burn: WEEK_VALERA_BURN,
       hold: WEEK_VALERA_HOLD,
       ok: WEEK_VALERA,
@@ -1023,7 +1026,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY6_NIGHT_RED,
               gone: DAY6_NIGHT_GONE,
-              found: DAY6_NIGHT_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY6_NIGHT_FOUND_BUNK : DAY6_NIGHT_FOUND,
               burn: DAY6_NIGHT_BURN,
               hold: holdStash(g.sim, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }),
               ok: DAY6_NIGHT,
@@ -1070,7 +1073,9 @@ export class CellLife {
                 : g.sim.malyava === 'burn'
                   ? DAY3_FOOD_BURN
                   : g.sim.malyava === 'found'
-                    ? DAY3_LEHA_FOUND
+                    ? g.sim.stash === 'bunk'
+                      ? DAY3_LEHA_FOUND_BUNK
+                      : DAY3_LEHA_FOUND
                     : g.sim.malyava === 'admin' || g.sim.path === 'red'
                       ? DAY3_LEHA_RED
                       : DAY3_FOOD
@@ -1110,7 +1115,9 @@ export class CellLife {
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_LEHA_RED
               : g.sim.malyava === 'found'
-                ? DAY3_LEHA_FOUND
+                ? g.sim.stash === 'bunk'
+                  ? DAY3_LEHA_FOUND_BUNK
+                  : DAY3_LEHA_FOUND
                 : g.sim.malyava === 'hold'
                   ? holdStash(g.sim, { pocket: DAY3_LEHA_HOLD, wash: DAY3_LEHA_HOLD_WASH, bunk: DAY3_LEHA_HOLD_BUNK })
                   : g.sim.malyava === 'burn'

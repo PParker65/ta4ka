@@ -1038,6 +1038,49 @@ export class Prison {
     rumple.position.set(-0.5, 0.11, 0.04);
     rumple.rotation.z = 0.12;
     lowerBed.add(rumple);
+    const stain = new THREE.Mesh(
+      new THREE.CircleGeometry(0.11, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a40, roughness: 0.95, transparent: true, opacity: 0.55 }),
+    );
+    stain.rotation.x = -Math.PI / 2;
+    stain.position.set(0.18, 0.065, 0.08);
+    lowerBed.add(stain);
+    const slit = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.03, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.92 }),
+    );
+    slit.position.set(0.12, 0.07, -0.08);
+    slit.rotation.y = 0.35;
+    lowerBed.add(slit);
+    const rag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.28, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x4a3e34, roughness: 0.95 }),
+    );
+    rag.position.set(-0.92, 0.28, 0.18);
+    rag.rotation.z = 0.28;
+    g.add(rag);
+    const sock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.04, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.9 }),
+    );
+    sock.position.set(0.55, 0.09, 0.18);
+    sock.rotation.y = -0.4;
+    lowerBed.add(sock);
+    if (player) {
+      const tear = new THREE.Mesh(
+        new THREE.BoxGeometry(0.18, 0.04, 0.09),
+        new THREE.MeshStandardMaterial({ color: 0x1c1610, roughness: 0.9 }),
+      );
+      tear.position.set(0.32, 0.075, 0.06);
+      tear.rotation.y = -0.2;
+      lowerBed.add(tear);
+      const foam = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.03, 0.06),
+        new THREE.MeshStandardMaterial({ color: 0xc8bca8, roughness: 0.88 }),
+      );
+      foam.position.set(0.34, 0.095, 0.06);
+      lowerBed.add(foam);
+    }
     return g;
   }
 

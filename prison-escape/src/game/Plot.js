@@ -42,6 +42,7 @@ import {
   DAY3_FOOD_BURN,
   DAY3_FOOD_RED,
   DAY3_FOOD_FOUND,
+  DAY3_FOOD_FOUND_BUNK,
   DAY3_WALK,
   DAY3_WALK_WAIT,
   DAY3_WALK_HOLD,
@@ -147,6 +148,7 @@ import {
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
   DAY6_NIGHT_FOUND,
+  DAY6_NIGHT_FOUND_BUNK,
   DAY6_NIGHT_BURN,
   DAY6_NIGHT_HOLD,
   DAY6_NIGHT_HOLD_WASH,
@@ -237,7 +239,9 @@ export function plotObjective(sim) {
     return sim.path === 'red' || sim.malyava === 'admin'
       ? 'Третий подъём. Вчера слово село. Кормушка днём живая. Не зевай.'
       : sim.malyava === 'found'
-        ? 'Третий подъём. Вчера нашли. Молчи. Оправдания — вторая малява.'
+        ? sim.stash === 'bunk'
+          ? 'Третий подъём. Вчера нашли в матрасе. Молчи. Оправдания — вторая малява.'
+          : 'Третий подъём. Вчера нашли. Молчи. Оправдания — вторая малява.'
         : sim.malyava === 'hold'
           ? sim.stash === 'bunk'
             ? 'Третий подъём. Бумага в матрасе. Шмон до пайки. Первое место.'
@@ -272,13 +276,17 @@ export function plotObjective(sim) {
   if (d === 3 && ph === 'food' && sim.malyava === 'burn')
     return 'Пайка пахнет золой. Ешь. Не свисти.';
   if (d === 3 && ph === 'food' && sim.malyava === 'found')
-    return 'Третья пайка. Нашли. Жар ест вместе с баландой. Рот на замок.';
+    return sim.stash === 'bunk'
+      ? 'Третья пайка. Нашли в матрасе. Жар ест вместе с баландой. Рот на замок.'
+      : 'Третья пайка. Нашли. Жар ест вместе с баландой. Рот на замок.';
   if (d === 3 && ph === 'food' && sim.malyava === 'admin')
     return 'Пайка лишняя. Красному ложку дают последним.';
   if (d === 3 && ph === 'evening' && !sim.malyava)
     return 'Отбой. Бумага ещё в щели. Завтра либо твоя, либо кума.';
   if (d === 3 && ph === 'evening' && sim.malyava === 'found')
-    return 'Третий отбой. Нашли днём. Молчи. Оправдания — вторая малява.';
+    return sim.stash === 'bunk'
+      ? 'Третий отбой. Нашли в матрасе днём. Молчи. Оправдания — вторая малява.'
+      : 'Третий отбой. Нашли днём. Молчи. Оправдания — вторая малява.';
   if (d === 3 && ph === 'evening' && (sim.malyava === 'admin' || sim.path === 'red'))
     return 'Третий отбой. Чайник не щёлкнул. Слово село. Не оправдывайся.';
   if (d === 3 && ph === 'evening' && sim.malyava === 'hold')
@@ -340,7 +348,9 @@ export function plotObjective(sim) {
       : !sim.malyava
         ? 'Четвёртая пайка. Щель живая. Ешь. Потом бери. Не зевай.'
         : sim.malyava === 'found'
-          ? 'Четвёртая пайка. Нашли. Жар ест вместе с баландой. Рот на замок.'
+          ? sim.stash === 'bunk'
+            ? 'Четвёртая пайка. Нашли в матрасе. Жар ест вместе с баландой. Рот на замок.'
+            : 'Четвёртая пайка. Нашли. Жар ест вместе с баландой. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Четвёртая пайка. Пахнет золой. Про дым — ни слова.'
             : sim.malyava === 'hold' && sim.teaPaid
@@ -356,7 +366,9 @@ export function plotObjective(sim) {
       : !sim.malyava
         ? 'Четвёртый отбой. Бумага в щели уже двое суток. Не зевай.'
         : sim.malyava === 'found'
-          ? 'Четвёртый отбой. Нашли. Жар не сняли. Молчи.'
+          ? sim.stash === 'bunk'
+            ? 'Четвёртый отбой. Нашли в матрасе. Жар не сняли. Молчи.'
+            : 'Четвёртый отбой. Нашли. Жар не сняли. Молчи.'
           : sim.malyava === 'burn'
             ? 'Четвёртый отбой. Зола ещё пахнет. Не свисти в полный голос.'
             : sim.malyava === 'hold' && sim.teaPaid
@@ -513,7 +525,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Шестой день. Щель пустая с пятого. Свежак кончается. Не ори про волю.'
         : sim.malyava === 'found'
-          ? 'Шестой день. Жар с кармана. Свежак кончается. Не оправдывайся.'
+          ? sim.stash === 'bunk'
+            ? 'Шестой день. Нашли в матрасе. Свежак кончается. Не оправдывайся.'
+            : 'Шестой день. Жар с кармана. Свежак кончается. Не оправдывайся.'
           : sim.malyava === 'burn'
             ? 'Шестой день. Зола. Свежак кончается. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -664,7 +678,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day5Evening(s));
     } else if (s.day === 6 && !s.seenDay6) {
       s.seenDay6 = true;
-      pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, hold: holdStash(s, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }), ok: DAY6_NIGHT }));
+      pickDialog(g, weekPick(s, { red: DAY6_NIGHT_RED, gone: DAY6_NIGHT_GONE, found: s.stash === 'bunk' ? DAY6_NIGHT_FOUND_BUNK : DAY6_NIGHT_FOUND, burn: DAY6_NIGHT_BURN, hold: holdStash(s, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }), ok: DAY6_NIGHT }));
     } else if (s.day >= 7 && !s.seenWeek) {
       s.seenWeek = true;
       pickDialog(g, weekPick(s, { red: WEEK_HELD_RED, gone: WEEK_HELD_GONE, found: WEEK_HELD_FOUND, burn: WEEK_HELD_BURN, hold: holdStash(s, { pocket: WEEK_HELD_HOLD, wash: WEEK_HELD_HOLD_WASH, bunk: WEEK_HELD_HOLD_BUNK }), ok: WEEK_HELD }));
@@ -918,7 +932,7 @@ function day3Food(s) {
   if (!s.malyava) return DAY3_FOOD;
   if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_FOOD_HOLD, wash: DAY3_FOOD_HOLD_WASH, bunk: DAY3_FOOD_HOLD_BUNK });
   if (s.malyava === 'burn') return DAY3_FOOD_BURN;
-  if (s.malyava === 'found') return DAY3_FOOD_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_FOOD_FOUND_BUNK : DAY3_FOOD_FOUND;
   return DAY3_FOOD_RED;
 }
 
@@ -961,7 +975,10 @@ function day5Evening(s) {
 function eveningLine(s) {
   if (s.courtTalk === 'cell' || s.malyava === 'admin') return 'Отбой. Чайник молчит. Так спят с красным в хате.';
   if (s.malyava === 'hold') return 'Отбой. Карман жжёт. Своя койка, бумага не на столе.';
-  if (s.malyava === 'found') return 'Отбой. Нашли днём. Ночь длиннее пайки.';
+  if (s.malyava === 'found')
+    return s.stash === 'bunk'
+      ? 'Отбой. Нашли в матрасе днём. Ночь длиннее пайки.'
+      : 'Отбой. Нашли днём. Ночь длиннее пайки.';
   if (s.malyava === 'burn') return 'Отбой. Пахнет золой. Своя койка.';
   if (s.malyava === 'gone') return 'Отбой. Щель пустая с утра. Своя койка.';
   if (s.courtTalk === 'silent') return 'Отбой. Щель закрылась. Своя койка.';
