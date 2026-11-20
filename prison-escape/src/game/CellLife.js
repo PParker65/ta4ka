@@ -40,6 +40,12 @@ import {
   DAY4_WALK_FOUND,
   DAY4_WALK_BURN,
   DAY4_WALK_RED,
+  DAY4_FOOD,
+  DAY4_FOOD_WAIT,
+  DAY4_FOOD_HOLD,
+  DAY4_FOOD_FOUND,
+  DAY4_FOOD_BURN,
+  DAY4_FOOD_RED,
   DAY5_COURT,
   DAY5_COURT_GONE,
   DAY5_WALK,
@@ -480,6 +486,18 @@ export class CellLife {
                 ? DAY5_COURT_GONE
               : g.sim.day >= 5
                 ? DAY5_COURT
+                : g.sim.day >= 4 && g.sim.phase.id === 'food'
+                  ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+                    ? DAY4_FOOD_RED
+                    : !g.sim.malyava
+                      ? DAY4_FOOD_WAIT
+                      : g.sim.malyava === 'found'
+                        ? DAY4_FOOD_FOUND
+                        : g.sim.malyava === 'burn'
+                          ? DAY4_FOOD_BURN
+                          : g.sim.malyava === 'hold' && g.sim.teaPaid
+                            ? DAY4_FOOD_HOLD
+                            : DAY4_FOOD
                 : g.sim.day >= 2
                   ? g.sim.stash === 'bunk'
                     ? DAY2_SEDOY_CAUGHT

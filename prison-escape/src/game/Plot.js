@@ -44,6 +44,10 @@ import {
   DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
+  DAY4_FOOD_HOLD,
+  DAY4_FOOD_FOUND,
+  DAY4_FOOD_BURN,
+  DAY4_FOOD_RED,
   DAY4_WAKE,
   DAY4_WAKE_BURN,
   DAY4_WAKE_RED,
@@ -174,6 +178,18 @@ export function plotObjective(sim) {
             : sim.malyava === 'hold' && sim.teaPaid
               ? 'Четвёртый круг. Чай ушёл. Карман нет. Через стену — ни звука.'
               : 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
+  if (d === 4 && ph === 'food')
+    return weekRed(sim)
+      ? 'Четвёртая пайка. Ложка последняя. Чайник молчит. Ешь после хаты.'
+      : !sim.malyava
+        ? 'Четвёртая пайка. Щель живая. Ешь. Потом бери. Не зевай.'
+        : sim.malyava === 'found'
+          ? 'Четвёртая пайка. Нашли. Жар ест вместе с баландой. Рот на замок.'
+          : sim.malyava === 'burn'
+            ? 'Четвёртая пайка. Пахнет золой. Про дым — ни слова.'
+            : sim.malyava === 'hold' && sim.teaPaid
+              ? 'Четвёртая пайка. Чай ушёл. Карман жжёт. За столом не читай.'
+              : 'Четвёртая пайка. Кто не отдаёт чай в щель — пустое место.';
   if (d === 4 && !sim.malyava)
     return 'Четвёртый день. Бумага вчера не ушла. Щель всё ещё живая.';
   if (d === 4 && ph === 'wake' && sim.malyava === 'hold' && !sim.teaPaid)
@@ -421,7 +437,7 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 4 && !s.seenDay4Food) {
       s.seenDay4Food = true;
-      pickDialog(g, s.malyava && s.malyava !== 'gone' ? DAY4_FOOD : DAY4_FOOD_WAIT);
+      pickDialog(g, day4Food(s));
       return;
     }
     if (s.day >= 3 && !s.malyava) {
@@ -487,6 +503,15 @@ function day4Walk(s) {
   if (s.malyava === 'burn') return DAY4_WALK_BURN;
   if (s.malyava === 'hold' && s.teaPaid) return DAY4_WALK_PAID;
   return DAY4_WALK;
+}
+
+function day4Food(s) {
+  if (weekRed(s)) return DAY4_FOOD_RED;
+  if (!s.malyava) return DAY4_FOOD_WAIT;
+  if (s.malyava === 'found') return DAY4_FOOD_FOUND;
+  if (s.malyava === 'burn') return DAY4_FOOD_BURN;
+  if (s.malyava === 'hold' && s.teaPaid) return DAY4_FOOD_HOLD;
+  return DAY4_FOOD;
 }
 
 function weekRed(s) {

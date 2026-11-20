@@ -437,6 +437,24 @@ export class Prison {
     this.addLivedIn(cell);
     this.addCat(cell);
     this.addCellLamp(cell, 0, h - 0.12, 0);
+    const ceilDamp = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.45 });
+    this.box(1.4, 0.02, 0.55, ceilDamp, -0.4, h - 0.05, 0.8, cell);
+    this.box(0.7, 0.02, 0.9, ceilDamp, 0.85, h - 0.05, -0.4, cell);
+    this.box(0.35, 0.02, 1.6, ceilDamp, -1.1, h - 0.05, 0.2, cell);
+    const conduit = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 2.4, 6),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, metalness: 0.4, roughness: 0.55 }),
+    );
+    conduit.rotation.z = Math.PI / 2;
+    conduit.position.set(0.2, h - 0.18, -0.55);
+    cell.add(conduit);
+    const peel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.55, 0.04, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.9 }),
+    );
+    peel.position.set(0.6, h - 0.08, 1.1);
+    peel.rotation.z = 0.12;
+    cell.add(peel);
 
     this.addCollider(ox + w / 2 - 0.18, ox + w / 2 + 0.3, oz - d / 2, oz + d / 2, 'cell-back');
     this.addCollider(ox - w / 2, ox + w / 2, oz + d / 2 - 0.18, oz + d / 2 + 0.25, 'cell-z+');
@@ -701,7 +719,7 @@ export class Prison {
     this.windowGlass = this.windowGlass || [];
     this.windowGlass.push(view);
     const wood = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.82 });
-    const bars = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, metalness: 0.7, roughness: 0.35 });
+    const bars = new THREE.MeshStandardMaterial({ color: 0x5a5a5e, metalness: 0.55, roughness: 0.42 });
     for (const x of [-1.35, 1.35]) {
       const z = d / 2 - 0.09;
       this.box(1.18, 0.08, 0.1, wood, x, 2.15 + 0.62, z, cell);
@@ -745,17 +763,33 @@ export class Prison {
         cell.add(drop);
       }
       const stuffed = new THREE.Mesh(
-        new THREE.BoxGeometry(0.22, 0.28, 0.014),
-        new THREE.MeshStandardMaterial({ color: 0xc8b896, roughness: 0.9 }),
+        new THREE.BoxGeometry(0.18, 0.22, 0.012),
+        new THREE.MeshBasicMaterial({ color: 0xf0e6c8 }),
       );
-      stuffed.position.set(x + 0.34, 1.78, d / 2 - 0.17);
-      stuffed.rotation.z = 0.18;
+      stuffed.position.set(x + 0.36, 1.72, d / 2 - 0.17);
+      stuffed.rotation.z = 0.22;
       cell.add(stuffed);
-      for (let i = -3; i <= 3; i++) {
-        this.box(0.03, 1.12, 0.03, bars, x + i * 0.13, 2.15, d / 2 - 0.16, cell);
+      const stuffed2 = stuffed.clone();
+      stuffed2.position.set(x + 0.32, 1.74, d / 2 - 0.168);
+      stuffed2.rotation.z = 0.08;
+      stuffed2.material = stuffed.material.clone();
+      stuffed2.material.color.setHex(0xe4d4b0);
+      cell.add(stuffed2);
+      const sillRust = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.9, transparent: true, opacity: 0.55 });
+      this.box(0.22, 0.18, 0.02, sillRust, x - 0.38, 1.64, d / 2 - 0.14, cell);
+      this.box(0.12, 0.28, 0.02, sillRust, x + 0.42, 1.7, d / 2 - 0.14, cell);
+      const winRag = new THREE.Mesh(
+        new THREE.BoxGeometry(0.16, 0.08, 0.05),
+        new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.94 }),
+      );
+      winRag.position.set(x - 0.28, 1.58, d / 2 - 0.18);
+      winRag.rotation.z = 0.4;
+      cell.add(winRag);
+      for (let i = -2; i <= 2; i++) {
+        this.box(0.022, 1.12, 0.022, bars, x + i * 0.18, 2.15, d / 2 - 0.16, cell);
       }
-      for (let j = -2; j <= 2; j++) {
-        this.box(0.96, 0.025, 0.025, bars, x, 2.15 + j * 0.22, d / 2 - 0.16, cell);
+      for (let j = -1; j <= 1; j++) {
+        this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
     }
   }
