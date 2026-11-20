@@ -1554,6 +1554,27 @@ export class Prison {
     foilWrap.position.set(-0.32, 0.752, 0.28);
     foilWrap.rotation.y = -0.5;
     cell.add(foilWrap);
+    const tableCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.009, 0.07, 6),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.7 }),
+    );
+    tableCig.rotation.z = Math.PI / 2;
+    tableCig.rotation.y = 0.4;
+    tableCig.position.set(0.42, 0.758, 0.08);
+    cell.add(tableCig);
+    const tableStain = new THREE.Mesh(
+      new THREE.CircleGeometry(0.06, 10),
+      new THREE.MeshStandardMaterial({ color: 0x4a3020, roughness: 0.9, transparent: true, opacity: 0.45 }),
+    );
+    tableStain.rotation.x = -Math.PI / 2;
+    tableStain.position.set(0.05, 0.748, 0.22);
+    cell.add(tableStain);
+    const tableTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.035, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    tableTin.position.set(-0.08, 0.79, 0.38);
+    cell.add(tableTin);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),
@@ -1694,6 +1715,19 @@ export class Prison {
     this.box(0.55, 0.22, 0.03, winPeel, -0.35, 1.55, LAYOUT.cellD / 2 - 0.14, cell);
     this.box(0.32, 0.16, 0.03, winPeel, 0.72, 1.38, LAYOUT.cellD / 2 - 0.14, cell);
     this.box(0.18, 0.55, 0.03, winPeel, 0.95, 0.85, LAYOUT.cellD / 2 - 0.14, cell);
+    const winAisleHang = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.38, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x4a3c32, roughness: 0.95 }),
+    );
+    winAisleHang.position.set(-0.15, 1.12, LAYOUT.cellD / 2 - 0.16);
+    winAisleHang.rotation.z = 0.18;
+    cell.add(winAisleHang);
+    const aisleTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    aisleTin.position.set(-0.62, 0.08, 0.22);
+    cell.add(aisleTin);
     const bottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),
