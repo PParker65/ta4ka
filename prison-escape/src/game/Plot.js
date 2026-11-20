@@ -92,6 +92,7 @@ import {
   DAY4_LEHA_HOLD_WASH,
   DAY4_LEHA_HOLD_BUNK,
   DAY4_LEHA_FOUND,
+  DAY4_LEHA_FOUND_BUNK,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
   DAY4_WALK,
@@ -117,6 +118,7 @@ import {
   DAY4_WAKE_RED,
   DAY4_WAKE_WAIT,
   DAY4_WAKE_FOUND,
+  DAY4_WAKE_FOUND_BUNK,
   DAY4_WAKE_HOLD,
   DAY4_WAKE_HOLD_WASH,
   DAY4_WAKE_HOLD_BUNK,
@@ -179,6 +181,7 @@ import {
   DAY7_WALK_GONE,
   DAY7_WALK_RED,
   DAY7_WALK_FOUND,
+  DAY7_WALK_FOUND_BUNK,
   DAY7_WALK_BURN,
   DAY7_WALK_HOLD,
   DAY7_WALK_HOLD_WASH,
@@ -581,7 +584,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Седьмой круг. Свежак кончился. Бумагу взяли без тебя. Не ори про волю.'
         : sim.malyava === 'found'
-          ? 'Седьмой круг. Нашли. Свежак кончился на карандаше. Через стену не ори.'
+          ? sim.stash === 'bunk'
+            ? 'Седьмой круг. Нашли в матрасе. Свежак кончился на карандаше. Через стену не ори.'
+            : 'Седьмой круг. Нашли. Свежак кончился на карандаше. Через стену не ори.'
           : sim.malyava === 'burn'
             ? 'Седьмой круг. Зола в хате. Свежак кончился. Про дым — ни звука.'
             : sim.malyava === 'hold'
@@ -646,7 +651,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: holdStash(s, { pocket: DAY6_WALK_HOLD, wash: DAY6_WALK_HOLD_WASH, bunk: DAY6_WALK_HOLD_BUNK }), ok: DAY6_WALK }));
     } else if (s.day === 7 && !s.heardDay7Yard) {
       s.heardDay7Yard = true;
-      pickDialog(g, weekPick(s, { red: DAY7_WALK_RED, gone: DAY7_WALK_GONE, found: DAY7_WALK_FOUND, burn: DAY7_WALK_BURN, hold: holdStash(s, { pocket: DAY7_WALK_HOLD, wash: DAY7_WALK_HOLD_WASH, bunk: DAY7_WALK_HOLD_BUNK }), ok: DAY7_WALK }));
+      pickDialog(g, weekPick(s, { red: DAY7_WALK_RED, gone: DAY7_WALK_GONE, found: s.stash === 'bunk' ? DAY7_WALK_FOUND_BUNK : DAY7_WALK_FOUND, burn: DAY7_WALK_BURN, hold: holdStash(s, { pocket: DAY7_WALK_HOLD, wash: DAY7_WALK_HOLD_WASH, bunk: DAY7_WALK_HOLD_BUNK }), ok: DAY7_WALK }));
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
       pickDialog(g, day4Walk(s));
@@ -919,7 +924,7 @@ function day4Food(s) {
 function day4Evening(s) {
   if (weekRed(s)) return DAY4_LEHA_RED;
   if (!s.malyava) return DAY4_NIGHT_WAIT;
-  if (s.malyava === 'found') return DAY4_LEHA_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_LEHA_FOUND_BUNK : DAY4_LEHA_FOUND;
   if (s.malyava === 'burn') return DAY4_LEHA_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_LEHA_HOLD, wash: DAY4_LEHA_HOLD_WASH, bunk: DAY4_LEHA_HOLD_BUNK });
@@ -929,7 +934,7 @@ function day4Evening(s) {
 function day4Wake(s) {
   if (weekRed(s)) return DAY4_WAKE_RED;
   if (!s.malyava) return DAY4_WAKE_WAIT;
-  if (s.malyava === 'found') return DAY4_WAKE_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_WAKE_FOUND_BUNK : DAY4_WAKE_FOUND;
   if (s.malyava === 'burn') return DAY4_WAKE_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_WAKE_HOLD, wash: DAY4_WAKE_HOLD_WASH, bunk: DAY4_WAKE_HOLD_BUNK });

@@ -207,6 +207,15 @@ import {
   DAY4_LEHA_HOLD_BUNK,
   DAY4_LEHA_FOUND,
   DAY4_LEHA_FOUND_BUNK,
+  DAY4_WAKE,
+  DAY4_WAKE_WAIT,
+  DAY4_WAKE_BURN,
+  DAY4_WAKE_RED,
+  DAY4_WAKE_FOUND,
+  DAY4_WAKE_FOUND_BUNK,
+  DAY4_WAKE_HOLD,
+  DAY4_WAKE_HOLD_WASH,
+  DAY4_WAKE_HOLD_BUNK,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
   DAY4_LEHA_SHMON_WAIT,
@@ -295,6 +304,7 @@ import {
   DAY7_WALK_GONE,
   DAY7_WALK_RED,
   DAY7_WALK_FOUND,
+  DAY7_WALK_FOUND_BUNK,
   DAY7_WALK_BURN,
   DAY7_WALK_HOLD,
   DAY7_WALK_HOLD_WASH,
@@ -1058,6 +1068,20 @@ export class CellLife {
           ? holdStash(g.sim, { pocket: DAY5_WAKE_HOLD, wash: DAY5_WAKE_HOLD_WASH, bunk: DAY5_WAKE_HOLD_BUNK })
           : g.sim.day >= 5
           ? DAY5_WAKE
+          : g.sim.day >= 4 && g.sim.phase.id === 'wake'
+            ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+              ? DAY4_WAKE_RED
+              : !g.sim.malyava
+                ? DAY4_WAKE_WAIT
+                : g.sim.malyava === 'found'
+                  ? g.sim.stash === 'bunk'
+                    ? DAY4_WAKE_FOUND_BUNK
+                    : DAY4_WAKE_FOUND
+                  : g.sim.malyava === 'burn'
+                    ? DAY4_WAKE_BURN
+                    : g.sim.malyava === 'hold' && g.sim.teaPaid
+                      ? holdStash(g.sim, { pocket: DAY4_WAKE_HOLD, wash: DAY4_WAKE_HOLD_WASH, bunk: DAY4_WAKE_HOLD_BUNK })
+                      : DAY4_WAKE
           : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
             ? day4ShmonTalk(g.sim, {
                 red: DAY4_LEHA_SHMON_RED,
@@ -1176,7 +1200,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY7_WALK_RED,
               gone: DAY7_WALK_GONE,
-              found: DAY7_WALK_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY7_WALK_FOUND_BUNK : DAY7_WALK_FOUND,
               burn: DAY7_WALK_BURN,
               hold: holdStash(g.sim, { pocket: DAY7_WALK_HOLD, wash: DAY7_WALK_HOLD_WASH, bunk: DAY7_WALK_HOLD_BUNK }),
               ok: DAY7_WALK,

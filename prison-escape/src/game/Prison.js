@@ -304,6 +304,30 @@ export class Prison {
       hatchCrumb.position.set(side * 0.13, 1.41, LAYOUT.doorW / 2 - 0.08);
       hatchCrumb.rotation.y = 0.4;
       door.add(hatchCrumb);
+      const hatchGrease = new THREE.Mesh(
+        new THREE.CircleGeometry(0.07, 8),
+        new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.35, metalness: 0.12, transparent: true, opacity: 0.55 }),
+      );
+      hatchGrease.rotation.x = -Math.PI / 2;
+      hatchGrease.position.set(side * 0.125, 1.392, LAYOUT.doorW / 2 + 0.04);
+      door.add(hatchGrease);
+      const hatchDrip = new THREE.MeshStandardMaterial({ color: 0x4a3a22, roughness: 0.4, transparent: true, opacity: 0.55 });
+      this.box(0.018, 0.16, 0.018, hatchDrip, side * 0.14, 1.3, LAYOUT.doorW / 2 - 0.02, door);
+      this.box(0.014, 0.08, 0.014, hatchDrip, side * 0.14, 1.2, LAYOUT.doorW / 2 - 0.02, door);
+      const hatchRag = new THREE.Mesh(
+        new THREE.BoxGeometry(0.03, 0.28, 0.1),
+        new THREE.MeshStandardMaterial({ color: 0x6a5a42, roughness: 0.96 }),
+      );
+      hatchRag.position.set(side * 0.155, 1.32, LAYOUT.doorW / 2 + 0.1);
+      hatchRag.rotation.set(0.12, 0.2, 0.18);
+      door.add(hatchRag);
+      const hatchCrust = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.01, 0.03),
+        new THREE.MeshStandardMaterial({ color: 0xb89058, roughness: 0.92 }),
+      );
+      hatchCrust.position.set(side * 0.132, 1.4, LAYOUT.doorW / 2 + 0.09);
+      hatchCrust.rotation.y = -0.5;
+      door.add(hatchCrust);
       const rim = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.5, roughness: 0.4 });
       this.box(0.03, 0.28, 0.42, rim, side * 0.13, 1.52, LAYOUT.doorW / 2, door);
       this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.66, LAYOUT.doorW / 2, door);
@@ -1787,6 +1811,21 @@ export class Prison {
     this.box(0.02, 0.28, 0.35, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.22, 3.35, cell);
     this.box(0.02, 0.85, 0.12, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.35, doorRelZ - 0.42, cell);
     this.box(0.02, 0.4, 0.18, hatchRust, -LAYOUT.cellW / 2 + 0.2, 0.55, doorRelZ + 0.28, cell);
+    this.box(0.02, 0.22, 0.22, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.08, 3.22, cell);
+    const hatchSmear = new THREE.Mesh(
+      new THREE.CircleGeometry(0.11, 8),
+      new THREE.MeshStandardMaterial({ color: 0x5a4028, roughness: 0.4, metalness: 0.08, transparent: true, opacity: 0.5 }),
+    );
+    hatchSmear.rotation.y = Math.PI / 2;
+    hatchSmear.position.set(-LAYOUT.cellW / 2 + 0.21, 1.18, 3.28);
+    cell.add(hatchSmear);
+    const hatchCloth = new THREE.Mesh(
+      new THREE.BoxGeometry(0.03, 0.34, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x4a3a2c, roughness: 0.96 }),
+    );
+    hatchCloth.position.set(-LAYOUT.cellW / 2 + 0.24, 1.28, 3.48);
+    hatchCloth.rotation.set(0.08, 0.12, 0.22);
+    cell.add(hatchCloth);
     const doorWet = new THREE.Mesh(
       new THREE.CircleGeometry(0.42, 10),
       new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.2, metalness: 0.1 }),
@@ -2891,6 +2930,43 @@ export class Prison {
     hushHall.position.set(LAYOUT.corridorHalf - 0.14, 1.72, 3.95);
     hushHall.rotation.y = -Math.PI / 2;
     this.group.add(hushHall);
+    const hallRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.42, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a38, roughness: 0.95 }),
+    );
+    hallRag.position.set(LAYOUT.corridorHalf - 0.16, 1.95, 3.55);
+    hallRag.rotation.set(0.08, 0.12, 0.18);
+    this.group.add(hallRag);
+    const hallMud = new THREE.Mesh(
+      new THREE.CircleGeometry(0.32, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a2414, roughness: 0.85 }),
+    );
+    hallMud.rotation.x = -Math.PI / 2;
+    hallMud.position.set(0.55, 0.048, 3.48);
+    this.group.add(hallMud);
+    const hallBoot = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.012, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0x2a1a10, roughness: 0.9 }),
+    );
+    hallBoot.position.set(0.22, 0.05, 3.72);
+    hallBoot.rotation.y = 0.35;
+    this.group.add(hallBoot);
+    const hallFoil = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.006, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xb8b0a0, metalness: 0.45, roughness: 0.4 }),
+    );
+    hallFoil.position.set(0.48, 0.052, 3.35);
+    hallFoil.rotation.y = -0.7;
+    this.group.add(hallFoil);
+    this.box(
+      0.08,
+      0.38,
+      0.22,
+      new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88 }),
+      LAYOUT.corridorHalf - 0.16,
+      0.55,
+      3.7,
+    );
     const board = this.box(
       0.04,
       0.55,
