@@ -31,6 +31,24 @@ import {
   DAY3_VALERA_BURN,
   DAY3_VALERA_FOUND,
   DAY3_VALERA_RED,
+  DAY4_VALERA,
+  DAY4_VALERA_WAIT,
+  DAY4_VALERA_PAID,
+  DAY4_VALERA_FOUND,
+  DAY4_VALERA_BURN,
+  DAY4_VALERA_RED,
+  DAY5_VALERA,
+  DAY5_VALERA_GONE,
+  DAY5_VALERA_HOLD,
+  DAY5_VALERA_FOUND,
+  DAY5_VALERA_BURN,
+  DAY5_VALERA_RED,
+  WEEK_VALERA,
+  WEEK_VALERA_GONE,
+  WEEK_VALERA_HOLD,
+  WEEK_VALERA_FOUND,
+  WEEK_VALERA_BURN,
+  WEEK_VALERA_RED,
   DAY3_NOTE,
   DAY3_WALK,
   DAY3_WALK_WAIT,
@@ -116,7 +134,52 @@ import {
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
 } from './Dialogue.js';
-import { onPhaseEnter, plotObjective, hatchReady } from './Plot.js';
+import { onPhaseEnter, plotObjective, hatchReady, weekPick, weekRed } from './Plot.js';
+
+function valeraInCell(s) {
+  if (s.day >= 6) {
+    return weekPick(s, {
+      red: WEEK_VALERA_RED,
+      gone: WEEK_VALERA_GONE,
+      found: WEEK_VALERA_FOUND,
+      burn: WEEK_VALERA_BURN,
+      hold: WEEK_VALERA_HOLD,
+      ok: WEEK_VALERA,
+    });
+  }
+  if (s.day >= 5) {
+    return weekPick(s, {
+      red: DAY5_VALERA_RED,
+      gone: DAY5_VALERA_GONE,
+      found: DAY5_VALERA_FOUND,
+      burn: DAY5_VALERA_BURN,
+      hold: DAY5_VALERA_HOLD,
+      ok: DAY5_VALERA,
+    });
+  }
+  if (s.day >= 4) {
+    if (weekRed(s)) return DAY4_VALERA_RED;
+    if (!s.malyava) return DAY4_VALERA_WAIT;
+    if (s.malyava === 'found') return DAY4_VALERA_FOUND;
+    if (s.malyava === 'burn') return DAY4_VALERA_BURN;
+    if (s.malyava === 'hold' && s.teaPaid) return DAY4_VALERA_PAID;
+    return DAY4_VALERA;
+  }
+  if (s.day >= 3) {
+    if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
+    if (s.malyava === 'found') return DAY3_VALERA_FOUND;
+    if (s.malyava === 'hold') return DAY3_VALERA_HOLD;
+    if (s.malyava === 'burn') return DAY3_VALERA_BURN;
+    if (!s.malyava) return DAY3_VALERA_WAIT;
+    return DAY3_VALERA;
+  }
+  if (s.day >= 2) {
+    if (s.stash === 'bunk') return DAY2_VALERA_CAUGHT;
+    if (s.stash === 'wash') return DAY2_VALERA_WASH;
+    return DAY2_VALERA;
+  }
+  return TALK_VALERA;
+}
 
 function ambientFor(g) {
   const s = g.sim;
@@ -720,25 +783,7 @@ export class CellLife {
                       : g.sim.stash === 'wash'
                         ? DAY2_YARD_WASH
                         : DAY2_YARD
-                    : g.sim.day >= 3
-                      ? g.sim.malyava === 'admin' || g.sim.path === 'red'
-                        ? DAY3_VALERA_RED
-                        : g.sim.malyava === 'found'
-                          ? DAY3_VALERA_FOUND
-                          : g.sim.malyava === 'hold'
-                            ? DAY3_VALERA_HOLD
-                            : g.sim.malyava === 'burn'
-                              ? DAY3_VALERA_BURN
-                              : !g.sim.malyava
-                                ? DAY3_VALERA_WAIT
-                                : DAY3_VALERA
-                    : g.sim.day >= 2
-                      ? g.sim.stash === 'bunk'
-                        ? DAY2_VALERA_CAUGHT
-                        : g.sim.stash === 'wash'
-                          ? DAY2_VALERA_WASH
-                          : DAY2_VALERA
-                    : TALK_VALERA;
+                    : valeraInCell(g.sim);
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);

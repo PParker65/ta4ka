@@ -854,7 +854,7 @@ function alcove(prison, x, z, title) {
   const g = new THREE.Group();
   g.position.set(x, 0, z);
   prison.group.add(g);
-  const wall = new THREE.MeshStandardMaterial({ color: 0xd2ccbe, roughness: 0.9 });
+  const wall = new THREE.MeshStandardMaterial({ color: 0xa8a296, roughness: 0.9 });
   const floor = new THREE.MeshStandardMaterial({ color: 0x8a8882, roughness: 0.86 });
   const ceil = new THREE.MeshStandardMaterial({ color: 0xcfc8bc, roughness: 0.88 });
   prison.box(3.6, 0.06, 3.5, floor, 0, 0.03, 0, g);
@@ -871,7 +871,7 @@ function alcove(prison, x, z, title) {
   const darkBoard = new THREE.MeshStandardMaterial({ color: 0x3e423c, roughness: 0.72 });
   prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, -1.58, g);
   prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, 1.58, g);
-  const lamp = new THREE.PointLight(0xf2ead0, 0.85, 7, 1.6);
+  const lamp = new THREE.PointLight(0xf2ead0, 0.32, 5.5, 1.8);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
   const t = plaque(title, 1.2, 0.28);

@@ -637,11 +637,11 @@ function day3Morning(s) {
   return DAY3_MORNING;
 }
 
-function weekRed(s) {
+export function weekRed(s) {
   return s.courtTalk === 'cell' || s.malyava === 'admin';
 }
 
-function weekPick(s, packs) {
+export function weekPick(s, packs) {
   if (weekRed(s) && packs.red) return packs.red;
   if (s.malyava === 'gone' && packs.gone) return packs.gone;
   if (s.malyava === 'found' && packs.found) return packs.found;
