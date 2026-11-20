@@ -149,6 +149,7 @@ import {
   DAY3_SEDOY_SHMON_HOLD,
   DAY3_SEDOY_SHMON_WASH,
   DAY3_SEDOY_SHMON_FOUND,
+  DAY3_SEDOY_SHMON_FOUND_BUNK,
   DAY3_SEDOY_SHMON_BURN,
   DAY3_SEDOY_SHMON_RED,
   DAY3_SEDOY_SHMON_CAUGHT,
@@ -925,7 +926,9 @@ export class CellLife {
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
                     ? DAY3_SEDOY_SHMON_RED
                     : g.sim.malyava === 'found'
-                      ? DAY3_SEDOY_SHMON_FOUND
+                      ? g.sim.stash === 'bunk'
+                        ? DAY3_SEDOY_SHMON_FOUND_BUNK
+                        : DAY3_SEDOY_SHMON_FOUND
                       : g.sim.malyava === 'hold' && g.sim.stash === 'wash'
                         ? DAY3_SEDOY_SHMON_WASH
                         : g.sim.malyava === 'hold'

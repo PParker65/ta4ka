@@ -58,18 +58,21 @@ import {
   DAY4_SHMON_WAIT,
   DAY4_SHMON_WASH,
   DAY4_SHMON_FOUND,
+  DAY4_SHMON_FOUND_BUNK,
   DAY4_SHMON_BURN,
   DAY4_SHMON_RED,
   DAY5_SHMON,
   DAY5_SHMON_GONE,
   DAY5_SHMON_HOLD,
   DAY5_SHMON_FOUND,
+  DAY5_SHMON_FOUND_BUNK,
   DAY5_SHMON_BURN,
   DAY5_SHMON_RED,
   DAY6_SHMON,
   DAY6_SHMON_GONE,
   DAY6_SHMON_HOLD,
   DAY6_SHMON_FOUND,
+  DAY6_SHMON_FOUND_BUNK,
   DAY6_SHMON_BURN,
   DAY6_SHMON_RED,
   DAY7_SHMON,
@@ -298,6 +301,22 @@ export function plotObjective(sim) {
     if (!sim.malyava) return 'Третий круг. Бумага ещё в щели. К щели — после. Через стену не ори.';
     return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
   }
+  if (d === 4 && ph === 'shmon')
+    return weekRed(sim)
+      ? 'Четвёртый шмон. Тебя записали. К стене. Не оправдывайся.'
+      : sim.malyava === 'found'
+        ? sim.stash === 'bunk'
+          ? 'Четвёртый шмон. Нашли в матрасе. К стене. Рот на замок.'
+          : 'Четвёртый шмон. Нашли в кармане. К стене. Рот на замок.'
+        : sim.malyava === 'burn'
+          ? 'Четвёртый шмон. Пахнет золой. К стене. Не объясняй чайник.'
+          : sim.malyava === 'hold' && sim.stash === 'wash'
+            ? 'Четвёртый шмон. Чашу не смотри. Бумага там вторые сутки.'
+            : sim.malyava === 'hold' && sim.stash === 'bunk'
+              ? 'Четвёртый шмон. Матрас первым. Не смотри на койку.'
+              : !sim.malyava
+                ? 'Четвёртый шмон. Щель живая. Койки, не кормушку.'
+                : 'Четвёртый шмон. К стенам. Руки видно.';
   if (d === 4 && ph === 'walk')
     return weekRed(sim)
       ? 'Четвёртый круг. Свист кончился. Через сетку — ни звука.'
@@ -390,7 +409,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Шестой шмон. Щель пустая с пятого. Папка уже не пустая. К стене.'
         : sim.malyava === 'found'
-          ? 'Шестой шмон. Нашли. Жар. Свежак кончается на карандаше. Рот на замок.'
+          ? sim.stash === 'bunk'
+            ? 'Шестой шмон. Нашли в матрасе. Свежак кончается. Рот на замок.'
+            : 'Шестой шмон. Нашли в кармане. Свежак кончается. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Шестой шмон. Пахнет золой. Свежак кончается. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -406,7 +427,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Шестой круг. Бумагу взяли без тебя. Завтра не ори про волю.'
         : sim.malyava === 'found'
-          ? 'Шестой круг. Нашли в кармане. Через стену не ори про шмон.'
+          ? sim.stash === 'bunk'
+            ? 'Шестой круг. Нашли в матрасе. Через стену не ори про шмон.'
+            : 'Шестой круг. Нашли в кармане. Через стену не ори про шмон.'
           : sim.malyava === 'burn'
             ? 'Шестой круг. Зола в хате. Не ори про дым.'
             : sim.malyava === 'hold'
@@ -438,7 +461,9 @@ export function plotObjective(sim) {
       : sim.malyava === 'gone'
         ? 'Пятый шмон. Щель пустая с утра. Следак уже забрал бумагу. К стене.'
         : sim.malyava === 'found'
-          ? 'Пятый шмон. Нашли. Жар полный. Сегодня вызов. Рот на замок.'
+          ? sim.stash === 'bunk'
+            ? 'Пятый шмон. Нашли в матрасе. Сегодня вызов. Рот на замок.'
+            : 'Пятый шмон. Нашли в кармане. Сегодня вызов. Рот на замок.'
           : sim.malyava === 'burn'
             ? 'Пятый шмон. Пахнет золой. Сегодня вызов. Не объясняй чайник.'
             : sim.malyava === 'hold'
@@ -667,13 +692,13 @@ export function onPhaseEnter(game, id) {
         pickDialog(g, s.stash === 'bunk' ? DAY7_SHMON_FOUND_BUNK : DAY7_SHMON_FOUND);
       } else if (s.day === 6 && !s.seenDay6Shmon) {
         s.seenDay6Shmon = true;
-        pickDialog(g, DAY6_SHMON_FOUND);
+        pickDialog(g, s.stash === 'bunk' ? DAY6_SHMON_FOUND_BUNK : DAY6_SHMON_FOUND);
       } else if (s.day === 5 && !s.seenDay5Shmon) {
         s.seenDay5Shmon = true;
-        pickDialog(g, DAY5_SHMON_FOUND);
+        pickDialog(g, s.stash === 'bunk' ? DAY5_SHMON_FOUND_BUNK : DAY5_SHMON_FOUND);
       } else if (s.day === 4 && !s.seenDay4Shmon) {
         s.seenDay4Shmon = true;
-        pickDialog(g, DAY4_SHMON_FOUND);
+        pickDialog(g, s.stash === 'bunk' ? DAY4_SHMON_FOUND_BUNK : DAY4_SHMON_FOUND);
       } else if (!s.seenDay3Shmon) {
         s.seenDay3Shmon = true;
         pickDialog(g, s.stash === 'bunk' ? DAY3_SHMON_FOUND_BUNK : DAY3_SHMON_FOUND);

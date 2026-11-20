@@ -1111,6 +1111,29 @@ export class Prison {
     const rustWash = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88, transparent: true, opacity: 0.55 });
     this.box(0.22, 0.45, 0.02, rustWash, 0.55, 0.55, 0.54, g);
     this.box(0.14, 0.28, 0.02, rustWash, -0.55, 0.4, 0.54, g);
+    this.box(0.18, 0.62, 0.02, rustWash, 0.28, 0.48, 0.54, g);
+    this.box(0.1, 0.38, 0.02, rustWash, -0.22, 0.32, 0.54, g);
+    const scum = new THREE.MeshStandardMaterial({ color: 0x8a7a62, roughness: 0.92, transparent: true, opacity: 0.7 });
+    this.box(0.28, 0.012, 0.22, scum, -0.35, 0.992, 0.42, g);
+    this.box(0.16, 0.01, 0.12, scum, -0.28, 0.988, 0.48, g);
+    const dampFloor = new THREE.MeshStandardMaterial({ color: 0x4a5248, roughness: 0.35, transparent: true, opacity: 0.55 });
+    this.box(0.55, 0.012, 0.4, dampFloor, -0.15, 0.07, 0.22, g);
+    this.box(0.38, 0.01, 0.28, dampFloor, 0.22, 0.068, -0.08, g);
+    this.box(0.24, 0.01, 0.18, dampFloor, -0.42, 0.068, 0.05, g);
+    const soapScum = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.018, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xc8b8a0, roughness: 0.7 }),
+    );
+    soapScum.position.set(-0.48, 0.08, 0.32);
+    soapScum.rotation.y = 0.4;
+    g.add(soapScum);
+    const washHang = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.42, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3c, roughness: 0.95 }),
+    );
+    washHang.position.set(0.62, 0.88, 0.42);
+    washHang.rotation.z = 0.18;
+    g.add(washHang);
     const soapWash = new THREE.Mesh(
       new THREE.BoxGeometry(0.07, 0.025, 0.045),
       new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.45 }),
