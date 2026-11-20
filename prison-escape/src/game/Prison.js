@@ -2805,6 +2805,13 @@ export class Prison {
     krugSock.position.set(-0.42, 0.14, 1.22);
     krugSock.rotation.set(1.15, 0.2, 0.35);
     g.add(krugSock);
+    const krugBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.036, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    krugBottle.position.set(0.12, 0.05, 1.42);
+    krugBottle.rotation.z = 1.2;
+    g.add(krugBottle);
     const buttKrug = new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 });
     for (const [bx, bz, ry] of [
       [0.42, 1.62, 0.6],

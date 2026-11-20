@@ -77,6 +77,8 @@ import {
   DAY4_SEDOY_NIGHT_FOUND_BUNK,
   DAY4_SEDOY_WAKE_HOLD_BUNK,
   DAY4_SEDOY_WAKE_FOUND_BUNK,
+  DAY5_SEDOY_WALK_HOLD_BUNK,
+  DAY5_SEDOY_WALK_FOUND_BUNK,
   DAY3_WALK_HOLD_WASH,
   DAY3_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_HOLD_BUNK,
@@ -958,6 +960,10 @@ export class CellLife {
               ? DAY5_BACK_SELF
               : g.sim.day >= 5 && g.sim.malyava === 'gone'
                 ? DAY5_COURT_GONE
+              : g.sim.day === 5 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                ? DAY5_SEDOY_WALK_FOUND_BUNK
+                : g.sim.day === 5 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                  ? DAY5_SEDOY_WALK_HOLD_BUNK
               : g.sim.day >= 5
                 ? DAY5_COURT
                 : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
