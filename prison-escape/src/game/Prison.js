@@ -991,6 +991,26 @@ export class Prison {
       winRag.position.set(x - 0.28, 1.58, d / 2 - 0.18);
       winRag.rotation.z = 0.4;
       cell.add(winRag);
+      const winHang = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.42, 0.04),
+        new THREE.MeshStandardMaterial({ color: 0x4a3a32, roughness: 0.96 }),
+      );
+      winHang.position.set(x - 0.12, 2.42, d / 2 - 0.17);
+      winHang.rotation.z = 0.18;
+      cell.add(winHang);
+      const winTin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.04, 0.07, 7),
+        new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.4, roughness: 0.5 }),
+      );
+      winTin.position.set(x + 0.18, 1.56, d / 2 - 0.2);
+      cell.add(winTin);
+      const winSock = new THREE.Mesh(
+        new THREE.BoxGeometry(0.06, 0.22, 0.05),
+        new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+      );
+      winSock.position.set(x + 0.38, 1.72, d / 2 - 0.18);
+      winSock.rotation.z = -0.28;
+      cell.add(winSock);
       for (let i = -2; i <= 2; i++) {
         this.box(0.022, 1.12, 0.022, bars, x + i * 0.18, 2.15, d / 2 - 0.16, cell);
       }

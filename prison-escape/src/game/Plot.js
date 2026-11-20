@@ -138,6 +138,7 @@ import {
   DAY5_SLED_GONE,
   DAY5_SLED_RED,
   DAY5_SLED_FOUND,
+  DAY5_SLED_FOUND_BUNK,
   DAY5_SLED_BURN,
   DAY5_SLED_HOLD,
   DAY5_BACK_SILENT,
@@ -842,7 +843,7 @@ export function onPhaseEnter(game, id) {
         s.malyava = 'gone';
         s.heat = Math.min(100, s.heat + 12);
       }
-      pickDialog(g, weekPick(s, { red: DAY5_SLED_RED, gone: DAY5_SLED_GONE, found: DAY5_SLED_FOUND, burn: DAY5_SLED_BURN, hold: DAY5_SLED_HOLD, ok: DAY5_SLED }));
+      pickDialog(g, weekPick(s, { red: DAY5_SLED_RED, gone: DAY5_SLED_GONE, found: s.stash === 'bunk' ? DAY5_SLED_FOUND_BUNK : DAY5_SLED_FOUND, burn: DAY5_SLED_BURN, hold: DAY5_SLED_HOLD, ok: DAY5_SLED }));
       return;
     }
     if (s.day === 6 && !s.seenDay6Food) {

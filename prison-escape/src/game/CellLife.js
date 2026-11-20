@@ -251,6 +251,7 @@ import {
   DAY7_LEHA_HOLD_WASH,
   DAY7_LEHA_HOLD_BUNK,
   DAY7_LEHA_FOUND,
+  DAY7_LEHA_FOUND_BUNK,
   DAY7_LEHA_BURN,
   DAY7_LEHA_RED,
   DAY4_HATCH,
@@ -343,6 +344,7 @@ import {
   DAY6_SEDOY_HOLD_BUNK,
   DAY6_SEDOY_GONE,
   DAY6_SEDOY_FOUND,
+  DAY6_SEDOY_FOUND_BUNK,
   DAY6_SEDOY_BURN,
   DAY6_SEDOY_RED,
   DAY5_BACK_SILENT,
@@ -922,7 +924,7 @@ export class CellLife {
             ? weekPick(g.sim, {
                 red: DAY6_SEDOY_RED,
                 gone: DAY6_SEDOY_GONE,
-                found: DAY6_SEDOY_FOUND,
+                found: g.sim.stash === 'bunk' ? DAY6_SEDOY_FOUND_BUNK : DAY6_SEDOY_FOUND,
                 burn: DAY6_SEDOY_BURN,
                 hold: holdStash(g.sim, { pocket: DAY6_SEDOY_HOLD, wash: DAY6_SEDOY_HOLD_WASH, bunk: DAY6_SEDOY_HOLD_BUNK }),
                 ok: DAY6_SEDOY,
@@ -1042,7 +1044,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY7_LEHA_RED,
               gone: DAY7_LEHA_GONE,
-              found: DAY7_LEHA_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY7_LEHA_FOUND_BUNK : DAY7_LEHA_FOUND,
               burn: DAY7_LEHA_BURN,
               hold: holdStash(g.sim, { pocket: DAY7_LEHA_HOLD, wash: DAY7_LEHA_HOLD_WASH, bunk: DAY7_LEHA_HOLD_BUNK }),
               ok: DAY7_LEHA,
