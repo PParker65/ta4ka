@@ -56,6 +56,10 @@ import {
   DAY5_BACK_SELF,
   DAY5_WALK,
   DAY5_WALK_GONE,
+  DAY5_WALK_HOLD,
+  DAY5_WALK_FOUND,
+  DAY5_WALK_BURN,
+  DAY5_WALK_RED,
   DAY6_NIGHT,
   DAY6_NIGHT_GONE,
   DAY6_NIGHT_RED,
@@ -195,6 +199,18 @@ export function plotObjective(sim) {
   if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
   if (d === 5 && sim.courtTalk === 'silent') return 'Про хату — ничего. Жар есть. Хата ещё дышит.';
   if (d === 5 && sim.courtTalk === 'self') return '«Ничего не видел.» Хата слышала тон. Не рассказывай сон.';
+  if (d === 5 && ph === 'walk')
+    return weekRed(sim)
+      ? 'Пятый круг. Свист кончился. Через сетку — ни звука.'
+      : sim.malyava === 'gone'
+        ? 'Пятый круг. Щель пустая. Через сетку не ори.'
+        : sim.malyava === 'found'
+          ? 'Пятый круг. Нашли. Через сетку не ори про шмон.'
+          : sim.malyava === 'burn'
+            ? 'Пятый круг. Зола в хате. Про дым — ни звука.'
+            : sim.malyava === 'hold'
+              ? 'Пятый круг. Карман жжёт. Через сетку про карман — ни звука.'
+              : 'Пятый круг. С коряка звали. Что скажешь — хата узнает.';
   if (d === 5 && sim.malyava === 'gone') return 'Щель отдала бумагу без тебя. Следователь уже читал.';
   if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
   if (d === 6)
@@ -244,7 +260,7 @@ export function onPhaseEnter(game, id) {
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
     if (s.day === 5 && !s.heardDay5Yard) {
       s.heardDay5Yard = true;
-      pickDialog(g, s.malyava === 'gone' ? DAY5_WALK_GONE : DAY5_WALK);
+      pickDialog(g, weekPick(s, { red: DAY5_WALK_RED, gone: DAY5_WALK_GONE, found: DAY5_WALK_FOUND, burn: DAY5_WALK_BURN, hold: DAY5_WALK_HOLD, ok: DAY5_WALK }));
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: DAY6_WALK_HOLD, ok: DAY6_WALK }));

@@ -7,7 +7,12 @@ import {
   HATCH_TALK,
   HATCH_GONE,
   KETTLE_TALK,
+  KETTLE_TALK_HOLD,
+  KETTLE_TALK_RED,
   WINDOW_TALK,
+  WINDOW_TALK_HOLD,
+  WINDOW_TALK_GONE,
+  WINDOW_TALK_RED,
   TALK_STAROSTA,
   TALK_LEHA,
   TALK_VALERA,
@@ -34,6 +39,10 @@ import {
   DAY5_COURT_GONE,
   DAY5_WALK,
   DAY5_WALK_GONE,
+  DAY5_WALK_HOLD,
+  DAY5_WALK_FOUND,
+  DAY5_WALK_BURN,
+  DAY5_WALK_RED,
   DAY5_WAKE_GONE,
   DAY6_WALK,
   DAY6_WALK_GONE,
@@ -525,8 +534,16 @@ export class CellLife {
             ? DAY6_WALK_HOLD
             : DAY6_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 5
-          ? g.sim.malyava === 'gone'
+          ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+            ? DAY5_WALK_RED
+            : g.sim.malyava === 'gone'
             ? DAY5_WALK_GONE
+            : g.sim.malyava === 'found'
+            ? DAY5_WALK_FOUND
+            : g.sim.malyava === 'burn'
+            ? DAY5_WALK_BURN
+            : g.sim.malyava === 'hold'
+            ? DAY5_WALK_HOLD
             : DAY5_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 4
             ? DAY4_WALK
@@ -641,7 +658,15 @@ export class CellLife {
   useWindow() {
     const g = this.g;
     g.unlockLook();
-    g.dialog.show(WINDOW_TALK.who, WINDOW_TALK.text, WINDOW_TALK.options);
+    const pack =
+      g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+        ? WINDOW_TALK_RED
+        : g.sim.malyava === 'gone'
+          ? WINDOW_TALK_GONE
+          : g.sim.malyava === 'hold'
+            ? WINDOW_TALK_HOLD
+            : WINDOW_TALK;
+    g.dialog.show(pack.who, pack.text, pack.options);
     g.dialog.onPick = (opt) => {
       this.applyTalk(opt);
       this.completeTask('window');
@@ -651,8 +676,19 @@ export class CellLife {
   useKettle() {
     const g = this.g;
     g.unlockLook();
-    g.dialog.show(KETTLE_TALK.who, KETTLE_TALK.text, KETTLE_TALK.options);
+    const pack =
+      g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+        ? KETTLE_TALK_RED
+        : g.sim.malyava === 'hold'
+          ? KETTLE_TALK_HOLD
+          : KETTLE_TALK;
+    g.dialog.show(pack.who, pack.text, pack.options);
     g.dialog.onPick = (opt) => {
+      if (opt.malyava === 'burn') {
+        this.applyTalk(opt);
+        this.completeTask('kettle');
+        return;
+      }
       if (opt.brew) {
         if (g.sim.inv.tea <= 0) {
           g.toast('Чай кончился. Чифир из воздуха не варят.');
