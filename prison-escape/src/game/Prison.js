@@ -1011,6 +1011,12 @@ export class Prison {
       winSock.position.set(x + 0.38, 1.72, d / 2 - 0.18);
       winSock.rotation.z = -0.28;
       cell.add(winSock);
+      const winDrip = new THREE.Mesh(
+        new THREE.SphereGeometry(0.02, 5, 4),
+        new THREE.MeshStandardMaterial({ color: 0x5a3a22, roughness: 0.75 }),
+      );
+      winDrip.position.set(x - 0.06, 1.51, d / 2 - 0.18);
+      cell.add(winDrip);
       for (let i = -2; i <= 2; i++) {
         this.box(0.022, 1.12, 0.022, bars, x + i * 0.18, 2.15, d / 2 - 0.16, cell);
       }
@@ -3159,6 +3165,19 @@ export class Prison {
     hallFoil.position.set(0.48, 0.052, 3.35);
     hallFoil.rotation.y = -0.7;
     this.group.add(hallFoil);
+    const hallTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    hallTin.position.set(0.68, 0.09, 3.58);
+    this.group.add(hallTin);
+    const hallSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.04, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    hallSock.position.set(0.38, 0.06, 3.28);
+    hallSock.rotation.y = 0.5;
+    this.group.add(hallSock);
     this.box(
       0.08,
       0.38,

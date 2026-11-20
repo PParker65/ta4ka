@@ -17,6 +17,7 @@ import {
   TALK_LEHA,
   TALK_VALERA,
   DAY2_SEDOY,
+  DAY2_SEDOY_BUNK,
   DAY2_SEDOY_CAUGHT,
   DAY2_SEDOY_WASH,
   DAY2_SEDOY_SHMON,
@@ -53,6 +54,7 @@ import {
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
   DAY2_VALERA,
+  DAY2_VALERA_BUNK,
   DAY2_VALERA_CAUGHT,
   DAY2_VALERA_WASH,
   DAY2_VALERA_SHMON,
@@ -461,7 +463,7 @@ function valeraInCell(s) {
       if (s.stash === 'wash') return DAY2_VALERA_SHMON_WASH;
       return DAY2_VALERA_SHMON;
     }
-    if (s.stash === 'bunk') return DAY2_VALERA_CAUGHT;
+    if (s.stash === 'bunk') return s.phase.id === 'wake' ? DAY2_VALERA_BUNK : DAY2_VALERA_CAUGHT;
     if (s.stash === 'wash') return DAY2_VALERA_WASH;
     return DAY2_VALERA;
   }
@@ -1006,7 +1008,9 @@ export class CellLife {
                       : DAY2_SEDOY_SHMON
                 : g.sim.day >= 2
                   ? g.sim.stash === 'bunk'
-                    ? DAY2_SEDOY_CAUGHT
+                    ? g.sim.phase.id === 'wake'
+                      ? DAY2_SEDOY_BUNK
+                      : DAY2_SEDOY_CAUGHT
                     : g.sim.stash === 'wash'
                       ? DAY2_SEDOY_WASH
                       : DAY2_SEDOY
