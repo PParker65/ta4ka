@@ -100,6 +100,7 @@ import {
   DAY4_WALK_PAID,
   DAY4_WALK_PAID_WASH,
   DAY4_WALK_PAID_BUNK,
+  DAY4_WALK_HOLD_BUNK,
   DAY4_WALK_FOUND,
   DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
@@ -360,6 +361,8 @@ export function plotObjective(sim) {
                   wash: 'Четвёртый круг. Чай ушёл. Чаша осталась в хате. Через стену не ори про неё.',
                   bunk: 'Четвёртый круг. Чай ушёл. Бумага в матрасе. Через стену — ни звука.',
                 })
+              : sim.malyava === 'hold' && sim.stash === 'bunk'
+                ? 'Четвёртый круг. Бумага в матрасе. Чай ещё в щели. Через стену — ни звука.'
               : 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && ph === 'food')
     return weekRed(sim)
@@ -918,6 +921,7 @@ function day4Walk(s) {
   if (s.malyava === 'burn') return DAY4_WALK_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK });
+  if (s.malyava === 'hold' && s.stash === 'bunk') return DAY4_WALK_HOLD_BUNK;
   return DAY4_WALK;
 }
 

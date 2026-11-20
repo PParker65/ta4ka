@@ -596,11 +596,18 @@ export class Prison {
     ceilSock.rotation.z = 0.35;
     cell.add(ceilSock);
     const ceilTin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.032, 0.06, 8),
+      new THREE.CylinderGeometry(0.055, 0.06, 0.11, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
     );
-    ceilTin.position.set(0.22, h - 0.52, 0.08);
+    ceilTin.position.set(0.22, h - 0.58, 0.08);
     cell.add(ceilTin);
+    const ceilHook = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 0.08, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a4e48, metalness: 0.45, roughness: 0.5 }),
+    );
+    ceilHook.position.set(0.22, h - 0.5, 0.08);
+    ceilHook.rotation.z = 0.35;
+    cell.add(ceilHook);
     const ceilDrip = new THREE.MeshStandardMaterial({ color: 0x6a5a40, roughness: 0.35, transparent: true, opacity: 0.45 });
     this.box(0.04, 0.18, 0.04, ceilDrip, 0.08, h - 0.22, 0.18, cell);
     this.box(0.03, 0.1, 0.03, ceilDrip, 0.08, h - 0.38, 0.18, cell);

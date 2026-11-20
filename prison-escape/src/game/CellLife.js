@@ -77,6 +77,8 @@ import {
   DAY3_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_FOUND_BUNK,
+  DAY4_SEDOY_WALK_HOLD_BUNK,
+  DAY4_SEDOY_WALK_FOUND_BUNK,
   DAY3_LEHA_HOLD_WASH,
   DAY3_LEHA_HOLD_BUNK,
   DAY3_MORNING_HOLD_WASH,
@@ -272,6 +274,7 @@ import {
   DAY4_WALK_PAID,
   DAY4_WALK_PAID_WASH,
   DAY4_WALK_PAID_BUNK,
+  DAY4_WALK_HOLD_BUNK,
   DAY4_WALK_FOUND,
   DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
@@ -999,9 +1002,13 @@ export class CellLife {
                     ? DAY3_NIGHT_FOUND_BUNK
                     : g.sim.day >= 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                       ? DAY3_SEDOY_NIGHT_HOLD_BUNK
-                    : g.sim.day >= 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                    : g.sim.day === 4 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                      ? DAY4_SEDOY_WALK_FOUND_BUNK
+                      : g.sim.day === 4 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                        ? DAY4_SEDOY_WALK_HOLD_BUNK
+                    : g.sim.day === 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
                       ? DAY3_SEDOY_WALK_FOUND_BUNK
-                      : g.sim.day >= 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                      : g.sim.day === 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                         ? DAY3_SEDOY_WALK_HOLD_BUNK
                 : g.sim.day >= 3
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
@@ -1276,6 +1283,8 @@ export class CellLife {
                     ? DAY4_WALK_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? holdStash(g.sim, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK })
+                      : g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                        ? DAY4_WALK_HOLD_BUNK
                       : DAY4_WALK
             : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
               ? DAY3_WALK_RED
