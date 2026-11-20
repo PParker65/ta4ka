@@ -673,10 +673,42 @@ export class Prison {
     extra.visible = false;
     this.group.add(extra);
     this.storyExtra = extra;
-    const tea = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 0.04, 0.06),
-      new THREE.MeshStandardMaterial({ color: 0x6a4a28, roughness: 0.78, emissive: 0x2a1808, emissiveIntensity: 0.2 }),
+    const tea = new THREE.Group();
+    const foil = new THREE.Mesh(
+      new THREE.BoxGeometry(0.072, 0.02, 0.11),
+      new THREE.MeshStandardMaterial({
+        color: 0x2a4a28,
+        roughness: 0.48,
+        metalness: 0.22,
+        emissive: 0x142810,
+        emissiveIntensity: 0.38,
+      }),
     );
+    tea.add(foil);
+    const band = new THREE.Mesh(
+      new THREE.BoxGeometry(0.074, 0.022, 0.028),
+      new THREE.MeshStandardMaterial({
+        color: 0xc4a048,
+        roughness: 0.42,
+        metalness: 0.35,
+        emissive: 0x3a2a08,
+        emissiveIntensity: 0.28,
+      }),
+    );
+    band.position.z = 0.008;
+    tea.add(band);
+    const crease = new THREE.Mesh(
+      new THREE.BoxGeometry(0.073, 0.003, 0.112),
+      new THREE.MeshStandardMaterial({ color: 0x1a3018, roughness: 0.7 }),
+    );
+    crease.position.y = 0.011;
+    tea.add(crease);
+    const leaf = new THREE.Mesh(
+      new THREE.BoxGeometry(0.018, 0.004, 0.028),
+      new THREE.MeshStandardMaterial({ color: 0x1e3a1c, roughness: 0.65, emissive: 0x0a1808, emissiveIntensity: 0.2 }),
+    );
+    leaf.position.set(0, 0.012, -0.028);
+    tea.add(leaf);
     tea.visible = false;
     this.group.add(tea);
     this.storyTea = tea;
@@ -751,7 +783,9 @@ export class Prison {
       this.storyTea.visible = teaDue;
       if (teaDue && this.hatchAnchor) {
         this.hatchAnchor.getWorldPosition(this.storyTea.position);
-        this.storyTea.position.y -= 0.05;
+        this.storyTea.position.x += 0.07;
+        this.storyTea.position.y -= 0.03;
+        this.storyTea.rotation.set(0.22, Math.PI / 2, 0.1);
       }
     }
     if (this.playerMattress) {
@@ -2332,6 +2366,42 @@ export class Prison {
     cornerRag.position.set(3.55, 0.08, 3.95);
     cornerRag.rotation.y = 0.5;
     g.add(cornerRag);
+    const rustDrip = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88 });
+    this.box(0.1, 0.62, 0.035, rustDrip, 4.0, 2.12, 4.1, g);
+    this.box(0.07, 0.48, 0.03, rustDrip, 4.1, 1.62, 4.0, g);
+    this.box(0.08, 1.05, 0.02, rustDrip, 3.78, 2.45, 4.22, g);
+    this.box(0.02, 0.95, 0.1, rustDrip, 4.22, 2.55, 3.82, g);
+    const hangRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.62, 0.045),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a46, roughness: 0.95 }),
+    );
+    hangRag.position.set(3.9, 2.08, 4.08);
+    hangRag.rotation.set(0.08, 0.35, 0.22);
+    g.add(hangRag);
+    const hangRag2 = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.42, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0x4a3a32, roughness: 0.94 }),
+    );
+    hangRag2.position.set(4.02, 1.78, 3.92);
+    hangRag2.rotation.set(0.05, -0.2, -0.28);
+    g.add(hangRag2);
+    const mossMound = new THREE.MeshStandardMaterial({ color: 0x3a4a38, roughness: 0.96 });
+    this.box(0.72, 0.045, 0.58, mossMound, 3.72, 0.05, 3.72, g);
+    this.box(0.24, 0.07, 0.2, mossMound, 3.95, 0.075, 3.95, g);
+    const grateBar = new THREE.MeshStandardMaterial({ color: 0x1e221e, metalness: 0.45, roughness: 0.5 });
+    for (let i = 0; i < 4; i++) {
+      this.box(0.34, 0.014, 0.028, grateBar, 3.85, 0.074, 3.7 + i * 0.09, g);
+    }
+    const buttCorner = new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.82 });
+    this.box(0.042, 0.014, 0.012, buttCorner, 3.52, 0.06, 3.52, g);
+    this.box(0.036, 0.012, 0.01, buttCorner, 3.62, 0.055, 3.68, g);
+    const wetSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.15, 0.04, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0x32363a, roughness: 0.92 }),
+    );
+    wetSock.position.set(3.38, 0.06, 3.58);
+    wetSock.rotation.y = -0.7;
+    g.add(wetSock);
     const cornerNum = wallScratch('4');
     cornerNum.scale.setScalar(1.8);
     cornerNum.position.set(4.18, 1.85, 3.2);

@@ -234,9 +234,9 @@ export class Game {
       return;
     }
     if (look === 'yardblank') {
-      this.player.position.set(2.15, 0, LAYOUT.corridorLen + 6.8);
-      this.input.yaw = 0.72;
-      this.input.pitch = 0.18;
+      this.player.position.set(2.65, 0, LAYOUT.corridorLen + 7.35);
+      this.input.yaw = 0.78;
+      this.input.pitch = -0.28;
       return;
     }
     if (look === 'yardgate') {
