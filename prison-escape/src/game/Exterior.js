@@ -818,6 +818,56 @@ function alcove(prison, x, z, title) {
     const tags = plaque('№ 4417', 0.55, 0.16);
     tags.position.set(0.2, 1.22, 0.55);
     g.add(tags);
+    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    prison.box(0.03, 0.7, 1.1, peel, -1.68, 2.15, 0.2, g);
+    prison.box(0.03, 0.45, 0.6, peel, -1.68, 1.55, -0.8, g);
+    const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.45 });
+    prison.box(0.03, 0.9, 0.8, damp, -1.68, 2.0, 0.9, g);
+    const papers = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
+    prison.box(0.22, 0.012, 0.16, papers, -0.15, 0.97, 0.05, g);
+    prison.box(0.18, 0.01, 0.14, papers, 0.22, 0.97, 0.18, g);
+    const stamp = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 8), metal);
+    stamp.position.set(0.35, 0.99, 0.28);
+    g.add(stamp);
+    const ledger = new THREE.Mesh(
+      new THREE.BoxGeometry(0.2, 0.03, 0.28),
+      new THREE.MeshStandardMaterial({ color: 0x3a2020, roughness: 0.85 }),
+    );
+    ledger.position.set(-0.45, 0.98, 0.08);
+    g.add(ledger);
+    const cab = new THREE.MeshStandardMaterial({ color: 0x4a4e46, metalness: 0.3, roughness: 0.55 });
+    prison.box(0.45, 1.15, 0.4, cab, -1.2, 0.58, -1.15, g);
+    prison.box(0.42, 0.02, 0.38, metal, -1.2, 0.85, -1.15, g);
+    prison.box(0.42, 0.02, 0.38, metal, -1.2, 0.45, -1.15, g);
+    const coat = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.85, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.9 }),
+    );
+    coat.position.set(1.2, 1.35, -0.4);
+    g.add(coat);
+    prison.box(0.04, 0.04, 0.08, metal, 1.2, 1.8, -0.4, g);
+    const ceilPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.4, 6), metal);
+    ceilPipe.rotation.z = Math.PI / 2;
+    ceilPipe.position.set(0, 2.85, 0.4);
+    g.add(ceilPipe);
+    const ceilDamp = new THREE.MeshStandardMaterial({ color: 0x5a5850, roughness: 0.92, transparent: true, opacity: 0.4 });
+    prison.box(1.2, 0.02, 0.5, ceilDamp, 0.2, 2.96, -0.3, g);
+    prison.box(0.16, 0.01, 0.12, papers, 0.4, 0.05, -0.6, g);
+    prison.box(0.35, 0.08, 0.28, metal, 1.1, 0.12, 0.5, g);
+    const cuffs = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.008, 6, 10), metal);
+    cuffs.position.set(0.5, 0.98, -0.05);
+    cuffs.rotation.x = Math.PI / 2;
+    g.add(cuffs);
+    const list = plaque('ВЕЩИ', 0.55, 0.18);
+    list.position.set(0, 2.15, -1.55);
+    g.add(list);
+    const wet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.28, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.2, metalness: 0.15 }),
+    );
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(-0.3, 0.05, -0.4);
+    g.add(wet);
   }
   if (title === 'ФОТО') {
     prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0xece8dc, roughness: 0.78 }), 0.2, 1.3, -1.55, g);

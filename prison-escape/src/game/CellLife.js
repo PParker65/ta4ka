@@ -24,6 +24,7 @@ import {
   DAY2_YARD_WASH,
   DAY3_NOTE,
   DAY3_WALK,
+  DAY3_WALK_WAIT,
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
@@ -631,8 +632,10 @@ export class CellLife {
                   ? DAY3_WALK_BURN
                   : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'found'
                     ? DAY3_WALK_FOUND
-                    : g.sim.phase.id === 'walk' && g.sim.day === 3
-                      ? DAY3_WALK
+                    : g.sim.phase.id === 'walk' && g.sim.day === 3 && !g.sim.malyava
+                      ? DAY3_WALK_WAIT
+                      : g.sim.phase.id === 'walk' && g.sim.day === 3
+                        ? DAY3_WALK
                     : g.sim.day >= 2 && g.sim.phase.id === 'walk'
                     ? g.sim.stash === 'bunk'
                       ? DAY2_YARD_CAUGHT

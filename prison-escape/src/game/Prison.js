@@ -1222,6 +1222,23 @@ export class Prison {
     days.position.set(-2.15, 1.45, 1.1);
     days.rotation.y = Math.PI / 2;
     cell.add(days);
+    const calRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, 0.025, 0.26),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95 }),
+    );
+    calRag.position.set(-1.45, 0.04, 0.95);
+    calRag.rotation.y = 0.35;
+    cell.add(calRag);
+    const calButt = new THREE.MeshStandardMaterial({ color: 0x2a2218, roughness: 0.82 });
+    for (const [bx, bz] of [
+      [-1.32, 0.82],
+      [-1.52, 1.08],
+    ]) {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.035, 5), calButt);
+      c.rotation.z = Math.PI / 2;
+      c.position.set(bx, 0.055, bz);
+      cell.add(c);
+    }
     const dampCal = new THREE.MeshStandardMaterial({ color: 0x4a524c, roughness: 0.4, transparent: true, opacity: 0.5 });
     this.box(0.02, 0.85, 0.42, dampCal, -LAYOUT.cellW / 2 + 0.21, 0.72, 1.1, cell);
     this.box(0.02, 0.45, 0.22, dampCal, -LAYOUT.cellW / 2 + 0.21, 0.48, 1.28, cell);

@@ -32,6 +32,7 @@ import {
   DAY3_FOOD_RED,
   DAY3_FOOD_FOUND,
   DAY3_WALK,
+  DAY3_WALK_WAIT,
   DAY3_WALK_HOLD,
   DAY3_WALK_RED,
   DAY3_WALK_BURN,
@@ -194,6 +195,7 @@ export function plotObjective(sim) {
     if (sim.malyava === 'hold') return 'Карман жжёт даже на круге. Через стену — ни звука.';
     if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
     if (sim.malyava === 'found') return 'Третий круг. Нашли. Через стену не ори про шмон.';
+    if (!sim.malyava) return 'Третий круг. Бумага ещё в щели. К щели — после. Через стену не ори.';
     return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
   }
   if (d === 4 && ph === 'walk')
@@ -593,6 +595,7 @@ function day4Wake(s) {
 
 function day3Walk(s) {
   if (s.malyava === 'admin' || s.path === 'red') return DAY3_WALK_RED;
+  if (!s.malyava) return DAY3_WALK_WAIT;
   if (s.malyava === 'hold') return DAY3_WALK_HOLD;
   if (s.malyava === 'burn') return DAY3_WALK_BURN;
   if (s.malyava === 'found') return DAY3_WALK_FOUND;
