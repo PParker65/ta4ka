@@ -494,6 +494,23 @@ export class Prison {
     lintelPeel.position.set(innerX + 0.1, LAYOUT.doorH + 0.22, doorRelZ);
     lintelPeel.rotation.z = 0.04;
     cell.add(lintelPeel);
+    const lintelRust = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88 });
+    this.box(0.02, 0.58, 0.08, lintelRust, innerX + 0.09, LAYOUT.doorH + 0.02, doorRelZ - 0.2, cell);
+    this.box(0.02, 0.4, 0.06, lintelRust, innerX + 0.09, LAYOUT.doorH - 0.12, doorRelZ + 0.24, cell);
+    const lintelRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.46, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a46, roughness: 0.95 }),
+    );
+    lintelRag.position.set(innerX + 0.12, LAYOUT.doorH - 0.08, doorRelZ + 0.06);
+    lintelRag.rotation.set(0.1, 0.18, 0.16);
+    cell.add(lintelRag);
+    const lintelWire = new THREE.Mesh(
+      new THREE.BoxGeometry(0.016, 0.016, 0.58),
+      new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.4, roughness: 0.5 }),
+    );
+    lintelWire.position.set(innerX + 0.11, LAYOUT.doorH + 0.4, doorRelZ);
+    lintelWire.rotation.z = 0.1;
+    cell.add(lintelWire);
 
     this.addCollider(ox + w / 2 - 0.18, ox + w / 2 + 0.3, oz - d / 2, oz + d / 2, 'cell-back');
     this.addCollider(ox - w / 2, ox + w / 2, oz + d / 2 - 0.18, oz + d / 2 + 0.25, 'cell-z+');

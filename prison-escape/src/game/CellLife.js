@@ -57,6 +57,9 @@ import {
   DAY3_VALERA,
   DAY3_VALERA_WAIT,
   DAY3_VALERA_HOLD,
+  DAY3_VALERA_HOLD_WASH,
+  DAY3_VALERA_HOLD_BUNK,
+  DAY3_VALERA_SHMON_HOLD_BUNK,
   DAY3_FOOD_HOLD_WASH,
   DAY3_FOOD_HOLD_BUNK,
   DAY3_NIGHT_HOLD_WASH,
@@ -357,6 +360,7 @@ function valeraInCell(s) {
       if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_SHMON_RED;
       if (s.malyava === 'found') return DAY3_VALERA_SHMON_FOUND;
       if (s.malyava === 'hold' && s.stash === 'wash') return DAY3_VALERA_SHMON_WASH;
+      if (s.malyava === 'hold' && s.stash === 'bunk') return DAY3_VALERA_SHMON_HOLD_BUNK;
       if (s.malyava === 'hold') return DAY3_VALERA_SHMON_HOLD;
       if (s.malyava === 'burn') return DAY3_VALERA_SHMON_BURN;
       if (!s.malyava) return DAY3_VALERA_SHMON_HATCH;
@@ -365,7 +369,7 @@ function valeraInCell(s) {
     }
     if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
     if (s.malyava === 'found') return DAY3_VALERA_FOUND;
-    if (s.malyava === 'hold') return DAY3_VALERA_HOLD;
+    if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
     if (s.malyava === 'burn') return DAY3_VALERA_BURN;
     if (!s.malyava) return DAY3_VALERA_WAIT;
     return DAY3_VALERA;
