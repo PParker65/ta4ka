@@ -296,6 +296,7 @@ import {
   DAY6_WALK_GONE,
   DAY6_WALK_RED,
   DAY6_WALK_FOUND,
+  DAY6_WALK_FOUND_BUNK,
   DAY6_WALK_BURN,
   DAY6_WALK_HOLD,
   DAY6_WALK_HOLD_WASH,
@@ -322,6 +323,7 @@ import {
   DAY6_FOOD_GONE,
   DAY6_FOOD_RED,
   DAY6_FOOD_FOUND,
+  DAY6_FOOD_FOUND_BUNK,
   DAY6_FOOD_BURN,
   DAY6_FOOD_HOLD,
   DAY6_FOOD_HOLD_WASH,
@@ -911,7 +913,7 @@ export class CellLife {
             ? weekPick(g.sim, {
                 red: DAY6_FOOD_RED,
                 gone: DAY6_FOOD_GONE,
-                found: DAY6_FOOD_FOUND,
+                found: g.sim.stash === 'bunk' ? DAY6_FOOD_FOUND_BUNK : DAY6_FOOD_FOUND,
                 burn: DAY6_FOOD_BURN,
                 hold: holdStash(g.sim, { pocket: DAY6_FOOD_HOLD, wash: DAY6_FOOD_HOLD_WASH, bunk: DAY6_FOOD_HOLD_BUNK }),
                 ok: DAY6_FOOD,
@@ -1211,7 +1213,9 @@ export class CellLife {
             : g.sim.malyava === 'gone'
             ? DAY6_WALK_GONE
             : g.sim.malyava === 'found'
-            ? DAY6_WALK_FOUND
+            ? g.sim.stash === 'bunk'
+            ? DAY6_WALK_FOUND_BUNK
+            : DAY6_WALK_FOUND
             : g.sim.malyava === 'burn'
             ? DAY6_WALK_BURN
             : g.sim.malyava === 'hold'

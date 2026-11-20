@@ -2729,9 +2729,32 @@ export class Prison {
     );
     wallFuse.position.set(4.2, 2.05, -0.95);
     g.add(wallFuse);
+    const wallSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.28, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x4a4038, roughness: 0.96 }),
+    );
+    wallSock.position.set(4.13, 0.95, -0.72);
+    wallSock.rotation.set(0.18, 0.08, 0.22);
+    g.add(wallSock);
+    const wallTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.05, 0.09, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.4, roughness: 0.5 }),
+    );
+    wallTin.position.set(3.95, 0.08, -0.55);
+    g.add(wallTin);
+    const wallPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.008, 0.11),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    wallPaper.position.set(3.82, 0.052, -0.38);
+    wallPaper.rotation.y = 0.55;
+    g.add(wallPaper);
+    const wallMossLow = new THREE.MeshStandardMaterial({ color: 0x3a4a38, roughness: 0.96 });
+    this.box(0.04, 0.28, 0.42, wallMossLow, 4.22, 0.42, -0.7, g);
     const wallDrip = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.85, transparent: true, opacity: 0.55 });
     this.box(0.03, 1.15, 0.08, wallDrip, 4.22, 1.85, -1.15, g);
     this.box(0.03, 0.85, 0.06, wallDrip, 4.22, 1.55, -0.55, g);
+    this.box(0.03, 0.95, 0.07, wallDrip, 4.22, 1.65, -0.82, g);
     const wallBox = new THREE.Mesh(
       new THREE.BoxGeometry(0.08, 0.28, 0.22),
       new THREE.MeshStandardMaterial({ color: 0x3a4238, metalness: 0.35, roughness: 0.55 }),
