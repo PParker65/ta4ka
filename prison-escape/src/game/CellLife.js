@@ -68,6 +68,14 @@ import {
   DAY3_MORNING_HOLD,
   DAY3_MORNING_BURN,
   DAY3_MORNING_FOUND,
+  DAY3_SEDOY_SHMON,
+  DAY3_SEDOY_SHMON_HATCH,
+  DAY3_SEDOY_SHMON_HOLD,
+  DAY3_SEDOY_SHMON_WASH,
+  DAY3_SEDOY_SHMON_FOUND,
+  DAY3_SEDOY_SHMON_BURN,
+  DAY3_SEDOY_SHMON_RED,
+  DAY3_SEDOY_SHMON_CAUGHT,
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
   DAY3_NIGHT_FOUND,
@@ -621,6 +629,22 @@ export class CellLife {
                           : g.sim.malyava === 'hold' && g.sim.teaPaid
                             ? DAY4_FOOD_HOLD
                             : DAY4_FOOD
+                : g.sim.day >= 3 && g.sim.phase.id === 'shmon'
+                  ? g.sim.malyava === 'admin' || g.sim.path === 'red'
+                    ? DAY3_SEDOY_SHMON_RED
+                    : g.sim.malyava === 'found'
+                      ? DAY3_SEDOY_SHMON_FOUND
+                      : g.sim.malyava === 'hold' && g.sim.stash === 'wash'
+                        ? DAY3_SEDOY_SHMON_WASH
+                        : g.sim.malyava === 'hold'
+                          ? DAY3_SEDOY_SHMON_HOLD
+                          : g.sim.malyava === 'burn'
+                            ? DAY3_SEDOY_SHMON_BURN
+                            : !g.sim.malyava
+                              ? DAY3_SEDOY_SHMON_HATCH
+                              : g.sim.stash === 'bunk'
+                                ? DAY3_SEDOY_SHMON_CAUGHT
+                                : DAY3_SEDOY_SHMON
                 : g.sim.day >= 3
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
                     ? DAY3_MORNING_RED

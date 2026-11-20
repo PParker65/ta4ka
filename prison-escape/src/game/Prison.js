@@ -1125,6 +1125,25 @@ export class Prison {
     );
     ashtray.position.set(0.48, 0.76, 0.28);
     cell.add(ashtray);
+    const butt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.01, 0.04, 6),
+      new THREE.MeshStandardMaterial({ color: 0xc8b090, roughness: 0.8 }),
+    );
+    butt.position.set(0.49, 0.78, 0.29);
+    butt.rotation.z = 0.9;
+    cell.add(butt);
+    const onion = new THREE.Mesh(
+      new THREE.SphereGeometry(0.035, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0xc8b070, roughness: 0.7 }),
+    );
+    onion.position.set(-0.18, 0.78, 0.12);
+    cell.add(onion);
+    const salt = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.07, 0.04),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c4, roughness: 0.85 }),
+    );
+    salt.position.set(0.32, 0.79, -0.12);
+    cell.add(salt);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),

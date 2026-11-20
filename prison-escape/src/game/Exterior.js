@@ -873,7 +873,7 @@ function alcove(prison, x, z, title) {
   prison.box(2.4, 1.35, 0.05, darkBoard, 0.1, 1.95, 1.58, g);
   const farFace = (x < 0 ? -1 : 1) * 1.68;
   prison.box(0.08, 2.6, 2.8, darkBoard, farFace, 1.4, 0, g);
-  const lamp = new THREE.PointLight(0xf2ead0, 0.16, 4.2, 2.0);
+  const lamp = new THREE.PointLight(0xf2ead0, 0.22, 4.6, 2.0);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
   const t = plaque(title, 1.2, 0.28);
@@ -958,7 +958,7 @@ function alcove(prison, x, z, title) {
     g.add(wet);
   }
   if (title === 'ФОТО') {
-    prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0xc8c2b4, roughness: 0.82 }), 0.2, 1.3, -1.55, g);
+    prison.box(2.2, 2.4, 0.05, new THREE.MeshStandardMaterial({ color: 0x8a8478, roughness: 0.82 }), 0.2, 1.3, -1.55, g);
     const grid = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.7 });
     for (let i = 0; i < 8; i++) {
       prison.box(2.05, 0.012, 0.02, grid, 0.2, 0.38 + i * 0.28, -1.52, g);
