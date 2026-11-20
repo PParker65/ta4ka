@@ -75,6 +75,8 @@ import {
   DAY3_SEDOY_NIGHT_HOLD_BUNK,
   DAY3_WALK_HOLD_WASH,
   DAY3_WALK_HOLD_BUNK,
+  DAY3_SEDOY_WALK_HOLD_BUNK,
+  DAY3_SEDOY_WALK_FOUND_BUNK,
   DAY3_LEHA_HOLD_WASH,
   DAY3_LEHA_HOLD_BUNK,
   DAY3_MORNING_HOLD_WASH,
@@ -997,6 +999,10 @@ export class CellLife {
                     ? DAY3_NIGHT_FOUND_BUNK
                     : g.sim.day >= 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                       ? DAY3_SEDOY_NIGHT_HOLD_BUNK
+                    : g.sim.day >= 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                      ? DAY3_SEDOY_WALK_FOUND_BUNK
+                      : g.sim.day >= 3 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                        ? DAY3_SEDOY_WALK_HOLD_BUNK
                 : g.sim.day >= 3
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
                     ? DAY3_MORNING_RED

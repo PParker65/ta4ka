@@ -224,7 +224,7 @@ export class Game {
     if (look === 'yardwall') {
       this.player.position.set(2.85, 0, LAYOUT.corridorLen + 3.85);
       this.input.yaw = Math.PI / 2;
-      this.input.pitch = -0.12;
+      this.input.pitch = -0.58;
       return;
     }
     if (look === 'krug') {

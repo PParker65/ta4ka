@@ -2958,6 +2958,13 @@ export class Prison {
     );
     wallTin.position.set(3.95, 0.08, -0.55);
     g.add(wallTin);
+    const wallBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.038, 0.042, 0.18, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.18, transparent: true, opacity: 0.82 }),
+    );
+    wallBottle.position.set(3.72, 0.05, -0.22);
+    wallBottle.rotation.z = 1.22;
+    g.add(wallBottle);
     const wallPaper = new THREE.Mesh(
       new THREE.BoxGeometry(0.16, 0.008, 0.11),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
