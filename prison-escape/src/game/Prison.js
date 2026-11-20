@@ -290,6 +290,20 @@ export class Prison {
       const recess = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.24, 0.38), dark);
       recess.position.set(side * 0.09, 1.52, LAYOUT.doorW / 2);
       door.add(recess);
+      const hatchStain = new THREE.Mesh(
+        new THREE.CircleGeometry(0.045, 7),
+        new THREE.MeshStandardMaterial({ color: 0x3a2a18, roughness: 0.85, transparent: true, opacity: 0.55 }),
+      );
+      hatchStain.rotation.x = -Math.PI / 2;
+      hatchStain.position.set(side * 0.12, 1.405, LAYOUT.doorW / 2);
+      door.add(hatchStain);
+      const hatchCrumb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.03, 0.012, 0.022),
+        new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.9 }),
+      );
+      hatchCrumb.position.set(side * 0.13, 1.41, LAYOUT.doorW / 2 - 0.08);
+      hatchCrumb.rotation.y = 0.4;
+      door.add(hatchCrumb);
       const rim = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.5, roughness: 0.4 });
       this.box(0.03, 0.28, 0.42, rim, side * 0.13, 1.52, LAYOUT.doorW / 2, door);
       this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.66, LAYOUT.doorW / 2, door);
@@ -603,20 +617,31 @@ export class Prison {
 
   addStoryProps(ox, oz, w) {
     const paper = new THREE.Mesh(
-      new THREE.BoxGeometry(0.28, 0.022, 0.18),
+      new THREE.BoxGeometry(0.13, 0.007, 0.085),
       new THREE.MeshStandardMaterial({
-        color: 0xf2e6c4,
-        roughness: 0.78,
-        emissive: 0x5a4a18,
-        emissiveIntensity: 0.55,
+        color: 0xe8d9b0,
+        roughness: 0.82,
+        emissive: 0x4a3a12,
+        emissiveIntensity: 0.22,
       }),
     );
     const fold = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.012, 0.16),
-      new THREE.MeshStandardMaterial({ color: 0xd4c49a, roughness: 0.88 }),
+      new THREE.BoxGeometry(0.058, 0.006, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xd0c094, roughness: 0.88 }),
     );
-    fold.position.set(0.07, 0.01, 0);
+    fold.position.set(0.034, 0.005, 0);
     paper.add(fold);
+    const ink = new THREE.MeshStandardMaterial({ color: 0x2a2418, roughness: 0.7 });
+    for (const [ix, iz, iw] of [
+      [-0.02, 0.018, 0.07],
+      [-0.018, 0.004, 0.055],
+      [-0.01, -0.012, 0.048],
+      [0.012, -0.022, 0.03],
+    ]) {
+      const line = new THREE.Mesh(new THREE.BoxGeometry(iw, 0.002, 0.004), ink);
+      line.position.set(ix, 0.005, iz);
+      paper.add(line);
+    }
     paper.visible = false;
     this.group.add(paper);
     this.storyNote = paper;
@@ -686,18 +711,18 @@ export class Prison {
     if (this.hatchFlap) this.hatchFlap.rotation.z = waiting || teaDue ? -0.7 : 0;
     if (waiting) {
       this.storyNote.visible = true;
-      this.storyNote.scale.set(1.55, 1.55, 1.55);
+      this.storyNote.scale.set(1.12, 1.12, 1.12);
       if (this.hatchAnchor) {
         this.hatchAnchor.getWorldPosition(this.storyNote.position);
-        this.storyNote.position.x += 0.08;
-        this.storyNote.rotation.set(0.28, Math.PI / 2, 0.04);
+        this.storyNote.position.x += 0.06;
+        this.storyNote.rotation.set(0.18, Math.PI / 2, 0.08);
       } else {
         this.storyNote.position.copy(a.hatch);
         this.storyNote.rotation.set(0.28, Math.PI / 2, 0.04);
       }
     } else if (hold && sim.stash === 'wash') {
       this.storyNote.visible = true;
-      this.storyNote.scale.set(1.8, 1.8, 1.8);
+      this.storyNote.scale.set(1.2, 1.2, 1.2);
       this.storyNote.position.copy(a.wash);
       this.storyNote.rotation.set(0.04, 0.55, 0.06);
     } else if (hold && sim.stash === 'bunk') {

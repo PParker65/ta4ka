@@ -255,9 +255,9 @@ export class Game {
     if (!o) return;
     this.hands.position.set(0, 0, 0);
     if (look === 'hatch') {
-      this.player.position.set(o.x - LAYOUT.cellW / 2 + 1.2, 0, 3.42);
+      this.player.position.set(o.x - LAYOUT.cellW / 2 + 1.05, 0, 3.42);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = 0.02;
+      this.input.pitch = -0.12;
     } else if (look === 'table') {
       this.player.position.set(o.x - 0.05, 0, o.z - 0.55);
       this.input.yaw = 0.18;

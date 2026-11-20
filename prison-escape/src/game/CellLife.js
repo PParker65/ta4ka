@@ -116,6 +116,7 @@ import {
   DAY7_VALERA_BURN,
   DAY7_VALERA_RED,
   DAY3_NOTE,
+  DAY3_NOTE_SHMON,
   DAY3_WALK,
   DAY3_WALK_WAIT,
   DAY3_WALK_HOLD,
@@ -1183,7 +1184,8 @@ export class CellLife {
       return;
     }
     if (hatchReady(g.sim)) {
-      g.dialog.show(DAY3_NOTE.who, DAY3_NOTE.text, DAY3_NOTE.options);
+      const pack = g.sim.phase.id === 'shmon' ? DAY3_NOTE_SHMON : DAY3_NOTE;
+      g.dialog.show(pack.who, pack.text, pack.options);
       g.dialog.onPick = (opt) => {
         this.applyTalk(opt);
         if (opt.malyava === 'admin') {
