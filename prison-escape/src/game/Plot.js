@@ -754,7 +754,11 @@ export function onPhaseEnter(game, id) {
         s.seenDay3Shmon = true;
         pickDialog(g, s.stash === 'bunk' ? DAY3_SHMON_FOUND_BUNK : DAY3_SHMON_FOUND);
       } else {
-        g.subtitle('Кормушка: «Малява. Свежак нёс дорогу в кармане.»');
+        g.subtitle(
+          s.stash === 'bunk'
+            ? 'Кормушка: «Малява. Свежак нёс дорогу в матрасе.»'
+            : 'Кормушка: «Малява. Свежак нёс дорогу в кармане.»',
+        );
       }
       return;
     }

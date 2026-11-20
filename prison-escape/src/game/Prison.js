@@ -1063,6 +1063,12 @@ export class Prison {
       const p = new THREE.Mesh(post, rust);
       p.position.set(x, 0.71, z);
       g.add(p);
+      const flake = new THREE.Mesh(
+        new THREE.BoxGeometry(0.042, 0.09, 0.014),
+        new THREE.MeshStandardMaterial({ color: 0x3a1810, roughness: 0.88, metalness: 0.2 }),
+      );
+      flake.position.set(x + (x > 0 ? 0.03 : -0.03), 0.52, z);
+      g.add(flake);
     }
     for (const y of [0.42, 1.18]) {
       const frame = new THREE.Mesh(new THREE.BoxGeometry(1.96, 0.05, 0.82), rustDark);
@@ -1141,6 +1147,18 @@ export class Prison {
       );
       foam.position.set(0.34, 0.095, 0.06);
       lowerBed.add(foam);
+      const bunkTin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.032, 0.035, 0.07, 8),
+        new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+      );
+      bunkTin.position.set(0.78, 0.04, 0.34);
+      g.add(bunkTin);
+      const frameRust = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 0.018, 0.09),
+        new THREE.MeshStandardMaterial({ color: 0x5a2414, roughness: 0.7, metalness: 0.35 }),
+      );
+      frameRust.position.set(-0.42, 0.45, 0.38);
+      g.add(frameRust);
     }
     return g;
   }
@@ -1614,6 +1632,13 @@ export class Prison {
     ];
     for (const [x, z] of spots) {
       this.box(0.34, 0.07, 0.34, wood, x, 0.44, z, cell);
+      const stoolScratch = new THREE.Mesh(
+        new THREE.CircleGeometry(0.055, 6),
+        new THREE.MeshStandardMaterial({ color: 0x3a2414, roughness: 0.95, transparent: true, opacity: 0.5 }),
+      );
+      stoolScratch.rotation.x = -Math.PI / 2;
+      stoolScratch.position.set(x + 0.04, 0.478, z - 0.03);
+      cell.add(stoolScratch);
       for (const [sx, sz] of [
         [-0.11, -0.11],
         [0.11, -0.11],
