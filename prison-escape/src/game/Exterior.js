@@ -895,6 +895,45 @@ function alcove(prison, x, z, title) {
     prison.box(0.55, 0.08, 0.32, wood, 0.2, 0.92, 0.35, g);
     prison.box(0.06, 0.88, 0.06, wood, 0.0, 0.44, 0.22, g);
     prison.box(0.06, 0.88, 0.06, wood, 0.4, 0.44, 0.48, g);
+    const peel = new THREE.MeshStandardMaterial({ color: 0xb8b0a0, roughness: 0.92 });
+    const damp = new THREE.MeshStandardMaterial({ color: 0x6a6860, roughness: 0.55, transparent: true, opacity: 0.45 });
+    prison.box(0.03, 0.7, 1.0, peel, 1.68, 2.15, 0.15, g);
+    prison.box(0.03, 0.5, 0.7, damp, 1.68, 1.85, -0.7, g);
+    prison.box(1.1, 0.02, 0.45, damp, 0.2, 2.96, 0.4, g);
+    const ceilPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2.2, 6), metal);
+    ceilPipe.rotation.z = Math.PI / 2;
+    ceilPipe.position.set(0, 2.85, -0.35);
+    g.add(ceilPipe);
+    const cards = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
+    prison.box(0.16, 0.008, 0.22, cards, 0.05, 0.97, 0.28, g);
+    prison.box(0.14, 0.008, 0.18, cards, 0.28, 0.97, 0.4, g);
+    const ink = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.04, 0.04, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1a1a18, roughness: 0.7 }),
+    );
+    ink.position.set(0.42, 0.98, 0.22);
+    g.add(ink);
+    const cab = new THREE.MeshStandardMaterial({ color: 0x4a4e46, metalness: 0.3, roughness: 0.55 });
+    prison.box(0.4, 1.05, 0.38, cab, 1.2, 0.54, -1.15, g);
+    const coat = new THREE.Mesh(
+      new THREE.BoxGeometry(0.26, 0.8, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.9 }),
+    );
+    coat.position.set(-1.15, 1.3, 0.55);
+    g.add(coat);
+    const anfas = plaque('АНФАС', 0.7, 0.2);
+    anfas.position.set(0, 2.2, 1.55);
+    g.add(anfas);
+    const wet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.25, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.22, metalness: 0.12 }),
+    );
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(-0.35, 0.05, -0.5);
+    g.add(wet);
+    const numCard = plaque('№ 4418', 0.5, 0.16);
+    numCard.position.set(0.2, 1.18, 0.5);
+    g.add(numCard);
   }
   if (title === 'МЕД') {
     prison.box(1.6, 0.12, 0.55, new THREE.MeshStandardMaterial({ color: 0xe8e4dc }), 0, 0.72, 0, g);

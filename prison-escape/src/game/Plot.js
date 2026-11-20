@@ -41,6 +41,7 @@ import {
   DAY3_SHMON_WASH,
   DAY3_SHMON_HATCH,
   DAY3_SHMON_BURN,
+  DAY3_SHMON_RED,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -175,6 +176,7 @@ export function plotObjective(sim) {
               : 'Третий день. Кормушка днём живая. Не зевай.';
   if (d === 3 && ph === 'shmon') {
     if (sim.malyava === 'found') return 'Нашли бумагу. К стене. Руки видно. Рот на замок.';
+    if (sim.malyava === 'admin' || sim.path === 'red') return 'Шмон. Вчера слово село. К стене. Не оправдывайся.';
     if (sim.malyava === 'hold' && sim.stash === 'wash') return 'Шмон. Чаша сегодня не их дело. Не смотри на неё.';
     if (sim.malyava === 'burn') return 'Шмон. Пахнет золой. К стене. Нос казённый.';
     if (!sim.malyava) return 'Шмон. Щель ещё живая. Койки шарят. Кормушку — пока нет.';
@@ -454,7 +456,8 @@ export function onPhaseEnter(game, id) {
     }
     if (s.day === 3 && !s.seenDay3Shmon) {
       s.seenDay3Shmon = true;
-      if (s.malyava === 'hold' && s.stash === 'wash') pickDialog(g, DAY3_SHMON_WASH);
+      if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_SHMON_RED);
+      else if (s.malyava === 'hold' && s.stash === 'wash') pickDialog(g, DAY3_SHMON_WASH);
       else if (s.malyava === 'burn') pickDialog(g, DAY3_SHMON_BURN);
       else if (!s.malyava) pickDialog(g, DAY3_SHMON_HATCH);
       else g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.»');
