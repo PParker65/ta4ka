@@ -1321,6 +1321,13 @@ export class Prison {
     );
     washTin.position.set(-0.42, 0.08, -0.08);
     g.add(washTin);
+    const washBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.036, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    washBottle.position.set(-0.18, 0.05, 0.02);
+    washBottle.rotation.z = 1.18;
+    g.add(washBottle);
     const washScrap = new THREE.Mesh(
       new THREE.BoxGeometry(0.14, 0.008, 0.1),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),

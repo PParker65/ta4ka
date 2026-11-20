@@ -81,6 +81,8 @@ import {
   DAY5_SEDOY_WALK_FOUND_BUNK,
   DAY6_SEDOY_WALK_HOLD_BUNK,
   DAY6_SEDOY_WALK_FOUND_BUNK,
+  DAY7_SEDOY_WALK_HOLD_BUNK,
+  DAY7_SEDOY_WALK_FOUND_BUNK,
   DAY3_WALK_HOLD_WASH,
   DAY3_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_HOLD_BUNK,
@@ -927,6 +929,10 @@ export class CellLife {
                 hold: DAY5_SEDOY_SHMON_HOLD,
                 ok: DAY5_SEDOY_SHMON,
               })
+          : g.sim.day === 7 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+            ? DAY7_SEDOY_WALK_FOUND_BUNK
+            : g.sim.day === 7 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+              ? DAY7_SEDOY_WALK_HOLD_BUNK
           : g.sim.day >= 7
             ? weekPick(g.sim, {
                 red: WEEK_HELD_RED,
