@@ -1494,6 +1494,29 @@ export class Prison {
     bunkBox.position.set(1.55, 0.12, 1.7);
     bunkBox.rotation.y = 0.2;
     cell.add(bunkBox);
+    const aisleMud = new THREE.MeshStandardMaterial({ color: 0x3a2a18, roughness: 0.98 });
+    this.box(0.55, 0.02, 0.32, aisleMud, -0.95, 0.055, 0.12, cell);
+    this.box(0.38, 0.018, 0.24, aisleMud, -0.72, 0.052, 0.85, cell);
+    this.box(0.48, 0.018, 0.28, aisleMud, -1.05, 0.052, -0.55, cell);
+    this.box(0.32, 0.016, 0.4, aisleMud, -0.4, 0.05, 1.15, cell);
+    const aislePaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.012, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    aislePaper.position.set(-0.82, 0.07, 0.42);
+    aislePaper.rotation.y = 0.55;
+    cell.add(aislePaper);
+    const aisleRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.28, 0.03, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x4a3c32, roughness: 0.95 }),
+    );
+    aisleRag.position.set(-0.55, 0.07, -0.35);
+    aisleRag.rotation.y = -0.4;
+    cell.add(aisleRag);
+    const winPeel = new THREE.MeshStandardMaterial({ color: 0x6a5240, roughness: 0.92 });
+    this.box(0.55, 0.22, 0.03, winPeel, -0.35, 1.55, LAYOUT.cellD / 2 - 0.14, cell);
+    this.box(0.32, 0.16, 0.03, winPeel, 0.72, 1.38, LAYOUT.cellD / 2 - 0.14, cell);
+    this.box(0.18, 0.55, 0.03, winPeel, 0.95, 0.85, LAYOUT.cellD / 2 - 0.14, cell);
     const bottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),

@@ -92,6 +92,7 @@ import {
   DAY4_VALERA_SHMON_WAIT,
   DAY4_VALERA_SHMON_WASH,
   DAY4_VALERA_SHMON_FOUND,
+  DAY4_VALERA_SHMON_FOUND_BUNK,
   DAY4_VALERA_SHMON_BURN,
   DAY4_VALERA_SHMON_RED,
   DAY5_VALERA_SHMON,
@@ -110,6 +111,7 @@ import {
   DAY7_VALERA_SHMON_GONE,
   DAY7_VALERA_SHMON_HOLD,
   DAY7_VALERA_SHMON_FOUND,
+  DAY7_VALERA_SHMON_FOUND_BUNK,
   DAY7_VALERA_SHMON_BURN,
   DAY7_VALERA_SHMON_RED,
   DAY5_VALERA,
@@ -185,6 +187,7 @@ import {
   DAY3_LEHA_SHMON_HOLD,
   DAY3_LEHA_SHMON_WASH,
   DAY3_LEHA_SHMON_FOUND,
+  DAY3_LEHA_SHMON_FOUND_BUNK,
   DAY3_LEHA_SHMON_BURN,
   DAY3_LEHA_SHMON_RED,
   DAY3_LEHA_SHMON_CAUGHT,
@@ -199,24 +202,28 @@ import {
   DAY4_LEHA_SHMON_WAIT,
   DAY4_LEHA_SHMON_WASH,
   DAY4_LEHA_SHMON_FOUND,
+  DAY4_LEHA_SHMON_FOUND_BUNK,
   DAY4_LEHA_SHMON_BURN,
   DAY4_LEHA_SHMON_RED,
   DAY5_LEHA_SHMON,
   DAY5_LEHA_SHMON_GONE,
   DAY5_LEHA_SHMON_HOLD,
   DAY5_LEHA_SHMON_FOUND,
+  DAY5_LEHA_SHMON_FOUND_BUNK,
   DAY5_LEHA_SHMON_BURN,
   DAY5_LEHA_SHMON_RED,
   DAY6_LEHA_SHMON,
   DAY6_LEHA_SHMON_GONE,
   DAY6_LEHA_SHMON_HOLD,
   DAY6_LEHA_SHMON_FOUND,
+  DAY6_LEHA_SHMON_FOUND_BUNK,
   DAY6_LEHA_SHMON_BURN,
   DAY6_LEHA_SHMON_RED,
   DAY7_LEHA_SHMON,
   DAY7_LEHA_SHMON_GONE,
   DAY7_LEHA_SHMON_HOLD,
   DAY7_LEHA_SHMON_FOUND,
+  DAY7_LEHA_SHMON_FOUND_BUNK,
   DAY7_LEHA_SHMON_BURN,
   DAY7_LEHA_SHMON_RED,
   DAY7_LEHA,
@@ -322,7 +329,7 @@ function valeraInCell(s) {
       return weekPick(s, {
         red: DAY7_VALERA_SHMON_RED,
         gone: DAY7_VALERA_SHMON_GONE,
-        found: DAY7_VALERA_SHMON_FOUND,
+        found: s.stash === 'bunk' ? DAY7_VALERA_SHMON_FOUND_BUNK : DAY7_VALERA_SHMON_FOUND,
         burn: DAY7_VALERA_SHMON_BURN,
         hold: DAY7_VALERA_SHMON_HOLD,
         ok: DAY7_VALERA_SHMON,
@@ -381,7 +388,7 @@ function valeraInCell(s) {
     if (s.phase.id === 'shmon') {
       return day4ShmonTalk(s, {
         red: DAY4_VALERA_SHMON_RED,
-        found: DAY4_VALERA_SHMON_FOUND,
+        found: s.stash === 'bunk' ? DAY4_VALERA_SHMON_FOUND_BUNK : DAY4_VALERA_SHMON_FOUND,
         burn: DAY4_VALERA_SHMON_BURN,
         wash: DAY4_VALERA_SHMON_WASH,
         wait: DAY4_VALERA_SHMON_WAIT,
@@ -976,7 +983,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY7_LEHA_SHMON_RED,
               gone: DAY7_LEHA_SHMON_GONE,
-              found: DAY7_LEHA_SHMON_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY7_LEHA_SHMON_FOUND_BUNK : DAY7_LEHA_SHMON_FOUND,
               burn: DAY7_LEHA_SHMON_BURN,
               hold: DAY7_LEHA_SHMON_HOLD,
               ok: DAY7_LEHA_SHMON,
@@ -985,7 +992,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY6_LEHA_SHMON_RED,
               gone: DAY6_LEHA_SHMON_GONE,
-              found: DAY6_LEHA_SHMON_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY6_LEHA_SHMON_FOUND_BUNK : DAY6_LEHA_SHMON_FOUND,
               burn: DAY6_LEHA_SHMON_BURN,
               hold: DAY6_LEHA_SHMON_HOLD,
               ok: DAY6_LEHA_SHMON,
@@ -994,7 +1001,7 @@ export class CellLife {
           ? weekPick(g.sim, {
               red: DAY5_LEHA_SHMON_RED,
               gone: DAY5_LEHA_SHMON_GONE,
-              found: DAY5_LEHA_SHMON_FOUND,
+              found: g.sim.stash === 'bunk' ? DAY5_LEHA_SHMON_FOUND_BUNK : DAY5_LEHA_SHMON_FOUND,
               burn: DAY5_LEHA_SHMON_BURN,
               hold: DAY5_LEHA_SHMON_HOLD,
               ok: DAY5_LEHA_SHMON,
@@ -1032,7 +1039,7 @@ export class CellLife {
           : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
             ? day4ShmonTalk(g.sim, {
                 red: DAY4_LEHA_SHMON_RED,
-                found: DAY4_LEHA_SHMON_FOUND,
+                found: g.sim.stash === 'bunk' ? DAY4_LEHA_SHMON_FOUND_BUNK : DAY4_LEHA_SHMON_FOUND,
                 burn: DAY4_LEHA_SHMON_BURN,
                 wash: DAY4_LEHA_SHMON_WASH,
                 wait: DAY4_LEHA_SHMON_WAIT,
@@ -1077,7 +1084,9 @@ export class CellLife {
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_LEHA_SHMON_RED
               : g.sim.malyava === 'found'
-                ? DAY3_LEHA_SHMON_FOUND
+                ? g.sim.stash === 'bunk'
+                  ? DAY3_LEHA_SHMON_FOUND_BUNK
+                  : DAY3_LEHA_SHMON_FOUND
                 : g.sim.malyava === 'hold' && g.sim.stash === 'wash'
                   ? DAY3_LEHA_SHMON_WASH
                   : g.sim.malyava === 'hold'
