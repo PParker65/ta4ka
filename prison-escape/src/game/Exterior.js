@@ -478,8 +478,8 @@ function addProcessing(prison) {
     position: new THREE.Vector3(1.2, 1, -15.4),
     radius: 1.35,
   });
-  const tile = new THREE.MeshStandardMaterial({ color: 0xd8e0dc, roughness: 0.55 });
-  prison.box(2.2, 1.3, 0.08, tile, 1.4, 0.65, -16.2);
+  const tile = new THREE.MeshStandardMaterial({ color: 0x4a5a54, roughness: 0.62 });
+  prison.box(0.08, 1.15, 1.35, tile, 2.38, 0.72, -16.2);
   const chair = new THREE.MeshStandardMaterial({ color: 0x2a2a28 });
   prison.box(0.42, 0.08, 0.42, chair, 1.2, 0.48, -15.2);
   prison.box(0.08, 0.7, 0.08, chair, 1.2, 0.7, -15.38);
@@ -515,9 +515,9 @@ function addProcessing(prison) {
   });
   kazenkaPile(prison, 2.35, -15.32);
   const mist = new THREE.MeshStandardMaterial({
-    color: 0xc8d4d0,
+    color: 0x6a7a76,
     transparent: true,
-    opacity: 0.16,
+    opacity: 0.08,
     depthWrite: false,
     roughness: 1,
   });
@@ -854,9 +854,9 @@ function alcove(prison, x, z, title) {
   const g = new THREE.Group();
   g.position.set(x, 0, z);
   prison.group.add(g);
-  const wall = new THREE.MeshStandardMaterial({ color: 0xa8a296, roughness: 0.9 });
+  const wall = new THREE.MeshStandardMaterial({ color: 0x6a665c, roughness: 0.9 });
   const floor = new THREE.MeshStandardMaterial({ color: 0x8a8882, roughness: 0.86 });
-  const ceil = new THREE.MeshStandardMaterial({ color: 0xcfc8bc, roughness: 0.88 });
+  const ceil = new THREE.MeshStandardMaterial({ color: 0x8a8478, roughness: 0.88 });
   prison.box(3.6, 0.06, 3.5, floor, 0, 0.03, 0, g);
   prison.box(3.6, 0.22, 3.5, ceil, 0, 3.08, 0, g);
   prison.box(3.6, 3.1, 0.14, wall, 0, 1.55, 1.7, g);
@@ -865,13 +865,15 @@ function alcove(prison, x, z, title) {
   const dadoHall = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
   prison.box(3.4, 1.12, 0.05, dadoHall, 0, 0.56, 1.61, g);
   prison.box(3.4, 1.12, 0.05, dadoHall, 0, 0.56, -1.61, g);
-  const faceCover = new THREE.MeshStandardMaterial({ color: 0x7a7468, roughness: 0.9 });
+  const faceCover = new THREE.MeshStandardMaterial({ color: 0x3e3c38, roughness: 0.9 });
   prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, 1.61, g);
   prison.box(3.4, 1.65, 0.04, faceCover, 0, 2.02, -1.61, g);
   const darkBoard = new THREE.MeshStandardMaterial({ color: 0x3e423c, roughness: 0.72 });
   prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, -1.58, g);
   prison.box(1.15, 0.72, 0.05, darkBoard, 0.1, 1.88, 1.58, g);
-  const lamp = new THREE.PointLight(0xf2ead0, 0.32, 5.5, 1.8);
+  const farFace = (x < 0 ? -1 : 1) * 1.68;
+  prison.box(0.08, 2.6, 2.8, darkBoard, farFace, 1.4, 0, g);
+  const lamp = new THREE.PointLight(0xf2ead0, 0.16, 4.2, 2.0);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
   const t = plaque(title, 1.2, 0.28);
@@ -1107,7 +1109,7 @@ function alcove(prison, x, z, title) {
   }
   if (title === 'БАНЯ') {
     const dado = new THREE.MeshStandardMaterial({ color: 0x3a5a54, roughness: 0.72 });
-    const tile = new THREE.MeshStandardMaterial({ color: 0xd4ddd8, roughness: 0.48 });
+    const tile = new THREE.MeshStandardMaterial({ color: 0x5e6c66, roughness: 0.62 });
     const wallX = (x < 0 ? -1 : 1) * 1.68;
     prison.box(3.4, 1.12, 0.05, dado, 0, 0.56, 1.62, g);
     prison.box(3.4, 1.12, 0.05, dado, 0, 0.56, -1.62, g);

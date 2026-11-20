@@ -25,6 +25,9 @@ import {
   DAY2_VALERA,
   DAY2_VALERA_CAUGHT,
   DAY2_VALERA_WASH,
+  DAY2_VALERA_SHMON,
+  DAY2_VALERA_SHMON_CAUGHT,
+  DAY2_VALERA_SHMON_WASH,
   DAY3_VALERA,
   DAY3_VALERA_WAIT,
   DAY3_VALERA_HOLD,
@@ -177,6 +180,11 @@ function valeraInCell(s) {
     return DAY3_VALERA;
   }
   if (s.day >= 2) {
+    if (s.phase.id === 'shmon') {
+      if (s.stash === 'bunk') return DAY2_VALERA_SHMON_CAUGHT;
+      if (s.stash === 'wash') return DAY2_VALERA_SHMON_WASH;
+      return DAY2_VALERA_SHMON;
+    }
     if (s.stash === 'bunk') return DAY2_VALERA_CAUGHT;
     if (s.stash === 'wash') return DAY2_VALERA_WASH;
     return DAY2_VALERA;
