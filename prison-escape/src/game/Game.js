@@ -222,9 +222,9 @@ export class Game {
   applyLook(params) {
     const look = params.get('look');
     if (look === 'yardwall') {
-      this.player.position.set(2.15, 0, LAYOUT.corridorLen + 3.7);
+      this.player.position.set(2.85, 0, LAYOUT.corridorLen + 3.85);
       this.input.yaw = Math.PI / 2;
-      this.input.pitch = 0.04;
+      this.input.pitch = -0.12;
       return;
     }
     if (look === 'krug') {

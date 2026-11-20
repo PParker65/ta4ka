@@ -223,6 +223,7 @@ export function plotObjective(sim) {
     if (sim.malyava === 'found') return 'Нашли бумагу. К стене. Руки видно. Рот на замок.';
     if (sim.malyava === 'admin' || sim.path === 'red') return 'Шмон. Вчера слово село. К стене. Не оправдывайся.';
     if (sim.malyava === 'hold' && sim.stash === 'wash') return 'Шмон. Чаша сегодня не их дело. Не смотри на неё.';
+    if (sim.malyava === 'hold' && sim.stash === 'bunk') return 'Шмон. Матрас первым. Не смотри на койку. Руки видно.';
     if (sim.malyava === 'burn') return 'Шмон. Пахнет золой. К стене. Нос казённый.';
     if (!sim.malyava) return 'Шмон. Щель ещё живая. Койки шарят. Кормушку — пока нет.';
     return 'Шмон. К стенам. Руки видно. Карман не шарь сам.';
