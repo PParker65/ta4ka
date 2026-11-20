@@ -1984,6 +1984,23 @@ export class Prison {
     radRag.position.set(-1.48, 0.61, LAYOUT.cellD / 2 - 0.28);
     radRag.rotation.z = 0.35;
     cell.add(radRag);
+    const radSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.22, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    radSock.position.set(-1.22, 0.58, LAYOUT.cellD / 2 - 0.32);
+    radSock.rotation.set(0.2, 0.12, 0.28);
+    cell.add(radSock);
+    const radPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.008, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    radPaper.position.set(-1.42, 0.055, LAYOUT.cellD / 2 - 0.48);
+    radPaper.rotation.y = 0.45;
+    cell.add(radPaper);
+    const radRust = new THREE.MeshStandardMaterial({ color: 0x5a2a18, roughness: 0.85, metalness: 0.15 });
+    this.box(0.18, 0.28, 0.04, radRust, -1.52, 0.42, LAYOUT.cellD / 2 - 0.16, cell);
+    this.box(0.12, 0.16, 0.03, radRust, -1.08, 0.28, LAYOUT.cellD / 2 - 0.16, cell);
     const dripMat = new THREE.MeshStandardMaterial({ color: 0x6a7a78, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.55 });
     for (const [dx, dy] of [
       [-1.15, 0.12],

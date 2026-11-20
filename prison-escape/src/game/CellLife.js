@@ -73,6 +73,7 @@ import {
   DAY3_MORNING_HOLD_BUNK,
   DAY3_VALERA_BURN,
   DAY3_VALERA_FOUND,
+  DAY3_VALERA_FOUND_BUNK,
   DAY3_VALERA_RED,
   DAY3_VALERA_SHMON,
   DAY3_VALERA_SHMON_HATCH,
@@ -87,6 +88,7 @@ import {
   DAY4_VALERA_WAIT,
   DAY4_VALERA_PAID,
   DAY4_VALERA_FOUND,
+  DAY4_VALERA_FOUND_BUNK,
   DAY4_VALERA_BURN,
   DAY4_VALERA_RED,
   DAY4_VALERA_SHMON_WAIT,
@@ -426,7 +428,7 @@ function valeraInCell(s) {
     }
     if (weekRed(s)) return DAY4_VALERA_RED;
     if (!s.malyava) return DAY4_VALERA_WAIT;
-    if (s.malyava === 'found') return DAY4_VALERA_FOUND;
+    if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_VALERA_FOUND_BUNK : DAY4_VALERA_FOUND;
     if (s.malyava === 'burn') return DAY4_VALERA_BURN;
     if (s.malyava === 'hold' && s.teaPaid) return DAY4_VALERA_PAID;
     return DAY4_VALERA;
@@ -444,7 +446,7 @@ function valeraInCell(s) {
       return DAY3_VALERA_SHMON;
     }
     if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
-    if (s.malyava === 'found') return DAY3_VALERA_FOUND;
+    if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_FOUND_BUNK : DAY3_VALERA_FOUND;
     if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
     if (s.malyava === 'burn') return DAY3_VALERA_BURN;
     if (!s.malyava) return DAY3_VALERA_WAIT;
