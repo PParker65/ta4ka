@@ -441,6 +441,9 @@ export class Prison {
     this.box(1.4, 0.02, 0.55, ceilDamp, -0.4, h - 0.05, 0.8, cell);
     this.box(0.7, 0.02, 0.9, ceilDamp, 0.85, h - 0.05, -0.4, cell);
     this.box(0.35, 0.02, 1.6, ceilDamp, -1.1, h - 0.05, 0.2, cell);
+    this.box(0.95, 0.02, 0.72, ceilDamp, -1.55, h - 0.05, doorRelZ + 0.15, cell);
+    this.box(0.5, 0.02, 1.15, ceilDamp, -0.15, h - 0.05, doorRelZ - 0.2, cell);
+    this.box(0.8, 0.02, 0.4, ceilDamp, 1.4, h - 0.05, doorRelZ + 0.9, cell);
     const conduit = new THREE.Mesh(
       new THREE.CylinderGeometry(0.025, 0.025, 2.4, 6),
       new THREE.MeshStandardMaterial({ color: 0x3a3a38, metalness: 0.4, roughness: 0.55 }),
@@ -448,6 +451,21 @@ export class Prison {
     conduit.rotation.z = Math.PI / 2;
     conduit.position.set(0.2, h - 0.18, -0.55);
     cell.add(conduit);
+    const conduitDoor = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.02, 0.02, 2.1, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a4238, metalness: 0.35, roughness: 0.6 }),
+    );
+    conduitDoor.rotation.x = Math.PI / 2;
+    conduitDoor.position.set(-1.55, h - 0.22, doorRelZ + 0.4);
+    cell.add(conduitDoor);
+    const hangWire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.008, 0.55, 5),
+      new THREE.MeshStandardMaterial({ color: 0x1c1c18, roughness: 0.9 }),
+    );
+    hangWire.position.set(-1.35, h - 0.38, doorRelZ + 0.55);
+    hangWire.rotation.z = 0.18;
+    cell.add(hangWire);
+    this.addCellLamp(cell, -1.15, h - 0.14, doorRelZ + 0.35);
     const peel = new THREE.Mesh(
       new THREE.BoxGeometry(0.55, 0.04, 0.28),
       new THREE.MeshStandardMaterial({ color: 0xc8c0b0, roughness: 0.9 }),
@@ -455,6 +473,13 @@ export class Prison {
     peel.position.set(0.6, h - 0.08, 1.1);
     peel.rotation.z = 0.12;
     cell.add(peel);
+    const lintelPeel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.025, 0.22, 0.48),
+      new THREE.MeshStandardMaterial({ color: 0xb8b09c, roughness: 0.94 }),
+    );
+    lintelPeel.position.set(innerX + 0.1, LAYOUT.doorH + 0.22, doorRelZ);
+    lintelPeel.rotation.z = 0.04;
+    cell.add(lintelPeel);
 
     this.addCollider(ox + w / 2 - 0.18, ox + w / 2 + 0.3, oz - d / 2, oz + d / 2, 'cell-back');
     this.addCollider(ox - w / 2, ox + w / 2, oz + d / 2 - 0.18, oz + d / 2 + 0.25, 'cell-z+');
@@ -1138,6 +1163,7 @@ export class Prison {
   }
 
   addLivedIn(cell) {
+    const doorRelZ = 3.4 - 5.2;
     const rope = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
     this.box(2.4, 0.012, 0.012, rope, -0.4, 1.92, 2.9, cell);
     const wallCal = cellSign('СУТКИ');
@@ -1245,16 +1271,32 @@ export class Prison {
       new THREE.CylinderGeometry(0.13, 0.11, 0.26, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.35, roughness: 0.55 }),
     );
-    doorPail.position.set(-1.95, 0.16, 1.35);
+    doorPail.position.set(-1.95, 0.16, doorRelZ + 0.58);
     cell.add(doorPail);
     const korm = wallScratch('КОРМ');
     korm.scale.set(0.9, 0.9, 0.9);
-    korm.position.set(-LAYOUT.cellW / 2 + 0.22, 1.28, 2.55);
+    korm.position.set(-LAYOUT.cellW / 2 + 0.22, 1.28, doorRelZ + 0.92);
     korm.rotation.y = Math.PI / 2;
     cell.add(korm);
     const hatchRust = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88 });
     this.box(0.02, 0.55, 0.7, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.5, 3.15, cell);
     this.box(0.02, 0.28, 0.35, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.22, 3.35, cell);
+    this.box(0.02, 0.85, 0.12, hatchRust, -LAYOUT.cellW / 2 + 0.2, 1.35, doorRelZ - 0.42, cell);
+    this.box(0.02, 0.4, 0.18, hatchRust, -LAYOUT.cellW / 2 + 0.2, 0.55, doorRelZ + 0.28, cell);
+    const doorWet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.42, 10),
+      new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.2, metalness: 0.1 }),
+    );
+    doorWet.rotation.x = -Math.PI / 2;
+    doorWet.position.set(-LAYOUT.cellW / 2 + 0.7, 0.04, doorRelZ);
+    cell.add(doorWet);
+    const doorWire = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.01, 0.01, 0.7, 5),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.85 }),
+    );
+    doorWire.position.set(-LAYOUT.cellW / 2 + 0.28, 2.15, doorRelZ + 0.35);
+    doorWire.rotation.z = 0.45;
+    cell.add(doorWire);
 
     const wet = new THREE.Mesh(
       new THREE.CircleGeometry(0.55, 10),
@@ -1945,6 +1987,8 @@ export class Prison {
       [0.35, 7.2, 0.55],
       [-0.4, 19.4, 0.7],
       [0.2, 31.5, 0.45],
+      [0.15, 3.55, 0.38],
+      [-0.25, 3.15, 0.28],
     ]) {
       const p = new THREE.Mesh(new THREE.CircleGeometry(s, 8), puddleMat);
       p.rotation.x = -Math.PI / 2;
@@ -1972,12 +2016,24 @@ export class Prison {
     valve.rotation.y = Math.PI / 2;
     this.group.add(valve);
     const cable = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9 });
-    for (const z of [8.2, 16.8, 25.5]) {
+    for (const z of [3.55, 8.2, 16.8, 25.5]) {
       const c = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.85, 5), cable);
       c.position.set(LAYOUT.corridorHalf - 0.18, 2.15, z);
       c.rotation.z = 0.35;
       this.group.add(c);
     }
+    const doorPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.008, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0bc, roughness: 0.92 }),
+    );
+    doorPaper.position.set(0.35, 0.05, 3.62);
+    doorPaper.rotation.y = 0.4;
+    this.group.add(doorPaper);
+    const hushHall = cellSign('4');
+    hushHall.scale.setScalar(0.38);
+    hushHall.position.set(LAYOUT.corridorHalf - 0.14, 1.72, 3.95);
+    hushHall.rotation.y = -Math.PI / 2;
+    this.group.add(hushHall);
     const board = this.box(
       0.04,
       0.55,

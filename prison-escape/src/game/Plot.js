@@ -17,6 +17,7 @@ import {
   DAY2_SHMON_WASH,
   DAY2_WAKE,
   DAY2_WAKE_BUNK,
+  DAY2_WAKE_WASH,
   DAY3_NIGHT,
   DAY3_NIGHT_WAIT,
   DAY3_MORNING,
@@ -130,7 +131,9 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'wake')
     return sim.stash === 'bunk'
       ? 'Второй подъём. Нычка в матрасе. Шмон будет до пайки. К стене.'
-      : 'Второй подъём. Шмон до пайки. Чаша, не матрас.';
+      : sim.stash === 'wash'
+        ? 'Второй подъём. Чаша, не матрас. Не смотри на неё. Руки пустые.'
+        : 'Второй подъём. Шмон до пайки. Чаша, не матрас.';
   if (d === 2 && ph === 'shmon') {
     return sim.stash === 'bunk'
       ? 'Шмон. Нычка в матрасе — плохое место. Стой. Руки видно.'
@@ -513,7 +516,7 @@ export function onPhaseEnter(game, id) {
     g.audio.buzz();
     if (s.day === 2 && !s.seenDay2Wake) {
       s.seenDay2Wake = true;
-      pickDialog(g, s.stash === 'bunk' ? DAY2_WAKE_BUNK : DAY2_WAKE);
+      pickDialog(g, s.stash === 'bunk' ? DAY2_WAKE_BUNK : s.stash === 'wash' ? DAY2_WAKE_WASH : DAY2_WAKE);
       return;
     }
     if (s.day === 3 && !s.seenDay3Morning) {

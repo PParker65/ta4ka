@@ -34,6 +34,8 @@ import {
   DAY3_MORNING_HOLD,
   DAY3_MORNING_BURN,
   DAY2_WAKE,
+  DAY2_WAKE_WASH,
+  DAY2_WAKE_BUNK,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -569,7 +571,11 @@ export class CellLife {
                     ? DAY3_MORNING_CAUGHT
                     : DAY3_MORNING
             : g.sim.day >= 2
-              ? DAY2_WAKE
+              ? g.sim.stash === 'bunk'
+                ? DAY2_WAKE_BUNK
+                : g.sim.stash === 'wash'
+                  ? DAY2_WAKE_WASH
+                  : DAY2_WAKE
               : TALK_LEHA;
       g.dialog.show(leha.who, leha.text, leha.options);
       g.dialog.onPick = (opt) => this.applyTalk(opt);
