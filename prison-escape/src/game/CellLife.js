@@ -35,6 +35,11 @@ import {
   DAY4_NIGHT_WAIT,
   DAY4_HATCH,
   DAY4_WALK,
+  DAY4_WALK_WAIT,
+  DAY4_WALK_PAID,
+  DAY4_WALK_FOUND,
+  DAY4_WALK_BURN,
+  DAY4_WALK_RED,
   DAY5_COURT,
   DAY5_COURT_GONE,
   DAY5_WALK,
@@ -546,7 +551,17 @@ export class CellLife {
             ? DAY5_WALK_HOLD
             : DAY5_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 4
-            ? DAY4_WALK
+            ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
+              ? DAY4_WALK_RED
+              : !g.sim.malyava
+                ? DAY4_WALK_WAIT
+                : g.sim.malyava === 'found'
+                  ? DAY4_WALK_FOUND
+                  : g.sim.malyava === 'burn'
+                    ? DAY4_WALK_BURN
+                    : g.sim.malyava === 'hold' && g.sim.teaPaid
+                      ? DAY4_WALK_PAID
+                      : DAY4_WALK
             : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
               ? DAY3_WALK_RED
               : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'hold'

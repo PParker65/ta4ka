@@ -628,7 +628,7 @@ export class Prison {
     this.storyFound = found;
     this._storyAnchors = {
       hatch: new THREE.Vector3(ox - w / 2 + 0.62, 1.52, 3.42),
-      wash: new THREE.Vector3(ox + 2.25, 1.1, oz + 2.7),
+      wash: new THREE.Vector3(ox + 2.28, 1.125, oz + 2.62),
       bunk: new THREE.Vector3(ox + 1.52, 0.58, oz - 2.12),
     };
   }
@@ -656,7 +656,7 @@ export class Prison {
       this.storyNote.visible = true;
       this.storyNote.scale.set(1.8, 1.8, 1.8);
       this.storyNote.position.copy(a.wash);
-      this.storyNote.rotation.set(-0.5, 0.7, 0.15);
+      this.storyNote.rotation.set(0.04, 0.55, 0.06);
     } else if (hold && sim.stash === 'bunk') {
       this.storyNote.visible = true;
       this.storyNote.scale.set(1, 1, 1);
@@ -906,6 +906,72 @@ export class Prison {
       new THREE.MeshStandardMaterial({ color: 0x1a1a1a }),
     );
     g.add(wire);
+    const grout = new THREE.MeshStandardMaterial({ color: 0x9aa090, roughness: 0.92, transparent: true, opacity: 0.45 });
+    this.box(1.2, 0.02, 0.02, grout, -0.05, 0.38, 0.54, g);
+    this.box(1.2, 0.02, 0.02, grout, -0.05, 0.72, 0.54, g);
+    const rustWash = new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.88, transparent: true, opacity: 0.55 });
+    this.box(0.22, 0.45, 0.02, rustWash, 0.55, 0.55, 0.54, g);
+    this.box(0.14, 0.28, 0.02, rustWash, -0.55, 0.4, 0.54, g);
+    const soapWash = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.025, 0.045),
+      new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.45 }),
+    );
+    soapWash.position.set(-0.18, 1.13, 0.22);
+    soapWash.scale.set(1.6, 1.4, 1.6);
+    g.add(soapWash);
+    const mugWash = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.028, 0.026, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0xc4b49a, roughness: 0.6 }),
+    );
+    mugWash.position.set(-0.42, 1.14, 0.18);
+    g.add(mugWash);
+    const ragWash = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.03, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.94 }),
+    );
+    ragWash.position.set(0.18, 1.125, 0.02);
+    ragWash.rotation.set(0.04, 0.55, 0.08);
+    g.add(ragWash);
+    const wetTile = new THREE.Mesh(
+      new THREE.CircleGeometry(0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8880, roughness: 0.2, metalness: 0.08, transparent: true, opacity: 0.45 }),
+    );
+    wetTile.rotation.x = -Math.PI / 2;
+    wetTile.position.set(0.02, 1.112, 0.08);
+    g.add(wetTile);
+    const stallGrout = new THREE.MeshStandardMaterial({ color: 0x7a786c, roughness: 0.95, transparent: true, opacity: 0.55 });
+    this.box(0.9, 0.006, 0.012, stallGrout, -0.08, 1.112, 0.05, g);
+    this.box(0.9, 0.006, 0.012, stallGrout, -0.08, 1.112, 0.28, g);
+    this.box(0.012, 0.006, 0.55, stallGrout, -0.22, 1.112, 0.12, g);
+    this.box(0.012, 0.006, 0.55, stallGrout, 0.18, 1.112, 0.12, g);
+    const rustStall = new THREE.Mesh(
+      new THREE.CircleGeometry(0.09, 7),
+      new THREE.MeshStandardMaterial({ color: 0x6a3a22, roughness: 0.9, transparent: true, opacity: 0.5 }),
+    );
+    rustStall.rotation.x = -Math.PI / 2;
+    rustStall.position.set(-0.32, 1.114, 0.32);
+    g.add(rustStall);
+    const brush = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.012, 0.16, 6),
+      new THREE.MeshStandardMaterial({ color: 0x3a4a38, roughness: 0.7 }),
+    );
+    brush.position.set(0.28, 1.13, 0.22);
+    brush.rotation.z = 1.2;
+    g.add(brush);
+    const floorRag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.2, 0.025, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.94 }),
+    );
+    floorRag.position.set(0.18, 0.1, -0.12);
+    floorRag.rotation.y = 0.35;
+    g.add(floorRag);
+    const floorWet = new THREE.Mesh(
+      new THREE.CircleGeometry(0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8880, roughness: 0.2, metalness: 0.08, transparent: true, opacity: 0.4 }),
+    );
+    floorWet.rotation.x = -Math.PI / 2;
+    floorWet.position.set(0.05, 0.108, -0.18);
+    g.add(floorWet);
   }
 
   addTable(cell) {

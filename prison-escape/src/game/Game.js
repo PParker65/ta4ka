@@ -216,6 +216,7 @@ export class Game {
     if (talk === 'silent' || talk === 'cell' || talk === 'self') this.sim.courtTalk = talk;
     const stash = params.get('stash');
     if (stash === 'wash' || stash === 'bunk' || stash === 'none') this.sim.stash = stash;
+    if (params.get('tea') === 'paid') this.sim.teaPaid = true;
   }
 
   applyLook(params) {

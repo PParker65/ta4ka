@@ -37,6 +37,11 @@ import {
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_WALK,
+  DAY4_WALK_WAIT,
+  DAY4_WALK_PAID,
+  DAY4_WALK_FOUND,
+  DAY4_WALK_BURN,
+  DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
   DAY4_WAKE,
@@ -157,11 +162,22 @@ export function plotObjective(sim) {
     if (sim.malyava === 'burn') return 'Третий круг. Зола осталась в хате. Не ори про дым.';
     return 'Третий круг. Щель днём стучала. Бумага либо твоя, либо чужая.';
   }
+  if (d === 4 && ph === 'walk')
+    return weekRed(sim)
+      ? 'Четвёртый круг. Свист кончился. Через сетку — ни звука.'
+      : !sim.malyava
+        ? 'Четвёртый круг. Бумага в щели. Не зевай вечером.'
+        : sim.malyava === 'found'
+          ? 'Четвёртый круг. Нашли. Через стену не ори про шмон.'
+          : sim.malyava === 'burn'
+            ? 'Четвёртый круг. Зола в хате. Про дым — ни звука.'
+            : sim.malyava === 'hold' && sim.teaPaid
+              ? 'Четвёртый круг. Чай ушёл. Карман нет. Через стену — ни звука.'
+              : 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && !sim.malyava)
     return 'Четвёртый день. Бумага вчера не ушла. Щель всё ещё живая.';
   if (d === 4 && ph === 'wake' && sim.malyava === 'hold' && !sim.teaPaid)
     return 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
-  if (d === 4 && ph === 'walk') return 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && !sim.teaPaid && sim.malyava === 'hold') return 'Чай в щели ждут. Не долг на воле.';
   if (d === 4) return 'Долг через кормушку. Лёха не забыл чай.';
   if (d === 6 && ph === 'food')
@@ -266,7 +282,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: DAY6_WALK_HOLD, ok: DAY6_WALK }));
     } else if (s.day >= 4 && !s.heardDay4Yard) {
       s.heardDay4Yard = true;
-      pickDialog(g, DAY4_WALK);
+      pickDialog(g, day4Walk(s));
     } else if (s.day === 3 && !s.heardDay3Yard) {
       s.heardDay3Yard = true;
       if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_WALK_RED);
@@ -462,6 +478,15 @@ export function onPhaseEnter(game, id) {
     }
     g.subtitle(wakeLine(s));
   }
+}
+
+function day4Walk(s) {
+  if (weekRed(s)) return DAY4_WALK_RED;
+  if (!s.malyava) return DAY4_WALK_WAIT;
+  if (s.malyava === 'found') return DAY4_WALK_FOUND;
+  if (s.malyava === 'burn') return DAY4_WALK_BURN;
+  if (s.malyava === 'hold' && s.teaPaid) return DAY4_WALK_PAID;
+  return DAY4_WALK;
 }
 
 function weekRed(s) {
