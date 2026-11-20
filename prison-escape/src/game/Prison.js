@@ -2184,6 +2184,13 @@ export class Prison {
     );
     tin.position.set(-1.58, 0.64, LAYOUT.cellD / 2 - 0.28);
     cell.add(tin);
+    const radBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.036, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    radBottle.position.set(-1.02, 0.05, LAYOUT.cellD / 2 - 0.62);
+    radBottle.rotation.z = 1.18;
+    cell.add(radBottle);
     const hole = new THREE.Mesh(
       new THREE.CircleGeometry(0.035, 10),
       new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.4 }),

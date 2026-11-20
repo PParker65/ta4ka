@@ -91,6 +91,7 @@ import {
   DAY4_LEHA_HOLD,
   DAY4_LEHA_HOLD_WASH,
   DAY4_LEHA_HOLD_BUNK,
+  DAY4_LEHA_HOLD_BUNK_WAIT,
   DAY4_LEHA_FOUND,
   DAY4_LEHA_FOUND_BUNK,
   DAY4_LEHA_BURN,
@@ -399,6 +400,8 @@ export function plotObjective(sim) {
                   wash: 'Четвёртый отбой. Чай ушёл. Чаша знает. Не шарь при лампе.',
                   bunk: 'Четвёртый отбой. Чай ушёл. Бумага в матрасе. Чаша, или жги.',
                 })
+              : sim.malyava === 'hold' && sim.stash === 'bunk'
+                ? 'Четвёртый отбой. Бумага в матрасе. Чай ещё в щели. Чаша, или жги.'
               : 'Чай, что через кормушку ушёл, ждут обратно.';
   if (d === 4 && ph === 'wake')
     return weekRed(sim)
@@ -942,6 +945,7 @@ function day4Evening(s) {
   if (s.malyava === 'burn') return DAY4_LEHA_BURN;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_LEHA_HOLD, wash: DAY4_LEHA_HOLD_WASH, bunk: DAY4_LEHA_HOLD_BUNK });
+  if (s.malyava === 'hold' && s.stash === 'bunk') return DAY4_LEHA_HOLD_BUNK_WAIT;
   return DAY4_LEHA;
 }
 

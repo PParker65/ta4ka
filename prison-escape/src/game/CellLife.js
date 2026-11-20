@@ -73,6 +73,8 @@ import {
   DAY3_NIGHT_HOLD_WASH,
   DAY3_NIGHT_HOLD_BUNK,
   DAY3_SEDOY_NIGHT_HOLD_BUNK,
+  DAY4_SEDOY_NIGHT_HOLD_BUNK,
+  DAY4_SEDOY_NIGHT_FOUND_BUNK,
   DAY3_WALK_HOLD_WASH,
   DAY3_WALK_HOLD_BUNK,
   DAY3_SEDOY_WALK_HOLD_BUNK,
@@ -219,6 +221,7 @@ import {
   DAY4_LEHA_HOLD,
   DAY4_LEHA_HOLD_WASH,
   DAY4_LEHA_HOLD_BUNK,
+  DAY4_LEHA_HOLD_BUNK_WAIT,
   DAY4_LEHA_FOUND,
   DAY4_LEHA_FOUND_BUNK,
   DAY4_WAKE,
@@ -998,9 +1001,13 @@ export class CellLife {
                   ? DAY3_FOOD_FOUND_BUNK
                   : g.sim.day >= 3 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                     ? DAY3_SEDOY_FOOD_HOLD_BUNK
-                  : g.sim.day >= 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                  : g.sim.day === 4 && g.sim.phase.id === 'evening' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                    ? DAY4_SEDOY_NIGHT_FOUND_BUNK
+                    : g.sim.day === 4 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                      ? DAY4_SEDOY_NIGHT_HOLD_BUNK
+                  : g.sim.day === 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
                     ? DAY3_NIGHT_FOUND_BUNK
-                    : g.sim.day >= 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                    : g.sim.day === 3 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                       ? DAY3_SEDOY_NIGHT_HOLD_BUNK
                     : g.sim.day === 4 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
                       ? DAY4_SEDOY_WALK_FOUND_BUNK
@@ -1140,6 +1147,8 @@ export class CellLife {
                     ? DAY4_LEHA_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? holdStash(g.sim, { pocket: DAY4_LEHA_HOLD, wash: DAY4_LEHA_HOLD_WASH, bunk: DAY4_LEHA_HOLD_BUNK })
+                      : g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                        ? DAY4_LEHA_HOLD_BUNK_WAIT
                       : DAY4_LEHA
           : g.sim.day >= 3 && g.sim.phase.id === 'food'
             ? !g.sim.malyava
