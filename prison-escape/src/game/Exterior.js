@@ -531,18 +531,28 @@ function addProcessing(prison) {
     prison.group.add(p);
   }
 
+  const tubeGlass = new THREE.MeshStandardMaterial({
+    color: 0xb8b490,
+    emissive: 0x8a8658,
+    emissiveIntensity: 0.32,
+    roughness: 0.5,
+  });
+  const tubeHouse = new THREE.MeshStandardMaterial({ color: 0x3a3a36, metalness: 0.42, roughness: 0.55 });
+  const tubeWire = new THREE.MeshStandardMaterial({ color: 0x1c1c18, roughness: 0.92 });
+  let tubeI = 0;
   for (let z = -50; z < -2; z += 6) {
-    const tube = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.035, 0.7, 8),
-      new THREE.MeshStandardMaterial({
-        color: 0xf0eed8,
-        emissive: 0xd8d4b8,
-        emissiveIntensity: 0.55,
-      }),
-    );
+    const x = tubeI % 2 === 0 ? 0.68 : -0.68;
+    tubeI += 1;
+    const house = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.07, 0.82), tubeHouse);
+    house.position.set(x, 2.94, z);
+    prison.group.add(house);
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.64, 8), tubeGlass);
     tube.rotation.x = Math.PI / 2;
-    tube.position.set(0, 2.85, z);
+    tube.position.set(x, 2.88, z);
     prison.group.add(tube);
+    const drop = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.16, 5), tubeWire);
+    drop.position.set(x, 3.02, z);
+    prison.group.add(drop);
   }
   for (const z of [-46, -34, -22, -12, -4]) {
     const lamp = new THREE.PointLight(0xf2ead0, 0.7, 9, 1.6);
@@ -613,6 +623,25 @@ function addProcessing(prison) {
     c.rotation.z = 0.42;
     prison.group.add(c);
   }
+  for (const [x, z, len, rz] of [
+    [0.28, -34.1, 0.72, 0.48],
+    [-0.38, -30.6, 0.88, -0.36],
+    [0.42, -25.4, 0.62, 0.28],
+    [-0.18, -18.2, 0.98, 0.2],
+    [0.22, -12.4, 0.55, -0.44],
+  ]) {
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, len, 5), dropCable);
+    c.position.set(x, 3.05 - len / 2, z);
+    c.rotation.z = rz;
+    prison.group.add(c);
+  }
+  const hangRag = new THREE.Mesh(
+    new THREE.BoxGeometry(0.14, 0.42, 0.02),
+    new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: 0.95 }),
+  );
+  hangRag.position.set(-0.55, 2.55, -33.6);
+  hangRag.rotation.z = 0.18;
+  prison.group.add(hangRag);
   const rad = new THREE.MeshStandardMaterial({ color: 0x6a3a28, roughness: 0.7, metalness: 0.22 });
   for (const z of [-33.5, -24.8, -16.6, -8.4]) {
     prison.box(0.1, 0.48, 0.85, rad, -2.42, 0.42, z);

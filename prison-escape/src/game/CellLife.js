@@ -44,6 +44,18 @@ import {
   DAY2_WAKE,
   DAY2_WAKE_WASH,
   DAY2_WAKE_BUNK,
+  DAY2_NIGHT,
+  DAY2_NIGHT_WASH,
+  DAY2_NIGHT_CAUGHT,
+  DAY3_FOOD,
+  DAY3_FOOD_HOLD,
+  DAY3_FOOD_BURN,
+  DAY3_LEHA,
+  DAY3_LEHA_HOLD,
+  DAY3_LEHA_BURN,
+  DAY3_LEHA_FOUND,
+  DAY3_LEHA_RED,
+  DAY3_LEHA_CAUGHT,
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
@@ -520,6 +532,18 @@ export class CellLife {
                           : g.sim.malyava === 'hold' && g.sim.teaPaid
                             ? DAY4_FOOD_HOLD
                             : DAY4_FOOD
+                : g.sim.day >= 3
+                  ? g.sim.malyava === 'admin' || g.sim.path === 'red'
+                    ? DAY3_MORNING_RED
+                    : g.sim.malyava === 'found'
+                      ? DAY3_MORNING_FOUND
+                      : g.sim.malyava === 'hold'
+                        ? DAY3_MORNING_HOLD
+                        : g.sim.malyava === 'burn'
+                          ? DAY3_MORNING_BURN
+                          : g.sim.stash === 'bunk'
+                            ? DAY3_MORNING_CAUGHT
+                            : DAY3_MORNING
                 : g.sim.day >= 2
                   ? g.sim.stash === 'bunk'
                     ? DAY2_SEDOY_CAUGHT
@@ -568,6 +592,18 @@ export class CellLife {
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? DAY4_LEHA_HOLD
                       : DAY4_LEHA
+          : g.sim.day >= 3 && g.sim.phase.id === 'food'
+            ? !g.sim.malyava
+              ? DAY3_FOOD
+              : g.sim.malyava === 'hold'
+                ? DAY3_FOOD_HOLD
+                : g.sim.malyava === 'burn'
+                  ? DAY3_FOOD_BURN
+                  : g.sim.malyava === 'found'
+                    ? DAY3_LEHA_FOUND
+                    : g.sim.malyava === 'admin' || g.sim.path === 'red'
+                      ? DAY3_LEHA_RED
+                      : DAY3_FOOD
           : g.sim.day >= 3 && g.sim.phase.id === 'evening'
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_NIGHT_RED
@@ -582,16 +618,22 @@ export class CellLife {
                       : DAY3_NIGHT
           : g.sim.day >= 3
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
-              ? DAY3_MORNING_RED
+              ? DAY3_LEHA_RED
               : g.sim.malyava === 'found'
-                ? DAY3_MORNING_FOUND
+                ? DAY3_LEHA_FOUND
                 : g.sim.malyava === 'hold'
-                  ? DAY3_MORNING_HOLD
+                  ? DAY3_LEHA_HOLD
                   : g.sim.malyava === 'burn'
-                    ? DAY3_MORNING_BURN
+                    ? DAY3_LEHA_BURN
                     : g.sim.stash === 'bunk'
-                      ? DAY3_MORNING_CAUGHT
-                      : DAY3_MORNING
+                      ? DAY3_LEHA_CAUGHT
+                      : DAY3_LEHA
+            : g.sim.day >= 2 && g.sim.phase.id === 'evening'
+              ? g.sim.stash === 'bunk'
+                ? DAY2_NIGHT_CAUGHT
+                : g.sim.stash === 'wash'
+                  ? DAY2_NIGHT_WASH
+                  : DAY2_NIGHT
             : g.sim.day >= 2
               ? g.sim.stash === 'bunk'
                 ? DAY2_WAKE_BUNK
