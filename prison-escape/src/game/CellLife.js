@@ -188,6 +188,8 @@ import {
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
+  DAY4_LEHA_HOLD_WASH,
+  DAY4_LEHA_HOLD_BUNK,
   DAY4_LEHA_FOUND,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
@@ -224,12 +226,16 @@ import {
   DAY4_WALK,
   DAY4_WALK_WAIT,
   DAY4_WALK_PAID,
+  DAY4_WALK_PAID_WASH,
+  DAY4_WALK_PAID_BUNK,
   DAY4_WALK_FOUND,
   DAY4_WALK_BURN,
   DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
   DAY4_FOOD_HOLD,
+  DAY4_FOOD_HOLD_WASH,
+  DAY4_FOOD_HOLD_BUNK,
   DAY4_FOOD_FOUND,
   DAY4_FOOD_BURN,
   DAY4_FOOD_RED,
@@ -238,6 +244,8 @@ import {
   DAY5_WALK,
   DAY5_WALK_GONE,
   DAY5_WALK_HOLD,
+  DAY5_WALK_HOLD_WASH,
+  DAY5_WALK_HOLD_BUNK,
   DAY5_WALK_FOUND,
   DAY5_WALK_BURN,
   DAY5_WALK_RED,
@@ -246,6 +254,8 @@ import {
   DAY5_WAKE_FOUND,
   DAY5_WAKE_BURN,
   DAY5_WAKE_HOLD,
+  DAY5_WAKE_HOLD_WASH,
+  DAY5_WAKE_HOLD_BUNK,
   DAY5_WAKE_RED,
   DAY6_WALK,
   DAY6_WALK_GONE,
@@ -863,7 +873,7 @@ export class CellLife {
                         : g.sim.malyava === 'burn'
                           ? DAY4_FOOD_BURN
                           : g.sim.malyava === 'hold' && g.sim.teaPaid
-                            ? DAY4_FOOD_HOLD
+                            ? holdStash(g.sim, { pocket: DAY4_FOOD_HOLD, wash: DAY4_FOOD_HOLD_WASH, bunk: DAY4_FOOD_HOLD_BUNK })
                             : DAY4_FOOD
                 : g.sim.day >= 3 && g.sim.phase.id === 'shmon'
                   ? g.sim.malyava === 'admin' || g.sim.path === 'red'
@@ -967,7 +977,7 @@ export class CellLife {
           : g.sim.day >= 5 && g.sim.malyava === 'burn'
           ? DAY5_WAKE_BURN
           : g.sim.day >= 5 && g.sim.malyava === 'hold'
-          ? DAY5_WAKE_HOLD
+          ? holdStash(g.sim, { pocket: DAY5_WAKE_HOLD, wash: DAY5_WAKE_HOLD_WASH, bunk: DAY5_WAKE_HOLD_BUNK })
           : g.sim.day >= 5
           ? DAY5_WAKE
           : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
@@ -988,7 +998,7 @@ export class CellLife {
                   : g.sim.malyava === 'burn'
                     ? DAY4_LEHA_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
-                      ? DAY4_LEHA_HOLD
+                      ? holdStash(g.sim, { pocket: DAY4_LEHA_HOLD, wash: DAY4_LEHA_HOLD_WASH, bunk: DAY4_LEHA_HOLD_BUNK })
                       : DAY4_LEHA
           : g.sim.day >= 3 && g.sim.phase.id === 'food'
             ? !g.sim.malyava
@@ -1105,7 +1115,7 @@ export class CellLife {
             : g.sim.malyava === 'burn'
             ? DAY5_WALK_BURN
             : g.sim.malyava === 'hold'
-            ? DAY5_WALK_HOLD
+            ? holdStash(g.sim, { pocket: DAY5_WALK_HOLD, wash: DAY5_WALK_HOLD_WASH, bunk: DAY5_WALK_HOLD_BUNK })
             : DAY5_WALK
           : g.sim.phase.id === 'walk' && g.sim.day >= 4
             ? g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin'
@@ -1117,7 +1127,7 @@ export class CellLife {
                   : g.sim.malyava === 'burn'
                     ? DAY4_WALK_BURN
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
-                      ? DAY4_WALK_PAID
+                      ? holdStash(g.sim, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK })
                       : DAY4_WALK
             : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
               ? DAY3_WALK_RED

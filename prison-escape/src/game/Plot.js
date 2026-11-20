@@ -81,18 +81,24 @@ import {
   DAY4_LEHA,
   DAY4_NIGHT_WAIT,
   DAY4_LEHA_HOLD,
+  DAY4_LEHA_HOLD_WASH,
+  DAY4_LEHA_HOLD_BUNK,
   DAY4_LEHA_FOUND,
   DAY4_LEHA_BURN,
   DAY4_LEHA_RED,
   DAY4_WALK,
   DAY4_WALK_WAIT,
   DAY4_WALK_PAID,
+  DAY4_WALK_PAID_WASH,
+  DAY4_WALK_PAID_BUNK,
   DAY4_WALK_FOUND,
   DAY4_WALK_BURN,
   DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
   DAY4_FOOD_HOLD,
+  DAY4_FOOD_HOLD_WASH,
+  DAY4_FOOD_HOLD_BUNK,
   DAY4_FOOD_FOUND,
   DAY4_FOOD_BURN,
   DAY4_FOOD_RED,
@@ -102,6 +108,8 @@ import {
   DAY4_WAKE_WAIT,
   DAY4_WAKE_FOUND,
   DAY4_WAKE_HOLD,
+  DAY4_WAKE_HOLD_WASH,
+  DAY4_WAKE_HOLD_BUNK,
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_COURT_GONE,
@@ -110,6 +118,8 @@ import {
   DAY5_WAKE_FOUND,
   DAY5_WAKE_BURN,
   DAY5_WAKE_HOLD,
+  DAY5_WAKE_HOLD_WASH,
+  DAY5_WAKE_HOLD_BUNK,
   DAY5_WAKE_RED,
   DAY5_SLED,
   DAY5_SLED_GONE,
@@ -123,6 +133,8 @@ import {
   DAY5_WALK,
   DAY5_WALK_GONE,
   DAY5_WALK_HOLD,
+  DAY5_WALK_HOLD_WASH,
+  DAY5_WALK_HOLD_BUNK,
   DAY5_WALK_FOUND,
   DAY5_WALK_BURN,
   DAY5_WALK_RED,
@@ -283,7 +295,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Четвёртый круг. Зола в хате. Про дым — ни звука.'
             : sim.malyava === 'hold' && sim.teaPaid
-              ? 'Четвёртый круг. Чай ушёл. Карман жжёт. Через стену — ни звука.'
+              ? holdStash(sim, {
+                  pocket: 'Четвёртый круг. Чай ушёл. Карман жжёт. Через стену — ни звука.',
+                  wash: 'Четвёртый круг. Чай ушёл. Чаша осталась в хате. Через стену не ори про неё.',
+                  bunk: 'Четвёртый круг. Чай ушёл. Бумага в матрасе. Через стену — ни звука.',
+                })
               : 'Дворик. Долг чая сидит в щели, не гуляет с тобой.';
   if (d === 4 && ph === 'food')
     return weekRed(sim)
@@ -295,7 +311,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Четвёртая пайка. Пахнет золой. Про дым — ни слова.'
             : sim.malyava === 'hold' && sim.teaPaid
-              ? 'Четвёртая пайка. Чай ушёл. Карман жжёт. За столом не читай.'
+              ? holdStash(sim, {
+                  pocket: 'Четвёртая пайка. Чай ушёл. Карман жжёт. За столом не читай.',
+                  wash: 'Четвёртая пайка. Чай ушёл. Чаша, не карман. За столом не вспоминай.',
+                  bunk: 'Четвёртая пайка. Чай ушёл. Бумага в матрасе. Койку за столом не вспоминай.',
+                })
               : 'Четвёртая пайка. Кто не отдаёт чай в щель — пустое место.';
   if (d === 4 && ph === 'evening')
     return weekRed(sim)
@@ -307,7 +327,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Четвёртый отбой. Зола ещё пахнет. Не свисти в полный голос.'
             : sim.malyava === 'hold' && sim.teaPaid
-              ? 'Четвёртый отбой. Чай ушёл. Карман жжёт. Не читай при лампе.'
+              ? holdStash(sim, {
+                  pocket: 'Четвёртый отбой. Чай ушёл. Карман жжёт. Не читай при лампе.',
+                  wash: 'Четвёртый отбой. Чай ушёл. Чаша знает. Не шарь при лампе.',
+                  bunk: 'Четвёртый отбой. Чай ушёл. Бумага в матрасе. Чаша, или жги.',
+                })
               : 'Чай, что через кормушку ушёл, ждут обратно.';
   if (d === 4 && ph === 'wake')
     return weekRed(sim)
@@ -319,7 +343,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Четвёртый подъём. Зола ещё пахнет. Не свисти в полный голос.'
             : sim.malyava === 'hold' && sim.teaPaid
-              ? 'Четвёртый подъём. Чай ушёл. Карман жжёт. Не шарь при лампе.'
+              ? holdStash(sim, {
+                  pocket: 'Четвёртый подъём. Чай ушёл. Карман жжёт. Не шарь при лампе.',
+                  wash: 'Четвёртый подъём. Чай ушёл. Чаша, не карман. Не шарь при лампе.',
+                  bunk: 'Четвёртый подъём. Чай ушёл. Бумага в матрасе. Шмон это любит.',
+                })
               : 'Четвёртый подъём. Чай ждут в щели, не после прогулки.';
   if (d === 4 && !sim.malyava)
     return 'Четвёртый день. Бумага вчера не ушла. Щель всё ещё живая.';
@@ -373,7 +401,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Пятый подъём. Зола ещё пахнет. Днём щель станет кабинетом.'
             : sim.malyava === 'hold'
-              ? 'Пятый подъём. Карман жжёт. Днём щель станет кабинетом. Не шарь.'
+              ? holdStash(sim, {
+                  pocket: 'Пятый подъём. Карман жжёт. Днём щель станет кабинетом. Не шарь.',
+                  wash: 'Пятый подъём. Чаша, не карман. Днём щель станет кабинетом. Не смотри на неё.',
+                  bunk: 'Пятый подъём. Бумага в матрасе. Днём щель станет кабинетом. Первое место.',
+                })
               : 'С коряка шепчут список. Днём щель станет кабинетом.';
   if (d === 5 && ph === 'shmon')
     return weekRed(sim)
@@ -385,7 +417,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Пятый шмон. Пахнет золой. Сегодня вызов. Не объясняй чайник.'
             : sim.malyava === 'hold'
-              ? 'Пятый шмон. Чашу не смотри. Сегодня вызов. Руки пустые.'
+              ? holdStash(sim, {
+                  pocket: 'Пятый шмон. Карман жжёт. Сегодня вызов. Руки пустые.',
+                  wash: 'Пятый шмон. Чашу не смотри. Сегодня вызов. Руки пустые.',
+                  bunk: 'Пятый шмон. Матрас первым. Сегодня вызов. Не смотри на койку.',
+                })
               : 'Пятый шмон. Сегодня вызов. Койки для порядка. К стене.';
   if (d === 5 && ph === 'food' && !sim.courtTalk)
     return weekRed(sim)
@@ -412,7 +448,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Пятый круг. Зола в хате. Про дым — ни звука.'
             : sim.malyava === 'hold'
-              ? 'Пятый круг. Карман жжёт. Через сетку про карман — ни звука.'
+              ? holdStash(sim, {
+                  pocket: 'Пятый круг. Карман жжёт. Через сетку про карман — ни звука.',
+                  wash: 'Пятый круг. Чаша осталась в хате. Через сетку про неё — ни звука.',
+                  bunk: 'Пятый круг. Бумага в матрасе. Через сетку про койку — ни звука.',
+                })
               : 'Пятый круг. С коряка звали. Что скажешь — хата узнает.';
   if (d === 5 && sim.malyava === 'gone') return 'Щель отдала бумагу без тебя. Следователь уже читал.';
   if (d === 5) return 'Следователь на свежака. Хата спрашивает, что скажешь про них.';
@@ -487,7 +527,7 @@ export function onPhaseEnter(game, id) {
     g.audio.voiceOnce('walk', 'Прогулка. Шагом. Голову не поднимай.', 'Конвой');
     if (s.day === 5 && !s.heardDay5Yard) {
       s.heardDay5Yard = true;
-      pickDialog(g, weekPick(s, { red: DAY5_WALK_RED, gone: DAY5_WALK_GONE, found: DAY5_WALK_FOUND, burn: DAY5_WALK_BURN, hold: DAY5_WALK_HOLD, ok: DAY5_WALK }));
+      pickDialog(g, weekPick(s, { red: DAY5_WALK_RED, gone: DAY5_WALK_GONE, found: DAY5_WALK_FOUND, burn: DAY5_WALK_BURN, hold: holdStash(s, { pocket: DAY5_WALK_HOLD, wash: DAY5_WALK_HOLD_WASH, bunk: DAY5_WALK_HOLD_BUNK }), ok: DAY5_WALK }));
     } else if (s.day === 6 && !s.heardDay6Yard) {
       s.heardDay6Yard = true;
       pickDialog(g, weekPick(s, { red: DAY6_WALK_RED, gone: DAY6_WALK_GONE, found: DAY6_WALK_FOUND, burn: DAY6_WALK_BURN, hold: DAY6_WALK_HOLD, ok: DAY6_WALK }));
@@ -731,7 +771,7 @@ export function onPhaseEnter(game, id) {
         s.heat = Math.min(100, s.heat + 12);
         s.hope = Math.max(0, s.hope - 6);
       }
-      pickDialog(g, weekPick(s, { red: DAY5_WAKE_RED, gone: DAY5_WAKE_GONE, found: DAY5_WAKE_FOUND, burn: DAY5_WAKE_BURN, hold: DAY5_WAKE_HOLD, ok: DAY5_WAKE }));
+      pickDialog(g, weekPick(s, { red: DAY5_WAKE_RED, gone: DAY5_WAKE_GONE, found: DAY5_WAKE_FOUND, burn: DAY5_WAKE_BURN, hold: holdStash(s, { pocket: DAY5_WAKE_HOLD, wash: DAY5_WAKE_HOLD_WASH, bunk: DAY5_WAKE_HOLD_BUNK }), ok: DAY5_WAKE }));
       return;
     }
     if (s.day === 7 && !s.seenDay7Morning) {
@@ -748,7 +788,8 @@ function day4Walk(s) {
   if (!s.malyava) return DAY4_WALK_WAIT;
   if (s.malyava === 'found') return DAY4_WALK_FOUND;
   if (s.malyava === 'burn') return DAY4_WALK_BURN;
-  if (s.malyava === 'hold' && s.teaPaid) return DAY4_WALK_PAID;
+  if (s.malyava === 'hold' && s.teaPaid)
+    return holdStash(s, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK });
   return DAY4_WALK;
 }
 
@@ -757,7 +798,8 @@ function day4Food(s) {
   if (!s.malyava) return DAY4_FOOD_WAIT;
   if (s.malyava === 'found') return DAY4_FOOD_FOUND;
   if (s.malyava === 'burn') return DAY4_FOOD_BURN;
-  if (s.malyava === 'hold' && s.teaPaid) return DAY4_FOOD_HOLD;
+  if (s.malyava === 'hold' && s.teaPaid)
+    return holdStash(s, { pocket: DAY4_FOOD_HOLD, wash: DAY4_FOOD_HOLD_WASH, bunk: DAY4_FOOD_HOLD_BUNK });
   return DAY4_FOOD;
 }
 
@@ -766,7 +808,8 @@ function day4Evening(s) {
   if (!s.malyava) return DAY4_NIGHT_WAIT;
   if (s.malyava === 'found') return DAY4_LEHA_FOUND;
   if (s.malyava === 'burn') return DAY4_LEHA_BURN;
-  if (s.malyava === 'hold' && s.teaPaid) return DAY4_LEHA_HOLD;
+  if (s.malyava === 'hold' && s.teaPaid)
+    return holdStash(s, { pocket: DAY4_LEHA_HOLD, wash: DAY4_LEHA_HOLD_WASH, bunk: DAY4_LEHA_HOLD_BUNK });
   return DAY4_LEHA;
 }
 
@@ -775,7 +818,8 @@ function day4Wake(s) {
   if (!s.malyava) return DAY4_WAKE_WAIT;
   if (s.malyava === 'found') return DAY4_WAKE_FOUND;
   if (s.malyava === 'burn') return DAY4_WAKE_BURN;
-  if (s.malyava === 'hold' && s.teaPaid) return DAY4_WAKE_HOLD;
+  if (s.malyava === 'hold' && s.teaPaid)
+    return holdStash(s, { pocket: DAY4_WAKE_HOLD, wash: DAY4_WAKE_HOLD_WASH, bunk: DAY4_WAKE_HOLD_BUNK });
   return DAY4_WAKE;
 }
 
