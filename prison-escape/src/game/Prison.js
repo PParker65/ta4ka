@@ -1238,6 +1238,26 @@ export class Prison {
     washHang.position.set(0.62, 0.88, 0.42);
     washHang.rotation.z = 0.18;
     g.add(washHang);
+    const washSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.22, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.95 }),
+    );
+    washSock.position.set(0.48, 0.42, 0.08);
+    washSock.rotation.set(0.18, 0.12, 0.32);
+    g.add(washSock);
+    const washTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.038, 0.08, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8e86, roughness: 0.45, metalness: 0.35 }),
+    );
+    washTin.position.set(-0.42, 0.08, -0.08);
+    g.add(washTin);
+    const washScrap = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.008, 0.1),
+      new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
+    );
+    washScrap.position.set(0.28, 0.075, 0.18);
+    washScrap.rotation.y = 0.55;
+    g.add(washScrap);
     const soapWash = new THREE.Mesh(
       new THREE.BoxGeometry(0.07, 0.025, 0.045),
       new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.45 }),
