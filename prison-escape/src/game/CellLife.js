@@ -24,6 +24,7 @@ import {
   DAY2_SEDOY_CAUGHT,
   DAY2_SEDOY_WASH,
   DAY2_SEDOY_WASH_WAKE,
+  DAY2_SEDOY_WASH_FOOD,
   DAY2_SEDOY_SHMON,
   DAY2_SEDOY_SHMON_CAUGHT,
   DAY2_SEDOY_SHMON_WASH,
@@ -1353,7 +1354,7 @@ export class CellLife {
                     ? g.sim.stash === 'bunk'
                       ? DAY2_SEDOY_CAUGHT
                       : g.sim.stash === 'wash'
-                        ? DAY2_SEDOY_WASH
+                        ? DAY2_SEDOY_WASH_FOOD
                         : DAY2_SEDOY_FOOD
                   : g.sim.phase.id === 'evening'
                     ? g.sim.stash === 'bunk'
