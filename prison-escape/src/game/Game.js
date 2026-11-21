@@ -269,6 +269,12 @@ export class Game {
       this.input.pitch = -0.48;
       return;
     }
+    if (look === 'hally') {
+      this.player.position.set(-0.22, 0, -17.4);
+      this.input.yaw = -Math.PI / 2;
+      this.input.pitch = -0.48;
+      return;
+    }
     if (look === 'photo') {
       this.player.position.set(-0.2, 0, -28.2);
       this.input.yaw = Math.PI / 2;

@@ -838,6 +838,15 @@ function addProcessing(prison) {
   hallBag3.position.set(-1.4, 0.12, -17.4);
   hallBag3.rotation.y = 0.2;
   prison.group.add(hallBag3);
+  const hallYCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallYCig.position.set(-1.22, 0.055, -17.15);
+  hallYCig.rotation.z = Math.PI / 2;
+  hallYCig.rotation.y = 0.35;
+  hallYCig.name = 'hallYCig';
+  prison.group.add(hallYCig);
   const hallShoe = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
   for (const [sx, sz] of [
     [-1.7, -41.6],
