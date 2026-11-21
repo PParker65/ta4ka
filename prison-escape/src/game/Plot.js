@@ -144,6 +144,8 @@ import {
   DAY5_SLED_FOUND_BUNK,
   DAY5_SLED_BURN,
   DAY5_SLED_HOLD,
+  DAY5_SLED_HOLD_WASH,
+  DAY5_SLED_HOLD_BUNK,
   DAY5_BACK_SILENT,
   DAY5_BACK_CELL,
   DAY5_BACK_SELF,
@@ -536,7 +538,11 @@ export function plotObjective(sim) {
           : sim.malyava === 'burn'
             ? 'Вызов. Нос казённый. Про дым — или про хату.'
             : sim.malyava === 'hold'
-              ? 'Вызов. Карман шуршит. Следователь слышит. Про хату — или про срок.'
+              ? holdStash(sim, {
+                  pocket: 'Вызов. Карман шуршит. Следователь слышит. Про хату — или про срок.',
+                  wash: 'Вызов. Чаша в хате. Следователь слышит. Про хату — или про срок.',
+                  bunk: 'Вызов. Бумага в матрасе. Следователь слышит. Про хату — или про срок.',
+                })
               : 'Вызов. Следователь в щели. Про хату — или про срок.';
   if (d === 5 && sim.courtTalk === 'cell') return 'Сказал про хату. Пайка лишняя. Вечером спросят уже не словами.';
   if (d === 5 && sim.courtTalk === 'silent') return 'Про хату — ничего. Жар есть. Хата ещё дышит.';
@@ -921,7 +927,7 @@ export function onPhaseEnter(game, id) {
         s.malyava = 'gone';
         s.heat = Math.min(100, s.heat + 12);
       }
-      pickDialog(g, weekPick(s, { red: DAY5_SLED_RED, gone: DAY5_SLED_GONE, found: s.stash === 'bunk' ? DAY5_SLED_FOUND_BUNK : DAY5_SLED_FOUND, burn: DAY5_SLED_BURN, hold: DAY5_SLED_HOLD, ok: DAY5_SLED }));
+      pickDialog(g, weekPick(s, { red: DAY5_SLED_RED, gone: DAY5_SLED_GONE, found: s.stash === 'bunk' ? DAY5_SLED_FOUND_BUNK : DAY5_SLED_FOUND, burn: DAY5_SLED_BURN, hold: holdStash(s, { pocket: DAY5_SLED_HOLD, wash: DAY5_SLED_HOLD_WASH, bunk: DAY5_SLED_HOLD_BUNK }), ok: DAY5_SLED }));
       return;
     }
     if (s.day === 6 && !s.seenDay6Food) {

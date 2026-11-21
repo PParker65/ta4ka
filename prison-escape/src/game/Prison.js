@@ -1205,6 +1205,14 @@ export class Prison {
       );
       bunkTin.position.set(0.78, 0.04, 0.34);
       g.add(bunkTin);
+      const bunkBottle = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.036, 0.04, 0.16, 8),
+        new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+      );
+      bunkBottle.position.set(-0.12, 0.07, 0.64);
+      bunkBottle.rotation.z = 1.22;
+      bunkBottle.rotation.y = 0.35;
+      g.add(bunkBottle);
       const frameRust = new THREE.Mesh(
         new THREE.BoxGeometry(0.22, 0.018, 0.09),
         new THREE.MeshStandardMaterial({ color: 0x5a2414, roughness: 0.7, metalness: 0.35 }),
