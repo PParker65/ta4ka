@@ -1977,6 +1977,15 @@ export class Prison {
     aisleBottle.position.set(-0.38, 0.05, 0.08);
     aisleBottle.rotation.z = 1.18;
     cell.add(aisleBottle);
+    const aisleCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    aisleCig.position.set(-0.18, 0.055, -0.72);
+    aisleCig.rotation.z = Math.PI / 2;
+    aisleCig.rotation.y = 0.45;
+    aisleCig.name = 'aisleCig';
+    cell.add(aisleCig);
     const handsBottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.045, 0.05, 0.2, 8),
       new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.9 }),

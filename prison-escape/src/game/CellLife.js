@@ -341,6 +341,15 @@ import {
   DAY7_LEHA_FOUND_BUNK,
   DAY7_LEHA_BURN,
   DAY7_LEHA_RED,
+  DAY7_LEHA_WAKE_HOLD,
+  DAY7_LEHA_WAKE_HOLD_WASH,
+  DAY7_LEHA_WAKE_HOLD_BUNK,
+  DAY7_LEHA_WAKE_FOUND,
+  DAY7_LEHA_WAKE_FOUND_BUNK,
+  DAY7_LEHA_WAKE_BURN,
+  DAY7_LEHA_WAKE_GONE,
+  DAY7_LEHA_WAKE_RED,
+  DAY7_LEHA_WAKE,
   DAY4_HATCH,
   DAY4_WALK,
   DAY4_WALK_WAIT,
@@ -1249,6 +1258,19 @@ export class CellLife {
               hold: holdStash(g.sim, { pocket: DAY5_LEHA_SHMON_HOLD, wash: DAY5_LEHA_SHMON_HOLD_WASH, bunk: DAY5_LEHA_SHMON_HOLD_BUNK }),
               ok: DAY5_LEHA_SHMON,
             })
+          : g.sim.day >= 7 && g.sim.phase.id === 'wake'
+            ? weekPick(g.sim, {
+                red: DAY7_LEHA_WAKE_RED,
+                gone: DAY7_LEHA_WAKE_GONE,
+                found: g.sim.stash === 'bunk' ? DAY7_LEHA_WAKE_FOUND_BUNK : DAY7_LEHA_WAKE_FOUND,
+                burn: DAY7_LEHA_WAKE_BURN,
+                hold: holdStash(g.sim, {
+                  pocket: DAY7_LEHA_WAKE_HOLD,
+                  wash: DAY7_LEHA_WAKE_HOLD_WASH,
+                  bunk: DAY7_LEHA_WAKE_HOLD_BUNK,
+                }),
+                ok: DAY7_LEHA_WAKE,
+              })
           : g.sim.day >= 7
           ? weekPick(g.sim, {
               red: DAY7_LEHA_RED,
