@@ -76,6 +76,7 @@ import {
   DAY2_VALERA_WASH,
   DAY2_VALERA_WASH_FOOD,
   DAY2_VALERA_WASH_NIGHT,
+  DAY2_VALERA_WASH_WAKE,
   DAY2_VALERA_SHMON,
   DAY2_VALERA_SHMON_CAUGHT,
   DAY2_VALERA_SHMON_WASH,
@@ -708,7 +709,7 @@ function valeraInCell(s) {
     }
     if (s.phase.id === 'wake') {
       if (s.stash === 'bunk') return DAY2_VALERA_BUNK;
-      if (s.stash === 'wash') return DAY2_VALERA_WASH;
+      if (s.stash === 'wash') return DAY2_VALERA_WASH_WAKE;
       return DAY2_VALERA_WAKE;
     }
     if (s.phase.id === 'food') {
