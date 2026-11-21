@@ -172,6 +172,8 @@ import {
   WEEK_VALERA,
   WEEK_VALERA_GONE,
   WEEK_VALERA_HOLD,
+  WEEK_VALERA_HOLD_WASH,
+  WEEK_VALERA_HOLD_BUNK,
   WEEK_VALERA_FOUND,
   WEEK_VALERA_FOUND_BUNK,
   WEEK_VALERA_BURN,
@@ -179,6 +181,8 @@ import {
   DAY7_VALERA,
   DAY7_VALERA_GONE,
   DAY7_VALERA_HOLD,
+  DAY7_VALERA_HOLD_WASH,
+  DAY7_VALERA_HOLD_BUNK,
   DAY7_VALERA_FOUND,
   DAY7_VALERA_FOUND_BUNK,
   DAY7_VALERA_BURN,
@@ -427,7 +431,7 @@ function valeraInCell(s) {
       gone: DAY7_VALERA_GONE,
       found: s.stash === 'bunk' ? DAY7_VALERA_FOUND_BUNK : DAY7_VALERA_FOUND,
       burn: DAY7_VALERA_BURN,
-      hold: DAY7_VALERA_HOLD,
+      hold: holdStash(s, { pocket: DAY7_VALERA_HOLD, wash: DAY7_VALERA_HOLD_WASH, bunk: DAY7_VALERA_HOLD_BUNK }),
       ok: DAY7_VALERA,
     });
   }
@@ -447,7 +451,7 @@ function valeraInCell(s) {
       gone: WEEK_VALERA_GONE,
       found: s.stash === 'bunk' ? WEEK_VALERA_FOUND_BUNK : WEEK_VALERA_FOUND,
       burn: WEEK_VALERA_BURN,
-      hold: WEEK_VALERA_HOLD,
+      hold: holdStash(s, { pocket: WEEK_VALERA_HOLD, wash: WEEK_VALERA_HOLD_WASH, bunk: WEEK_VALERA_HOLD_BUNK }),
       ok: WEEK_VALERA,
     });
   }

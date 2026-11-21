@@ -263,6 +263,12 @@ export class Game {
       this.input.pitch = -0.62;
       return;
     }
+    if (look === 'bath') {
+      this.player.position.set(0.45, 0, -15.4);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = -0.58;
+      return;
+    }
     const o = this.prison.cellOrigin;
     if (!o) return;
     this.hands.position.set(0, 0, 0);
