@@ -1120,6 +1120,17 @@ export class Prison {
       );
       winStreak.position.set(x - 0.06, 1.66, d / 2 - 0.145);
       cell.add(winStreak);
+      if (x === -1.35) {
+        const winCig = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+          new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+        );
+        winCig.position.set(x + 0.46, 1.88, d / 2 - 0.22);
+        winCig.rotation.z = Math.PI / 2;
+        winCig.rotation.y = 0.85;
+        winCig.name = 'winCig';
+        cell.add(winCig);
+      }
       for (let i = -2; i <= 2; i++) {
         this.box(0.022, 1.12, 0.022, bars, x + i * 0.18, 2.15, d / 2 - 0.16, cell);
       }

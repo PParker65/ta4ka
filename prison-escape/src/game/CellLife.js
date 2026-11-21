@@ -97,6 +97,13 @@ import {
   DAY6_SEDOY_WALK_FOUND_BUNK,
   DAY6_SEDOY_WAKE_HOLD_BUNK,
   DAY6_SEDOY_WAKE_FOUND_BUNK,
+  DAY6_SEDOY_WAKE_HOLD,
+  DAY6_SEDOY_WAKE_HOLD_WASH,
+  DAY6_SEDOY_WAKE_FOUND,
+  DAY6_SEDOY_WAKE_BURN,
+  DAY6_SEDOY_WAKE_GONE,
+  DAY6_SEDOY_WAKE_RED,
+  DAY6_SEDOY_WAKE,
   DAY7_SEDOY_WALK_HOLD_BUNK,
   DAY7_SEDOY_WALK_FOUND_BUNK,
   DAY7_SEDOY_NIGHT_HOLD_BUNK,
@@ -1045,10 +1052,19 @@ export class CellLife {
             ? DAY6_SEDOY_WALK_FOUND_BUNK
             : g.sim.day === 6 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
               ? DAY6_SEDOY_WALK_HOLD_BUNK
-          : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
-            ? DAY6_SEDOY_WAKE_FOUND_BUNK
-            : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
-              ? DAY6_SEDOY_WAKE_HOLD_BUNK
+          : g.sim.day === 6 && g.sim.phase.id === 'wake'
+            ? weekPick(g.sim, {
+                red: DAY6_SEDOY_WAKE_RED,
+                gone: DAY6_SEDOY_WAKE_GONE,
+                found: g.sim.stash === 'bunk' ? DAY6_SEDOY_WAKE_FOUND_BUNK : DAY6_SEDOY_WAKE_FOUND,
+                burn: DAY6_SEDOY_WAKE_BURN,
+                hold: holdStash(g.sim, {
+                  pocket: DAY6_SEDOY_WAKE_HOLD,
+                  wash: DAY6_SEDOY_WAKE_HOLD_WASH,
+                  bunk: DAY6_SEDOY_WAKE_HOLD_BUNK,
+                }),
+                ok: DAY6_SEDOY_WAKE,
+              })
           : g.sim.day >= 6
             ? weekPick(g.sim, {
                 red: DAY6_SEDOY_RED,
