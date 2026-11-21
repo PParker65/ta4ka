@@ -1531,6 +1531,14 @@ export class Prison {
     kettleSock.position.set(-0.48, 0.78, 0.22);
     kettleSock.rotation.set(1.2, 0.15, 0.28);
     cell.add(kettleSock);
+    const kettleBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.036, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    kettleBottle.position.set(-0.34, 0.78, 0.32);
+    kettleBottle.rotation.z = 1.18;
+    kettleBottle.rotation.y = 0.42;
+    cell.add(kettleBottle);
     const steam = new THREE.Group();
     steam.position.set(-0.15, 1.02, 0.15);
     cell.add(steam);
