@@ -910,6 +910,15 @@ function addProcessing(prison) {
   noTalk.position.set(2.48, 1.62, -20.6);
   noTalk.rotation.y = -Math.PI / 2;
   prison.group.add(noTalk);
+  const hallNCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallNCig.position.set(2.18, 0.055, -20.45);
+  hallNCig.rotation.z = Math.PI / 2;
+  hallNCig.rotation.y = -0.35;
+  hallNCig.name = 'hallNCig';
+  prison.group.add(hallNCig);
   const wet = new THREE.MeshStandardMaterial({ color: 0x3a4038, roughness: 0.2, metalness: 0.28 });
   for (const [x, z, s] of [
     [0.4, -24, 0.45],
