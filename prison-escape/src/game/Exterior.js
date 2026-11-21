@@ -876,6 +876,15 @@ function addProcessing(prison) {
   );
   line.position.set(-0.85, 0.045, -28);
   prison.group.add(line);
+  const hallLCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallLCig.position.set(-0.78, 0.055, -22.4);
+  hallLCig.rotation.z = Math.PI / 2;
+  hallLCig.rotation.y = 0.4;
+  hallLCig.name = 'hallLCig';
+  prison.group.add(hallLCig);
   const quiet = plaque('НЕ КУРИТЬ', 1.4, 0.28);
   quiet.position.set(-2.48, 1.85, -40);
   quiet.rotation.y = Math.PI / 2;
