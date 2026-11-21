@@ -257,6 +257,12 @@ export class Game {
       this.input.pitch = 0.92;
       return;
     }
+    if (look === 'cageb') {
+      this.player.position.set(1.55, 0, LAYOUT.corridorLen + 4.85);
+      this.input.yaw = Math.PI;
+      this.input.pitch = 0.92;
+      return;
+    }
     if (look === 'shall') {
       this.player.position.set(0.15, 0, -36.4);
       this.input.yaw = 0;

@@ -2861,6 +2861,15 @@ export class Prison {
     cageRagB.position.set(1.55, 3.08, -0.75);
     cageRagB.rotation.z = -0.16;
     g.add(cageRagB);
+    const cageBCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    cageBCig.position.set(1.62, 2.86, -0.72);
+    cageBCig.rotation.z = Math.PI / 2;
+    cageBCig.rotation.y = -0.3;
+    cageBCig.name = 'cageBCig';
+    g.add(cageBCig);
     const cageRagC = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.5, 0.04), cageRagMat);
     cageRagC.position.set(0.35, 3.04, 0.55);
     cageRagC.rotation.z = 0.12;

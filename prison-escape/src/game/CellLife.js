@@ -70,6 +70,7 @@ import {
   DAY2_VALERA_SHMON_WASH,
   DAY3_VALERA,
   DAY3_VALERA_WAKE,
+  DAY3_VALERA_FOOD,
   DAY3_VALERA_WAIT,
   DAY3_VALERA_HOLD,
   DAY3_VALERA_HOLD_WASH,
@@ -665,6 +666,13 @@ function valeraInCell(s) {
       if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
       if (s.malyava === 'burn') return DAY3_VALERA_BURN;
       return DAY3_VALERA_WAKE;
+    }
+    if (s.phase.id === 'food') {
+      if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
+      if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_FOUND_BUNK : DAY3_VALERA_FOUND;
+      if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
+      if (s.malyava === 'burn') return DAY3_VALERA_BURN;
+      return DAY3_VALERA_FOOD;
     }
     if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
     if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_FOUND_BUNK : DAY3_VALERA_FOUND;
