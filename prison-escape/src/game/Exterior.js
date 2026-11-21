@@ -480,6 +480,15 @@ function addProcessing(prison) {
   prison.group.add(jar);
   const tray = new THREE.MeshStandardMaterial({ color: 0xb0b4b0, metalness: 0.4, roughness: 0.45 });
   prison.box(0.28, 0.03, 0.18, tray, -0.95, 0.8, -22.15);
+  const medBottle = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.056, 0.22, 8),
+    new THREE.MeshStandardMaterial({ color: 0xc4a050, roughness: 0.24, metalness: 0.28, transparent: true, opacity: 0.9 }),
+  );
+  medBottle.position.set(-0.92, 0.09, -21.48);
+  medBottle.rotation.z = 1.18;
+  medBottle.rotation.y = 0.4;
+  medBottle.name = 'medBottle';
+  prison.group.add(medBottle);
 
   prison.interactables.push({
     id: 'bath',

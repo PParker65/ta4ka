@@ -161,6 +161,10 @@ import {
   DAY5_VALERA_HOLD_BUNK,
   DAY5_VALERA_NIGHT_HOLD_BUNK,
   DAY5_VALERA_NIGHT_FOUND_BUNK,
+  DAY5_VALERA_WAKE_HOLD_BUNK,
+  DAY5_VALERA_WAKE_FOUND_BUNK,
+  DAY5_VALERA_FOOD_HOLD_BUNK,
+  DAY5_VALERA_FOOD_FOUND_BUNK,
   DAY5_VALERA_FOUND,
   DAY5_VALERA_FOUND_BUNK,
   DAY5_VALERA_BURN,
@@ -460,6 +464,10 @@ function valeraInCell(s) {
     }
     if (s.phase.id === 'evening' && s.malyava === 'found' && s.stash === 'bunk') return DAY5_VALERA_NIGHT_FOUND_BUNK;
     if (s.phase.id === 'evening' && s.malyava === 'hold' && s.stash === 'bunk') return DAY5_VALERA_NIGHT_HOLD_BUNK;
+    if (s.phase.id === 'food' && s.malyava === 'found' && s.stash === 'bunk') return DAY5_VALERA_FOOD_FOUND_BUNK;
+    if (s.phase.id === 'food' && s.malyava === 'hold' && s.stash === 'bunk') return DAY5_VALERA_FOOD_HOLD_BUNK;
+    if (s.phase.id === 'wake' && s.malyava === 'found' && s.stash === 'bunk') return DAY5_VALERA_WAKE_FOUND_BUNK;
+    if (s.phase.id === 'wake' && s.malyava === 'hold' && s.stash === 'bunk') return DAY5_VALERA_WAKE_HOLD_BUNK;
     return weekPick(s, {
       red: DAY5_VALERA_RED,
       gone: DAY5_VALERA_GONE,
