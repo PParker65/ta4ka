@@ -1994,6 +1994,15 @@ export class Prison {
     handsBottle.rotation.z = 1.15;
     handsBottle.rotation.y = 0.4;
     cell.add(handsBottle);
+    const handsCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    handsCig.position.set(1.08, 0.055, 0.82);
+    handsCig.rotation.z = Math.PI / 2;
+    handsCig.rotation.y = 0.55;
+    handsCig.name = 'handsCig';
+    cell.add(handsCig);
     const bottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),
