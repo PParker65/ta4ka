@@ -509,7 +509,7 @@ function valeraInCell(s) {
         ok: DAY7_VALERA_SHMON,
       });
     }
-    return weekPick(s, {
+    const pack = weekPick(s, {
       red: DAY7_VALERA_RED,
       gone: DAY7_VALERA_GONE,
       found: s.stash === 'bunk' ? DAY7_VALERA_FOUND_BUNK : DAY7_VALERA_FOUND,
@@ -517,6 +517,12 @@ function valeraInCell(s) {
       hold: holdStash(s, { pocket: DAY7_VALERA_HOLD, wash: DAY7_VALERA_HOLD_WASH, bunk: DAY7_VALERA_HOLD_BUNK }),
       ok: DAY7_VALERA,
     });
+    const open =
+      s.phase.id === 'wake' ? 'Седьмой подъём' : s.phase.id === 'food' ? 'Седьмая пайка' : 'Седьмой отбой';
+    if (pack?.text?.startsWith('Седьмой день')) {
+      return { ...pack, text: open + pack.text.slice('Седьмой день'.length) };
+    }
+    return pack;
   }
   if (s.day >= 6) {
     if (s.phase.id === 'shmon') {

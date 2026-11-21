@@ -338,6 +338,10 @@ export class Game {
       this.player.position.set(o.x + 0.18, 0, o.z - 0.85);
       this.input.yaw = 0.08;
       this.input.pitch = -0.72;
+    } else if (look === 'stoolx') {
+      this.player.position.set(o.x + 0.22, 0, o.z + 1.22);
+      this.input.yaw = Math.PI;
+      this.input.pitch = -0.72;
     }
   }
 
