@@ -332,6 +332,8 @@ import {
   DAY4_FOOD_RED,
   DAY5_COURT,
   DAY5_COURT_GONE,
+  DAY5_NIGHT_MISS,
+  DAY5_NIGHT_GONE,
   DAY5_WALK,
   DAY5_WALK_GONE,
   DAY5_WALK_HOLD,
@@ -1027,7 +1029,9 @@ export class CellLife {
             : g.sim.day >= 5 && g.sim.courtTalk === 'self'
               ? DAY5_BACK_SELF
               : g.sim.day >= 5 && g.sim.malyava === 'gone'
-                ? DAY5_COURT_GONE
+                ? g.sim.phase.id === 'evening'
+                  ? DAY5_NIGHT_GONE
+                  : DAY5_COURT_GONE
               : g.sim.day === 5 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
                 ? DAY5_SEDOY_WALK_FOUND_BUNK
                 : g.sim.day === 5 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
@@ -1044,6 +1048,8 @@ export class CellLife {
                 ? DAY5_SEDOY_WAKE_FOUND_BUNK
                 : g.sim.day === 5 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                   ? DAY5_SEDOY_WAKE_HOLD_BUNK
+              : g.sim.day === 5 && g.sim.phase.id === 'evening'
+                ? DAY5_NIGHT_MISS
               : g.sim.day >= 5
                 ? DAY5_COURT
                 : g.sim.day >= 4 && g.sim.phase.id === 'shmon'

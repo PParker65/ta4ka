@@ -128,6 +128,10 @@ import {
   FOUND_NIGHT,
   DAY5_COURT,
   DAY5_COURT_GONE,
+  DAY5_NIGHT_MISS,
+  DAY5_NIGHT_GONE,
+  DAY5_SEDOY_NIGHT_HOLD_BUNK,
+  DAY5_SEDOY_NIGHT_FOUND_BUNK,
   DAY5_WAKE,
   DAY5_WAKE_GONE,
   DAY5_WAKE_FOUND,
@@ -1138,8 +1142,10 @@ function day5Evening(s) {
   if (s.courtTalk === 'cell') return DAY5_BACK_CELL;
   if (s.courtTalk === 'silent') return DAY5_BACK_SILENT;
   if (s.courtTalk === 'self') return DAY5_BACK_SELF;
-  if (s.malyava === 'gone') return DAY5_COURT_GONE;
-  return DAY5_COURT;
+  if (s.malyava === 'found' && s.stash === 'bunk') return DAY5_SEDOY_NIGHT_FOUND_BUNK;
+  if (s.malyava === 'hold' && s.stash === 'bunk') return DAY5_SEDOY_NIGHT_HOLD_BUNK;
+  if (s.malyava === 'gone') return DAY5_NIGHT_GONE;
+  return DAY5_NIGHT_MISS;
 }
 
 function eveningLine(s) {
