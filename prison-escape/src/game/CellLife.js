@@ -81,6 +81,8 @@ import {
   DAY5_SEDOY_WALK_FOUND_BUNK,
   DAY6_SEDOY_WALK_HOLD_BUNK,
   DAY6_SEDOY_WALK_FOUND_BUNK,
+  DAY6_SEDOY_WAKE_HOLD_BUNK,
+  DAY6_SEDOY_WAKE_FOUND_BUNK,
   DAY7_SEDOY_WALK_HOLD_BUNK,
   DAY7_SEDOY_WALK_FOUND_BUNK,
   DAY7_SEDOY_NIGHT_HOLD_BUNK,
@@ -355,6 +357,8 @@ import {
   DAY6_NIGHT_HOLD_BUNK,
   DAY6_LEHA_FOOD_HOLD_BUNK,
   DAY6_LEHA_FOOD_FOUND_BUNK,
+  DAY6_LEHA_WAKE_HOLD_BUNK,
+  DAY6_LEHA_WAKE_FOUND_BUNK,
   DAY6_FOOD,
   DAY6_FOOD_GONE,
   DAY6_FOOD_RED,
@@ -975,6 +979,10 @@ export class CellLife {
             ? DAY6_SEDOY_WALK_FOUND_BUNK
             : g.sim.day === 6 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
               ? DAY6_SEDOY_WALK_HOLD_BUNK
+          : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+            ? DAY6_SEDOY_WAKE_FOUND_BUNK
+            : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+              ? DAY6_SEDOY_WAKE_HOLD_BUNK
           : g.sim.day >= 6
             ? weekPick(g.sim, {
                 red: DAY6_SEDOY_RED,
@@ -1138,6 +1146,10 @@ export class CellLife {
             ? DAY6_LEHA_FOOD_FOUND_BUNK
             : g.sim.day === 6 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
               ? DAY6_LEHA_FOOD_HOLD_BUNK
+          : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+            ? DAY6_LEHA_WAKE_FOUND_BUNK
+            : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+              ? DAY6_LEHA_WAKE_HOLD_BUNK
           : g.sim.day >= 6
           ? weekPick(g.sim, {
               red: DAY6_NIGHT_RED,
