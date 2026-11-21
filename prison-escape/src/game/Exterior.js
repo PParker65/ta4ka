@@ -496,6 +496,13 @@ function addProcessing(prison) {
   medBottle.rotation.y = 0.4;
   medBottle.name = 'medBottle';
   prison.group.add(medBottle);
+  const medTin = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.05, 0.07, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8a8680, metalness: 0.45, roughness: 0.4 }),
+  );
+  medTin.position.set(-1.08, 0.06, -22.78);
+  medTin.name = 'medTin';
+  prison.group.add(medTin);
 
   prison.interactables.push({
     id: 'bath',
