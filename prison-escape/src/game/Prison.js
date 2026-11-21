@@ -1983,6 +1983,15 @@ export class Prison {
     calBottle.position.set(-LAYOUT.cellW / 2 + 0.52, 0.05, 0.68);
     calBottle.rotation.z = 1.18;
     cell.add(calBottle);
+    const calCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    calCig.position.set(-LAYOUT.cellW / 2 + 0.58, 0.055, 0.55);
+    calCig.rotation.z = Math.PI / 2;
+    calCig.rotation.y = 0.35;
+    calCig.name = 'calCig';
+    cell.add(calCig);
     const calScrap = new THREE.Mesh(
       new THREE.BoxGeometry(0.14, 0.008, 0.1),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
