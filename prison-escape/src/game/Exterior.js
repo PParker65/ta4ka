@@ -741,6 +741,13 @@ function addProcessing(prison) {
   shallBottle.rotation.y = 0.4;
   shallBottle.name = 'shallBottle';
   prison.group.add(shallBottle);
+  const shallTin = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.05, 0.07, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8a8680, metalness: 0.45, roughness: 0.4 }),
+  );
+  shallTin.position.set(0.18, 0.055, -35.12);
+  shallTin.name = 'shallTin';
+  prison.group.add(shallTin);
   const belt = new THREE.Mesh(
     new THREE.BoxGeometry(0.42, 0.015, 0.05),
     new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.8 }),
