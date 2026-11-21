@@ -771,6 +771,15 @@ function addProcessing(prison) {
   shallTin.position.set(0.18, 0.055, -35.12);
   shallTin.name = 'shallTin';
   prison.group.add(shallTin);
+  const shallCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  shallCig.position.set(-0.08, 0.055, -35.38);
+  shallCig.rotation.z = Math.PI / 2;
+  shallCig.rotation.y = 0.45;
+  shallCig.name = 'shallCig';
+  prison.group.add(shallCig);
   const belt = new THREE.Mesh(
     new THREE.BoxGeometry(0.42, 0.015, 0.05),
     new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.8 }),
