@@ -464,6 +464,13 @@ function addProcessing(prison) {
   photoBottle.rotation.y = 0.35;
   photoBottle.name = 'photoBottle';
   prison.group.add(photoBottle);
+  const photoTin = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.05, 0.07, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8a8680, metalness: 0.45, roughness: 0.4 }),
+  );
+  photoTin.position.set(0.82, 0.06, -27.52);
+  photoTin.name = 'photoTin';
+  prison.group.add(photoTin);
 
   prison.interactables.push({
     id: 'med',
