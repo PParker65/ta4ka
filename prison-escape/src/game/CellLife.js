@@ -219,6 +219,15 @@ import {
   DAY7_VALERA_WAKE_FOUND_BUNK,
   DAY7_VALERA_WAKE_BURN,
   DAY7_VALERA_WAKE_RED,
+  DAY7_VALERA_FOOD,
+  DAY7_VALERA_FOOD_GONE,
+  DAY7_VALERA_FOOD_HOLD,
+  DAY7_VALERA_FOOD_HOLD_WASH,
+  DAY7_VALERA_FOOD_HOLD_BUNK,
+  DAY7_VALERA_FOOD_FOUND,
+  DAY7_VALERA_FOOD_FOUND_BUNK,
+  DAY7_VALERA_FOOD_BURN,
+  DAY7_VALERA_FOOD_RED,
   DAY3_NOTE,
   DAY3_NOTE_SHMON,
   DAY3_WALK,
@@ -526,6 +535,16 @@ function valeraInCell(s) {
         burn: DAY7_VALERA_WAKE_BURN,
         hold: holdStash(s, { pocket: DAY7_VALERA_WAKE_HOLD, wash: DAY7_VALERA_WAKE_HOLD_WASH, bunk: DAY7_VALERA_WAKE_HOLD_BUNK }),
         ok: DAY7_VALERA_WAKE,
+      });
+    }
+    if (s.phase.id === 'food') {
+      return weekPick(s, {
+        red: DAY7_VALERA_FOOD_RED,
+        gone: DAY7_VALERA_FOOD_GONE,
+        found: s.stash === 'bunk' ? DAY7_VALERA_FOOD_FOUND_BUNK : DAY7_VALERA_FOOD_FOUND,
+        burn: DAY7_VALERA_FOOD_BURN,
+        hold: holdStash(s, { pocket: DAY7_VALERA_FOOD_HOLD, wash: DAY7_VALERA_FOOD_HOLD_WASH, bunk: DAY7_VALERA_FOOD_HOLD_BUNK }),
+        ok: DAY7_VALERA_FOOD,
       });
     }
     const pack = weekPick(s, {

@@ -2856,6 +2856,15 @@ export class Prison {
     cageRagC.position.set(0.35, 3.04, 0.55);
     cageRagC.rotation.z = 0.12;
     g.add(cageRagC);
+    const cageCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    cageCig.position.set(0.42, 2.82, 0.58);
+    cageCig.rotation.z = Math.PI / 2;
+    cageCig.rotation.y = 0.4;
+    cageCig.name = 'cageCig';
+    g.add(cageCig);
     const cageRust = new THREE.MeshStandardMaterial({ color: 0x5a3824, roughness: 0.7, metalness: 0.2 });
     this.box(1.55, 0.04, 0.07, cageRust, -0.35, 3.34, 0.55, g);
     this.box(0.07, 0.04, 1.2, cageRust, 1.15, 3.34, -0.25, g);
