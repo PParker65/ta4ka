@@ -341,6 +341,15 @@ export class Prison {
       hatchSock.position.set(side * 0.16, 1.22, LAYOUT.doorW / 2 - 0.12);
       hatchSock.rotation.z = 0.25;
       door.add(hatchSock);
+      const hatchCig = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+        new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+      );
+      hatchCig.position.set(side * 0.16, 1.42, LAYOUT.doorW / 2 - 0.08);
+      hatchCig.rotation.x = Math.PI / 2;
+      hatchCig.rotation.z = 0.35;
+      hatchCig.name = 'hatchCig';
+      door.add(hatchCig);
       const rim = new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.5, roughness: 0.4 });
       this.box(0.03, 0.28, 0.42, rim, side * 0.13, 1.52, LAYOUT.doorW / 2, door);
       this.box(0.03, 0.03, 0.42, rim, side * 0.13, 1.66, LAYOUT.doorW / 2, door);

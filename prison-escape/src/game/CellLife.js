@@ -412,6 +412,13 @@ import {
   DAY6_NIGHT_HOLD_BUNK,
   DAY6_LEHA_FOOD_HOLD_BUNK,
   DAY6_LEHA_FOOD_FOUND_BUNK,
+  DAY6_LEHA_FOOD_HOLD,
+  DAY6_LEHA_FOOD_HOLD_WASH,
+  DAY6_LEHA_FOOD_FOUND,
+  DAY6_LEHA_FOOD_BURN,
+  DAY6_LEHA_FOOD_GONE,
+  DAY6_LEHA_FOOD_RED,
+  DAY6_LEHA_FOOD,
   DAY6_LEHA_WAKE_HOLD_BUNK,
   DAY6_LEHA_WAKE_HOLD,
   DAY6_LEHA_WAKE_HOLD_WASH,
@@ -1242,10 +1249,19 @@ export class CellLife {
               hold: holdStash(g.sim, { pocket: DAY7_LEHA_HOLD, wash: DAY7_LEHA_HOLD_WASH, bunk: DAY7_LEHA_HOLD_BUNK }),
               ok: DAY7_LEHA,
             })
-          : g.sim.day === 6 && g.sim.phase.id === 'food' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
-            ? DAY6_LEHA_FOOD_FOUND_BUNK
-            : g.sim.day === 6 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
-              ? DAY6_LEHA_FOOD_HOLD_BUNK
+          : g.sim.day === 6 && g.sim.phase.id === 'food'
+            ? weekPick(g.sim, {
+                red: DAY6_LEHA_FOOD_RED,
+                gone: DAY6_LEHA_FOOD_GONE,
+                found: g.sim.stash === 'bunk' ? DAY6_LEHA_FOOD_FOUND_BUNK : DAY6_LEHA_FOOD_FOUND,
+                burn: DAY6_LEHA_FOOD_BURN,
+                hold: holdStash(g.sim, {
+                  pocket: DAY6_LEHA_FOOD_HOLD,
+                  wash: DAY6_LEHA_FOOD_HOLD_WASH,
+                  bunk: DAY6_LEHA_FOOD_HOLD_BUNK,
+                }),
+                ok: DAY6_LEHA_FOOD,
+              })
           : g.sim.day === 6 && g.sim.phase.id === 'wake'
             ? weekPick(g.sim, {
                 red: DAY6_LEHA_WAKE_RED,
