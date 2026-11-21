@@ -1393,6 +1393,15 @@ export class Prison {
     washBottle.position.set(-0.18, 0.05, 0.02);
     washBottle.rotation.z = 1.18;
     g.add(washBottle);
+    const washCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    washCig.position.set(-0.08, 0.055, 0.18);
+    washCig.rotation.z = Math.PI / 2;
+    washCig.rotation.y = 0.4;
+    washCig.name = 'washCig';
+    g.add(washCig);
     const washScrap = new THREE.Mesh(
       new THREE.BoxGeometry(0.14, 0.008, 0.1),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
