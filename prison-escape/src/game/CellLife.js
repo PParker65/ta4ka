@@ -265,6 +265,8 @@ import {
   DAY5_LEHA_SHMON_FOUND_BUNK,
   DAY5_LEHA_SHMON_BURN,
   DAY5_LEHA_SHMON_RED,
+  DAY5_LEHA_FOOD_HOLD_BUNK,
+  DAY5_LEHA_FOOD_FOUND_BUNK,
   DAY6_LEHA_SHMON,
   DAY6_LEHA_SHMON_GONE,
   DAY6_LEHA_SHMON_HOLD,
@@ -1159,6 +1161,10 @@ export class CellLife {
               hold: holdStash(g.sim, { pocket: DAY6_NIGHT_HOLD, wash: DAY6_NIGHT_HOLD_WASH, bunk: DAY6_NIGHT_HOLD_BUNK }),
               ok: DAY6_NIGHT,
             })
+          : g.sim.day === 5 && g.sim.phase.id === 'food' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+            ? DAY5_LEHA_FOOD_FOUND_BUNK
+            : g.sim.day === 5 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+              ? DAY5_LEHA_FOOD_HOLD_BUNK
           : g.sim.day >= 5 && (g.sim.courtTalk === 'cell' || g.sim.malyava === 'admin')
           ? DAY5_WAKE_RED
           : g.sim.day >= 5 && g.sim.malyava === 'gone'
