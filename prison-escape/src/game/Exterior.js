@@ -825,6 +825,15 @@ function addProcessing(prison) {
   hallBag2.position.set(1.55, 0.12, -25.2);
   hallBag2.rotation.y = -0.55;
   prison.group.add(hallBag2);
+  const hallXCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallXCig.position.set(1.42, 0.055, -24.95);
+  hallXCig.rotation.z = Math.PI / 2;
+  hallXCig.rotation.y = 0.4;
+  hallXCig.name = 'hallXCig';
+  prison.group.add(hallXCig);
   const hallBag3 = hallBag.clone();
   hallBag3.position.set(-1.4, 0.12, -17.4);
   hallBag3.rotation.y = 0.2;
