@@ -455,6 +455,15 @@ function addProcessing(prison) {
   const chart = plaque('180\n170\n160', 0.5, 1.1);
   chart.position.set(2.3, 1.4, -28.2);
   prison.group.add(chart);
+  const photoBottle = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.056, 0.22, 8),
+    new THREE.MeshStandardMaterial({ color: 0xc4a050, roughness: 0.24, metalness: 0.28, transparent: true, opacity: 0.9 }),
+  );
+  photoBottle.position.set(1.15, 0.08, -27.85);
+  photoBottle.rotation.z = 1.18;
+  photoBottle.rotation.y = 0.35;
+  photoBottle.name = 'photoBottle';
+  prison.group.add(photoBottle);
 
   prison.interactables.push({
     id: 'med',

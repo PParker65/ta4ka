@@ -157,6 +157,10 @@ import {
   DAY5_VALERA,
   DAY5_VALERA_GONE,
   DAY5_VALERA_HOLD,
+  DAY5_VALERA_HOLD_WASH,
+  DAY5_VALERA_HOLD_BUNK,
+  DAY5_VALERA_NIGHT_HOLD_BUNK,
+  DAY5_VALERA_NIGHT_FOUND_BUNK,
   DAY5_VALERA_FOUND,
   DAY5_VALERA_FOUND_BUNK,
   DAY5_VALERA_BURN,
@@ -454,12 +458,14 @@ function valeraInCell(s) {
         ok: DAY5_VALERA_SHMON,
       });
     }
+    if (s.phase.id === 'evening' && s.malyava === 'found' && s.stash === 'bunk') return DAY5_VALERA_NIGHT_FOUND_BUNK;
+    if (s.phase.id === 'evening' && s.malyava === 'hold' && s.stash === 'bunk') return DAY5_VALERA_NIGHT_HOLD_BUNK;
     return weekPick(s, {
       red: DAY5_VALERA_RED,
       gone: DAY5_VALERA_GONE,
       found: s.stash === 'bunk' ? DAY5_VALERA_FOUND_BUNK : DAY5_VALERA_FOUND,
       burn: DAY5_VALERA_BURN,
-      hold: DAY5_VALERA_HOLD,
+      hold: holdStash(s, { pocket: DAY5_VALERA_HOLD, wash: DAY5_VALERA_HOLD_WASH, bunk: DAY5_VALERA_HOLD_BUNK }),
       ok: DAY5_VALERA,
     });
   }

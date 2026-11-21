@@ -251,6 +251,12 @@ export class Game {
       this.input.pitch = -0.52;
       return;
     }
+    if (look === 'photo') {
+      this.player.position.set(-0.2, 0, -28.2);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = -0.52;
+      return;
+    }
     const o = this.prison.cellOrigin;
     if (!o) return;
     this.hands.position.set(0, 0, 0);
