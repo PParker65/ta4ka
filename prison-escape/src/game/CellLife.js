@@ -34,6 +34,8 @@ import {
   DAY5_SEDOY_SHMON,
   DAY5_SEDOY_SHMON_GONE,
   DAY5_SEDOY_SHMON_HOLD,
+  DAY5_SEDOY_SHMON_HOLD_WASH,
+  DAY5_SEDOY_SHMON_HOLD_BUNK,
   DAY5_SEDOY_SHMON_FOUND,
   DAY5_SEDOY_SHMON_FOUND_BUNK,
   DAY5_SEDOY_SHMON_BURN,
@@ -140,6 +142,8 @@ import {
   DAY5_VALERA_SHMON,
   DAY5_VALERA_SHMON_GONE,
   DAY5_VALERA_SHMON_HOLD,
+  DAY5_VALERA_SHMON_HOLD_WASH,
+  DAY5_VALERA_SHMON_HOLD_BUNK,
   DAY5_VALERA_SHMON_FOUND,
   DAY5_VALERA_SHMON_FOUND_BUNK,
   DAY5_VALERA_SHMON_BURN,
@@ -285,6 +289,8 @@ import {
   DAY5_LEHA_SHMON,
   DAY5_LEHA_SHMON_GONE,
   DAY5_LEHA_SHMON_HOLD,
+  DAY5_LEHA_SHMON_HOLD_WASH,
+  DAY5_LEHA_SHMON_HOLD_BUNK,
   DAY5_LEHA_SHMON_FOUND,
   DAY5_LEHA_SHMON_FOUND_BUNK,
   DAY5_LEHA_SHMON_BURN,
@@ -470,7 +476,7 @@ function valeraInCell(s) {
         gone: DAY5_VALERA_SHMON_GONE,
         found: s.stash === 'bunk' ? DAY5_VALERA_SHMON_FOUND_BUNK : DAY5_VALERA_SHMON_FOUND,
         burn: DAY5_VALERA_SHMON_BURN,
-        hold: DAY5_VALERA_SHMON_HOLD,
+        hold: holdStash(s, { pocket: DAY5_VALERA_SHMON_HOLD, wash: DAY5_VALERA_SHMON_HOLD_WASH, bunk: DAY5_VALERA_SHMON_HOLD_BUNK }),
         ok: DAY5_VALERA_SHMON,
       });
     }
@@ -979,7 +985,7 @@ export class CellLife {
                 gone: DAY5_SEDOY_SHMON_GONE,
                 found: g.sim.stash === 'bunk' ? DAY5_SEDOY_SHMON_FOUND_BUNK : DAY5_SEDOY_SHMON_FOUND,
                 burn: DAY5_SEDOY_SHMON_BURN,
-                hold: DAY5_SEDOY_SHMON_HOLD,
+                hold: holdStash(g.sim, { pocket: DAY5_SEDOY_SHMON_HOLD, wash: DAY5_SEDOY_SHMON_HOLD_WASH, bunk: DAY5_SEDOY_SHMON_HOLD_BUNK }),
                 ok: DAY5_SEDOY_SHMON,
               })
           : g.sim.day === 7 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
@@ -1189,7 +1195,7 @@ export class CellLife {
               gone: DAY5_LEHA_SHMON_GONE,
               found: g.sim.stash === 'bunk' ? DAY5_LEHA_SHMON_FOUND_BUNK : DAY5_LEHA_SHMON_FOUND,
               burn: DAY5_LEHA_SHMON_BURN,
-              hold: DAY5_LEHA_SHMON_HOLD,
+              hold: holdStash(g.sim, { pocket: DAY5_LEHA_SHMON_HOLD, wash: DAY5_LEHA_SHMON_HOLD_WASH, bunk: DAY5_LEHA_SHMON_HOLD_BUNK }),
               ok: DAY5_LEHA_SHMON,
             })
           : g.sim.day >= 7

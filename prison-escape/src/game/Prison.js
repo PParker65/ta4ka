@@ -698,6 +698,14 @@ export class Prison {
     doorSock.rotation.y = 0.55;
     doorSock.name = 'doorSock';
     this.group.add(doorSock);
+    const doorPaper = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.008, 0.08),
+      new THREE.MeshStandardMaterial({ color: 0xc8c0a8, roughness: 0.85 }),
+    );
+    doorPaper.position.set(ox - w / 2 + 0.98, 0.03, 3.14);
+    doorPaper.rotation.y = 0.4;
+    doorPaper.name = 'doorPaper';
+    this.group.add(doorPaper);
     this.ragMesh = rag;
     this.interactables.push({
       id: 'rag',

@@ -72,6 +72,8 @@ import {
   DAY5_SHMON,
   DAY5_SHMON_GONE,
   DAY5_SHMON_HOLD,
+  DAY5_SHMON_HOLD_WASH,
+  DAY5_SHMON_HOLD_BUNK,
   DAY5_SHMON_FOUND,
   DAY5_SHMON_FOUND_BUNK,
   DAY5_SHMON_BURN,
@@ -852,7 +854,7 @@ export function onPhaseEnter(game, id) {
     if (door && !door.open) g.prison.openDoor(door);
     g.audio.clang();
     g.subtitle('Конвой в хате. К стенам. Руки видно.');
-    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 5) {
+    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 6) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
@@ -915,9 +917,9 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, weekPick(s, {
         red: DAY5_SHMON_RED,
         gone: DAY5_SHMON_GONE,
-        found: DAY5_SHMON_FOUND,
+        found: s.stash === 'bunk' ? DAY5_SHMON_FOUND_BUNK : DAY5_SHMON_FOUND,
         burn: DAY5_SHMON_BURN,
-        hold: DAY5_SHMON_HOLD,
+        hold: holdStash(s, { pocket: DAY5_SHMON_HOLD, wash: DAY5_SHMON_HOLD_WASH, bunk: DAY5_SHMON_HOLD_BUNK }),
         ok: DAY5_SHMON,
       }));
       return;
@@ -960,7 +962,7 @@ export function onPhaseEnter(game, id) {
     if (
       s.malyava === 'hold' &&
       s.stash !== 'wash' &&
-      ((s.day === 3 && s.seenDay3Shmon) || (s.day === 4 && s.seenDay4Shmon))
+      ((s.day === 3 && s.seenDay3Shmon) || (s.day === 4 && s.seenDay4Shmon) || (s.day === 5 && s.seenDay5Shmon))
     ) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
