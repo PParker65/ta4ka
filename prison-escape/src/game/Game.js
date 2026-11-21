@@ -248,7 +248,7 @@ export class Game {
     if (look === 'shall') {
       this.player.position.set(0.15, 0, -36.4);
       this.input.yaw = 0;
-      this.input.pitch = 0.08;
+      this.input.pitch = -0.52;
       return;
     }
     const o = this.prison.cellOrigin;

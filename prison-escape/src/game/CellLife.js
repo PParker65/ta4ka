@@ -81,6 +81,10 @@ import {
   DAY5_SEDOY_WALK_FOUND_BUNK,
   DAY5_SEDOY_NIGHT_HOLD_BUNK,
   DAY5_SEDOY_NIGHT_FOUND_BUNK,
+  DAY5_SEDOY_WAKE_HOLD_BUNK,
+  DAY5_SEDOY_WAKE_FOUND_BUNK,
+  DAY5_SEDOY_FOOD_HOLD_BUNK,
+  DAY5_SEDOY_FOOD_FOUND_BUNK,
   DAY6_SEDOY_WALK_HOLD_BUNK,
   DAY6_SEDOY_WALK_FOUND_BUNK,
   DAY6_SEDOY_WAKE_HOLD_BUNK,
@@ -1014,6 +1018,14 @@ export class CellLife {
                 ? DAY5_SEDOY_NIGHT_FOUND_BUNK
                 : g.sim.day === 5 && g.sim.phase.id === 'evening' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
                   ? DAY5_SEDOY_NIGHT_HOLD_BUNK
+              : g.sim.day === 5 && g.sim.phase.id === 'food' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                ? DAY5_SEDOY_FOOD_FOUND_BUNK
+                : g.sim.day === 5 && g.sim.phase.id === 'food' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                  ? DAY5_SEDOY_FOOD_HOLD_BUNK
+              : g.sim.day === 5 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
+                ? DAY5_SEDOY_WAKE_FOUND_BUNK
+                : g.sim.day === 5 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
+                  ? DAY5_SEDOY_WAKE_HOLD_BUNK
               : g.sim.day >= 5
                 ? DAY5_COURT
                 : g.sim.day >= 4 && g.sim.phase.id === 'shmon'
