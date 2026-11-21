@@ -1861,6 +1861,17 @@ export class Prison {
       stoolScratch.rotation.x = -Math.PI / 2;
       stoolScratch.position.set(x + 0.04, 0.478, z - 0.03);
       cell.add(stoolScratch);
+      if (z < -0.2) {
+        const stoolCig = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+          new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+        );
+        stoolCig.position.set(x + 0.02, 0.50, z + 0.02);
+        stoolCig.rotation.z = Math.PI / 2;
+        stoolCig.rotation.y = 0.45;
+        stoolCig.name = 'stoolCig';
+        cell.add(stoolCig);
+      }
       for (const [sx, sz] of [
         [-0.11, -0.11],
         [0.11, -0.11],

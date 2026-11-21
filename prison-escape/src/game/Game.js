@@ -334,6 +334,10 @@ export class Game {
       this.player.position.set(o.x - 0.2, 0, o.z + 0.15);
       this.input.yaw = 0.18;
       this.input.pitch = 0.92;
+    } else if (look === 'stool') {
+      this.player.position.set(o.x + 0.18, 0, o.z - 0.85);
+      this.input.yaw = 0.08;
+      this.input.pitch = -0.72;
     }
   }
 
