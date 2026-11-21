@@ -692,6 +692,15 @@ export class Prison {
     doorBottle.rotation.y = 0.35;
     doorBottle.name = 'doorBottle';
     this.group.add(doorBottle);
+    const doorFloorCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    doorFloorCig.position.set(ox - w / 2 + 0.72, 0.055, 3.35);
+    doorFloorCig.rotation.z = Math.PI / 2;
+    doorFloorCig.rotation.y = 0.35;
+    doorFloorCig.name = 'doorFloorCig';
+    this.group.add(doorFloorCig);
     const doorStick = new THREE.Mesh(
       new THREE.BoxGeometry(0.035, 1.12, 0.035),
       new THREE.MeshStandardMaterial({ color: 0x5a3a22, roughness: 0.9 }),
