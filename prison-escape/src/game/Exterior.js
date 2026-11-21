@@ -471,6 +471,15 @@ function addProcessing(prison) {
   photoTin.position.set(0.82, 0.06, -27.52);
   photoTin.name = 'photoTin';
   prison.group.add(photoTin);
+  const photoCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  photoCig.position.set(0.55, 0.055, -27.72);
+  photoCig.rotation.z = Math.PI / 2;
+  photoCig.rotation.y = 0.4;
+  photoCig.name = 'photoCig';
+  prison.group.add(photoCig);
 
   prison.interactables.push({
     id: 'med',
