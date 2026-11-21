@@ -893,6 +893,15 @@ function addProcessing(prison) {
   arrow.position.set(2.48, 1.55, -33.8);
   arrow.rotation.y = -Math.PI / 2;
   prison.group.add(arrow);
+  const hallACig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallACig.position.set(2.18, 0.055, -33.65);
+  hallACig.rotation.z = Math.PI / 2;
+  hallACig.rotation.y = -0.35;
+  hallACig.name = 'hallACig';
+  prison.group.add(hallACig);
   const halt = plaque('СТОЙ', 0.55, 0.22);
   halt.position.set(-2.48, 1.58, -27.2);
   halt.rotation.y = Math.PI / 2;
