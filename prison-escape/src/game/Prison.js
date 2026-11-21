@@ -3127,6 +3127,15 @@ export class Prison {
     wallBottle.position.set(3.72, 0.05, -0.22);
     wallBottle.rotation.z = 1.22;
     g.add(wallBottle);
+    const wallCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    wallCig.position.set(3.58, 0.055, -0.48);
+    wallCig.rotation.z = Math.PI / 2;
+    wallCig.rotation.y = 0.5;
+    wallCig.name = 'wallCig';
+    g.add(wallCig);
     const wallPaper = new THREE.Mesh(
       new THREE.BoxGeometry(0.16, 0.008, 0.11),
       new THREE.MeshStandardMaterial({ color: 0xc8b898, roughness: 0.92 }),
