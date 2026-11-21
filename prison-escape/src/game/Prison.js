@@ -2603,6 +2603,15 @@ export class Prison {
     gateBottle.position.set(0.02, 0.06, -0.92);
     gateBottle.rotation.z = 1.18;
     g.add(gateBottle);
+    const gateCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    gateCig.position.set(0.18, 0.055, -0.68);
+    gateCig.rotation.z = Math.PI / 2;
+    gateCig.rotation.y = 0.4;
+    gateCig.name = 'gateCig';
+    g.add(gateCig);
     const haltYard = wallScratch('СТОЙ');
     haltYard.scale.set(1.1, 1.1, 1.1);
     haltYard.position.set(-3.15, 2.05, wallZ + 0.22);
