@@ -25,6 +25,8 @@ import {
   DAY2_SEDOY_SHMON_WASH,
   DAY4_SEDOY_SHMON_WAIT,
   DAY4_SEDOY_SHMON_WASH,
+  DAY4_SEDOY_SHMON_HOLD,
+  DAY4_SEDOY_SHMON_HOLD_BUNK,
   DAY4_SEDOY_SHMON_FOUND,
   DAY4_SEDOY_SHMON_FOUND_BUNK,
   DAY4_SEDOY_SHMON_BURN,
@@ -129,6 +131,8 @@ import {
   DAY4_VALERA_RED,
   DAY4_VALERA_SHMON_WAIT,
   DAY4_VALERA_SHMON_WASH,
+  DAY4_VALERA_SHMON_HOLD,
+  DAY4_VALERA_SHMON_HOLD_BUNK,
   DAY4_VALERA_SHMON_FOUND,
   DAY4_VALERA_SHMON_FOUND_BUNK,
   DAY4_VALERA_SHMON_BURN,
@@ -272,6 +276,8 @@ import {
   DAY4_LEHA_RED,
   DAY4_LEHA_SHMON_WAIT,
   DAY4_LEHA_SHMON_WASH,
+  DAY4_LEHA_SHMON_HOLD,
+  DAY4_LEHA_SHMON_HOLD_BUNK,
   DAY4_LEHA_SHMON_FOUND,
   DAY4_LEHA_SHMON_FOUND_BUNK,
   DAY4_LEHA_SHMON_BURN,
@@ -490,6 +496,8 @@ function valeraInCell(s) {
         found: s.stash === 'bunk' ? DAY4_VALERA_SHMON_FOUND_BUNK : DAY4_VALERA_SHMON_FOUND,
         burn: DAY4_VALERA_SHMON_BURN,
         wash: DAY4_VALERA_SHMON_WASH,
+        hold: DAY4_VALERA_SHMON_HOLD,
+        holdBunk: DAY4_VALERA_SHMON_HOLD_BUNK,
         wait: DAY4_VALERA_SHMON_WAIT,
       });
     }
@@ -536,6 +544,9 @@ function day4ShmonTalk(s, packs) {
   if (weekRed(s)) return packs.red;
   if (s.malyava === 'found') return packs.found;
   if (s.malyava === 'burn') return packs.burn;
+  if (s.malyava === 'hold' && s.stash === 'wash') return packs.wash;
+  if (s.malyava === 'hold' && s.stash === 'bunk' && packs.holdBunk) return packs.holdBunk;
+  if (s.malyava === 'hold' && packs.hold) return packs.hold;
   if (s.malyava === 'hold') return packs.wash;
   return packs.wait;
 }
@@ -1058,6 +1069,8 @@ export class CellLife {
                       found: g.sim.stash === 'bunk' ? DAY4_SEDOY_SHMON_FOUND_BUNK : DAY4_SEDOY_SHMON_FOUND,
                       burn: DAY4_SEDOY_SHMON_BURN,
                       wash: DAY4_SEDOY_SHMON_WASH,
+                      hold: DAY4_SEDOY_SHMON_HOLD,
+                      holdBunk: DAY4_SEDOY_SHMON_HOLD_BUNK,
                       wait: DAY4_SEDOY_SHMON_WAIT,
                     })
                 : g.sim.day >= 4 && g.sim.phase.id === 'food'
@@ -1249,6 +1262,8 @@ export class CellLife {
                 found: g.sim.stash === 'bunk' ? DAY4_LEHA_SHMON_FOUND_BUNK : DAY4_LEHA_SHMON_FOUND,
                 burn: DAY4_LEHA_SHMON_BURN,
                 wash: DAY4_LEHA_SHMON_WASH,
+                hold: DAY4_LEHA_SHMON_HOLD,
+                holdBunk: DAY4_LEHA_SHMON_HOLD_BUNK,
                 wait: DAY4_LEHA_SHMON_WAIT,
               })
           : g.sim.day >= 4

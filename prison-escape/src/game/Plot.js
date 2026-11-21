@@ -63,6 +63,8 @@ import {
   DAY3_SHMON_RED,
   DAY4_SHMON_WAIT,
   DAY4_SHMON_WASH,
+  DAY4_SHMON_HOLD,
+  DAY4_SHMON_HOLD_BUNK,
   DAY4_SHMON_FOUND,
   DAY4_SHMON_FOUND_BUNK,
   DAY4_SHMON_BURN,
@@ -850,7 +852,7 @@ export function onPhaseEnter(game, id) {
     if (door && !door.open) g.prison.openDoor(door);
     g.audio.clang();
     g.subtitle('Конвой в хате. К стенам. Руки видно.');
-    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 4) {
+    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 5) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
@@ -955,7 +957,11 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'food') {
     if (g.prison.foodTray) g.prison.foodTray.visible = true;
-    if (s.day === 3 && s.malyava === 'hold' && s.stash !== 'wash' && s.seenDay3Shmon) {
+    if (
+      s.malyava === 'hold' &&
+      s.stash !== 'wash' &&
+      ((s.day === 3 && s.seenDay3Shmon) || (s.day === 4 && s.seenDay4Shmon))
+    ) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
@@ -1102,9 +1108,9 @@ function day4Wake(s) {
 
 function day4Shmon(s) {
   if (weekRed(s)) return DAY4_SHMON_RED;
-  if (s.malyava === 'found') return DAY4_SHMON_FOUND;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_SHMON_FOUND_BUNK : DAY4_SHMON_FOUND;
   if (s.malyava === 'burn') return DAY4_SHMON_BURN;
-  if (s.malyava === 'hold') return DAY4_SHMON_WASH;
+  if (s.malyava === 'hold') return holdStash(s, { pocket: DAY4_SHMON_HOLD, wash: DAY4_SHMON_WASH, bunk: DAY4_SHMON_HOLD_BUNK });
   return DAY4_SHMON_WAIT;
 }
 

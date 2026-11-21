@@ -690,6 +690,14 @@ export class Prison {
     doorTin.position.set(ox - w / 2 + 0.58, 0.055, 3.08);
     doorTin.name = 'doorTin';
     this.group.add(doorTin);
+    const doorSock = new THREE.Mesh(
+      new THREE.BoxGeometry(0.09, 0.035, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a36, roughness: 0.95 }),
+    );
+    doorSock.position.set(ox - w / 2 + 0.78, 0.04, 3.22);
+    doorSock.rotation.y = 0.55;
+    doorSock.name = 'doorSock';
+    this.group.add(doorSock);
     this.ragMesh = rag;
     this.interactables.push({
       id: 'rag',
