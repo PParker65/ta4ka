@@ -665,6 +665,15 @@ export class Prison {
     rag.position.set(ox - w / 2 + 0.55, 0.04, 3.42);
     rag.name = 'Rag';
     this.group.add(rag);
+    const doorBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.055, 0.062, 0.26, 8),
+      new THREE.MeshStandardMaterial({ color: 0xc4a050, roughness: 0.24, metalness: 0.28, transparent: true, opacity: 0.9 }),
+    );
+    doorBottle.position.set(ox - w / 2 + 0.92, 0.08, 3.28);
+    doorBottle.rotation.z = 1.22;
+    doorBottle.rotation.y = 0.35;
+    doorBottle.name = 'doorBottle';
+    this.group.add(doorBottle);
     this.ragMesh = rag;
     this.interactables.push({
       id: 'rag',

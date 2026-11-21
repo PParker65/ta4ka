@@ -303,7 +303,7 @@ export class Game {
     } else if (look === 'door') {
       this.player.position.set(o.x - 0.45, 0, 3.42);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = 0.02;
+      this.input.pitch = -0.58;
     } else if (look === 'walkin') {
       this.player.position.set(o.x - 0.5, 0, 3.78);
       this.input.yaw = -Math.PI / 2 + 0.18;
