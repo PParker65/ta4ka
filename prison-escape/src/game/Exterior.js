@@ -870,6 +870,15 @@ function addProcessing(prison) {
   rules.position.set(2.48, 1.7, -36.4);
   rules.rotation.y = -Math.PI / 2;
   prison.group.add(rules);
+  const hallRCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallRCig.position.set(2.18, 0.055, -36.25);
+  hallRCig.rotation.z = Math.PI / 2;
+  hallRCig.rotation.y = -0.35;
+  hallRCig.name = 'hallRCig';
+  prison.group.add(hallRCig);
   const line = new THREE.Mesh(
     new THREE.BoxGeometry(0.08, 0.01, 40),
     new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 }),
