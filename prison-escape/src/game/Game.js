@@ -311,7 +311,7 @@ export class Game {
     } else if (look === 'walkdoor') {
       this.player.position.set(o.x - 0.4, 0, 3.55);
       this.input.yaw = -Math.PI / 2;
-      this.input.pitch = -0.22;
+      this.input.pitch = -0.38;
     } else if (look === 'ceil') {
       this.player.position.set(o.x - 0.2, 0, o.z + 0.15);
       this.input.yaw = 0.18;
