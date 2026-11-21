@@ -2325,6 +2325,15 @@ export class Prison {
     radBottle.position.set(-1.02, 0.05, LAYOUT.cellD / 2 - 0.62);
     radBottle.rotation.z = 1.18;
     cell.add(radBottle);
+    const radCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    radCig.position.set(-1.22, 0.055, LAYOUT.cellD / 2 - 0.58);
+    radCig.rotation.z = Math.PI / 2;
+    radCig.rotation.y = 0.4;
+    radCig.name = 'radCig';
+    cell.add(radCig);
     const hole = new THREE.Mesh(
       new THREE.CircleGeometry(0.035, 10),
       new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 0.4 }),

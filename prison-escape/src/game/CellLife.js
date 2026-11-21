@@ -407,6 +407,7 @@ import {
   DAY6_LEHA_FOOD_FOUND_BUNK,
   DAY6_LEHA_WAKE_HOLD_BUNK,
   DAY6_LEHA_WAKE_FOUND_BUNK,
+  DAY6_LEHA_WAKE_FOUND,
   DAY6_FOOD,
   DAY6_FOOD_GONE,
   DAY6_FOOD_RED,
@@ -1225,6 +1226,8 @@ export class CellLife {
               ? DAY6_LEHA_FOOD_HOLD_BUNK
           : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found' && g.sim.stash === 'bunk'
             ? DAY6_LEHA_WAKE_FOUND_BUNK
+            : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'found'
+              ? DAY6_LEHA_WAKE_FOUND
             : g.sim.day === 6 && g.sim.phase.id === 'wake' && g.sim.malyava === 'hold' && g.sim.stash === 'bunk'
               ? DAY6_LEHA_WAKE_HOLD_BUNK
           : g.sim.day >= 6
