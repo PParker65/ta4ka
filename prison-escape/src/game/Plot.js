@@ -55,6 +55,8 @@ import {
   DAY3_WALK_FOUND_BUNK,
   DAY3_SHMON_FOUND,
   DAY3_SHMON_FOUND_BUNK,
+  DAY3_SHMON_HOLD,
+  DAY3_SHMON_HOLD_BUNK,
   DAY3_SHMON_WASH,
   DAY3_SHMON_HATCH,
   DAY3_SHMON_BURN,
@@ -848,7 +850,7 @@ export function onPhaseEnter(game, id) {
     if (door && !door.open) g.prison.openDoor(door);
     g.audio.clang();
     g.subtitle('Конвой в хате. К стенам. Руки видно.');
-    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 3) {
+    if (s.malyava === 'hold' && s.stash !== 'wash' && s.day >= 4) {
       s.malyava = 'found';
       s.heat = Math.min(100, s.heat + 28);
       s.stress = Math.min(100, s.stress + 16);
@@ -927,6 +929,8 @@ export function onPhaseEnter(game, id) {
       s.seenDay3Shmon = true;
       if (s.malyava === 'admin' || s.path === 'red') pickDialog(g, DAY3_SHMON_RED);
       else if (s.malyava === 'hold' && s.stash === 'wash') pickDialog(g, DAY3_SHMON_WASH);
+      else if (s.malyava === 'hold' && s.stash === 'bunk') pickDialog(g, DAY3_SHMON_HOLD_BUNK);
+      else if (s.malyava === 'hold') pickDialog(g, DAY3_SHMON_HOLD);
       else if (s.malyava === 'burn') pickDialog(g, DAY3_SHMON_BURN);
       else if (!s.malyava) pickDialog(g, DAY3_SHMON_HATCH);
       else g.subtitle('Кормушка: «Шмон. К стенам. Руки видно.»');
@@ -951,6 +955,17 @@ export function onPhaseEnter(game, id) {
   }
   if (id === 'food') {
     if (g.prison.foodTray) g.prison.foodTray.visible = true;
+    if (s.day === 3 && s.malyava === 'hold' && s.stash !== 'wash' && s.seenDay3Shmon) {
+      s.malyava = 'found';
+      s.heat = Math.min(100, s.heat + 28);
+      s.stress = Math.min(100, s.stress + 16);
+      s.hope = Math.max(0, s.hope - 10);
+      g.toast(
+        s.stash === 'bunk'
+          ? 'Нашли в матрасе. Койка пустая, жар полный.'
+          : 'Нашли бумагу. Карман пустой, жар полный.',
+      );
+    }
     if (s.day === 2 && !s.seenDay2Food) {
       s.seenDay2Food = true;
       pickDialog(g, s.stash === 'bunk' ? DAY2_FOOD_CAUGHT : s.stash === 'wash' ? DAY2_FOOD_WASH : DAY2_FOOD);

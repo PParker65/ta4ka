@@ -683,6 +683,13 @@ export class Prison {
     doorStick.rotation.y = 0.12;
     doorStick.name = 'doorStick';
     this.group.add(doorStick);
+    const doorTin = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.05, 0.07, 8),
+      new THREE.MeshStandardMaterial({ color: 0x8a8680, metalness: 0.45, roughness: 0.4 }),
+    );
+    doorTin.position.set(ox - w / 2 + 0.58, 0.055, 3.08);
+    doorTin.name = 'doorTin';
+    this.group.add(doorTin);
     this.ragMesh = rag;
     this.interactables.push({
       id: 'rag',
