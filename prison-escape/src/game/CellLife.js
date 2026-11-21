@@ -43,6 +43,8 @@ import {
   DAY6_SEDOY_SHMON,
   DAY6_SEDOY_SHMON_GONE,
   DAY6_SEDOY_SHMON_HOLD,
+  DAY6_SEDOY_SHMON_HOLD_WASH,
+  DAY6_SEDOY_SHMON_HOLD_BUNK,
   DAY6_SEDOY_SHMON_FOUND,
   DAY6_SEDOY_SHMON_FOUND_BUNK,
   DAY6_SEDOY_SHMON_BURN,
@@ -151,6 +153,8 @@ import {
   DAY6_VALERA_SHMON,
   DAY6_VALERA_SHMON_GONE,
   DAY6_VALERA_SHMON_HOLD,
+  DAY6_VALERA_SHMON_HOLD_WASH,
+  DAY6_VALERA_SHMON_HOLD_BUNK,
   DAY6_VALERA_SHMON_FOUND,
   DAY6_VALERA_SHMON_FOUND_BUNK,
   DAY6_VALERA_SHMON_BURN,
@@ -302,6 +306,8 @@ import {
   DAY6_LEHA_SHMON,
   DAY6_LEHA_SHMON_GONE,
   DAY6_LEHA_SHMON_HOLD,
+  DAY6_LEHA_SHMON_HOLD_WASH,
+  DAY6_LEHA_SHMON_HOLD_BUNK,
   DAY6_LEHA_SHMON_FOUND,
   DAY6_LEHA_SHMON_FOUND_BUNK,
   DAY6_LEHA_SHMON_BURN,
@@ -456,7 +462,7 @@ function valeraInCell(s) {
         gone: DAY6_VALERA_SHMON_GONE,
         found: s.stash === 'bunk' ? DAY6_VALERA_SHMON_FOUND_BUNK : DAY6_VALERA_SHMON_FOUND,
         burn: DAY6_VALERA_SHMON_BURN,
-        hold: DAY6_VALERA_SHMON_HOLD,
+        hold: holdStash(s, { pocket: DAY6_VALERA_SHMON_HOLD, wash: DAY6_VALERA_SHMON_HOLD_WASH, bunk: DAY6_VALERA_SHMON_HOLD_BUNK }),
         ok: DAY6_VALERA_SHMON,
       });
     }
@@ -976,7 +982,7 @@ export class CellLife {
                 gone: DAY6_SEDOY_SHMON_GONE,
                 found: g.sim.stash === 'bunk' ? DAY6_SEDOY_SHMON_FOUND_BUNK : DAY6_SEDOY_SHMON_FOUND,
                 burn: DAY6_SEDOY_SHMON_BURN,
-                hold: DAY6_SEDOY_SHMON_HOLD,
+                hold: holdStash(g.sim, { pocket: DAY6_SEDOY_SHMON_HOLD, wash: DAY6_SEDOY_SHMON_HOLD_WASH, bunk: DAY6_SEDOY_SHMON_HOLD_BUNK }),
                 ok: DAY6_SEDOY_SHMON,
               })
           : g.sim.day >= 5 && g.sim.phase.id === 'shmon'
@@ -1186,7 +1192,7 @@ export class CellLife {
               gone: DAY6_LEHA_SHMON_GONE,
               found: g.sim.stash === 'bunk' ? DAY6_LEHA_SHMON_FOUND_BUNK : DAY6_LEHA_SHMON_FOUND,
               burn: DAY6_LEHA_SHMON_BURN,
-              hold: DAY6_LEHA_SHMON_HOLD,
+              hold: holdStash(g.sim, { pocket: DAY6_LEHA_SHMON_HOLD, wash: DAY6_LEHA_SHMON_HOLD_WASH, bunk: DAY6_LEHA_SHMON_HOLD_BUNK }),
               ok: DAY6_LEHA_SHMON,
             })
           : g.sim.day >= 5 && g.sim.phase.id === 'shmon'

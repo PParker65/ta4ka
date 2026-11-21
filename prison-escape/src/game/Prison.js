@@ -706,6 +706,15 @@ export class Prison {
     doorPaper.rotation.y = 0.4;
     doorPaper.name = 'doorPaper';
     this.group.add(doorPaper);
+    const doorCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    doorCig.position.set(ox - w / 2 + 0.32, 0.03, 2.72);
+    doorCig.rotation.z = Math.PI / 2;
+    doorCig.rotation.y = 0.55;
+    doorCig.name = 'doorCig';
+    this.group.add(doorCig);
     this.ragMesh = rag;
     this.interactables.push({
       id: 'rag',
