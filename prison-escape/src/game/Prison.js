@@ -1832,6 +1832,13 @@ export class Prison {
     );
     aisleTin.position.set(-0.62, 0.08, 0.22);
     cell.add(aisleTin);
+    const aisleBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.036, 0.14, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    aisleBottle.position.set(-0.38, 0.05, 0.08);
+    aisleBottle.rotation.z = 1.18;
+    cell.add(aisleBottle);
     const bottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x2a4a38, roughness: 0.3, metalness: 0.1 }),

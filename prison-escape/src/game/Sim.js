@@ -67,6 +67,7 @@ export class Sim {
     this.seenDay7Morning = false;
     this.seenDay2Shmon = false;
     this.seenDay6Food = false;
+    this.seenDay7Food = false;
     this.heardDay6Yard = false;
     this.heardDay7Yard = false;
     this.teaPaid = false;

@@ -212,6 +212,8 @@ import {
   WEEK_HELD_HOLD_BUNK,
   DAY7_SEDOY_NIGHT_HOLD_BUNK,
   DAY7_SEDOY_NIGHT_FOUND_BUNK,
+  DAY7_SEDOY_FOOD_HOLD_BUNK,
+  DAY7_SEDOY_FOOD_FOUND_BUNK,
   HOLD_NIGHT,
   BURN_NIGHT,
   SNITCH_NIGHT,
@@ -649,6 +651,24 @@ export function plotObjective(sim) {
                   bunk: 'Седьмой подъём. Свежак кончился. Бумага в матрасе. Шмон первым трогает койку.',
                 })
               : 'Седьмой подъём. Свежак кончился. Молчи. Ешь. Неси, если несут.';
+  if (d === 7 && ph === 'food')
+    return weekRed(sim)
+      ? 'Седьмая пайка. Свежак кончился красным. Ложка последняя. Молчи.'
+      : sim.malyava === 'gone'
+        ? 'Седьмая пайка. Бумагу взяли без тебя. Свежак кончился. Молчи. Ешь.'
+        : sim.malyava === 'found'
+          ? sim.stash === 'bunk'
+            ? 'Седьмая пайка. Нашли в матрасе. Не выселили. Койку за столом не вспоминай.'
+            : 'Седьмая пайка. Нашли. Не выселили. Карман за столом не вспоминай.'
+          : sim.malyava === 'burn'
+            ? 'Седьмая пайка. Пахнет золой. Свежак кончился. Про дым — ни слова.'
+            : sim.malyava === 'hold'
+              ? holdStash(sim, {
+                  pocket: 'Седьмая пайка. Свежак кончился. Карман жжёт даже у ложки.',
+                  wash: 'Седьмая пайка. Свежак кончился. Чашу за столом не вспоминай.',
+                  bunk: 'Седьмая пайка. Свежак кончился. Бумага в матрасе. Койку за столом не вспоминай.',
+                })
+              : 'Седьмая пайка. Свежак кончился. Хлеб общий. Ложка после смотрящего.';
   if (d === 7)
     return weekRed(sim)
       ? 'Неделя. Свежак кончился красным. Молчи. Ешь последним.'
@@ -908,6 +928,17 @@ export function onPhaseEnter(game, id) {
       s.seenDay6Food = true;
       pickDialog(g, weekPick(s, { red: DAY6_FOOD_RED, gone: DAY6_FOOD_GONE, found: s.stash === 'bunk' ? DAY6_FOOD_FOUND_BUNK : DAY6_FOOD_FOUND, burn: DAY6_FOOD_BURN, hold: holdStash(s, { pocket: DAY6_FOOD_HOLD, wash: DAY6_FOOD_HOLD_WASH, bunk: DAY6_FOOD_HOLD_BUNK }), ok: DAY6_FOOD }));
       return;
+    }
+    if (s.day === 7 && !s.seenDay7Food) {
+      s.seenDay7Food = true;
+      if (s.malyava === 'found' && s.stash === 'bunk') {
+        pickDialog(g, DAY7_SEDOY_FOOD_FOUND_BUNK);
+        return;
+      }
+      if (s.malyava === 'hold' && s.stash === 'bunk') {
+        pickDialog(g, DAY7_SEDOY_FOOD_HOLD_BUNK);
+        return;
+      }
     }
     if (s.day === 4 && !s.seenDay4Food) {
       s.seenDay4Food = true;

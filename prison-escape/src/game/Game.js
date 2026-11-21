@@ -287,7 +287,7 @@ export class Game {
     } else if (look === 'winwall') {
       this.player.position.set(o.x - 0.05, 0, o.z - 2.15);
       this.input.yaw = 0.02;
-      this.input.pitch = -0.06;
+      this.input.pitch = -0.48;
     } else if (look === 'cal') {
       this.player.position.set(o.x - 1.45, 0, o.z + 0.62);
       this.input.yaw = -Math.PI / 2 + 0.22;
