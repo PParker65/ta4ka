@@ -555,6 +555,15 @@ function addProcessing(prison) {
   bathRag.rotation.y = 0.55;
   bathRag.name = 'bathRag';
   prison.group.add(bathRag);
+  const bathCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  bathCig.position.set(1.05, 0.055, -15.48);
+  bathCig.rotation.z = Math.PI / 2;
+  bathCig.rotation.y = 0.4;
+  bathCig.name = 'bathCig';
+  prison.group.add(bathCig);
 
   prison.interactables.push({
     id: 'robe',

@@ -141,6 +141,7 @@ import {
   DAY5_NIGHT_MISS,
   DAY5_NIGHT_GONE,
   DAY5_SEDOY_NIGHT_HOLD_BUNK,
+  DAY5_SEDOY_NIGHT_FOUND,
   DAY5_SEDOY_NIGHT_FOUND_BUNK,
   DAY5_WAKE,
   DAY5_WAKE_GONE,
@@ -518,7 +519,7 @@ export function plotObjective(sim) {
         : sim.malyava === 'found'
           ? sim.stash === 'bunk'
             ? 'Пятый подъём. Нашли в матрасе. Жар не сняли. Днём щель станет кабинетом.'
-            : 'Пятый подъём. Нашли. Жар не сняли. Днём щель станет кабинетом.'
+            : 'Пятый подъём. Нашли в кармане. Жар не сняли. Днём щель станет кабинетом.'
           : sim.malyava === 'burn'
             ? 'Пятый подъём. Зола ещё пахнет. Днём щель станет кабинетом.'
             : sim.malyava === 'hold'
@@ -593,7 +594,7 @@ export function plotObjective(sim) {
         : sim.malyava === 'found'
           ? sim.stash === 'bunk'
             ? 'Пятый отбой. Нашли в матрасе. Щель уже была кабинетом. Койку не вспоминай.'
-            : 'Пятый отбой. Нашли. Щель уже была кабинетом. Не оправдывайся.'
+            : 'Пятый отбой. Нашли в кармане. Щель уже была кабинетом. Не оправдывайся.'
           : sim.malyava === 'burn'
             ? 'Пятый отбой. Зола. Щель уже была кабинетом. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -685,7 +686,7 @@ export function plotObjective(sim) {
         : sim.malyava === 'found'
           ? sim.stash === 'bunk'
             ? 'Седьмой отбой. Нашли в матрасе. Не выселили. Свежак кончился на карандаше.'
-            : 'Седьмой отбой. Нашли. Не выселили. Свежак кончился на карандаше.'
+            : 'Седьмой отбой. Нашли в кармане. Не выселили. Свежак кончился на карандаше.'
           : sim.malyava === 'burn'
             ? 'Седьмой отбой. Бумага зола. Свежак кончился. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -703,7 +704,7 @@ export function plotObjective(sim) {
         : sim.malyava === 'found'
           ? sim.stash === 'bunk'
             ? 'Седьмой подъём. Нашли в матрасе. Свежак кончился. Койку не вспоминать.'
-            : 'Седьмой подъём. Нашли. Свежак кончился. Карман не вспоминать.'
+            : 'Седьмой подъём. Нашли в кармане. Свежак кончился. Карман не вспоминать.'
           : sim.malyava === 'burn'
             ? 'Седьмой подъём. Пахнет золой. Свежак кончился. Про дым — ни слова.'
             : sim.malyava === 'hold'
@@ -1175,7 +1176,7 @@ function day5Evening(s) {
   if (s.courtTalk === 'cell') return DAY5_BACK_CELL;
   if (s.courtTalk === 'silent') return DAY5_BACK_SILENT;
   if (s.courtTalk === 'self') return DAY5_BACK_SELF;
-  if (s.malyava === 'found' && s.stash === 'bunk') return DAY5_SEDOY_NIGHT_FOUND_BUNK;
+  if (s.malyava === 'found') return s.stash === 'bunk' ? DAY5_SEDOY_NIGHT_FOUND_BUNK : DAY5_SEDOY_NIGHT_FOUND;
   if (s.malyava === 'hold' && s.stash === 'bunk') return DAY5_SEDOY_NIGHT_HOLD_BUNK;
   if (s.malyava === 'gone') return DAY5_NIGHT_GONE;
   return DAY5_NIGHT_MISS;
