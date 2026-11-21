@@ -1799,6 +1799,15 @@ export class Prison {
     tableCig.rotation.y = 0.4;
     tableCig.position.set(0.42, 0.758, 0.08);
     cell.add(tableCig);
+    const tableFloorCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    tableFloorCig.position.set(0.48, 0.772, -0.05);
+    tableFloorCig.rotation.z = Math.PI / 2;
+    tableFloorCig.rotation.y = 0.5;
+    tableFloorCig.name = 'tableFloorCig';
+    cell.add(tableFloorCig);
     const tableStain = new THREE.Mesh(
       new THREE.CircleGeometry(0.06, 10),
       new THREE.MeshStandardMaterial({ color: 0x4a3020, roughness: 0.9, transparent: true, opacity: 0.45 }),
