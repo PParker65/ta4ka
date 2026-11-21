@@ -3237,6 +3237,15 @@ export class Prison {
     drainTin.rotation.z = 1.15;
     drainTin.rotation.y = 0.4;
     g.add(drainTin);
+    const drainCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    drainCig.position.set(3.22, 0.055, 3.48);
+    drainCig.rotation.z = Math.PI / 2;
+    drainCig.rotation.y = -0.35;
+    drainCig.name = 'drainCig';
+    g.add(drainCig);
     const drainBottle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.035, 0.04, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x3a4a42, roughness: 0.45, transparent: true, opacity: 0.72 }),
