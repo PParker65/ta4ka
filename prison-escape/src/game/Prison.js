@@ -1270,6 +1270,15 @@ export class Prison {
       bunkBottle.rotation.z = 1.22;
       bunkBottle.rotation.y = 0.35;
       g.add(bunkBottle);
+      const bunkCig = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+        new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+      );
+      bunkCig.position.set(-0.22, 0.14, 0.22);
+      bunkCig.rotation.z = Math.PI / 2;
+      bunkCig.rotation.y = 0.45;
+      bunkCig.name = 'bunkCig';
+      lowerBed.add(bunkCig);
       const frameRust = new THREE.Mesh(
         new THREE.BoxGeometry(0.22, 0.018, 0.09),
         new THREE.MeshStandardMaterial({ color: 0x5a2414, roughness: 0.7, metalness: 0.35 }),
