@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+.alarm-overlay {
+  background: radial-gradient(circle at 50% 40%, rgba(180, 0, 0, 0.08), rgba(140, 0, 0, 0.42));
+  animation: alarmPulse 0.45s steps(2, end) infinite;
+}
+
+@keyframes alarmPulse {
+  0% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 0.85;
+  }
+}
+
+.crt-scan {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 70, 0.07) 0px,
+    rgba(0, 255, 70, 0.07) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  line-height: 1;
+  color: #a1a1aa;
+}
+.stat span {
+  width: 3.4rem;
+  flex: none;
+}
+.stat i {
+  display: block;
+  height: 4px;
+  flex: 1;
+  border-radius: 99px;
+  background: #3f3f46;
+  position: relative;
+  overflow: hidden;
+}
+.stat i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w, 50%);
+  background: #d4a017;
+}
+#bar-hygiene::after {
+  background: #3a9a8a;
+}
+#bar-stress::after {
+  background: #b33a3a;
+}
+#bar-hope::after {
+  background: #c9a227;
+}
+.chat-row {
+  margin: 0 0 6px;
+}
+
+#fade {
+  opacity: 1;
+  transition: none;
+}
+
+.hud-quiet #hud-left,
+.hud-quiet #hud-right,
+.hud-quiet #look-hint {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#nerves {
+  background: radial-gradient(circle at 50% 45%, transparent 42%, rgba(20, 4, 4, 0.72) 100%);
+}
+
+#needle {
+  transform-origin: 50% 11px;
+}
+.chat-row b {
+  color: #fbbf24;
+}
+.chat-me b {
+  color: #7dd3fc;
+}
+.chat-peer b {
+  color: #86efac;
+}
+.chat-sys {
+  color: #a1a1aa;
+  font-size: 14px;
+}
+.chat-sys b {
+  color: #a1a1aa;
+}
+
+.shop-btn {
+  min-height: 48px;
+  width: 100%;
+  max-width: 20rem;
+  margin-bottom: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #52525b;
+  background: #18181b;
+  color: #f4f4f5;
+  font-size: 16px;
+}

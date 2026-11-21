@@ -1,0 +1,20 @@
+{
+  "name": "prison-escape",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Mobile-first third-person 3D prison escape (Three.js + Vite + Tailwind)",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.14",
+    "tailwindcss": "^4.0.14",
+    "vite": "^6.2.0"
+  }
+}

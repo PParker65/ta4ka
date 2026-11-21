@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#07080a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>СИЗО · Хатка</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="m-0 overflow-hidden bg-black text-zinc-100 antialiased">
+    <div id="app" class="relative h-[100dvh] w-full touch-none">
+      <canvas id="game" class="block h-full w-full touch-none"></canvas>
+      <div id="fade" class="pointer-events-none absolute inset-0 z-20 bg-black"></div>
+
+      <div id="hud" class="pointer-events-none absolute inset-0">
+        <div id="alarm" class="alarm-overlay pointer-events-none absolute inset-0 hidden"></div>
+
+        <div
+          id="hud-left"
+          class="absolute left-2 top-2 max-w-[46%] rounded border border-zinc-700/80 bg-black/70 px-1.5 py-0.5 font-mono text-[11px] leading-tight"
+        >
+          <div id="clock" class="text-amber-400">День 1 · КПП</div>
+          <div id="status" class="text-[10px] text-zinc-300">СИЗО · Катенька</div>
+          <div id="path-label" class="text-[10px] text-zinc-500">Путь: новичок</div>
+        </div>
+
+        <div
+          id="way"
+          class="pointer-events-none absolute left-2 top-[3.35rem] flex items-center gap-1.5 rounded-full border border-amber-700/50 bg-black/70 px-2 py-0.5"
+        >
+          <div id="compass" class="relative h-6 w-6 rounded-full border border-amber-500/80">
+            <div id="needle" class="absolute left-1/2 top-0 origin-[50%_11px] text-[10px] text-amber-300">▲</div>
+          </div>
+          <div class="min-w-[7rem] text-left">
+            <div id="way-name" class="text-[11px] font-semibold text-amber-100">КПП</div>
+            <div id="way-dist" class="text-[10px] text-zinc-400">документы · справа</div>
+          </div>
+        </div>
+
+        <div
+          id="quest"
+          class="pointer-events-none absolute left-2 top-[5.35rem] hidden max-w-sm rounded border border-amber-700/40 bg-black/70 px-2 py-1 text-left text-[13px] leading-snug text-amber-100"
+        >
+          КПП справа от ворот.
+        </div>
+
+        <div
+          id="look-hint"
+          class="pointer-events-none absolute bottom-[168px] left-1/2 w-[92%] max-w-md -translate-x-1/2 text-center text-[15px] text-zinc-400"
+        >
+          Мышь — взгляд. W вперёд, A влево, D вправо, S назад. Shift — бег. E — действие.
+        </div>
+
+        <div id="nerves" class="pointer-events-none absolute inset-0 z-[5] hidden"></div>
+
+        <div class="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70"></div>
+
+        <div id="hud-right" class="absolute right-2 top-2 w-[8.8rem] space-y-0.5 rounded border border-zinc-800 bg-black/70 px-1.5 py-1">
+          <div class="stat"><span>Голод</span><i id="bar-hunger"></i></div>
+          <div class="stat"><span>Гигиена</span><i id="bar-hygiene"></i></div>
+          <div class="stat"><span>Стресс</span><i id="bar-stress"></i></div>
+          <div class="stat"><span>Надежда</span><i id="bar-hope"></i></div>
+          <div id="inv" class="pt-0.5 text-[9px] leading-tight text-zinc-400">чай 0 · циг. 1 · пайка 0</div>
+        </div>
+
+        <div
+          id="prompt"
+          class="absolute left-1/2 top-[22%] hidden -translate-x-1/2 rounded bg-black/75 px-3 py-1 text-center text-[16px] text-amber-200"
+        ></div>
+        <div
+          id="toast"
+          class="absolute left-1/2 top-[28%] hidden -translate-x-1/2 rounded border border-zinc-600 bg-black/85 px-4 py-2 text-center text-[16px]"
+        ></div>
+        <div
+          id="sub"
+          class="absolute bottom-[210px] left-1/2 hidden w-[90%] -translate-x-1/2 text-center text-[16px] text-zinc-200"
+        ></div>
+
+        <div id="stick-root" class="pointer-events-auto absolute bottom-[22px] left-[18px] h-[128px] w-[128px]">
+          <div class="absolute inset-0 rounded-full border border-white/25 bg-black/25"></div>
+          <div
+            id="stick-knob"
+            class="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-white/35"
+          ></div>
+        </div>
+
+        <div class="pointer-events-auto absolute bottom-[22px] right-[12px] flex flex-col gap-2">
+          <button
+            id="btn-talk"
+            type="button"
+            class="min-h-[48px] min-w-[118px] rounded-full border border-sky-500/70 bg-black/55 px-4 text-[16px] font-semibold text-sky-100"
+          >
+            Говорить
+          </button>
+          <button
+            id="btn-shop"
+            type="button"
+            class="min-h-[48px] min-w-[118px] rounded-full border border-emerald-600/70 bg-black/55 px-4 text-[16px] font-semibold text-emerald-100"
+          >
+            Грев
+          </button>
+          <button
+            id="btn-run"
+            type="button"
+            class="min-h-[52px] min-w-[118px] rounded-full border border-red-500/70 bg-black/55 px-4 text-[16px] font-semibold uppercase text-red-100"
+          >
+            Бег
+          </button>
+          <button
+            id="btn-interact"
+            type="button"
+            class="min-h-[52px] min-w-[118px] rounded-full border border-amber-500/70 bg-black/55 px-4 text-[16px] font-semibold uppercase text-amber-100"
+          >
+            Действие
+          </button>
+          <button
+            id="btn-crouch"
+            type="button"
+            class="min-h-[48px] min-w-[118px] rounded-full border border-zinc-400/60 bg-black/55 px-4 text-[16px] font-semibold uppercase text-zinc-100"
+          >
+            Присесть
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="dialog"
+        class="absolute inset-0 z-20 hidden flex-col justify-end bg-black/55 px-4 pb-[200px] pt-10"
+      >
+        <div class="pointer-events-auto mx-auto w-full max-w-md rounded-xl border border-zinc-700 bg-[#12110e]/95 p-4">
+          <p id="dialog-who" class="mb-1 text-[16px] font-semibold text-amber-400"></p>
+          <p id="dialog-text" class="mb-3 text-[16px] leading-relaxed text-zinc-200"></p>
+          <div id="dialog-choices" class="flex flex-col gap-2"></div>
+        </div>
+      </div>
+
+      <div
+        id="shmon-ui"
+        class="absolute inset-0 z-20 hidden flex-col items-center justify-center bg-black/80 px-5"
+      >
+        <h2 class="mb-2 text-xl">Опись имущества</h2>
+        <p class="mb-4 max-w-sm text-center text-[16px] text-zinc-400">
+          На стол. Шнурки, ремень, телефон, деньги, часы. Пока в кармане — ты ещё с воли. Сдал — груз.
+        </p>
+        <ul id="shmon-list" class="mb-4 w-full max-w-sm space-y-2"></ul>
+        <button
+          id="btn-shmon-done"
+          type="button"
+          class="min-h-[52px] rounded-full bg-amber-600 px-6 text-[16px] font-semibold text-black"
+        >
+          На досмотр
+        </button>
+      </div>
+
+      <div id="shop" class="absolute inset-0 z-20 hidden flex-col items-center justify-center bg-black/80 px-5">
+        <h2 class="mb-1 text-xl">Грев с воли</h2>
+        <p class="mb-4 max-w-sm text-center text-[16px] text-zinc-400">
+          Демо-магазин. Реальная оплата в этой сборке не списывается.
+        </p>
+        <button type="button" data-pack="tea" class="shop-btn">Чай / чифир · пак</button>
+        <button type="button" data-pack="cigs" class="shop-btn">Сигареты · блок</button>
+        <button type="button" data-pack="food" class="shop-btn">Сладости · пайка</button>
+        <button id="btn-shop-close" type="button" class="mt-4 min-h-[48px] text-[16px] text-zinc-400">Закрыть</button>
+      </div>
+
+      <div id="cards" class="absolute inset-0 z-20 hidden flex-col items-center justify-center bg-black/80 px-5">
+        <p class="mb-2 text-[16px] text-zinc-400">Карты на интерес</p>
+        <div class="mb-3 flex gap-6 text-4xl">
+          <span id="card-you" class="rounded bg-zinc-100 px-4 py-6 text-black">?</span>
+          <span id="card-them" class="rounded bg-zinc-100 px-4 py-6 text-black">?</span>
+        </div>
+        <p id="card-result" class="mb-4 text-center text-[16px]"></p>
+        <button id="btn-cards-close" type="button" class="min-h-[48px] rounded-full bg-zinc-200 px-6 text-[16px] text-black">
+          Отойти
+        </button>
+      </div>
+
+      <div id="rope" class="absolute inset-0 z-20 hidden flex-col items-center justify-center bg-black/75 px-5">
+        <p class="mb-3 text-center text-[16px]">Дорога. Поймай середину — малява пройдёт.</p>
+        <div id="rope-bar" class="relative h-12 w-full max-w-sm rounded bg-zinc-800">
+          <div class="absolute left-1/2 top-0 h-full w-8 -translate-x-1/2 bg-emerald-700/50"></div>
+          <div id="rope-knob" class="absolute top-1 h-10 w-4 -translate-x-1/2 rounded bg-amber-400"></div>
+        </div>
+      </div>
+
+      <div
+        id="chat"
+        class="absolute inset-0 z-20 hidden flex-col justify-end bg-black/50 px-4 pb-[190px] pt-10"
+      >
+        <div class="pointer-events-auto mx-auto flex w-full max-w-md flex-col rounded-xl border border-zinc-700 bg-[#12110e]/95 p-3">
+          <div class="mb-2 flex items-center justify-between">
+            <p class="text-[16px] font-semibold text-sky-200">Хатка · эфир</p>
+            <button id="btn-chat-close" type="button" class="min-h-[40px] px-2 text-[16px] text-zinc-400">Закрыть</button>
+          </div>
+          <div id="chat-log" class="mb-2 max-h-48 overflow-y-auto text-[16px] leading-relaxed"></div>
+          <form id="chat-form" class="flex gap-2">
+            <input
+              id="chat-in"
+              type="text"
+              maxlength="140"
+              autocomplete="off"
+              placeholder="Скажи хате…"
+              class="min-h-[48px] flex-1 rounded-lg border border-zinc-600 bg-black/60 px-3 text-[16px] text-zinc-100"
+            />
+            <button type="submit" class="min-h-[48px] rounded-lg bg-sky-700 px-3 text-[16px] text-white">Ок</button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        id="boot"
+        class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#07080a] px-6 text-center"
+      >
+        <p class="mb-2 font-mono text-[16px] tracking-[0.3em] text-amber-500">СИЗО · КАТЕНЬКА</p>
+        <h1 class="mb-3 text-3xl font-semibold">Хатка</h1>
+        <p class="mb-8 max-w-md text-[16px] leading-relaxed text-zinc-500">
+          Мотор глохнет. Дальше — двор СІЗО №13.
+        </p>
+        <button
+          id="btn-start"
+          type="button"
+          class="min-h-[52px] min-w-[200px] rounded-full bg-amber-600 px-6 text-[16px] font-semibold uppercase tracking-wider text-black"
+        >
+          Двери
+        </button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
