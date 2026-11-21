@@ -1113,6 +1113,12 @@ export class Game {
       !this.sim.teaPaid
     )
       return 'Чай в щели';
+    if ((item.type === 'hatch' || item.type === 'malyava') && this.sim.malyava === 'hold')
+      return this.sim.stash === 'bunk'
+        ? 'Бумага в матрасе'
+        : this.sim.stash === 'wash'
+          ? 'Чаша не смотри'
+          : 'Карман жжёт';
     const map = {
       kpp: 'Сверка документов · КПП',
       shmon: 'Сдать вещи на опись',
