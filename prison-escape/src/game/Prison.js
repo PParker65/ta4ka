@@ -1605,6 +1605,15 @@ export class Prison {
     kettleBottle.rotation.z = 1.18;
     kettleBottle.rotation.y = 0.42;
     cell.add(kettleBottle);
+    const steamCig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+    );
+    steamCig.position.set(-0.22, 0.77, -0.02);
+    steamCig.rotation.z = Math.PI / 2;
+    steamCig.rotation.y = 0.45;
+    steamCig.name = 'steamCig';
+    cell.add(steamCig);
     const steam = new THREE.Group();
     steam.position.set(-0.15, 1.02, 0.15);
     cell.add(steam);
