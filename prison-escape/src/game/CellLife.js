@@ -17,6 +17,7 @@ import {
   TALK_LEHA,
   TALK_VALERA,
   DAY2_SEDOY,
+  DAY2_SEDOY_WAKE,
   DAY2_SEDOY_BUNK,
   DAY2_SEDOY_CAUGHT,
   DAY2_SEDOY_WASH,
@@ -1327,10 +1328,14 @@ export class CellLife {
                       ? DAY2_SEDOY_SHMON_WASH
                       : DAY2_SEDOY_SHMON
                 : g.sim.day >= 2
-                  ? g.sim.stash === 'bunk'
-                    ? g.sim.phase.id === 'wake'
+                  ? g.sim.phase.id === 'wake'
+                    ? g.sim.stash === 'bunk'
                       ? DAY2_SEDOY_BUNK
-                      : DAY2_SEDOY_CAUGHT
+                      : g.sim.stash === 'wash'
+                        ? DAY2_SEDOY_WASH
+                        : DAY2_SEDOY_WAKE
+                  : g.sim.stash === 'bunk'
+                    ? DAY2_SEDOY_CAUGHT
                     : g.sim.stash === 'wash'
                       ? DAY2_SEDOY_WASH
                       : DAY2_SEDOY
