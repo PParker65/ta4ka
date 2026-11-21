@@ -1665,6 +1665,13 @@ export class Prison {
     );
     tableTin.position.set(-0.08, 0.79, 0.38);
     cell.add(tableTin);
+    const tableBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.028, 0.032, 0.12, 8),
+      new THREE.MeshStandardMaterial({ color: 0x6a5a32, roughness: 0.32, metalness: 0.16, transparent: true, opacity: 0.82 }),
+    );
+    tableBottle.position.set(0.22, 0.78, 0.22);
+    tableBottle.rotation.z = 1.18;
+    cell.add(tableBottle);
     const photo = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.36),
       new THREE.MeshStandardMaterial({ color: 0xd8c8a8, roughness: 0.7 }),
