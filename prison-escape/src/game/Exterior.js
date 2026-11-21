@@ -857,6 +857,15 @@ function addProcessing(prison) {
     galosh.rotation.y = 0.5;
     prison.group.add(galosh);
   }
+  const hallSCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallSCig.position.set(-1.38, 0.055, -41.32);
+  hallSCig.rotation.z = Math.PI / 2;
+  hallSCig.rotation.y = 0.35;
+  hallSCig.name = 'hallSCig';
+  prison.group.add(hallSCig);
   const rules = plaque('СДАТЬ ВСЁ', 0.9, 0.28);
   rules.position.set(2.48, 1.7, -36.4);
   rules.rotation.y = -Math.PI / 2;
