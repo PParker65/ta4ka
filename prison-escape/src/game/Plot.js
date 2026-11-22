@@ -299,7 +299,7 @@ export function plotObjective(sim) {
     if (sim.malyava === 'admin' || sim.path === 'red') return 'Шмон. Вчера слово село. К стене. Не оправдывайся.';
     if (sim.malyava === 'hold')
       return holdStash(sim, {
-        pocket: 'Шмон. Карман жжёт. Руки пустые.',
+        pocket: 'Третий шмон. Карман жжёт. Руки пустые.',
         wash: 'Шмон. Чаша сегодня не их дело. Не смотри на неё.',
         bunk: 'Шмон. Матрас первым. Не смотри на койку. Руки видно.',
       });

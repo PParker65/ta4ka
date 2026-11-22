@@ -503,6 +503,12 @@ export class Game {
       this.input.pitch = -0.48;
       return;
     }
+    if (look === 'halloo') {
+      this.player.position.set(-0.85, 0, -25.9);
+      this.input.yaw = -Math.PI / 2;
+      this.input.pitch = -0.48;
+      return;
+    }
     if (look === 'hallbag') {
       this.player.position.set(-0.72, 0, -31.55);
       this.input.yaw = -Math.PI / 2;
