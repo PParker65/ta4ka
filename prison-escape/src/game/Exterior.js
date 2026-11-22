@@ -1068,6 +1068,15 @@ function addProcessing(prison) {
   hallGCig.rotation.y = -0.32;
   hallGCig.name = 'hallGCig';
   prison.group.add(hallGCig);
+  const hallHCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallHCig.position.set(-2.18, 0.055, -33.2);
+  hallHCig.rotation.z = Math.PI / 2;
+  hallHCig.rotation.y = 0.28;
+  hallHCig.name = 'hallHCig';
+  prison.group.add(hallHCig);
 }
 
 /** Fill the black 2m hole between сборник (ends ~z=-2) and коряк (starts z=0). */
