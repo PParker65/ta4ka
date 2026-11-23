@@ -893,6 +893,12 @@ export class Game {
       this.input.pitch = -0.48;
       return;
     }
+    if (look === 'hallbbbbb') {
+      this.player.position.set(0.85, 0, -52.875);
+      this.input.yaw = Math.PI / 2;
+      this.input.pitch = -0.48;
+      return;
+    }
     if (look === 'hallbag') {
       this.player.position.set(-0.72, 0, -31.55);
       this.input.yaw = -Math.PI / 2;
