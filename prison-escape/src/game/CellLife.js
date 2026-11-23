@@ -144,6 +144,7 @@ import {
   DAY3_VALERA_FOOD_RED,
   DAY3_VALERA_NIGHT_RED,
   DAY3_VALERA_WAKE_RED,
+  DAY3_VALERA_WALK_RED,
   DAY3_VALERA_SHMON,
   DAY3_VALERA_SHMON_HATCH,
   DAY3_VALERA_SHMON_HOLD,
@@ -698,6 +699,7 @@ function valeraInCell(s) {
       if (s.malyava === 'burn') return DAY3_VALERA_BURN;
       return DAY3_VALERA_NIGHT;
     }
+    if (s.phase.id === 'walk' && (s.malyava === 'admin' || s.path === 'red')) return DAY3_VALERA_WALK_RED;
     if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
     if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_FOUND_BUNK : DAY3_VALERA_FOUND;
     if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
@@ -1716,7 +1718,7 @@ export class CellLife {
                         ? DAY4_WALK_HOLD_BUNK
                       : DAY4_WALK
             : g.sim.phase.id === 'walk' && g.sim.day === 3 && (g.sim.malyava === 'admin' || g.sim.path === 'red')
-              ? DAY3_WALK_RED
+              ? DAY3_VALERA_WALK_RED
               : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'hold'
                 ? holdStash(g.sim, { pocket: DAY3_WALK_HOLD, wash: DAY3_WALK_HOLD_WASH, bunk: DAY3_WALK_HOLD_BUNK })
                 : g.sim.phase.id === 'walk' && g.sim.day === 3 && g.sim.malyava === 'burn'
