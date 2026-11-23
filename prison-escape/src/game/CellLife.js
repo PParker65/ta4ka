@@ -71,6 +71,7 @@ import {
   DAY2_WALK_GONE,
   DAY1_WALK_RED,
   DAY1_WALK_BURN,
+  DAY1_WALK_GONE,
   DAY2_WALK_RED,
   DAY2_VALERA,
   DAY2_VALERA_WAKE,
@@ -1771,6 +1772,8 @@ export class CellLife {
                     ? DAY1_WALK_RED
                     : g.sim.day === 1 && g.sim.phase.id === 'walk' && g.sim.malyava === 'burn'
                     ? DAY1_WALK_BURN
+                    : g.sim.day === 1 && g.sim.phase.id === 'walk' && g.sim.malyava === 'gone'
+                    ? DAY1_WALK_GONE
                     : valeraInCell(g.sim);
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {

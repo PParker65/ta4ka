@@ -13,6 +13,7 @@ import {
   DAY2_WALK_GONE,
   DAY1_WALK_RED,
   DAY1_WALK_BURN,
+  DAY1_WALK_GONE,
   DAY2_WALK_RED,
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
@@ -252,6 +253,8 @@ export function plotObjective(sim) {
       ? 'Первый круг. Свист кончился в щели. Через стену — ни звука.'
       : sim.malyava === 'burn'
         ? 'Первый круг. Зола в хате. Про дым — ни звука.'
+        : sim.malyava === 'gone'
+          ? 'Первый круг. Бумагу взяли без тебя. Через стену не ори.'
         : 'Конвой вывел. Круг по дворику. Назад сам не пойдёшь — заведут.';
   if (d === 2 && ph === 'wake')
     return sim.stash === 'bunk'
@@ -840,6 +843,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 1 && s.malyava === 'burn' && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK_BURN);
+    } else if (s.day === 1 && s.malyava === 'gone' && !s.heardYard) {
+      s.heardYard = true;
+      pickDialog(g, DAY1_WALK_GONE);
     }
     return;
   }
@@ -1305,6 +1311,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'gone' && sim.day === 3) return 'Валера коротко: «Щель пустая. Свист кончился на третий круг.»';
   if (sim.malyava === 'gone' && sim.day === 4) return 'Валера коротко: «Щель пустая. Свист кончился на четвёртый круг.»';
   if (sim.malyava === 'gone' && sim.day === 2) return 'Валера коротко: «Щель пустая. Свист кончился на второй круг.»';
+  if (sim.malyava === 'gone' && sim.day === 1) return 'Валера коротко: «Щель пустая. Свист кончился на первый круг.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
