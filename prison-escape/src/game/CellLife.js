@@ -67,6 +67,7 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY2_WALK_BURN,
   DAY1_WALK_RED,
   DAY2_WALK_RED,
   DAY2_VALERA,
@@ -1752,6 +1753,8 @@ export class CellLife {
                     : g.sim.day >= 2 && g.sim.phase.id === 'walk'
                     ? weekRed(g.sim)
                       ? DAY2_WALK_RED
+                      : g.sim.malyava === 'burn'
+                        ? DAY2_WALK_BURN
                       : g.sim.stash === 'bunk'
                         ? DAY2_YARD_CAUGHT
                         : g.sim.stash === 'wash'

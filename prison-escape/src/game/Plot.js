@@ -9,6 +9,7 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY2_WALK_BURN,
   DAY1_WALK_RED,
   DAY2_WALK_RED,
   DAY2_FOOD,
@@ -269,7 +270,9 @@ export function plotObjective(sim) {
   if (d === 2 && ph === 'walk')
     return weekRed(sim)
       ? 'Второй круг. Свист кончился в щели. Через стену — ни звука.'
-      : sim.stash === 'bunk'
+      : sim.malyava === 'burn'
+        ? 'Второй круг. Зола в хате. Про дым — ни звука.'
+        : sim.stash === 'bunk'
         ? 'Круг после шмона. Нашли в матрасе. Через стену не ори.'
         : sim.stash === 'wash'
           ? 'Круг. Матрас чистый. Через стену не рассказывай про чашу.'
@@ -821,7 +824,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day3Walk(s));
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
-      pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
+      pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.malyava === 'burn' ? DAY2_WALK_BURN : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
     } else if (s.day === 1 && weekRed(s) && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK_RED);
@@ -1280,6 +1283,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'burn' && sim.day === 5) return 'Валера коротко: «Зола в хате. Свист кончился на пятый круг.»';
   if (sim.malyava === 'burn' && sim.day === 6) return 'Валера коротко: «Зола в хате. Свист кончился на шестой круг.»';
   if (sim.malyava === 'burn' && sim.day === 7) return 'Валера коротко: «Зола в хате. Свист кончился на седьмой круг.»';
+  if (sim.malyava === 'burn' && sim.day === 2) return 'Валера коротко: «Зола в хате. Свист кончился на второй круг.»';
   if (sim.malyava === 'burn') return 'Валера коротко: «Зола в хате. На дворе про дым не ори.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
