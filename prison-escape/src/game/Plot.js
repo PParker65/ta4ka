@@ -295,7 +295,7 @@ export function plotObjective(sim) {
     if (sim.malyava === 'found')
       return sim.stash === 'bunk'
         ? 'Нашли в матрасе. К стене. Руки видно. Рот на замок.'
-        : 'Нашли в кармане. К стене. Руки видно. Рот на замок.';
+        : 'Третий шмон. Нашли в кармане. К стене. Руки видно. Рот на замок.';
     if (sim.malyava === 'admin' || sim.path === 'red') return 'Третий шмон. Вчера слово село. К стене. Не оправдывайся.';
     if (sim.malyava === 'hold')
       return holdStash(sim, {
