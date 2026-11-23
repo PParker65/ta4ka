@@ -435,6 +435,7 @@ import {
   DAY4_WALK_FOUND,
   DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
+  DAY4_WALK_GONE,
   DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
@@ -1732,6 +1733,8 @@ export class CellLife {
                     : DAY4_WALK_FOUND
                   : g.sim.malyava === 'burn'
                     ? DAY4_WALK_BURN
+                    : g.sim.malyava === 'gone'
+                      ? DAY4_WALK_GONE
                     : g.sim.malyava === 'hold' && g.sim.teaPaid
                       ? holdStash(g.sim, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK })
                       : g.sim.malyava === 'hold' && g.sim.stash === 'bunk'

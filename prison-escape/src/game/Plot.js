@@ -119,6 +119,7 @@ import {
   DAY4_WALK_FOUND,
   DAY4_WALK_FOUND_BUNK,
   DAY4_WALK_BURN,
+  DAY4_WALK_GONE,
   DAY4_WALK_RED,
   DAY4_FOOD,
   DAY4_FOOD_WAIT,
@@ -397,6 +398,8 @@ export function plotObjective(sim) {
             : 'Четвёртый круг. Нашли в кармане. Через стену не ори про шмон.'
           : sim.malyava === 'burn'
             ? 'Четвёртый круг. Зола в хате. Про дым — ни звука.'
+            : sim.malyava === 'gone'
+              ? 'Четвёртый круг. Бумагу взяли без тебя. Через стену не ори.'
             : sim.malyava === 'hold' && sim.teaPaid
               ? holdStash(sim, {
                   pocket: 'Четвёртый круг. Чай ушёл. Карман жжёт. Через стену — ни звука.',
@@ -1118,6 +1121,7 @@ function day4Walk(s) {
   if (!s.malyava) return DAY4_WALK_WAIT;
   if (s.malyava === 'found') return s.stash === 'bunk' ? DAY4_WALK_FOUND_BUNK : DAY4_WALK_FOUND;
   if (s.malyava === 'burn') return DAY4_WALK_BURN;
+  if (s.malyava === 'gone') return DAY4_WALK_GONE;
   if (s.malyava === 'hold' && s.teaPaid)
     return holdStash(s, { pocket: DAY4_WALK_PAID, wash: DAY4_WALK_PAID_WASH, bunk: DAY4_WALK_PAID_BUNK });
   if (s.malyava === 'hold' && s.stash === 'bunk') return DAY4_WALK_HOLD_BUNK;
@@ -1296,6 +1300,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'gone' && sim.day === 6) return 'Валера коротко: «Щель пустая. Свист кончился на шестой круг.»';
   if (sim.malyava === 'gone' && sim.day === 7) return 'Валера коротко: «Щель пустая. Свист кончился на седьмой круг.»';
   if (sim.malyava === 'gone' && sim.day === 3) return 'Валера коротко: «Щель пустая. Свист кончился на третий круг.»';
+  if (sim.malyava === 'gone' && sim.day === 4) return 'Валера коротко: «Щель пустая. Свист кончился на четвёртый круг.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
