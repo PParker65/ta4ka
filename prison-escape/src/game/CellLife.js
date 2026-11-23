@@ -312,6 +312,7 @@ import {
   DAY3_LEHA_FOUND,
   DAY3_LEHA_FOUND_BUNK,
   DAY3_LEHA_RED,
+  DAY3_LEHA_WAKE_RED,
   DAY3_LEHA_FOOD_RED,
   DAY3_LEHA_WALK_RED,
   DAY3_LEHA_NIGHT_RED,
@@ -1631,6 +1632,8 @@ export class CellLife {
                           : DAY3_LEHA_SHMON
           : g.sim.day >= 3 && g.sim.phase.id === 'walk' && (g.sim.malyava === 'admin' || g.sim.path === 'red')
             ? DAY3_LEHA_WALK_RED
+          : g.sim.day >= 3 && g.sim.phase.id === 'wake' && (g.sim.malyava === 'admin' || g.sim.path === 'red')
+            ? DAY3_LEHA_WAKE_RED
           : g.sim.day >= 3
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
               ? DAY3_LEHA_RED
