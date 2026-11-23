@@ -67,6 +67,7 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY2_WALK_RED,
   DAY2_VALERA,
   DAY2_VALERA_WAKE,
   DAY2_VALERA_FOOD,
@@ -1748,11 +1749,13 @@ export class CellLife {
                       : g.sim.phase.id === 'walk' && g.sim.day === 3
                         ? DAY3_WALK
                     : g.sim.day >= 2 && g.sim.phase.id === 'walk'
-                    ? g.sim.stash === 'bunk'
-                      ? DAY2_YARD_CAUGHT
-                      : g.sim.stash === 'wash'
-                        ? DAY2_YARD_WASH
-                        : DAY2_YARD
+                    ? weekRed(g.sim)
+                      ? DAY2_WALK_RED
+                      : g.sim.stash === 'bunk'
+                        ? DAY2_YARD_CAUGHT
+                        : g.sim.stash === 'wash'
+                          ? DAY2_YARD_WASH
+                          : DAY2_YARD
                     : valeraInCell(g.sim);
       g.dialog.show(valera.who, valera.text, valera.options);
       g.dialog.onPick = (opt) => {

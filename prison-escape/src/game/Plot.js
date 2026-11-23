@@ -9,6 +9,7 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY2_WALK_RED,
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
   DAY2_FOOD_WASH,
@@ -262,11 +263,13 @@ export function plotObjective(sim) {
         ? 'Пайка. Матрас чистый. Чашу за столом не вспоминай.'
         : 'Баланда. Очередь. В сортир, пока едят, не ходи.';
   if (d === 2 && ph === 'walk')
-    return sim.stash === 'bunk'
-      ? 'Круг после шмона. Нашли в матрасе. Через стену не ори.'
-      : sim.stash === 'wash'
-        ? 'Круг. Матрас чистый. Через стену не рассказывай про чашу.'
-        : 'Дворик. Валера знает слух. Через стену не ори.';
+    return weekRed(sim)
+      ? 'Второй круг. Свист кончился в щели. Через стену — ни звука.'
+      : sim.stash === 'bunk'
+        ? 'Круг после шмона. Нашли в матрасе. Через стену не ори.'
+        : sim.stash === 'wash'
+          ? 'Круг. Матрас чистый. Через стену не рассказывай про чашу.'
+          : 'Дворик. Валера знает слух. Через стену не ори.';
   if (d === 2 && ph === 'evening')
     return sim.stash === 'bunk'
       ? 'Отбой. Нашли в матрасе. Не объясняйся. Оправдания — вторая нычка.'
@@ -814,7 +817,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day3Walk(s));
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
-      pickDialog(g, s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
+      pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
     }
     return;
   }
@@ -1262,6 +1265,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'admin' && sim.day === 5) return 'Валера молчит. Свист кончился на пятый круг.';
   if (sim.malyava === 'admin' && sim.day === 6) return 'Валера молчит. Свист кончился на шестой круг.';
   if (sim.malyava === 'admin' && sim.day === 7) return 'Валера молчит. Свист кончился на седьмой круг.';
+  if (sim.malyava === 'admin' && sim.day === 2) return 'Валера молчит. Свист кончился на второй круг.';
   if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
   if (sim.malyava === 'burn') return 'Валера коротко: «Зола в хате. На дворе про дым не ори.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
