@@ -68,6 +68,7 @@ import {
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
   DAY2_WALK_BURN,
+  DAY2_WALK_GONE,
   DAY1_WALK_RED,
   DAY1_WALK_BURN,
   DAY2_WALK_RED,
@@ -1759,6 +1760,8 @@ export class CellLife {
                       ? DAY2_WALK_RED
                       : g.sim.malyava === 'burn'
                         ? DAY2_WALK_BURN
+                      : g.sim.malyava === 'gone'
+                        ? DAY2_WALK_GONE
                       : g.sim.stash === 'bunk'
                         ? DAY2_YARD_CAUGHT
                         : g.sim.stash === 'wash'
