@@ -9,6 +9,7 @@ import {
   DAY2_YARD,
   DAY2_YARD_CAUGHT,
   DAY2_YARD_WASH,
+  DAY1_WALK_RED,
   DAY2_WALK_RED,
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
@@ -242,7 +243,10 @@ export function plotObjective(sim) {
   const d = sim.day;
   const ph = sim.phase.id;
   if (d === 1 && ph === 'evening') return 'Отбой. Лёха шепчет про шмон. Своя койка, не чужая.';
-  if (d === 1 && ph === 'walk') return 'Конвой вывел. Круг по дворику. Назад сам не пойдёшь — заведут.';
+  if (d === 1 && ph === 'walk')
+    return weekRed(sim)
+      ? 'Первый круг. Свист кончился в щели. Через стену — ни звука.'
+      : 'Конвой вывел. Круг по дворику. Назад сам не пойдёшь — заведут.';
   if (d === 2 && ph === 'wake')
     return sim.stash === 'bunk'
       ? 'Второй подъём. Нычка в матрасе. Шмон будет до пайки. К стене.'
@@ -818,6 +822,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
+    } else if (s.day === 1 && weekRed(s) && !s.heardYard) {
+      s.heardYard = true;
+      pickDialog(g, DAY1_WALK_RED);
     }
     return;
   }
@@ -1266,6 +1273,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'admin' && sim.day === 6) return 'Валера молчит. Свист кончился на шестой круг.';
   if (sim.malyava === 'admin' && sim.day === 7) return 'Валера молчит. Свист кончился на седьмой круг.';
   if (sim.malyava === 'admin' && sim.day === 2) return 'Валера молчит. Свист кончился на второй круг.';
+  if (sim.malyava === 'admin' && sim.day === 1) return 'Валера молчит. Свист кончился на первый круг.';
   if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
   if (sim.malyava === 'burn') return 'Валера коротко: «Зола в хате. На дворе про дым не ори.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
