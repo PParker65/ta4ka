@@ -142,6 +142,7 @@ import {
   DAY3_VALERA_FOUND_BUNK,
   DAY3_VALERA_RED,
   DAY3_VALERA_FOOD_RED,
+  DAY3_VALERA_NIGHT_RED,
   DAY3_VALERA_SHMON,
   DAY3_VALERA_SHMON_HATCH,
   DAY3_VALERA_SHMON_HOLD,
@@ -690,7 +691,7 @@ function valeraInCell(s) {
       return DAY3_VALERA_FOOD;
     }
     if (s.phase.id === 'evening') {
-      if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_RED;
+      if (s.malyava === 'admin' || s.path === 'red') return DAY3_VALERA_NIGHT_RED;
       if (s.malyava === 'found') return s.stash === 'bunk' ? DAY3_VALERA_FOUND_BUNK : DAY3_VALERA_FOUND;
       if (s.malyava === 'hold') return holdStash(s, { pocket: DAY3_VALERA_HOLD, wash: DAY3_VALERA_HOLD_WASH, bunk: DAY3_VALERA_HOLD_BUNK });
       if (s.malyava === 'burn') return DAY3_VALERA_BURN;
