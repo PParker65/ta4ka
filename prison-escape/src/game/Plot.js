@@ -1257,6 +1257,7 @@ function pickDialog(g, pack) {
 
 export function walkLine(sim) {
   if (sim.courtTalk === 'cell') return 'Валера не смотрит. Свист кончился в щели.';
+  if (sim.malyava === 'admin' && sim.day === 3) return 'Валера молчит. Свист кончился на третий круг.';
   if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
   if (sim.malyava === 'burn') return 'Валера коротко: «Зола в хате. На дворе про дым не ори.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
