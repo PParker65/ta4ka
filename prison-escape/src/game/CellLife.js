@@ -305,6 +305,7 @@ import {
   DAY3_LEHA_FOUND,
   DAY3_LEHA_FOUND_BUNK,
   DAY3_LEHA_RED,
+  DAY3_LEHA_FOOD_RED,
   DAY3_LEHA_CAUGHT,
   DAY3_LEHA_SHMON,
   DAY3_LEHA_SHMON_HATCH,
@@ -1578,7 +1579,7 @@ export class CellLife {
                       ? DAY3_LEHA_FOUND_BUNK
                       : DAY3_LEHA_FOUND
                     : g.sim.malyava === 'admin' || g.sim.path === 'red'
-                      ? DAY3_LEHA_RED
+                      ? DAY3_LEHA_FOOD_RED
                       : DAY3_FOOD
           : g.sim.day >= 3 && g.sim.phase.id === 'evening'
             ? g.sim.malyava === 'admin' || g.sim.path === 'red'
