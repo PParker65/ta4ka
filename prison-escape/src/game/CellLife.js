@@ -69,6 +69,9 @@ import {
   DAY2_YARD_WASH,
   DAY2_WALK_BURN,
   DAY2_WALK_GONE,
+  DAY2_WALK_HOLD,
+  DAY2_WALK_HOLD_WASH,
+  DAY2_WALK_HOLD_BUNK,
   DAY1_WALK_RED,
   DAY1_WALK_BURN,
   DAY1_WALK_GONE,
@@ -1763,6 +1766,8 @@ export class CellLife {
                         ? DAY2_WALK_BURN
                       : g.sim.malyava === 'gone'
                         ? DAY2_WALK_GONE
+                      : g.sim.malyava === 'hold'
+                        ? holdStash(g.sim, { pocket: DAY2_WALK_HOLD, wash: DAY2_WALK_HOLD_WASH, bunk: DAY2_WALK_HOLD_BUNK })
                       : g.sim.stash === 'bunk'
                         ? DAY2_YARD_CAUGHT
                         : g.sim.stash === 'wash'
