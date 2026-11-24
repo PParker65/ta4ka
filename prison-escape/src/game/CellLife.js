@@ -81,6 +81,8 @@ import {
   DAY1_WALK_HOLD,
   DAY1_WALK_HOLD_WASH,
   DAY1_WALK_HOLD_BUNK,
+  DAY1_WALK_FOUND,
+  DAY1_WALK_FOUND_BUNK,
   DAY2_WALK_RED,
   DAY2_VALERA,
   DAY2_VALERA_WAKE,
@@ -1791,6 +1793,10 @@ export class CellLife {
                     ? DAY1_WALK_GONE
                     : g.sim.day === 1 && g.sim.phase.id === 'walk' && g.sim.malyava === 'hold'
                     ? holdStash(g.sim, { pocket: DAY1_WALK_HOLD, wash: DAY1_WALK_HOLD_WASH, bunk: DAY1_WALK_HOLD_BUNK })
+                    : g.sim.day === 1 && g.sim.phase.id === 'walk' && g.sim.malyava === 'found'
+                    ? g.sim.stash === 'bunk'
+                      ? DAY1_WALK_FOUND_BUNK
+                      : DAY1_WALK_FOUND
                     : g.sim.day === 1 && g.sim.phase.id === 'walk'
                     ? DAY1_WALK
                     : valeraInCell(g.sim);

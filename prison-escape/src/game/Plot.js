@@ -23,6 +23,8 @@ import {
   DAY1_WALK_HOLD,
   DAY1_WALK_HOLD_WASH,
   DAY1_WALK_HOLD_BUNK,
+  DAY1_WALK_FOUND,
+  DAY1_WALK_FOUND_BUNK,
   DAY2_WALK_RED,
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
@@ -270,6 +272,10 @@ export function plotObjective(sim) {
               : sim.stash === 'wash'
                 ? 'Первый круг. Чаша в хате. Через стену не ори.'
                 : 'Первый круг. Карман жжёт. Через стену не ори.'
+          : sim.malyava === 'found'
+            ? sim.stash === 'bunk'
+              ? 'Первый круг. Нашли в матрасе. Через стену не ори.'
+              : 'Первый круг. Нашли в кармане. Через стену не ори.'
         : 'Первый круг. Конвой вывел. Назад сам не пойдёшь — заведут.';
   if (d === 2 && ph === 'wake')
     return sim.stash === 'bunk'
@@ -874,6 +880,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 1 && s.malyava === 'hold' && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, holdStash(s, { pocket: DAY1_WALK_HOLD, wash: DAY1_WALK_HOLD_WASH, bunk: DAY1_WALK_HOLD_BUNK }));
+    } else if (s.day === 1 && s.malyava === 'found' && !s.heardYard) {
+      s.heardYard = true;
+      pickDialog(g, s.stash === 'bunk' ? DAY1_WALK_FOUND_BUNK : DAY1_WALK_FOUND);
     } else if (s.day === 1 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK);
@@ -1422,6 +1431,10 @@ export function walkLine(sim) {
       : sim.stash === 'wash'
         ? 'Валера коротко: «Чаша в хате. Свист кончился на первый круг.»'
         : 'Валера коротко: «Карман жжёт. Свист кончился на первый круг.»';
+  if (sim.malyava === 'found' && sim.day === 1)
+    return sim.stash === 'bunk'
+      ? 'Валера коротко: «Нашли в матрасе. Свист кончился на первый круг.»'
+      : 'Валера коротко: «Нашли в кармане. Свист кончился на первый круг.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
