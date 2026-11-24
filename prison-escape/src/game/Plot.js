@@ -20,6 +20,9 @@ import {
   DAY1_WALK_BURN,
   DAY1_WALK_GONE,
   DAY1_WALK,
+  DAY1_WALK_HOLD,
+  DAY1_WALK_HOLD_WASH,
+  DAY1_WALK_HOLD_BUNK,
   DAY2_WALK_RED,
   DAY2_FOOD,
   DAY2_FOOD_CAUGHT,
@@ -261,6 +264,12 @@ export function plotObjective(sim) {
         ? 'Первый круг. Зола в хате. Про дым — ни звука.'
         : sim.malyava === 'gone'
           ? 'Первый круг. Бумагу взяли без тебя. Через стену не ори.'
+          : sim.malyava === 'hold'
+            ? sim.stash === 'bunk'
+              ? 'Первый круг. Бумага в матрасе. Через стену не ори.'
+              : sim.stash === 'wash'
+                ? 'Первый круг. Чаша в хате. Через стену не ори.'
+                : 'Первый круг. Карман жжёт. Через стену не ори.'
         : 'Первый круг. Конвой вывел. Назад сам не пойдёшь — заведут.';
   if (d === 2 && ph === 'wake')
     return sim.stash === 'bunk'
@@ -862,6 +871,9 @@ export function onPhaseEnter(game, id) {
     } else if (s.day === 1 && s.malyava === 'gone' && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK_GONE);
+    } else if (s.day === 1 && s.malyava === 'hold' && !s.heardYard) {
+      s.heardYard = true;
+      pickDialog(g, holdStash(s, { pocket: DAY1_WALK_HOLD, wash: DAY1_WALK_HOLD_WASH, bunk: DAY1_WALK_HOLD_BUNK }));
     } else if (s.day === 1 && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK);
@@ -1404,6 +1416,12 @@ export function walkLine(sim) {
       ? 'Валера коротко: «Нашли в матрасе. Свист кончился на второй круг.»'
       : 'Валера коротко: «Нашли в кармане. Свист кончился на второй круг.»';
   if (!sim.malyava && sim.day === 1) return 'Валера коротко: «Конвой вывел. Свист кончился на первый круг.»';
+  if (sim.malyava === 'hold' && sim.day === 1)
+    return sim.stash === 'bunk'
+      ? 'Валера коротко: «Бумага в матрасе. Свист кончился на первый круг.»'
+      : sim.stash === 'wash'
+        ? 'Валера коротко: «Чаша в хате. Свист кончился на первый круг.»'
+        : 'Валера коротко: «Карман жжёт. Свист кончился на первый круг.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
