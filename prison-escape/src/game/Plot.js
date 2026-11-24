@@ -1363,7 +1363,7 @@ export function walkLine(sim) {
     return sim.stash === 'bunk'
       ? 'Валера коротко: «Третий круг. Нашли в матрасе. Свист кончился.»'
       : 'Валера коротко: «Третий круг. Нашли в кармане. Свист кончился.»';
-  if (!sim.malyava && sim.day === 4) return 'Валера коротко: «Бумага в щели. Свист кончился на четвёртый круг.»';
+  if (!sim.malyava && sim.day === 4) return 'Валера коротко: «Четвёртый круг. Бумага в щели. Свист кончился.»';
   if (sim.malyava === 'hold' && sim.day === 4)
     return sim.teaPaid
       ? sim.stash === 'bunk'
