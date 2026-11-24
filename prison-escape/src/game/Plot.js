@@ -1352,7 +1352,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'gone' && sim.day === 4) return 'Валера коротко: «Щель пустая. Свист кончился на четвёртый круг.»';
   if (sim.malyava === 'gone' && sim.day === 2) return 'Валера коротко: «Щель пустая. Свист кончился на второй круг.»';
   if (sim.malyava === 'gone' && sim.day === 1) return 'Валера коротко: «Щель пустая. Свист кончился на первый круг.»';
-  if (!sim.malyava && sim.day === 3) return 'Валера коротко: «Бумага в щели. Свист кончился на третий круг.»';
+  if (!sim.malyava && sim.day === 3) return 'Валера коротко: «Третий круг. Бумага в щели. Свист кончился.»';
   if (sim.malyava === 'hold' && sim.day === 3)
     return sim.stash === 'bunk'
       ? 'Валера коротко: «Бумага в матрасе. Свист кончился на третий круг.»'
