@@ -1337,7 +1337,7 @@ export function walkLine(sim) {
   if (sim.malyava === 'admin' && sim.day === 2) return 'Валера молчит. Свист кончился на второй круг.';
   if (sim.malyava === 'admin' && sim.day === 1) return 'Валера молчит. Свист кончился на первый круг.';
   if (sim.malyava === 'admin') return 'Валера молчит. Свист кончился на третий день.';
-  if (sim.malyava === 'burn' && sim.day === 3) return 'Валера коротко: «Зола в хате. Свист кончился на третий круг.»';
+  if (sim.malyava === 'burn' && sim.day === 3) return 'Валера коротко: «Третий круг. Зола осталась в хате. Свист кончился.»';
   if (sim.malyava === 'burn' && sim.day === 4) return 'Валера коротко: «Зола в хате. Свист кончился на четвёртый круг.»';
   if (sim.malyava === 'burn' && sim.day === 5) return 'Валера коротко: «Зола в хате. Свист кончился на пятый круг.»';
   if (sim.malyava === 'burn' && sim.day === 6) return 'Валера коротко: «Зола в хате. Свист кончился на шестой круг.»';
