@@ -14,6 +14,8 @@ import {
   DAY2_WALK_HOLD,
   DAY2_WALK_HOLD_WASH,
   DAY2_WALK_HOLD_BUNK,
+  DAY2_WALK_FOUND,
+  DAY2_WALK_FOUND_BUNK,
   DAY1_WALK_RED,
   DAY1_WALK_BURN,
   DAY1_WALK_GONE,
@@ -291,6 +293,10 @@ export function plotObjective(sim) {
               : sim.stash === 'wash'
                 ? 'Второй круг. Чаша в хате. Через стену не ори.'
                 : 'Второй круг. Карман жжёт. Через стену не ори.'
+          : sim.malyava === 'found'
+            ? sim.stash === 'bunk'
+              ? 'Второй круг. Нашли в матрасе. Через стену не ори.'
+              : 'Второй круг. Нашли в кармане. Через стену не ори.'
         : sim.stash === 'bunk'
         ? 'Круг после шмона. Нашли в матрасе. Через стену не ори.'
         : sim.stash === 'wash'
@@ -845,7 +851,7 @@ export function onPhaseEnter(game, id) {
       pickDialog(g, day3Walk(s));
     } else if (s.day >= 2 && !s.heardYard) {
       s.heardYard = true;
-      pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.malyava === 'burn' ? DAY2_WALK_BURN : s.malyava === 'gone' ? DAY2_WALK_GONE : s.malyava === 'hold' ? holdStash(s, { pocket: DAY2_WALK_HOLD, wash: DAY2_WALK_HOLD_WASH, bunk: DAY2_WALK_HOLD_BUNK }) : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
+      pickDialog(g, weekRed(s) ? DAY2_WALK_RED : s.malyava === 'burn' ? DAY2_WALK_BURN : s.malyava === 'gone' ? DAY2_WALK_GONE : s.malyava === 'hold' ? holdStash(s, { pocket: DAY2_WALK_HOLD, wash: DAY2_WALK_HOLD_WASH, bunk: DAY2_WALK_HOLD_BUNK }) : s.malyava === 'found' ? (s.stash === 'bunk' ? DAY2_WALK_FOUND_BUNK : DAY2_WALK_FOUND) : s.stash === 'bunk' ? DAY2_YARD_CAUGHT : s.stash === 'wash' ? DAY2_YARD_WASH : DAY2_YARD);
     } else if (s.day === 1 && weekRed(s) && !s.heardYard) {
       s.heardYard = true;
       pickDialog(g, DAY1_WALK_RED);
@@ -1389,6 +1395,10 @@ export function walkLine(sim) {
       : sim.stash === 'wash'
         ? 'Валера коротко: «Чаша в хате. Свист кончился на второй круг.»'
         : 'Валера коротко: «Карман жжёт. Свист кончился на второй круг.»';
+  if (sim.malyava === 'found' && sim.day === 2)
+    return sim.stash === 'bunk'
+      ? 'Валера коротко: «Нашли в матрасе. Свист кончился на второй круг.»'
+      : 'Валера коротко: «Нашли в кармане. Свист кончился на второй круг.»';
   if (sim.day === 5) return 'Валера: «С коряка звали. Что сказал — хата узнает вечером.»';
   if (sim.day >= 2) return 'Валера тихо: «Этапом шепчут Херсон. Не повторяй вслух.»';
   return 'Круг по бетону. Через сетку — небо. Небо не твоё.';
