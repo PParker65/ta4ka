@@ -1329,7 +1329,7 @@ function pickDialog(g, pack) {
 
 export function walkLine(sim) {
   if (sim.courtTalk === 'cell') return 'Валера не смотрит. Свист кончился в щели.';
-  if (sim.malyava === 'admin' && sim.day === 3) return 'Валера молчит. Свист кончился на третий круг.';
+  if (sim.malyava === 'admin' && sim.day === 3) return 'Валера молчит. Третий круг без свиста. Свист кончился.';
   if (sim.malyava === 'admin' && sim.day === 4) return 'Валера молчит. Свист кончился на четвёртый круг.';
   if (sim.malyava === 'admin' && sim.day === 5) return 'Валера молчит. Свист кончился на пятый круг.';
   if (sim.malyava === 'admin' && sim.day === 6) return 'Валера молчит. Свист кончился на шестой круг.';
