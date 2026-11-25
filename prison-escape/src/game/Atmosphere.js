@@ -304,7 +304,7 @@ export function applyMood(game, mood, place) {
     prison.cellLamp.color.setHex(night ? 0xff9944 : ph === 'food' ? 0xffc070 : 0xffd7a0);
   }
   if (prison.foodLamp) {
-    prison.foodLamp.intensity = place === 'cell' && ph === 'food' ? 0.9 : 0;
+    prison.foodLamp.intensity = place === 'cell' && ph === 'food' ? 1.35 : 0;
   }
   if (prison.foodSet) prison.foodSet.visible = place === 'cell' && ph === 'food';
   if (prison.cellSodium) {

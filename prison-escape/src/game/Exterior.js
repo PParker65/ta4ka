@@ -220,16 +220,25 @@ function addVan(prison) {
   cabin.position.set(0, 1.62, 0.2);
   van.add(cabin);
 
+  const stripe = new THREE.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.55 });
+  prison.box(0.05, 0.16, 5.05, stripe, 1.05, 1.08, 0, van);
+  prison.box(0.05, 0.16, 5.05, stripe, -1.05, 1.08, 0, van);
+  const rim = new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.55, roughness: 0.4 });
   for (const [x, z] of [
-    [-1.05, -1.6],
-    [1.05, -1.6],
-    [-1.05, 1.7],
-    [1.05, 1.7],
+    [-1.22, -1.55],
+    [1.22, -1.55],
+    [-1.22, 1.65],
+    [1.22, 1.65],
   ]) {
-    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.28, 12), dark);
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.32, 12), dark);
     w.rotation.z = Math.PI / 2;
-    w.position.set(x, 0.38, z);
+    w.position.set(x, 0.42, z);
     van.add(w);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.34, 10), rim);
+    hub.rotation.z = Math.PI / 2;
+    hub.position.set(x, 0.42, z);
+    van.add(hub);
+    prison.box(0.22, 0.12, 0.7, body, x > 0 ? 1.08 : -1.08, 0.72, z, van);
   }
 
   const bars = new THREE.MeshStandardMaterial({ color: 0x1a1a1c, metalness: 0.55, roughness: 0.35 });

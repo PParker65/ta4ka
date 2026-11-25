@@ -47,8 +47,8 @@ export class Npcs {
   }
 
   async spawnConvoy() {
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 0.85, z: -78.6, yaw: Math.PI, follow: 0 });
-    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -0.85, z: -78.4, yaw: Math.PI, follow: 1 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: 1.15, z: -80.55, yaw: 0.4, follow: 0 });
+    await this.add('guard', { id: 'convoy', name: 'Конвой', x: -1.05, z: -80.35, yaw: -0.35, follow: 1 });
     await this.add('guard', { id: 'kpp-officer', name: 'Дежурный', x: 4.2, z: -55.4, yaw: Math.PI, follow: null });
     await this.add('inmate', {
       id: 'fresh',
@@ -82,7 +82,7 @@ export class Npcs {
       queue.sitStyle = 'chair';
       this.pose(queue, 'sit');
     }
-    this.dogs = [makeDog(-3.6, -73.2, 0.4), makeDog(2.4, -71.4, -0.3), makeDog(-1.2, -75.5, 0.9)];
+    this.dogs = [makeDog(-4.2, -76.4, 0.4), makeDog(3.8, -81.2, -0.3), makeDog(-2.6, -81.8, 0.9)];
     for (const d of this.dogs) {
       this.scene.add(d.root);
       this.list.push(d);

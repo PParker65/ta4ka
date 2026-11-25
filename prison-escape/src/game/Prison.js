@@ -1944,19 +1944,32 @@ export class Prison {
       [0.48, 0.22, stew],
       [-0.02, 0.28, soup],
     ]) {
-      const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.05, 12), alum);
-      bowl.position.set(fx, 0.775, fz);
+      const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.07, 12), alum);
+      bowl.position.set(fx, 0.785, fz);
       food.add(bowl);
-      const liquid = new THREE.Mesh(new THREE.CircleGeometry(0.075, 12), mat);
+      const liquid = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12), mat);
       liquid.rotation.x = -Math.PI / 2;
-      liquid.position.set(fx, 0.798, fz);
+      liquid.position.set(fx, 0.822, fz);
       food.add(liquid);
     }
+    const chai = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.09, 0.16, 10),
+      new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.45, roughness: 0.4 }),
+    );
+    chai.position.set(-0.22, 0.86, 0.08);
+    food.add(chai);
+    const chaiSpout = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.022, 0.12, 6),
+      new THREE.MeshStandardMaterial({ color: 0x4a4e52, metalness: 0.45, roughness: 0.4 }),
+    );
+    chaiSpout.rotation.z = 0.9;
+    chaiSpout.position.set(-0.12, 0.9, 0.08);
+    food.add(chaiSpout);
     const loaf = new THREE.Mesh(
-      new THREE.BoxGeometry(0.18, 0.055, 0.09),
+      new THREE.BoxGeometry(0.22, 0.07, 0.11),
       new THREE.MeshStandardMaterial({ color: 0xc4a06a, roughness: 0.9 }),
     );
-    loaf.position.set(0.32, 0.78, 0.02);
+    loaf.position.set(0.32, 0.8, 0.02);
     loaf.rotation.y = 0.4;
     food.add(loaf);
     const bunkBowl = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.06, 12), alum);
@@ -1992,13 +2005,13 @@ export class Prison {
     spoonFood.rotation.y = 0.55;
     food.add(spoonFood);
     const steamFood = new THREE.Group();
-    steamFood.position.set(0.18, 0.86, 0.12);
-    for (let i = 0; i < 4; i++) {
+    steamFood.position.set(0.18, 0.92, 0.12);
+    for (let i = 0; i < 5; i++) {
       const puff = new THREE.Mesh(
-        new THREE.SphereGeometry(0.04 + i * 0.012, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0xf0e8d8, transparent: true, opacity: 0.32, depthWrite: false }),
+        new THREE.SphereGeometry(0.055 + i * 0.016, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf4ead8, transparent: true, opacity: 0.42, depthWrite: false }),
       );
-      puff.position.y = i * 0.07;
+      puff.position.y = i * 0.09;
       steamFood.add(puff);
     }
     food.add(steamFood);

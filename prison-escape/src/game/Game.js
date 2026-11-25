@@ -1561,10 +1561,13 @@ export class Game {
         this.input.pitch = 0.14;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
-        this.player.position.set(2.35, 0, -78.55);
-        this.input.yaw = -2.18;
-        this.input.pitch = 0.08;
-        this.npcs.dogsAlert?.(true);
+        this.player.position.set(3.55, 0, -77.15);
+        this.input.yaw = -2.32;
+        this.input.pitch = 0.05;
+        this.npcs.dogsAlert?.(false);
+        for (const n of this.npcs.list) {
+          if (n.id === 'convoy') n.follow = null;
+        }
       } else if (at === 'shmon') {
         this.sim.docs = true;
         this.sim.stage = 'shmon';
