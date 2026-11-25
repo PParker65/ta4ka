@@ -157,6 +157,13 @@ export class Game {
         params.get('look');
       if (ph) this.forcePhase(ph);
       else if (story) this.forcePhase('wake');
+      if (ph === 'food') {
+        const o = this.prison.cellOrigin;
+        this.player.position.set(o.x + 0.12, 0, o.z - 0.52);
+        this.input.yaw = 0.06;
+        this.input.pitch = -0.48;
+        this.cellLife.directNpcs?.();
+      }
       this.applyLook(params);
       if (params.get('look')) this._skipPlotDialog = true;
       this.paintWorld();

@@ -2029,8 +2029,8 @@ export class Prison {
     const wood = new THREE.MeshStandardMaterial({ color: 0x6a4e32, roughness: 0.86 });
     const spots = [
       [1.08, 0.18],
-      [0.18, -0.4],
-      [0.22, 0.74],
+      [-0.52, 0.16],
+      [1.22, 0.38],
     ];
     for (const [x, z] of spots) {
       this.box(0.34, 0.07, 0.34, wood, x, 0.44, z, cell);
@@ -4068,8 +4068,8 @@ export function makeSeats(ox, oz) {
   const d = LAYOUT.cellD;
   return {
     sedoyStool: { x: ox + 1.08, z: oz + 0.18, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
-    stoolS: { x: ox + 0.18, z: oz - 0.4, yaw: 0, sit: true, seatY: 0.5 },
-    stoolN: { x: ox + 0.22, z: oz + 0.74, yaw: Math.PI, sit: true, seatY: 0.5 },
+    stoolS: { x: ox - 0.52, z: oz + 0.16, yaw: Math.PI / 2, sit: true, seatY: 0.5 },
+    stoolN: { x: ox + 1.22, z: oz + 0.38, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
     lehaSit: { x: ox + 1.35, z: oz + 1.62, yaw: Math.PI, sit: true, seatY: 0.58, sitStyle: 'bunk' },
     lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
     valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },

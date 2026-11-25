@@ -1034,9 +1034,9 @@ export class CellLife {
       return;
     }
     if (phase === 'food') {
-      this.hold(starosta, 'food', s.sedoyStool, 99);
-      this.hold(leha, 'food', s.stoolS, 99);
-      this.hold(valera, 'food', s.stoolN, 99);
+      this.snap(starosta, 'food', s.sedoyStool);
+      this.snap(leha, 'food', s.stoolS);
+      this.snap(valera, 'food', s.lehaSit);
       return;
     }
     if (phase === 'walk') {
