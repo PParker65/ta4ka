@@ -157,6 +157,14 @@ export class Game {
         params.get('look');
       if (ph) this.forcePhase(ph);
       else if (story) this.forcePhase('wake');
+      if (ph === 'wake' || !ph) {
+        const o = this.prison.cellOrigin;
+        this.player.position.set(o.x - 0.42, 0, o.z - 0.92);
+        this.input.yaw = 0.38;
+        this.input.pitch = -0.12;
+        this.npcs.snapSeats?.();
+        this.cellLife.directNpcs?.();
+      }
       if (ph === 'food') {
         const o = this.prison.cellOrigin;
         this.player.position.set(o.x + 0.12, 0, o.z - 0.52);
@@ -222,9 +230,9 @@ export class Game {
     this.prison.closeDoor(this.prison.blockDoor);
     this.finishEscort();
     const o = this.prison.cellOrigin;
-    this.player.position.set(o.x + 0.42, 0, o.z - 0.12);
-    this.input.yaw = -0.22;
-    this.input.pitch = -0.2;
+    this.player.position.set(o.x - 0.42, 0, o.z - 0.92);
+    this.input.yaw = 0.38;
+    this.input.pitch = -0.12;
     this.npcs.snapSeats?.();
     this.paintWorld();
   }

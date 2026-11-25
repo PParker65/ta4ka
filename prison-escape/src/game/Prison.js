@@ -1216,9 +1216,26 @@ export class Prison {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
       const shaft = new THREE.Mesh(
-        new THREE.ConeGeometry(0.58, 2.6, 8, 1, true),
+        new THREE.ConeGeometry(0.34, 2.35, 10, 1, true),
         new THREE.MeshBasicMaterial({
-          color: 0xd0e4f4,
+          color: 0xd8eaf8,
+          transparent: true,
+          opacity: 0.16,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      shaft.position.set(x, 1.18, d / 2 - 1.05);
+      shaft.rotation.x = Math.PI;
+      shaft.renderOrder = 2;
+      cell.add(shaft);
+      this.windowShafts = this.windowShafts || [];
+      this.windowShafts.push(shaft);
+      const shaftCore = new THREE.Mesh(
+        new THREE.ConeGeometry(0.16, 2.05, 8, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0xf2f8ff,
           transparent: true,
           opacity: 0.22,
           depthWrite: false,
@@ -1226,24 +1243,23 @@ export class Prison {
           blending: THREE.AdditiveBlending,
         }),
       );
-      shaft.position.set(x, 1.22, d / 2 - 1.15);
-      shaft.rotation.x = Math.PI;
-      shaft.renderOrder = 2;
-      cell.add(shaft);
-      this.windowShafts = this.windowShafts || [];
-      this.windowShafts.push(shaft);
+      shaftCore.position.set(x, 1.28, d / 2 - 0.95);
+      shaftCore.rotation.x = Math.PI;
+      shaftCore.renderOrder = 2;
+      cell.add(shaftCore);
+      this.windowShafts.push(shaftCore);
       const shaftWide = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.05, 2.15),
+        new THREE.PlaneGeometry(0.82, 1.85),
         new THREE.MeshBasicMaterial({
           color: 0xc8dcec,
           transparent: true,
-          opacity: 0.14,
+          opacity: 0.1,
           depthWrite: false,
           side: THREE.DoubleSide,
           blending: THREE.AdditiveBlending,
         }),
       );
-      shaftWide.position.set(x, 1.52, d / 2 - 0.92);
+      shaftWide.position.set(x, 1.48, d / 2 - 0.82);
       shaftWide.renderOrder = 2;
       cell.add(shaftWide);
       this.windowShafts.push(shaftWide);
@@ -1749,8 +1765,8 @@ export class Prison {
     cell.add(steam);
     for (let i = 0; i < 5; i++) {
       const puff = new THREE.Mesh(
-        new THREE.SphereGeometry(0.045 + i * 0.016, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0xe8e4dc, transparent: true, opacity: 0.38, depthWrite: false }),
+        new THREE.SphereGeometry(0.018 + i * 0.006, 6, 6),
+        new THREE.MeshBasicMaterial({ color: 0xe8e4dc, transparent: true, opacity: 0.22, depthWrite: false }),
       );
       puff.position.y = i * 0.09;
       steam.add(puff);

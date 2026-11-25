@@ -1058,15 +1058,9 @@ export class CellLife {
       return;
     }
 
-    this.cycle(starosta, [{ name: 'throne', spot: s.sedoyStool, hold: 48, line: 'Седой, не глядя: «Цигарка — на стол, не в карман.»' }]);
-    this.cycle(leha, [
-      { name: 'bunk', spot: s.lehaSit, hold: 38 },
-      { name: 'hatch', spot: s.hatch, hold: 14, line: 'Лёха тихо: «Кормушку без команды не открывай.»' },
-    ]);
-    this.cycle(valera, [
-      { name: 'bunk', spot: s.valeraSit, hold: 34 },
-      { name: 'window', spot: s.window, hold: 16, line: 'Валера: «Карты вечером, если цигарка есть.»' },
-    ]);
+    this.snap(starosta, 'wake', s.sedoyStool);
+    this.snap(leha, 'wake', s.stoolS);
+    this.snap(valera, 'wake', s.window);
   }
 
   setCellDoor(open) {
