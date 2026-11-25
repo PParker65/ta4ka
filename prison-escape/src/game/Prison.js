@@ -14,6 +14,8 @@ import {
   greenMetalTex,
   windowViewTex,
   createFlickerMaterial,
+  asphaltTex,
+  skyTex,
 } from '../shaders/environment.js';
 import { buildArrival, openKppGate, tickKppGate } from './Exterior.js';
 
@@ -57,6 +59,8 @@ export class Prison {
       diamond: diamondCeilingTex(),
       green: greenMetalTex(),
       windowView: windowViewTex(),
+      asphalt: asphaltTex(),
+      sky: skyTex(),
     };
 
     this.addCorridor();
@@ -1173,6 +1177,22 @@ export class Prison {
       for (let j = -1; j <= 1; j++) {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
+      const shaft = new THREE.Mesh(
+        new THREE.ConeGeometry(0.55, 2.4, 8, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0xc8d8e8,
+          transparent: true,
+          opacity: 0.12,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        }),
+      );
+      shaft.position.set(x, 1.05, d / 2 - 1.15);
+      shaft.rotation.x = Math.PI;
+      shaft.renderOrder = 2;
+      cell.add(shaft);
+      this.windowShafts = this.windowShafts || [];
+      this.windowShafts.push(shaft);
     }
   }
 
@@ -2667,8 +2687,22 @@ export class Prison {
       roughness: 0.75,
       side: THREE.DoubleSide,
     });
-    const dirt = new THREE.MeshStandardMaterial({ color: 0x5a584e, roughness: 0.96 });
+    const dirt = this.mat(this.tex.asphalt, { roughness: 0.42, metalness: 0.18, repeat: [2.4, 2.4] });
+    dirt.color.set(0x6a6e68);
     this.box(9, 0.08, 9, dirt, 0, 0.03, 0, g);
+    const wetSheet = new THREE.Mesh(
+      new THREE.PlaneGeometry(8.6, 8.6),
+      new THREE.MeshStandardMaterial({
+        color: 0x3a423c,
+        roughness: 0.12,
+        metalness: 0.35,
+        transparent: true,
+        opacity: 0.38,
+      }),
+    );
+    wetSheet.rotation.x = -Math.PI / 2;
+    wetSheet.position.y = 0.078;
+    g.add(wetSheet);
     const crack = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.9 });
     this.box(3.4, 0.015, 0.04, crack, -1.9, 0.075, -2.15, g);
     this.box(0.04, 0.015, 2.2, crack, 2.35, 0.075, 2.5, g);
@@ -2679,7 +2713,7 @@ export class Prison {
       this.box(0.3, 1.15, 9, dado, x, 0.57, 0, g);
       this.box(0.3, 2.25, 9, plaster, x, 2.27, 0, g);
     }
-    const cage = new THREE.MeshStandardMaterial({ color: 0x3a3e42, metalness: 0.55, roughness: 0.4 });
+    const cage = new THREE.MeshStandardMaterial({ color: 0x1c1e22, metalness: 0.72, roughness: 0.28 });
     for (let i = -4; i <= 4; i++) {
       this.box(0.05, 0.05, 8.8, cage, i, 3.38, 0, g);
       this.box(8.8, 0.05, 0.05, cage, 0, 3.38, i, g);
@@ -2790,18 +2824,29 @@ export class Prison {
     this.box(hw * 2 + 0.2, 0.14, 1.3, plaster, 0, LAYOUT.wallH + 0.2, neckZ);
 
     const skyLight = new THREE.Mesh(
-      new THREE.PlaneGeometry(8, 8),
-      new THREE.MeshBasicMaterial({ color: 0x8aa6b8, side: THREE.DoubleSide }),
+      new THREE.PlaneGeometry(14, 14),
+      new THREE.MeshBasicMaterial({ map: this.tex.sky, color: 0xc4d4e0, side: THREE.DoubleSide, fog: false }),
     );
     skyLight.rotation.x = Math.PI / 2;
-    skyLight.position.y = 3.45;
+    skyLight.position.y = 6.4;
     g.add(skyLight);
-    const sun = new THREE.PointLight(0xe8dcc0, 1.15, 14, 1.5);
-    sun.position.set(0, 3.05, 0.4);
+    this.yardSky = skyLight;
+    const hemi = new THREE.Mesh(
+      new THREE.SphereGeometry(18, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.48),
+      new THREE.MeshBasicMaterial({ map: this.tex.sky, color: 0xb0c4d2, side: THREE.BackSide, fog: false, depthWrite: false }),
+    );
+    hemi.position.y = 1.2;
+    g.add(hemi);
+    this.yardHemis = hemi;
+    const sun = new THREE.PointLight(0xe8dcc0, 1.45, 16, 1.35);
+    sun.position.set(0, 3.35, 0.4);
     g.add(sun);
-    const doorLamp = new THREE.PointLight(0xf0ead0, 0.85, 8, 1.6);
+    this.yardSun = sun;
+    const doorLamp = new THREE.PointLight(0xf0ead0, 0.9, 8, 1.6);
     doorLamp.position.set(0, 2.45, wallZ + 0.9);
     g.add(doorLamp);
+    this.yardDoorLamp = doorLamp;
+    this.addYardRain(g);
 
     const green = this.mat(this.tex.green, { roughness: 0.45, metalness: 0.28 });
     const gate = new THREE.Mesh(new THREE.BoxGeometry(1.18, 2.12, 0.07), green);
@@ -2827,8 +2872,41 @@ export class Prison {
     this.addCollider(doorW / 2, 4.5, z0 - 0.25, z0 + 0.4, 'yard-door-r');
   }
 
+  addYardRain(g) {
+    const n = 420;
+    const pos = new Float32Array(n * 6);
+    for (let i = 0; i < n; i++) {
+      const x = (Math.random() - 0.5) * 8.4;
+      const y = Math.random() * 6.2;
+      const z = (Math.random() - 0.5) * 8.4;
+      const o = i * 6;
+      pos[o] = x;
+      pos[o + 1] = y;
+      pos[o + 2] = z;
+      pos[o + 3] = x;
+      pos[o + 4] = y - 0.38;
+      pos[o + 5] = z;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const rain = new THREE.LineSegments(
+      geo,
+      new THREE.LineBasicMaterial({
+        color: 0xc8d4de,
+        transparent: true,
+        opacity: 0.42,
+        depthWrite: false,
+      }),
+    );
+    rain.name = 'YardRain';
+    rain.visible = false;
+    rain.userData.streak = true;
+    g.add(rain);
+    this.yardRain = rain;
+  }
+
   addYardLife(g) {
-    const mesh = new THREE.MeshStandardMaterial({ color: 0x2e3236, metalness: 0.55, roughness: 0.42 });
+    const mesh = new THREE.MeshStandardMaterial({ color: 0x16181c, metalness: 0.7, roughness: 0.3 });
     for (const x of [-4.28, 4.28]) {
       for (let i = -8; i <= 8; i++) {
         this.box(0.03, 3.2, 0.03, mesh, x, 1.7, i * 0.48, g);
@@ -2892,21 +2970,13 @@ export class Prison {
       roughness: 0.94,
       side: THREE.DoubleSide,
     });
-    this.box(2.6, 0.04, 1.9, cageTarp, -1.35, 3.32, 0.55, g);
-    this.box(2.1, 0.04, 2.3, cageTarp, 1.55, 3.32, -0.85, g);
-    this.box(1.7, 0.038, 1.5, cageTarp, 0.15, 3.32, 1.85, g);
     const cageTarpDark = new THREE.MeshStandardMaterial({
       color: 0x3e3c36,
       roughness: 0.96,
       side: THREE.DoubleSide,
     });
-    this.box(2.8, 0.045, 2.2, cageTarpDark, 0.05, 3.31, -0.15, g);
-    this.box(2.2, 0.04, 1.7, cageTarp, -2.05, 3.32, -1.75, g);
-    this.box(2.0, 0.04, 1.6, cageTarp, 2.15, 3.32, 1.65, g);
-    this.box(1.8, 0.038, 1.4, cageTarpDark, -0.9, 3.31, 2.35, g);
-    this.box(2.4, 0.042, 1.8, cageTarpDark, -0.8, 3.31, -2.65, g);
-    this.box(2.2, 0.04, 1.6, cageTarp, 1.4, 3.32, -3.15, g);
-    this.box(1.9, 0.038, 1.5, cageTarp, -2.2, 3.32, -3.35, g);
+    this.box(1.6, 0.04, 1.1, cageTarp, -2.55, 3.36, 2.55, g);
+    this.box(1.4, 0.04, 1.0, cageTarpDark, 2.65, 3.36, -2.65, g);
     const cageTarpHang = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.55, 0.03), cageTarpDark);
     cageTarpHang.position.set(-0.4, 3.08, 0.2);
     cageTarpHang.rotation.x = 0.18;

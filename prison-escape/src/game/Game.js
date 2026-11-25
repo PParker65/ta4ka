@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Input } from '../controls/Input.js';
@@ -20,6 +21,7 @@ import { storyLine, wayFor } from './Story.js';
 import { plotObjective, walkLine } from './Plot.js';
 import { lifeTick } from './Life.js';
 import { CellLife } from './CellLife.js';
+import { applyMood, moodFor, placeOf, weatherLabel } from './Atmosphere.js';
 
 export class Game {
   constructor(canvas) {
@@ -143,6 +145,7 @@ export class Game {
       this.skipToPlace(at);
       this.applySkipFlags(params);
       this.applyLook(params);
+      this.paintWorld();
     } else if (params.has('cell')) {
       this.skipToCell();
       this.applySkipFlags(params);
@@ -156,6 +159,7 @@ export class Game {
       else if (story) this.forcePhase('wake');
       this.applyLook(params);
       if (params.get('look')) this._skipPlotDialog = true;
+      this.paintWorld();
     }
   }
 
@@ -195,6 +199,8 @@ export class Game {
     this.scene.fog.color.set(0x161410);
     this.scene.background.set(0x161410);
     this.player.position.copy(this.prison.cellSpawn);
+    this.input.yaw = 1.05;
+    this.input.pitch = 0.08;
     this.npcs.list.forEach((n) => {
       n.root.traverse((c) => {
         if (c.userData.billboard) c.visible = true;
@@ -204,6 +210,13 @@ export class Game {
     if (door?.open) this.prison.closeDoor(door);
     this.prison.closeDoor(this.prison.blockDoor);
     this.finishEscort();
+    this.paintWorld();
+  }
+
+  paintWorld() {
+    const place = placeOf(this.player.position);
+    applyMood(this, moodFor(this.sim, place), place);
+    this._place = place;
   }
 
   applySkipFlags(params) {
@@ -1520,9 +1533,10 @@ export class Game {
     if (at === 'yard') {
       this.skipToCell();
       this.forcePhase('walk');
-      this.player.position.set(-0.2, 0, LAYOUT.corridorLen + 5.2);
-      this.input.yaw = 0.12;
-      this.input.pitch = -0.82;
+      this.player.position.set(0.15, 0, LAYOUT.corridorLen + 4.6);
+      this.input.yaw = 0.22;
+      this.input.pitch = 0.18;
+      this.paintWorld();
       return;
     }
     if (at === 'kpp' || at === 'van' || at === 'shmon' || at === 'photo' || at === 'med' || at === 'bath' || at === 'neck' || at === 'escort') {
@@ -1620,6 +1634,12 @@ export class Game {
   setupComposer() {
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
+    if (!this.lowEnd) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      this.bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.22, 0.42, 0.84);
+      this.composer.addPass(this.bloomPass);
+    }
     this.composer.addPass(new OutputPass());
   }
 
@@ -1697,6 +1717,7 @@ export class Game {
       this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
       this.cellLife?.tick(dt);
       this.prison.syncStoryProps?.(this.sim);
+      this.paintWorld();
       this.syncHud();
       return;
     }
@@ -1717,21 +1738,9 @@ export class Game {
     this.npcs.update(this.clock.elapsedTime, this.player.position, this.camera, dt);
 
     this.updateCamera(crouch, dt);
-    const outside = this.player.position.z < -53;
-    this.sun.intensity = outside ? 1.35 : 0.1;
-    this.hemi.intensity = outside ? 1.05 : 0.4;
-    this.hemi.color.set(outside ? 0xd8e4ee : 0xc4b8a8);
-    this.fill.intensity = outside
-      ? 0.05
-      : this.sim.stage === 'life' && this.sim.phase.id === 'evening'
-        ? 0.12
-        : 0.22;
-    if (!outside) this.fill.position.set(this.player.position.x, 2.55, this.player.position.z);
+    this.paintWorld();
+    if (this._place !== 'intake') this.fill.position.set(this.player.position.x, 2.55, this.player.position.z);
     this.alarmLight.position.set(this.player.position.x, 2.15, this.player.position.z);
-    this.scene.fog.near = outside ? 42 : 9;
-    this.scene.fog.far = outside ? 155 : 34;
-    this.scene.fog.color.set(outside ? 0x9aadb8 : 0x161410);
-    this.scene.background.set(outside ? 0x9aadb8 : 0x161410);
     const lights = this.prison.searchlights;
     if (lights) {
       const t = this.clock.elapsedTime;
@@ -2086,14 +2095,29 @@ export class Game {
   }
 
   stepRain(dt) {
-    const rain = this.prison.rain;
-    if (!rain) return;
-    const arr = rain.geometry.attributes.position.array;
-    for (let i = 1; i < arr.length; i += 3) {
-      arr[i] -= dt * 9;
-      if (arr[i] < 0) arr[i] = 14 + Math.random() * 4;
+    for (const rain of [this.prison.rain, this.prison.yardRain]) {
+      if (!rain?.visible) continue;
+      const arr = rain.geometry.attributes.position.array;
+      const cap = rain === this.prison.yardRain ? 6.1 : 16;
+      const floor = rain === this.prison.yardRain ? 0.08 : 0;
+      if (rain.userData.streak) {
+        for (let i = 0; i < arr.length; i += 6) {
+          arr[i + 1] -= dt * 11;
+          arr[i + 4] -= dt * 11;
+          if (arr[i + 4] < floor) {
+            const y = cap + Math.random() * 1.4;
+            arr[i + 1] = y;
+            arr[i + 4] = y - 0.38;
+          }
+        }
+      } else {
+        for (let i = 1; i < arr.length; i += 3) {
+          arr[i] -= dt * 9;
+          if (arr[i] < floor) arr[i] = cap + Math.random() * 4;
+        }
+      }
+      rain.geometry.attributes.position.needsUpdate = true;
     }
-    rain.geometry.attributes.position.needsUpdate = true;
   }
 
   autoGuide(dt, mag) {
@@ -2703,7 +2727,9 @@ export class Game {
     const s = this.sim;
     document.getElementById('clock').textContent =
       s.stage === 'life' ? `День ${s.day} · ${s.phase.label}` : `День 1 · ${stageName(s.stage)}`;
-    document.getElementById('status').textContent = this.alarm ? 'ТРЕВОГА' : 'СИЗО · Катенька';
+    document.getElementById('status').textContent = this.alarm
+      ? 'ТРЕВОГА'
+      : weatherLabel(s, this._place || placeOf(this.player.position));
     document.getElementById('path-label').textContent = `Путь: ${s.pathLabel}`;
     document.getElementById('bar-hunger').style.setProperty('--w', `${s.hunger}%`);
     document.getElementById('bar-hygiene').style.setProperty('--w', `${s.hygiene}%`);

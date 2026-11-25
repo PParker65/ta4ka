@@ -545,9 +545,9 @@ function human(kind, spec) {
   const look = faceOf(spec);
   const skin = new THREE.MeshStandardMaterial({
     color: look.skin,
-    roughness: 0.55,
-    emissive: 0x3a2010,
-    emissiveIntensity: 0.08,
+    roughness: 0.52,
+    emissive: 0x4a2814,
+    emissiveIntensity: 0.16,
   });
   const cloth =
     kind === 'guard'

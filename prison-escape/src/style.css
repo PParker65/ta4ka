@@ -103,6 +103,15 @@ textarea {
   background: radial-gradient(circle at 50% 45%, transparent 42%, rgba(20, 4, 4, 0.72) 100%);
 }
 
+#app::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: radial-gradient(ellipse at 50% 42%, transparent 48%, rgba(6, 5, 4, 0.55) 100%);
+}
+
 #needle {
   transform-origin: 50% 11px;
 }

@@ -4,24 +4,38 @@ import * as THREE from 'three';
 export function makeHands() {
   const g = new THREE.Group();
   g.name = 'FPHands';
-  const skin = new THREE.MeshStandardMaterial({ color: 0xc4a07a, roughness: 0.62 });
+  const skin = new THREE.MeshStandardMaterial({
+    color: 0xc4a07a,
+    roughness: 0.55,
+    emissive: 0x3a2010,
+    emissiveIntensity: 0.12,
+  });
   const sleeve = streetMat();
   g.userData.street = sleeve;
   g.userData.kaz = stripedMat();
   const arms = [];
   for (const side of [-1, 1]) {
     const arm = new THREE.Group();
-    arm.position.set(side * 0.16, -0.22, -0.28);
+    arm.position.set(side * 0.18, -0.2, -0.26);
     g.add(arm);
-    const sleeveM = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.05, 0.11), sleeve);
-    sleeveM.position.set(0, 0, 0.02);
+    const sleeveM = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.16), sleeve);
+    sleeveM.position.set(0, 0.01, 0.04);
     arm.add(sleeveM);
-    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.03, 0.07), skin);
-    hand.position.set(0, -0.02, -0.08);
+    const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.026, 0.05, 8), skin);
+    wrist.rotation.x = Math.PI / 2;
+    wrist.position.set(0, -0.01, -0.06);
+    arm.add(wrist);
+    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.068, 0.034, 0.085), skin);
+    hand.position.set(0, -0.02, -0.1);
     arm.add(hand);
+    const thumb = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.016, 0.04), skin);
+    thumb.position.set(side * 0.04, -0.01, -0.1);
+    thumb.rotation.y = side * 0.55;
+    arm.add(thumb);
     for (let f = 0; f < 4; f++) {
-      const finger = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.03), skin);
-      finger.position.set(-0.018 + f * 0.012, -0.028, -0.12);
+      const finger = new THREE.Mesh(new THREE.BoxGeometry(0.013, 0.012, 0.042), skin);
+      finger.position.set(-0.024 + f * 0.016, -0.03, -0.15);
+      finger.rotation.x = 0.18;
       arm.add(finger);
     }
     arms.push(arm);
@@ -89,10 +103,10 @@ export function makeHands() {
       arm.rotation.x = 0.12 + swing;
       arm.position.y = -0.22 + Math.abs(Math.sin(t * freq)) * mag * 0.01;
       if (cuffed) {
-        arm.position.x = s * 0.09;
+        arm.position.x = s * 0.1;
         arm.rotation.z = -s * 0.18;
       } else {
-        arm.position.x = s * 0.16;
+        arm.position.x = s * 0.18;
         arm.rotation.z = 0;
       }
     });
