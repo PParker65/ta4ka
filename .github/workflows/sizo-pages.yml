@@ -1,0 +1,50 @@
+name: SIZO test pages
+
+on:
+  push:
+    branches:
+      - cursor/prison-escape-game-2971
+    paths:
+      - 'prison-escape/**'
+      - '.github/workflows/sizo-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sizo-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prison-escape
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: prison-escape/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /ta4ka/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: prison-escape/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
