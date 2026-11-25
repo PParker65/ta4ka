@@ -3954,13 +3954,31 @@ function floorPaint(text) {
   );
 }
 
-function yardSitter(g, x, z, yaw, robe) {
-  const cloth = new THREE.MeshStandardMaterial({
-    color: robe,
-    roughness: 0.75,
-    emissive: robe,
-    emissiveIntensity: 0.16,
+function kazenkaCloth(hex) {
+  const c = document.createElement('canvas');
+  c.width = 64;
+  c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#c8c8be';
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.fillStyle = '#2c2c28';
+  for (let y = 0; y < 64; y += 8) ctx.fillRect(0, y, 64, 4);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 3);
+  const m = new THREE.MeshStandardMaterial({
+    map: tex,
+    roughness: 0.72,
+    emissive: 0x2a2818,
+    emissiveIntensity: 0.35,
   });
+  m.color.setHex(hex);
+  return m;
+}
+
+function yardSitter(g, x, z, yaw, robe) {
+  const cloth = kazenkaCloth(robe);
   const skin = new THREE.MeshStandardMaterial({
     color: 0xc4a07a,
     roughness: 0.55,
@@ -3971,18 +3989,20 @@ function yardSitter(g, x, z, yaw, robe) {
   hips.position.set(x, 0.5, z);
   hips.rotation.y = yaw;
   g.add(hips);
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.42, 0.2), cloth);
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.44, 0.22), cloth);
   torso.position.y = 0.12;
   hips.add(torso);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), skin);
   head.position.y = 0.44;
   hips.add(head);
-  const hair = new THREE.Mesh(
-    new THREE.SphereGeometry(0.132, 8, 8, 0, Math.PI * 2, 0, 1.2),
-    new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.9 }),
-  );
-  hair.position.set(0, 0.46, -0.01);
+  const hairMat = new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.9, emissive: 0x2a1c12, emissiveIntensity: 0.18 });
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.136, 10, 8), hairMat);
+  hair.scale.set(1.04, 0.58, 1.06);
+  hair.position.set(0, 0.5, -0.01);
   hips.add(hair);
+  const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.04, 0.05), hairMat);
+  fringe.position.set(0, 0.5, 0.1);
+  hips.add(fringe);
   for (const s of [-1, 1]) {
     const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.34), cloth);
     thigh.position.set(s * 0.09, -0.14, 0.12);

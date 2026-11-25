@@ -2722,10 +2722,10 @@ function alcove(prison, x, z, title) {
     prison.box(0.26, 0.03, 0.18, papers, 0.08, 0.99, -0.08, g);
     prison.box(0.2, 0.025, 0.14, new THREE.MeshStandardMaterial({ color: 0x3a2020, roughness: 0.85 }), -0.38, 0.99, 0.22, g);
     const deskLamp = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.04, 0.07, 0.08, 8),
+      new THREE.ConeGeometry(0.09, 0.12, 8),
       new THREE.MeshBasicMaterial({ color: 0xffe8a0 }),
     );
-    deskLamp.position.set(0.52, 1.12, 0.18);
+    deskLamp.position.set(0.52, 1.2, 0.18);
     g.add(deskLamp);
     const deskGlow = new THREE.PointLight(0xffe8a0, 0.55, 2.4, 2);
     deskGlow.position.set(0.5, 1.18, 0.18);

@@ -179,8 +179,8 @@ export function moodFor(sim, place) {
         fill: 0.05,
         fillColor: 0xffaa44,
         exposure: 0.46,
-        cellLamp: 0.32,
-        windowFill: 0.4,
+        cellLamp: 0.42,
+        windowFill: 0.48,
         windowTint: 0x2a4068,
         bloom: 0.62,
         env: 0.05,
@@ -308,7 +308,7 @@ export function applyMood(game, mood, place) {
   }
   if (prison.foodSet) prison.foodSet.visible = place === 'cell' && ph === 'food';
   if (prison.cellSodium) {
-    prison.cellSodium.intensity = night ? 0.95 : 0.04;
+    prison.cellSodium.intensity = night ? 1.15 : 0.04;
     prison.cellSodium.color.setHex(0xff8a33);
   }
   if (prison.cellSodiumTube) prison.cellSodiumTube.visible = night;
