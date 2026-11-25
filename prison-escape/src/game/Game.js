@@ -1557,7 +1557,7 @@ export class Game {
       } else if (at === 'van') {
         this.player.position.set(0, 0, -80.8);
         this.input.yaw = 0.08;
-        this.input.pitch = 0.32;
+        this.input.pitch = 0.18;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'shmon') {
         this.sim.docs = true;
@@ -1565,7 +1565,7 @@ export class Game {
         this.prison.openKpp();
         this.player.position.set(0.35, 0, -36.4);
         this.input.yaw = -Math.PI / 2;
-        this.input.pitch = 0.1;
+        this.input.pitch = 0.02;
       } else if (at === 'photo') {
         this.sim.docs = true;
         this.sim.pending = [];

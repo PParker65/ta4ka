@@ -82,22 +82,22 @@ export function moodFor(sim, place) {
   if (place === 'proc') {
     Object.assign(base, {
       fog: 0x1a2220,
-      fogNear: 5,
-      fogFar: 18,
-      bg: 0x121816,
-      hemiSky: 0xd8ece8,
+      fogNear: 4,
+      fogFar: 16,
+      bg: 0x101614,
+      hemiSky: 0xe8fcf6,
       hemiGround: 0x2a3a38,
-      hemi: 0.55,
-      sun: 0xe8f4f0,
-      sunI: 0.12,
-      fill: 0.32,
-      fillColor: 0xd8f0ea,
-      exposure: 1.22,
-      bloom: 0.38,
-      env: 0.28,
-      hall: 0.85,
-      proc: 1.15,
-      hallColor: 0xe8f4f2,
+      hemi: 0.62,
+      sun: 0xf0fff8,
+      sunI: 0.18,
+      fill: 0.48,
+      fillColor: 0xe8f8f2,
+      exposure: 1.38,
+      bloom: 0.48,
+      env: 0.34,
+      hall: 1.05,
+      proc: 1.45,
+      hallColor: 0xf2fff8,
     });
     return base;
   }
@@ -346,7 +346,7 @@ export function applyMood(game, mood, place) {
     const on = place === 'cell' && phaseId(game.sim) !== 'shmon';
     for (const s of prison.windowShafts) {
       s.visible = on;
-      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.06 : 0.09;
+      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.08 : 0.16;
       s.material.color.setHex(mood.windowTint);
     }
   }

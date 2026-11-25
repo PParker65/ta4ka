@@ -243,6 +243,24 @@ function addVan(prison) {
   prison.vanDoors = { left: doorL, right: doorR };
 
   addRain(prison);
+  const puddleMat = new THREE.MeshStandardMaterial({
+    color: 0x3a4248,
+    roughness: 0.08,
+    metalness: 0.42,
+    transparent: true,
+    opacity: 0.55,
+  });
+  for (const [px, pz, s] of [
+    [0.85, -80.15, 0.85],
+    [-1.1, -79.4, 0.55],
+    [1.6, -78.2, 0.7],
+    [-0.4, -81.1, 0.45],
+  ]) {
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(s, 10), puddleMat);
+    puddle.rotation.x = -Math.PI / 2;
+    puddle.position.set(px, 0.055, pz);
+    prison.group.add(puddle);
+  }
 
   const plate = plaque('АА 1313 КІ', 0.7, 0.18);
   plate.position.set(0, 0.7, 2.75);
@@ -278,9 +296,9 @@ function addRain(prison) {
   const rain = new THREE.LineSegments(
     g,
     new THREE.LineBasicMaterial({
-      color: 0xc8d4de,
+      color: 0xd4e0ea,
       transparent: true,
-      opacity: 0.48,
+      opacity: 0.62,
       depthWrite: false,
     }),
   );
@@ -395,6 +413,19 @@ function addProcessing(prison) {
   const floor = prison.mat(prison.tex.plaster, { roughness: 0.38, metalness: 0.12, env: 0.18, repeat: [3, 6] });
   floor.color.set(0x6a726c);
   prison.box(hw * 2 + 0.2, 0.06, L, floor, 0, 0.03, z0);
+  const procWet = new THREE.Mesh(
+    new THREE.PlaneGeometry(hw * 2, L * 0.92),
+    new THREE.MeshStandardMaterial({
+      color: 0x3a4a48,
+      roughness: 0.1,
+      metalness: 0.32,
+      transparent: true,
+      opacity: 0.38,
+    }),
+  );
+  procWet.rotation.x = -Math.PI / 2;
+  procWet.position.set(0, 0.068, z0);
+  prison.group.add(procWet);
   prison.procLights = prison.procLights || [];
   for (let z = -50; z < -4; z += 5.4) {
     const glow = new THREE.PointLight(0xe8f4f2, 0.7, 8.5, 1.7);
@@ -2634,11 +2665,22 @@ function alcove(prison, x, z, title) {
   prison.box(2.4, 1.35, 0.05, darkBoard, 0.1, 1.95, 1.58, g);
   const farFace = (x < 0 ? -1 : 1) * 1.68;
   prison.box(0.08, 2.6, 2.8, darkBoard, farFace, 1.4, 0, g);
-  const lamp = new THREE.PointLight(0xe8f4f2, 0.85, 5.4, 1.8);
+  const lamp = new THREE.PointLight(0xe8f4f2, 1.15, 6.2, 1.6);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
   prison.procLights = prison.procLights || [];
   prison.procLights.push(lamp);
+  const tube = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.045, 1.55, 8),
+    new THREE.MeshBasicMaterial({ color: 0xf4fff8 }),
+  );
+  tube.rotation.z = Math.PI / 2;
+  tube.position.set(0, 2.92, 0);
+  g.add(tube);
+  const tubeGlow = new THREE.PointLight(0xf4fff8, 0.55, 4.2, 1.8);
+  tubeGlow.position.set(0, 2.88, 0);
+  g.add(tubeGlow);
+  prison.procLights.push(tubeGlow);
   const t = plaque(title, 1.2, 0.28);
   t.position.set(0, 2.55, 1.62);
   g.add(t);

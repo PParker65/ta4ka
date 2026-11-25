@@ -1200,22 +1200,37 @@ export class Prison {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
       const shaft = new THREE.Mesh(
-        new THREE.ConeGeometry(0.26, 2.1, 6, 1, true),
+        new THREE.ConeGeometry(0.42, 2.4, 7, 1, true),
         new THREE.MeshBasicMaterial({
-          color: 0xc8d8e8,
+          color: 0xd0e4f4,
           transparent: true,
-          opacity: 0.08,
+          opacity: 0.16,
           depthWrite: false,
           side: THREE.DoubleSide,
           blending: THREE.AdditiveBlending,
         }),
       );
-      shaft.position.set(x, 1.28, d / 2 - 0.95);
+      shaft.position.set(x, 1.18, d / 2 - 1.05);
       shaft.rotation.x = Math.PI;
       shaft.renderOrder = 2;
       cell.add(shaft);
       this.windowShafts = this.windowShafts || [];
       this.windowShafts.push(shaft);
+      const shaftWide = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.7, 1.8),
+        new THREE.MeshBasicMaterial({
+          color: 0xc8dcec,
+          transparent: true,
+          opacity: 0.09,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      shaftWide.position.set(x, 1.45, d / 2 - 0.85);
+      shaftWide.renderOrder = 2;
+      cell.add(shaftWide);
+      this.windowShafts.push(shaftWide);
     }
   }
 
@@ -3645,9 +3660,9 @@ export class Prison {
       rag.rotation.z = i % 2 ? 0.1 : -0.08;
       g.add(rag);
     });
-    yardSitter(g, -2.15, 2.55, Math.PI * 0.15, 0x4a4a46);
-    yardSitter(g, 2.35, 1.72, -Math.PI * 0.6, 0x3e3c38);
-    yardSitter(g, -2.55, -1.5, 0.4, 0x5a5854);
+    yardSitter(g, 0.55, 1.28, Math.PI, 0x4a4a46);
+    yardSitter(g, -1.55, 2.05, 0.35, 0x3e3c38);
+    yardSitter(g, 2.05, 1.85, -0.85, 0x5a5854);
   }
 
   addPipesAndProps() {
@@ -4005,7 +4020,7 @@ export function makeSeats(ox, oz) {
     sedoyStool: { x: ox + 1.08, z: oz + 0.18, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
     stoolS: { x: ox + 0.18, z: oz - 0.4, yaw: 0, sit: true, seatY: 0.5 },
     stoolN: { x: ox + 0.22, z: oz + 0.74, yaw: Math.PI, sit: true, seatY: 0.5 },
-    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },
+    lehaSit: { x: ox + 1.35, z: oz + 1.62, yaw: Math.PI, sit: true, seatY: 0.58, sitStyle: 'bunk' },
     lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
     valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },
     valeraLie: { x: ox - 0.15, z: oz + 2.35, yaw: 0, lie: true },

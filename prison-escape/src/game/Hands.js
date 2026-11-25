@@ -123,10 +123,10 @@ function stripedMat() {
   c.width = 32;
   c.height = 32;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#6a6a68';
+  ctx.fillStyle = '#c8c8be';
   ctx.fillRect(0, 0, 32, 32);
-  ctx.fillStyle = '#2e2e2c';
-  for (let y = 0; y < 32; y += 8) ctx.fillRect(0, y, 32, 3);
+  ctx.fillStyle = '#2c2c28';
+  for (let y = 0; y < 32; y += 8) ctx.fillRect(0, y, 32, 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75 });

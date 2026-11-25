@@ -26,8 +26,8 @@ export class Npcs {
     await this.add('inmate', {
       id: 'cellmate',
       name: 'Лёха',
-      x: s?.lehaSit.x ?? ox + 1.5,
-      z: s?.lehaSit.z ?? oz + 1.92,
+      x: s?.lehaSit.x ?? ox + 1.35,
+      z: s?.lehaSit.z ?? oz + 1.62,
       yaw: s?.lehaSit.yaw ?? -Math.PI / 2,
       robe: 0x5a5854,
     });
@@ -757,10 +757,10 @@ function striped(hex) {
   c.width = 64;
   c.height = 64;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#5c5c58';
+  ctx.fillStyle = '#c8c8be';
   ctx.fillRect(0, 0, 64, 64);
-  ctx.fillStyle = '#2a2a28';
-  for (let y = 0; y < 64; y += 7) ctx.fillRect(0, y, 64, 3);
+  ctx.fillStyle = '#2c2c28';
+  for (let y = 0; y < 64; y += 8) ctx.fillRect(0, y, 64, 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
