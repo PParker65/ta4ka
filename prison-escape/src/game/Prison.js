@@ -453,11 +453,11 @@ export class Prison {
 
     this.box(w, 0.05, d, this.mat(this.tex.broken, { roughness: 0.9, repeat: [2.4, 2.8] }), 0, 0.025, 0, cell);
     const wet = new THREE.MeshStandardMaterial({
-      color: 0x3a423c,
-      roughness: 0.14,
-      metalness: 0.28,
+      color: 0x2a3834,
+      roughness: 0.08,
+      metalness: 0.42,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.58,
     });
     for (const [px, pz, s] of [
       [-0.8, 0.4, 0.55],
@@ -467,6 +467,7 @@ export class Prison {
       [0.28, 0.72, 0.62],
       [0.85, 0.18, 0.4],
       [-0.35, 1.05, 0.48],
+      [0.12, 0.48, 0.85],
     ]) {
       const p = new THREE.Mesh(new THREE.CircleGeometry(s, 10), wet);
       p.rotation.x = -Math.PI / 2;
@@ -1203,34 +1204,34 @@ export class Prison {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
       const shaft = new THREE.Mesh(
-        new THREE.ConeGeometry(0.42, 2.4, 7, 1, true),
+        new THREE.ConeGeometry(0.58, 2.6, 8, 1, true),
         new THREE.MeshBasicMaterial({
           color: 0xd0e4f4,
           transparent: true,
-          opacity: 0.16,
+          opacity: 0.22,
           depthWrite: false,
           side: THREE.DoubleSide,
           blending: THREE.AdditiveBlending,
         }),
       );
-      shaft.position.set(x, 1.18, d / 2 - 1.05);
+      shaft.position.set(x, 1.22, d / 2 - 1.15);
       shaft.rotation.x = Math.PI;
       shaft.renderOrder = 2;
       cell.add(shaft);
       this.windowShafts = this.windowShafts || [];
       this.windowShafts.push(shaft);
       const shaftWide = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.7, 1.8),
+        new THREE.PlaneGeometry(1.05, 2.15),
         new THREE.MeshBasicMaterial({
           color: 0xc8dcec,
           transparent: true,
-          opacity: 0.09,
+          opacity: 0.14,
           depthWrite: false,
           side: THREE.DoubleSide,
           blending: THREE.AdditiveBlending,
         }),
       );
-      shaftWide.position.set(x, 1.45, d / 2 - 0.85);
+      shaftWide.position.set(x, 1.52, d / 2 - 0.92);
       shaftWide.renderOrder = 2;
       cell.add(shaftWide);
       this.windowShafts.push(shaftWide);

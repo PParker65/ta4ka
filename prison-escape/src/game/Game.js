@@ -1569,9 +1569,9 @@ export class Game {
         this.sim.docs = true;
         this.sim.stage = 'shmon';
         this.prison.openKpp();
-        this.player.position.set(0.92, 0, -36.4);
-        this.input.yaw = -Math.PI / 2;
-        this.input.pitch = -0.04;
+        this.player.position.set(0.18, 0, -39.2);
+        this.input.yaw = 0;
+        this.input.pitch = 0.08;
       } else if (at === 'photo') {
         this.sim.docs = true;
         this.sim.pending = [];

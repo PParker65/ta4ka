@@ -402,6 +402,24 @@ function addKpp(prison) {
     radius: 2.5,
   });
   prison.addCollider(2.65, 6.15, -58.05, -54.95, 'kpp-booth');
+  const kppWet = new THREE.MeshStandardMaterial({
+    color: 0x2a3236,
+    roughness: 0.08,
+    metalness: 0.45,
+    transparent: true,
+    opacity: 0.55,
+  });
+  for (const [px, pz, s] of [
+    [1.15, -59.4, 1.15],
+    [2.55, -59.85, 0.7],
+    [0.2, -60.6, 0.85],
+    [3.4, -58.6, 0.55],
+  ]) {
+    const p = new THREE.Mesh(new THREE.CircleGeometry(s, 10), kppWet);
+    p.rotation.x = -Math.PI / 2;
+    p.position.set(px, 0.04, pz);
+    prison.group.add(p);
+  }
 }
 
 export function openKppGate(prison) {
@@ -448,6 +466,7 @@ function addProcessing(prison) {
   );
   procWet.rotation.x = -Math.PI / 2;
   procWet.position.set(0, 0.068, z0);
+  procWet.material.opacity = 0.5;
   prison.group.add(procWet);
   prison.procLights = prison.procLights || [];
   for (let z = -50; z < -4; z += 5.4) {
@@ -455,6 +474,19 @@ function addProcessing(prison) {
     glow.position.set(0, 2.68, z);
     prison.group.add(glow);
     prison.procLights.push(glow);
+    const tube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 1.35, 8),
+      new THREE.MeshBasicMaterial({ color: 0xf2fff8 }),
+    );
+    tube.rotation.z = Math.PI / 2;
+    tube.position.set(0, 2.92, z);
+    prison.group.add(tube);
+    const housing = new THREE.Mesh(
+      new THREE.BoxGeometry(1.55, 0.08, 0.18),
+      new THREE.MeshStandardMaterial({ color: 0x3a3e40, metalness: 0.35, roughness: 0.5 }),
+    );
+    housing.position.set(0, 2.98, z);
+    prison.group.add(housing);
   }
 
   const wall = new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.9 });

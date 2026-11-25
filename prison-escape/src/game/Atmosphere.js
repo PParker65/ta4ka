@@ -351,7 +351,7 @@ export function applyMood(game, mood, place) {
     const on = place === 'cell' && phaseId(game.sim) !== 'shmon';
     for (const s of prison.windowShafts) {
       s.visible = on;
-      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.08 : 0.16;
+      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.1 : 0.24;
       s.material.color.setHex(mood.windowTint);
     }
   }
