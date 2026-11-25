@@ -1899,16 +1899,16 @@ export class Prison {
     lamp.position.set(0.2, 1.6, 0.2);
     cell.add(lamp);
     this.cellLamp = lamp;
-    const sodium = new THREE.PointLight(0xff9944, 0.05, 5.5, 2);
-    sodium.position.set(-0.4, 2.42, -0.6);
+    const sodium = new THREE.PointLight(0xff9944, 0.05, 6.5, 2);
+    sodium.position.set(0.15, 2.38, 1.05);
     cell.add(sodium);
     this.cellSodium = sodium;
     const sodiumTube = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.03, 0.03, 0.42, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffb060 }),
+      new THREE.CylinderGeometry(0.045, 0.045, 0.85, 8),
+      new THREE.MeshBasicMaterial({ color: 0xff9944 }),
     );
     sodiumTube.rotation.z = Math.PI / 2;
-    sodiumTube.position.set(-0.4, 2.58, -0.6);
+    sodiumTube.position.set(0.15, 2.68, 1.05);
     cell.add(sodiumTube);
     this.cellSodiumTube = sodiumTube;
     const windowFill = new THREE.PointLight(0x9bb4c4, 0.4, 8, 2);

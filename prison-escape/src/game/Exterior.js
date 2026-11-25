@@ -323,6 +323,12 @@ function addKpp(prison) {
     opacity: 0.55,
   });
   prison.box(1.4, 0.7, 0.06, glass, -0.4, 1.45, -1.62, booth);
+  const frame = new THREE.MeshStandardMaterial({ color: 0x3a3834, roughness: 0.7, metalness: 0.15 });
+  prison.box(1.56, 0.07, 0.1, frame, -0.4, 1.84, -1.62, booth);
+  prison.box(1.56, 0.07, 0.1, frame, -0.4, 1.06, -1.62, booth);
+  prison.box(0.07, 0.78, 0.1, frame, -1.14, 1.45, -1.62, booth);
+  prison.box(0.07, 0.78, 0.1, frame, 0.34, 1.45, -1.62, booth);
+  prison.box(0.04, 0.7, 0.04, frame, -0.4, 1.45, -1.62, booth);
   const kppSign = plaque('КПП', 1.1, 0.32);
   kppSign.position.set(0, 2.35, -1.64);
   booth.add(kppSign);
@@ -335,6 +341,14 @@ function addKpp(prison) {
   const kppGlow = new THREE.PointLight(0xffe8a0, 1.15, 8, 1.6);
   kppGlow.position.set(0, 2.7, -1.2);
   booth.add(kppGlow);
+  const doorMat = new THREE.MeshStandardMaterial({ color: 0x2c3034, roughness: 0.55, metalness: 0.28 });
+  const latch = new THREE.MeshStandardMaterial({ color: 0x8a9096, roughness: 0.4, metalness: 0.45 });
+  prison.box(0.08, 2.12, 0.92, doorMat, -1.82, 1.08, 0.22, booth);
+  prison.box(0.05, 0.05, 0.14, latch, -1.88, 1.12, -0.12, booth);
+  const rustPipe = new THREE.MeshStandardMaterial({ color: 0x4a3428, roughness: 0.88, metalness: 0.2 });
+  prison.box(0.08, 2.55, 0.08, rustPipe, -1.74, 1.28, -1.52, booth);
+  prison.box(0.55, 0.08, 0.08, rustPipe, -1.48, 2.52, -1.52, booth);
+  prison.box(2.05, 0.06, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a322c, roughness: 0.8 }), -0.35, 2.62, -1.55, booth);
 
   prison.box(1.5, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a3530 }), 3.2, 1.05, -56.4);
   const paper = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });
@@ -384,7 +398,7 @@ function addKpp(prison) {
   prison.interactables.push({
     id: 'kpp',
     type: 'kpp',
-    position: new THREE.Vector3(2.4, 1, -58.6),
+    position: new THREE.Vector3(2.9, 1, -59.45),
     radius: 2.5,
   });
   prison.addCollider(2.65, 6.15, -58.05, -54.95, 'kpp-booth');
@@ -3037,16 +3051,9 @@ function darkCam() {
 }
 
 function addWaymarks(prison) {
-  const paint = new THREE.MeshBasicMaterial({ color: 0xc9a227, transparent: true, opacity: 0.7, depthWrite: false });
-  for (let z = -78; z <= -58; z += 3.6) {
-    const chev = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.7, 3), paint);
-    chev.rotation.x = -Math.PI / 2;
-    chev.position.set(0.95, 0.03, z);
-    prison.group.add(chev);
-  }
-  const kpp = plaque('КПП →', 1.6, 0.38);
-  kpp.position.set(2.35, 1.55, -58.4);
-  kpp.rotation.y = -0.4;
+  const kpp = plaque('КПП →', 1.4, 0.32);
+  kpp.position.set(4.0, 1.92, -58.14);
+  kpp.rotation.y = Math.PI;
   prison.group.add(kpp);
   const puddle = new THREE.Mesh(
     new THREE.CircleGeometry(1.4, 10),

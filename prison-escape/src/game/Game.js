@@ -2792,17 +2792,18 @@ function smoothstep(x) {
 
 function makeBeacon() {
   const g = new THREE.Group();
-  const m = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.16, 0),
-    new THREE.MeshBasicMaterial({ color: 0xe8b84a, transparent: true, opacity: 0.9, depthWrite: false }),
-  );
-  g.add(m);
   const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.22, 0.28, 16),
-    new THREE.MeshBasicMaterial({ color: 0xe8b84a, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.RingGeometry(0.38, 0.5, 20),
+    new THREE.MeshBasicMaterial({
+      color: 0x8a7a40,
+      transparent: true,
+      opacity: 0.32,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
   );
   ring.rotation.x = -Math.PI / 2;
-  ring.position.y = -1.55;
+  ring.position.y = -1.68;
   g.add(ring);
   g.visible = false;
   return g;
