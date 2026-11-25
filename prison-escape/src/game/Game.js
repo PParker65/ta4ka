@@ -1545,9 +1545,9 @@ export class Game {
     if (at === 'yard') {
       this.skipToCell();
       this.forcePhase('walk');
-      this.player.position.set(0.15, 0, LAYOUT.corridorLen + 4.6);
-      this.input.yaw = 0.12;
-      this.input.pitch = -0.06;
+      this.player.position.set(0.2, 0, LAYOUT.corridorLen + 3.15);
+      this.input.yaw = 0.18;
+      this.input.pitch = 0.06;
       this.paintWorld();
       return;
     }
@@ -1561,9 +1561,9 @@ export class Game {
         this.input.pitch = 0.14;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
-        this.player.position.set(0.72, 0, -80.25);
-        this.input.yaw = 0.22;
-        this.input.pitch = 0.12;
+        this.player.position.set(2.35, 0, -78.55);
+        this.input.yaw = -2.18;
+        this.input.pitch = 0.08;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'shmon') {
         this.sim.docs = true;

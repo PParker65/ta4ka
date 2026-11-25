@@ -451,7 +451,7 @@ export class Prison {
     cell.position.set(ox, 0, oz);
     this.group.add(cell);
 
-    this.box(w, 0.05, d, this.mat(this.tex.broken, { roughness: 0.9, repeat: [2.4, 2.8] }), 0, 0.025, 0, cell);
+    this.box(w, 0.05, d, this.mat(this.tex.broken, { roughness: 0.28, metalness: 0.22, repeat: [2.4, 2.8] }), 0, 0.025, 0, cell);
     const wet = new THREE.MeshStandardMaterial({
       color: 0x2a3834,
       roughness: 0.08,
@@ -474,6 +474,18 @@ export class Prison {
       p.position.set(px, 0.04, pz);
       cell.add(p);
     }
+    const aisleSheen = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.7, 2.4),
+      new THREE.MeshBasicMaterial({
+        color: 0x7a9a94,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+      }),
+    );
+    aisleSheen.rotation.x = -Math.PI / 2;
+    aisleSheen.position.set(0.22, 0.046, 0.55);
+    cell.add(aisleSheen);
 
     const wallMat = this.mat(this.tex.plaster, { repeat: [w / 1.3, h / 1.1], bump: 0.02 });
     wallMat.polygonOffset = true;
@@ -3665,9 +3677,9 @@ export class Prison {
       rag.rotation.z = i % 2 ? 0.1 : -0.08;
       g.add(rag);
     });
-    yardSitter(g, 0.55, 1.28, Math.PI, 0x4a4a46);
-    yardSitter(g, -1.55, 2.05, 0.35, 0x3e3c38);
-    yardSitter(g, 2.05, 1.85, -0.85, 0x5a5854);
+    yardSitter(g, -2.05, 2.55, 0.55, 0x4a4a46);
+    yardSitter(g, 2.15, 2.85, -0.65, 0x3e3c38);
+    yardSitter(g, 0.35, 3.35, Math.PI, 0x5a5854);
   }
 
   addPipesAndProps() {

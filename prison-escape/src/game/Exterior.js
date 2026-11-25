@@ -201,6 +201,14 @@ function addVan(prison) {
   prison.box(0.36, 0.07, 2.35, rust, -0.62, 0.52, 0.05, van);
   prison.box(0.36, 0.07, 2.35, rust, 0.62, 0.52, 0.05, van);
   prison.box(1.85, 1.05, 0.05, dark, 0, 1.15, 1.72, van);
+  prison.box(1.72, 0.07, 0.42, rust, 0, 0.52, -0.85, van);
+  prison.box(1.72, 0.07, 0.42, rust, 0, 0.52, 0.55, van);
+  const bulb = new THREE.Mesh(
+    new THREE.SphereGeometry(0.045, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0xffd090 }),
+  );
+  bulb.position.set(0, 1.72, -0.55);
+  van.add(bulb);
   const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.55, 5), steel);
   chain.position.set(-0.55, 1.15, -0.4);
   van.add(chain);
@@ -262,8 +270,33 @@ function addVan(prison) {
     prison.group.add(puddle);
   }
 
+  const glass = new THREE.MeshStandardMaterial({
+    color: 0x8aa0b0,
+    roughness: 0.12,
+    metalness: 0.25,
+    transparent: true,
+    opacity: 0.55,
+  });
+  prison.box(1.72, 0.48, 0.05, glass, 0, 1.58, 2.78, van);
+  const grill = new THREE.MeshStandardMaterial({ color: 0x2a2c28, roughness: 0.55, metalness: 0.4 });
+  prison.box(1.55, 0.28, 0.08, grill, 0, 0.92, 2.76, van);
+  for (const x of [-0.35, 0, 0.35]) {
+    prison.box(0.08, 0.22, 0.04, steel, x, 0.92, 2.81, van);
+  }
+  prison.box(1.95, 0.14, 0.22, rust, 0, 0.48, 2.72, van);
+  for (const x of [-0.62, 0.62]) {
+    const lamp = new THREE.Mesh(
+      new THREE.CircleGeometry(0.09, 10),
+      new THREE.MeshBasicMaterial({ color: 0xffe2a0 }),
+    );
+    lamp.position.set(x, 0.78, 2.82);
+    van.add(lamp);
+    const halo = new THREE.PointLight(0xffe0a8, 0.55, 4.2, 1.8);
+    halo.position.set(x, 0.78, 2.9);
+    van.add(halo);
+  }
   const plate = plaque('АА 1313 КІ', 0.7, 0.18);
-  plate.position.set(0, 0.7, 2.75);
+  plate.position.set(0, 0.62, 2.88);
   van.add(plate);
 
   const flood = new THREE.SpotLight(0xe8dcc0, 10, 32, 0.5, 0.45, 1.3);
