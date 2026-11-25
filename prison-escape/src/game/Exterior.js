@@ -3101,6 +3101,19 @@ function alcove(prison, x, z, title) {
     wet.rotation.x = -Math.PI / 2;
     wet.position.set(0.2, 0.04, 0.15);
     g.add(wet);
+    const wetFloor = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.3, 3.3),
+      new THREE.MeshStandardMaterial({
+        color: 0x2a3c3a,
+        roughness: 0.06,
+        metalness: 0.48,
+        transparent: true,
+        opacity: 0.7,
+      }),
+    );
+    wetFloor.rotation.x = -Math.PI / 2;
+    wetFloor.position.set(0, 0.068, 0);
+    g.add(wetFloor);
     const bathFill = new THREE.PointLight(0xc8ddd8, 1.2, 5, 1.7);
     bathFill.position.set(0.2, 2.1, 0.1);
     g.add(bathFill);

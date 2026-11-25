@@ -1616,7 +1616,7 @@ export class Game {
         this.prison.openKpp();
         this.player.position.set(2.48, 0, -15.45);
         this.input.yaw = Math.PI / 2;
-        this.input.pitch = -0.28;
+        this.input.pitch = -0.42;
       } else if (at === 'escort') {
         this.sim.docs = true;
         this.sim.pending = [];
