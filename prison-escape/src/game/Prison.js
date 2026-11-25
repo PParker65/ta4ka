@@ -1197,16 +1197,17 @@ export class Prison {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
       const shaft = new THREE.Mesh(
-        new THREE.ConeGeometry(0.72, 2.8, 8, 1, true),
+        new THREE.ConeGeometry(0.26, 2.1, 6, 1, true),
         new THREE.MeshBasicMaterial({
           color: 0xc8d8e8,
           transparent: true,
-          opacity: 0.2,
+          opacity: 0.08,
           depthWrite: false,
           side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
         }),
       );
-      shaft.position.set(x, 0.95, d / 2 - 1.35);
+      shaft.position.set(x, 1.28, d / 2 - 0.95);
       shaft.rotation.x = Math.PI;
       shaft.renderOrder = 2;
       cell.add(shaft);
@@ -1877,6 +1878,18 @@ export class Prison {
     lamp.position.set(0.2, 1.6, 0.2);
     cell.add(lamp);
     this.cellLamp = lamp;
+    const sodium = new THREE.PointLight(0xff9944, 0.05, 5.5, 2);
+    sodium.position.set(-0.4, 2.42, -0.6);
+    cell.add(sodium);
+    this.cellSodium = sodium;
+    const sodiumTube = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.42, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffb060 }),
+    );
+    sodiumTube.rotation.z = Math.PI / 2;
+    sodiumTube.position.set(-0.4, 2.58, -0.6);
+    cell.add(sodiumTube);
+    this.cellSodiumTube = sodiumTube;
     const windowFill = new THREE.PointLight(0x9bb4c4, 0.4, 8, 2);
     windowFill.position.set(-1.2, 2.15, LAYOUT.cellD / 2 - 0.5);
     cell.add(windowFill);

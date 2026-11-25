@@ -198,12 +198,6 @@ export class Game {
     this.scene.fog.far = 34;
     this.scene.fog.color.set(0x161410);
     this.scene.background.set(0x161410);
-    const o = this.prison.cellOrigin;
-    const win = this.prison.seats?.window;
-    this.player.position.set(win?.x ?? o.x - 1.35, 0, win?.z ?? o.z + 2.4);
-    this.input.yaw = 0;
-    this.input.pitch = 0.2;
-    this.npcs.snapSeats?.();
     this.npcs.list.forEach((n) => {
       n.root.traverse((c) => {
         if (c.userData.billboard) c.visible = true;
@@ -213,6 +207,11 @@ export class Game {
     if (door?.open) this.prison.closeDoor(door);
     this.prison.closeDoor(this.prison.blockDoor);
     this.finishEscort();
+    const o = this.prison.cellOrigin;
+    this.player.position.set(o.x + 0.42, 0, o.z - 0.12);
+    this.input.yaw = -0.42;
+    this.input.pitch = 0.1;
+    this.npcs.snapSeats?.();
     this.paintWorld();
   }
 

@@ -593,7 +593,7 @@ function human(kind, spec) {
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 8), skin);
   neck.position.y = 0.32;
   hips.add(neck);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 16), skin);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.145, 20, 16), skin);
   head.position.y = 0.5;
   hips.add(head);
   const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 8), skin);
@@ -690,7 +690,7 @@ function human(kind, spec) {
     hips.add(barrel);
   } else {
     const buzz = new THREE.Mesh(
-      new THREE.SphereGeometry(0.128, 10, 8, 0, Math.PI * 2, 0, 1.05),
+      new THREE.SphereGeometry(0.144, 10, 8, 0, Math.PI * 2, 0, 1.05),
       new THREE.MeshStandardMaterial({ color: look.hair, roughness: 0.85 }),
     );
     buzz.position.set(0, 0.5, 0);

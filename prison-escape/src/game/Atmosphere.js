@@ -296,10 +296,16 @@ export function applyMood(game, mood, place) {
   fill.color.setHex(mood.fillColor);
   if ('environmentIntensity' in scene) scene.environmentIntensity = mood.env ?? 0.2;
 
+  const night = place === 'cell' && game.sim.phase?.id === 'evening';
   if (prison.cellLamp) {
     prison.cellLamp.intensity = mood.cellLamp;
-    prison.cellLamp.color.setHex(place === 'cell' && game.sim.phase?.id === 'evening' ? 0xff9944 : 0xffd7a0);
+    prison.cellLamp.color.setHex(night ? 0xff9944 : 0xffd7a0);
   }
+  if (prison.cellSodium) {
+    prison.cellSodium.intensity = night ? 0.55 : 0.04;
+    prison.cellSodium.color.setHex(0xff8a33);
+  }
+  if (prison.cellSodiumTube) prison.cellSodiumTube.visible = night;
   if (prison.windowFills) {
     for (const l of prison.windowFills) {
       l.intensity = mood.windowFill;
@@ -334,7 +340,7 @@ export function applyMood(game, mood, place) {
     const on = place === 'cell' && phaseId(game.sim) !== 'shmon';
     for (const s of prison.windowShafts) {
       s.visible = on;
-      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.1 : 0.22;
+      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.06 : 0.09;
       s.material.color.setHex(mood.windowTint);
     }
   }
