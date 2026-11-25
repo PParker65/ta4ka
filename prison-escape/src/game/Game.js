@@ -1562,7 +1562,7 @@ export class Game {
       this.forcePhase('walk');
       this.player.position.set(0.2, 0, LAYOUT.corridorLen + 3.15);
       this.input.yaw = 0.18;
-      this.input.pitch = 0.06;
+      this.input.pitch = 0.16;
       this.paintWorld();
       return;
     }
@@ -1576,9 +1576,9 @@ export class Game {
         this.input.pitch = 0.14;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
-        this.player.position.set(3.55, 0, -77.15);
-        this.input.yaw = -2.32;
-        this.input.pitch = 0.05;
+        this.player.position.set(3.85, 0, -80.15);
+        this.input.yaw = -2.22;
+        this.input.pitch = 0.06;
         this.npcs.dogsAlert?.(false);
         for (const n of this.npcs.list) {
           if (n.id === 'convoy') n.follow = null;

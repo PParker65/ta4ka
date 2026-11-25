@@ -125,22 +125,22 @@ export function moodFor(sim, place) {
       });
     } else if (rain) {
       Object.assign(base, {
-        sky: 0x5a6570,
-        fog: 0x5a6570,
-        fogNear: 4,
-        fogFar: 16,
-        bg: 0x4a555e,
-        hemiSky: 0x9aa8b4,
-        hemiGround: 0x3a3c38,
-        hemi: 0.55,
-        sun: 0xc8d0d8,
-        sunI: 0.22,
-        fill: 0.12,
-        fillColor: 0xb8c4cc,
-        exposure: 0.88,
-        yardSun: 0.55,
-        yardSky: 0x6a7884,
-        bloom: 0.12,
+        sky: 0x4a555e,
+        fog: 0x4a555e,
+        fogNear: 3,
+        fogFar: 12,
+        bg: 0x3a454c,
+        hemiSky: 0x8a98a4,
+        hemiGround: 0x2a2c28,
+        hemi: 0.42,
+        sun: 0xb0b8c0,
+        sunI: 0.12,
+        fill: 0.08,
+        fillColor: 0x9aa6ae,
+        exposure: 0.72,
+        yardSun: 0.32,
+        yardSky: 0x4a5864,
+        bloom: 0.08,
       });
     } else {
       Object.assign(base, {

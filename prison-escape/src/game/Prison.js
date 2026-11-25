@@ -3031,18 +3031,18 @@ export class Prison {
   }
 
   addYardRain(g) {
-    const n = 720;
+    const n = 1400;
     const pos = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
-      const x = (Math.random() - 0.5) * 8.4;
-      const y = Math.random() * 6.2;
-      const z = (Math.random() - 0.5) * 8.4;
+      const x = (Math.random() - 0.5) * 8.8;
+      const y = Math.random() * 6.4;
+      const z = (Math.random() - 0.5) * 8.8;
       const o = i * 6;
       pos[o] = x;
       pos[o + 1] = y;
       pos[o + 2] = z;
-      pos[o + 3] = x;
-      pos[o + 4] = y - 0.55;
+      pos[o + 3] = x + 0.04;
+      pos[o + 4] = y - 0.9;
       pos[o + 5] = z;
     }
     const geo = new THREE.BufferGeometry();
@@ -3050,9 +3050,9 @@ export class Prison {
     const rain = new THREE.LineSegments(
       geo,
       new THREE.LineBasicMaterial({
-        color: 0xd4e0ea,
+        color: 0xe8f0f6,
         transparent: true,
-        opacity: 0.58,
+        opacity: 0.72,
         depthWrite: false,
       }),
     );
