@@ -2902,6 +2902,9 @@ function alcove(prison, x, z, title) {
     );
     flash.position.set(-0.4, 1.48, 0.5);
     g.add(flash);
+    const flashFill = new THREE.PointLight(0xfff6e0, 1.6, 5.5, 1.6);
+    flashFill.position.set(-0.3, 1.6, 0.3);
+    g.add(flashFill);
     const pad = new THREE.Mesh(
       new THREE.BoxGeometry(0.22, 0.04, 0.16),
       new THREE.MeshStandardMaterial({ color: 0x1a1a18, roughness: 0.9 }),
@@ -2974,6 +2977,9 @@ function alcove(prison, x, z, title) {
     }));
     lamp.position.set(0.2, 1.55, 0.2);
     g.add(lamp);
+    const examFill = new THREE.PointLight(0xd8f0e4, 1.35, 5.2, 1.7);
+    examFill.position.set(0.15, 1.7, 0.1);
+    g.add(examFill);
     const hiv = plaque('АНАЛИЗ', 0.7, 0.2);
     hiv.position.set(0, 2.15, 1.62);
     g.add(hiv);
@@ -3095,6 +3101,9 @@ function alcove(prison, x, z, title) {
     wet.rotation.x = -Math.PI / 2;
     wet.position.set(0.2, 0.04, 0.15);
     g.add(wet);
+    const bathFill = new THREE.PointLight(0xc8ddd8, 1.2, 5, 1.7);
+    bathFill.position.set(0.2, 2.1, 0.1);
+    g.add(bathFill);
     const bucket = new THREE.Mesh(
       new THREE.CylinderGeometry(0.12, 0.1, 0.22, 8),
       new THREE.MeshStandardMaterial({ color: 0x8a8e86, metalness: 0.3, roughness: 0.55 }),
