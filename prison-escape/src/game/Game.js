@@ -164,6 +164,13 @@ export class Game {
         this.input.pitch = -0.48;
         this.cellLife.directNpcs?.();
       }
+      if (ph === 'evening') {
+        const o = this.prison.cellOrigin;
+        this.player.position.set(o.x + 0.28, 0, o.z + 0.48);
+        this.input.yaw = 0.68;
+        this.input.pitch = 0.1;
+        this.cellLife.directNpcs?.();
+      }
       this.applyLook(params);
       if (params.get('look')) this._skipPlotDialog = true;
       this.paintWorld();
@@ -230,6 +237,7 @@ export class Game {
     this._place = place;
     this.audio.rain?.(place === 'intake' || (mood.rain && place === 'yard'));
     if (place === 'cell') this.audio.drip?.();
+    if (place === 'cell' && this.sim.phase?.id === 'evening') this.audio.murmur?.();
   }
 
   applySkipFlags(params) {
