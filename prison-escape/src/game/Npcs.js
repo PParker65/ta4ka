@@ -693,14 +693,20 @@ function human(kind, spec) {
       color: look.hair,
       roughness: 0.9,
       emissive: look.hair,
-      emissiveIntensity: 0.14,
+      emissiveIntensity: 0.22,
     });
-    const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.158, 12, 10, 0, Math.PI * 2, 0, 1.45), hairMat);
-    buzz.position.set(0, 0.525, -0.01);
-    hips.add(buzz);
-    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.04, 0.04), hairMat);
-    fringe.position.set(0, 0.58, 0.1);
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.162, 12, 10), hairMat);
+    cap.scale.set(1.05, 0.62, 1.08);
+    cap.position.set(0, 0.575, -0.012);
+    hips.add(cap);
+    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.045, 0.055), hairMat);
+    fringe.position.set(0, 0.575, 0.12);
     hips.add(fringe);
+    for (const s of [-1, 1]) {
+      const side = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 0.06), hairMat);
+      side.position.set(s * 0.13, 0.52, 0.02);
+      hips.add(side);
+    }
   }
 
   if (spec.tattoos) {

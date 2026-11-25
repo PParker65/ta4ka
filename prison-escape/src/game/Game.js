@@ -1525,8 +1525,8 @@ export class Game {
     document.getElementById('quest')?.classList.remove('hidden');
     this.audio.stopRumble();
     if (this.prison.vanDoors) {
-      this.prison.vanDoors.left.rotation.y = 1.28;
-      this.prison.vanDoors.right.rotation.y = -1.28;
+      this.prison.vanDoors.left.rotation.y = 1.62;
+      this.prison.vanDoors.right.rotation.y = -1.62;
     }
     this.input.pitch = 0;
   }
@@ -1555,17 +1555,17 @@ export class Game {
         this.input.pitch = 0.28;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
-        this.player.position.set(0, 0, -80.8);
-        this.input.yaw = 0.08;
-        this.input.pitch = 0.18;
+        this.player.position.set(0.72, 0, -80.25);
+        this.input.yaw = 0.22;
+        this.input.pitch = 0.12;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'shmon') {
         this.sim.docs = true;
         this.sim.stage = 'shmon';
         this.prison.openKpp();
-        this.player.position.set(0.35, 0, -36.4);
+        this.player.position.set(0.92, 0, -36.4);
         this.input.yaw = -Math.PI / 2;
-        this.input.pitch = 0.02;
+        this.input.pitch = -0.04;
       } else if (at === 'photo') {
         this.sim.docs = true;
         this.sim.pending = [];

@@ -16,7 +16,7 @@ export function makeHands() {
   const arms = [];
   for (const side of [-1, 1]) {
     const arm = new THREE.Group();
-    arm.position.set(side * 0.2, -0.16, -0.28);
+    arm.position.set(side * 0.22, -0.1, -0.22);
     g.add(arm);
     const sleeveM = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.16), sleeve);
     sleeveM.position.set(0, 0.01, 0.04);
@@ -100,13 +100,13 @@ export function makeHands() {
     arms.forEach((arm, i) => {
       const s = i === 0 ? -1 : 1;
       const swing = Math.sin(t * freq) * amp * (cuffed ? 0.35 : 1) * s;
-      arm.rotation.x = 0.12 + swing;
-      arm.position.y = -0.22 + Math.abs(Math.sin(t * freq)) * mag * 0.01;
+      arm.rotation.x = 0.18 + swing;
+      arm.position.y = -0.1 + Math.abs(Math.sin(t * freq)) * mag * 0.01;
       if (cuffed) {
-        arm.position.x = s * 0.1;
+        arm.position.x = s * 0.12;
         arm.rotation.z = -s * 0.18;
       } else {
-        arm.position.x = s * 0.18;
+        arm.position.x = s * 0.22;
         arm.rotation.z = 0;
       }
     });
