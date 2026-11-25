@@ -464,6 +464,9 @@ export class Prison {
       [1.2, -1.1, 0.4],
       [0.15, 1.6, 0.7],
       [-1.6, -0.6, 0.35],
+      [0.28, 0.72, 0.62],
+      [0.85, 0.18, 0.4],
+      [-0.35, 1.05, 0.48],
     ]) {
       const p = new THREE.Mesh(new THREE.CircleGeometry(s, 10), wet);
       p.rotation.x = -Math.PI / 2;
@@ -2831,6 +2834,7 @@ export class Prison {
     wetSheet.rotation.x = -Math.PI / 2;
     wetSheet.position.y = 0.078;
     g.add(wetSheet);
+    this.yardWet = wetSheet;
     const crack = new THREE.MeshStandardMaterial({ color: 0x3a3830, roughness: 0.9 });
     this.box(3.4, 0.015, 0.04, crack, -1.9, 0.075, -2.15, g);
     this.box(0.04, 0.015, 2.2, crack, 2.35, 0.075, 2.5, g);
@@ -3001,7 +3005,7 @@ export class Prison {
   }
 
   addYardRain(g) {
-    const n = 420;
+    const n = 720;
     const pos = new Float32Array(n * 6);
     for (let i = 0; i < n; i++) {
       const x = (Math.random() - 0.5) * 8.4;
@@ -3012,7 +3016,7 @@ export class Prison {
       pos[o + 1] = y;
       pos[o + 2] = z;
       pos[o + 3] = x;
-      pos[o + 4] = y - 0.38;
+      pos[o + 4] = y - 0.55;
       pos[o + 5] = z;
     }
     const geo = new THREE.BufferGeometry();
@@ -3020,9 +3024,9 @@ export class Prison {
     const rain = new THREE.LineSegments(
       geo,
       new THREE.LineBasicMaterial({
-        color: 0xc8d4de,
+        color: 0xd4e0ea,
         transparent: true,
-        opacity: 0.42,
+        opacity: 0.58,
         depthWrite: false,
       }),
     );

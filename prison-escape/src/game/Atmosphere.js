@@ -330,6 +330,11 @@ export function applyMood(game, mood, place) {
   if (prison.yardHemis) prison.yardHemis.material.color.setHex(mood.sky);
   if (prison.rain) prison.rain.visible = place === 'intake';
   if (prison.yardRain) prison.yardRain.visible = mood.rain && place === 'yard';
+  if (prison.yardWet) {
+    prison.yardWet.material.opacity = mood.rain && place === 'yard' ? 0.58 : 0.32;
+    prison.yardWet.material.metalness = mood.rain && place === 'yard' ? 0.52 : 0.28;
+    prison.yardWet.material.color.setHex(mood.rain ? 0x2a3230 : 0x3a423c);
+  }
   if (prison.hallLights) {
     for (const l of prison.hallLights) {
       l.intensity = mood.hall ?? 0.4;
