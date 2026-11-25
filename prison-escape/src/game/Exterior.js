@@ -326,6 +326,15 @@ function addKpp(prison) {
   const kppSign = plaque('КПП', 1.1, 0.32);
   kppSign.position.set(0, 2.35, -1.64);
   booth.add(kppSign);
+  const kppFlood = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.12, 0.1, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffe8a8 }),
+  );
+  kppFlood.position.set(-0.35, 2.52, -1.58);
+  booth.add(kppFlood);
+  const kppGlow = new THREE.PointLight(0xffe8a0, 1.15, 8, 1.6);
+  kppGlow.position.set(0, 2.7, -1.2);
+  booth.add(kppGlow);
 
   prison.box(1.5, 0.08, 0.55, new THREE.MeshStandardMaterial({ color: 0x3a3530 }), 3.2, 1.05, -56.4);
   const paper = new THREE.MeshStandardMaterial({ color: 0xe8e0cc, roughness: 0.9 });

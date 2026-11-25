@@ -282,6 +282,12 @@ export class Game {
       this.input.pitch = 0.92;
       return;
     }
+    if (look === 'desk') {
+      this.player.position.set(-2.15, 0, -36.2);
+      this.input.yaw = -Math.PI / 2;
+      this.input.pitch = -0.18;
+      return;
+    }
     if (look === 'shall') {
       this.player.position.set(0.15, 0, -36.4);
       this.input.yaw = 0;
@@ -1550,9 +1556,9 @@ export class Game {
       this.sim.locked = false;
       this.sim.cuffed = false;
       if (at === 'kpp') {
-        this.player.position.set(1.55, 0, -59.2);
-        this.input.yaw = 0.55;
-        this.input.pitch = 0.28;
+        this.player.position.set(0.35, 0, -61.4);
+        this.input.yaw = 0.72;
+        this.input.pitch = 0.14;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
         this.player.position.set(0.72, 0, -80.25);
