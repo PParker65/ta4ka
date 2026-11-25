@@ -2508,6 +2508,15 @@ function addProcessing(prison) {
   hallXXXXXXXCig.rotation.y = 0.13;
   hallXXXXXXXCig.name = 'hallXXXXXXXCig';
   prison.group.add(hallXXXXXXXCig);
+  const hallYYYYYYYCig = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.16, 8),
+    new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.65 }),
+  );
+  hallYYYYYYYCig.position.set(-2.18, 0.075, -2.05);
+  hallYYYYYYYCig.rotation.z = Math.PI / 2;
+  hallYYYYYYYCig.rotation.y = -0.14;
+  hallYYYYYYYCig.name = 'hallYYYYYYYCig';
+  prison.group.add(hallYYYYYYYCig);
 }
 
 /** Fill the black 2m hole between сборник (ends ~z=-2) and коряк (starts z=0). */
