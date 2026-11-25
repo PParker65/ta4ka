@@ -1059,6 +1059,9 @@ export class Prison {
       const cold = sim.malyava === 'admin' || sim.courtTalk === 'cell';
       this.kettleSteam.visible = sim.stage === 'life' && !cold;
     }
+    const eating = sim.stage === 'life' && sim.phase?.id === 'food';
+    if (this.foodSet) this.foodSet.visible = eating;
+    if (this.foodLamp) this.foodLamp.intensity = eating ? 0.9 : 0;
     if (this.cigSmoke) {
       const cold = sim.malyava === 'admin' || sim.courtTalk === 'cell';
       this.cigSmoke.visible = sim.stage === 'life' && !cold && sim.phase?.id !== 'shmon';
@@ -1895,6 +1898,87 @@ export class Prison {
     cell.add(windowFill);
     this.windowFills = this.windowFills || [];
     this.windowFills.push(windowFill);
+    const windowFill2 = new THREE.PointLight(0x9bb4c4, 0.35, 7, 2);
+    windowFill2.position.set(1.25, 2.15, LAYOUT.cellD / 2 - 0.5);
+    cell.add(windowFill2);
+    this.windowFills.push(windowFill2);
+    const food = new THREE.Group();
+    food.name = 'foodSet';
+    food.visible = false;
+    const alum = new THREE.MeshStandardMaterial({ color: 0x9aa094, metalness: 0.55, roughness: 0.38 });
+    const soup = new THREE.MeshBasicMaterial({ color: 0x8a5a22 });
+    const stew = new THREE.MeshBasicMaterial({ color: 0x6a3a14 });
+    for (const [fx, fz, mat] of [
+      [0.18, 0.12, soup],
+      [0.48, 0.22, stew],
+      [-0.02, 0.28, soup],
+    ]) {
+      const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.07, 0.05, 12), alum);
+      bowl.position.set(fx, 0.775, fz);
+      food.add(bowl);
+      const liquid = new THREE.Mesh(new THREE.CircleGeometry(0.075, 12), mat);
+      liquid.rotation.x = -Math.PI / 2;
+      liquid.position.set(fx, 0.798, fz);
+      food.add(liquid);
+    }
+    const loaf = new THREE.Mesh(
+      new THREE.BoxGeometry(0.18, 0.055, 0.09),
+      new THREE.MeshStandardMaterial({ color: 0xc4a06a, roughness: 0.9 }),
+    );
+    loaf.position.set(0.32, 0.78, 0.02);
+    loaf.rotation.y = 0.4;
+    food.add(loaf);
+    const bunkBowl = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.09, 0.06, 12), alum);
+    bunkBowl.position.set(1.12, 0.6, 1.82);
+    food.add(bunkBowl);
+    const bunkSoup = new THREE.Mesh(new THREE.CircleGeometry(0.095, 12), stew);
+    bunkSoup.rotation.x = -Math.PI / 2;
+    bunkSoup.position.set(1.12, 0.632, 1.82);
+    food.add(bunkSoup);
+    const bunkBread = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.045, 0.07),
+      new THREE.MeshStandardMaterial({ color: 0xc4a06a, roughness: 0.9 }),
+    );
+    bunkBread.position.set(0.92, 0.6, 1.7);
+    bunkBread.rotation.y = 0.35;
+    food.add(bunkBread);
+    const bunkSteam = new THREE.Group();
+    bunkSteam.position.set(1.12, 0.7, 1.82);
+    for (let i = 0; i < 3; i++) {
+      const puff = new THREE.Mesh(
+        new THREE.SphereGeometry(0.045 + i * 0.014, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf0e8d8, transparent: true, opacity: 0.3, depthWrite: false }),
+      );
+      puff.position.y = i * 0.08;
+      bunkSteam.add(puff);
+    }
+    food.add(bunkSteam);
+    const spoonFood = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.012, 0.028),
+      new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.55, roughness: 0.4 }),
+    );
+    spoonFood.position.set(0.28, 0.8, 0.14);
+    spoonFood.rotation.y = 0.55;
+    food.add(spoonFood);
+    const steamFood = new THREE.Group();
+    steamFood.position.set(0.18, 0.86, 0.12);
+    for (let i = 0; i < 4; i++) {
+      const puff = new THREE.Mesh(
+        new THREE.SphereGeometry(0.04 + i * 0.012, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf0e8d8, transparent: true, opacity: 0.32, depthWrite: false }),
+      );
+      puff.position.y = i * 0.07;
+      steamFood.add(puff);
+    }
+    food.add(steamFood);
+    cell.add(food);
+    this.foodSet = food;
+    this.foodSteam = steamFood;
+    this.foodSteams = [steamFood, bunkSteam];
+    const foodLamp = new THREE.PointLight(0xffb060, 0, 3.8, 2);
+    foodLamp.position.set(0.2, 1.12, 0.2);
+    cell.add(foodLamp);
+    this.foodLamp = foodLamp;
   }
 
   addStools(cell) {
@@ -1949,11 +2033,11 @@ export class Prison {
   addLivedIn(cell) {
     const doorRelZ = 3.4 - 5.2;
     const rope = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
-    this.box(2.4, 0.012, 0.012, rope, -0.4, 1.92, 2.9, cell);
+    this.box(0.012, 0.012, 2.6, rope, LAYOUT.cellW / 2 - 0.38, 1.92, 0.55, cell);
     const wallCal = cellSign('СУТКИ');
     wallCal.scale.setScalar(0.85);
-    wallCal.position.set(0.15, 1.88, LAYOUT.cellD / 2 - 0.16);
-    wallCal.rotation.y = Math.PI;
+    wallCal.position.set(-LAYOUT.cellW / 2 + 0.2, 1.88, 0.15);
+    wallCal.rotation.y = Math.PI / 2;
     cell.add(wallCal);
     const dadoWin = new THREE.MeshStandardMaterial({ color: 0x3a524c, roughness: 0.45, transparent: true, opacity: 0.42 });
     this.box(1.4, 0.7, 0.02, dadoWin, 0.15, 0.72, LAYOUT.cellD / 2 - 0.14, cell);
@@ -1978,27 +2062,24 @@ export class Prison {
     winTicks.position.set(0.55, 0.62, LAYOUT.cellD / 2 - 0.15);
     winTicks.rotation.y = Math.PI;
     cell.add(winTicks);
-    const cloths = [0x8a8e98, 0xd8d2c0, 0x9a6a42];
+    const cloths = [0x8a8e98, 0xd8d2c0, 0x9a6a42, 0x4a5a48];
     cloths.forEach((c, i) => {
       const rag = new THREE.Mesh(
-        new THREE.BoxGeometry(0.28, 0.42, 0.04),
-        new THREE.MeshStandardMaterial({ color: c, roughness: 0.92 }),
+        new THREE.PlaneGeometry(0.32, 0.52),
+        new THREE.MeshStandardMaterial({ color: c, roughness: 0.92, side: THREE.DoubleSide }),
       );
-      rag.position.set(-1.1 + i * 0.55, 1.68, 2.9);
-      rag.rotation.z = (i - 1) * 0.08;
+      rag.position.set(LAYOUT.cellW / 2 - 0.42, 1.64, -0.45 + i * 0.55);
+      rag.rotation.y = Math.PI / 2 + 0.08 * (i - 1.5);
+      rag.rotation.z = i % 2 === 0 ? 0.12 : -0.1;
       cell.add(rag);
     });
-    const extraCloth = new THREE.Mesh(
-      new THREE.BoxGeometry(0.32, 0.5, 0.04),
-      new THREE.MeshStandardMaterial({ color: 0x4a5a48, roughness: 0.92 }),
+    const sockLine = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.14, 0.3),
+      new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.94, side: THREE.DoubleSide }),
     );
-    extraCloth.position.set(0.85, 1.7, 2.9);
-    extraCloth.rotation.z = 0.12;
-    cell.add(extraCloth);
-    const sockLine = extraCloth.clone();
-    sockLine.scale.set(0.35, 0.55, 1);
-    sockLine.material = new THREE.MeshStandardMaterial({ color: 0x3a3a38, roughness: 0.94 });
-    sockLine.position.set(-1.55, 1.55, 2.9);
+    sockLine.position.set(LAYOUT.cellW / 2 - 0.4, 1.52, 1.85);
+    sockLine.rotation.y = Math.PI / 2;
+    sockLine.rotation.z = 0.18;
     cell.add(sockLine);
     const shoeMat = new THREE.MeshStandardMaterial({ color: 0x2a2a28, roughness: 0.9 });
     for (const [sx, sz, ry] of [
@@ -3551,6 +3632,22 @@ export class Prison {
     cornerNum.position.set(4.18, 1.85, 3.2);
     cornerNum.rotation.y = -Math.PI / 2;
     g.add(cornerNum);
+    const line = new THREE.MeshStandardMaterial({ color: 0x3a342c, roughness: 0.8 });
+    this.box(3.4, 0.015, 0.015, line, 0.2, 1.85, 3.55, g);
+    const hang = [0x6a7080, 0xc8c0b0, 0x5a3a28, 0x3a4a38, 0x8a8a82];
+    hang.forEach((c, i) => {
+      const rag = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.38, 0.62),
+        new THREE.MeshStandardMaterial({ color: c, roughness: 0.92, side: THREE.DoubleSide }),
+      );
+      rag.position.set(-1.2 + i * 0.62, 1.52, 3.55);
+      rag.rotation.y = 0.08 * (i - 2);
+      rag.rotation.z = i % 2 ? 0.1 : -0.08;
+      g.add(rag);
+    });
+    yardSitter(g, -2.15, 2.55, Math.PI * 0.15, 0x4a4a46);
+    yardSitter(g, 2.35, 1.72, -Math.PI * 0.6, 0x3e3c38);
+    yardSitter(g, -2.55, -1.5, 0.4, 0x5a5854);
   }
 
   addPipesAndProps() {
@@ -3842,6 +3939,46 @@ function floorPaint(text) {
   );
 }
 
+function yardSitter(g, x, z, yaw, robe) {
+  const cloth = new THREE.MeshStandardMaterial({
+    color: robe,
+    roughness: 0.75,
+    emissive: robe,
+    emissiveIntensity: 0.16,
+  });
+  const skin = new THREE.MeshStandardMaterial({
+    color: 0xc4a07a,
+    roughness: 0.55,
+    emissive: 0x5a3018,
+    emissiveIntensity: 0.22,
+  });
+  const hips = new THREE.Group();
+  hips.position.set(x, 0.5, z);
+  hips.rotation.y = yaw;
+  g.add(hips);
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.42, 0.2), cloth);
+  torso.position.y = 0.12;
+  hips.add(torso);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), skin);
+  head.position.y = 0.44;
+  hips.add(head);
+  const hair = new THREE.Mesh(
+    new THREE.SphereGeometry(0.132, 8, 8, 0, Math.PI * 2, 0, 1.2),
+    new THREE.MeshStandardMaterial({ color: 0x2a221c, roughness: 0.9 }),
+  );
+  hair.position.set(0, 0.46, -0.01);
+  hips.add(hair);
+  for (const s of [-1, 1]) {
+    const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.34), cloth);
+    thigh.position.set(s * 0.09, -0.14, 0.12);
+    hips.add(thigh);
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.28, 0.07), cloth);
+    arm.position.set(s * 0.22, 0.02, 0.08);
+    arm.rotation.x = 1.05;
+    hips.add(arm);
+  }
+}
+
 function wallScratch(text) {
   const c = document.createElement('canvas');
   c.width = 256;
@@ -3868,7 +4005,7 @@ export function makeSeats(ox, oz) {
     sedoyStool: { x: ox + 1.08, z: oz + 0.18, yaw: -Math.PI / 2, sit: true, seatY: 0.5 },
     stoolS: { x: ox + 0.18, z: oz - 0.4, yaw: 0, sit: true, seatY: 0.5 },
     stoolN: { x: ox + 0.22, z: oz + 0.74, yaw: Math.PI, sit: true, seatY: 0.5 },
-    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: -Math.PI / 2, sit: true, seatY: 0.62, sitStyle: 'bunk' },
+    lehaSit: { x: ox + 1.5, z: oz + 1.92, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },
     lehaLie: { x: ox + 1.85, z: oz + 2.15, yaw: Math.PI / 2, lie: true },
     valeraSit: { x: ox - 0.15, z: oz + 1.55, yaw: Math.PI, sit: true, seatY: 0.62, sitStyle: 'bunk' },
     valeraLie: { x: ox - 0.15, z: oz + 2.35, yaw: 0, lie: true },

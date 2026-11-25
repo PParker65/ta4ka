@@ -253,8 +253,8 @@ export class Npcs {
       if (thighs[1]) thighs[1].rotation.x = bunk ? -0.38 : -1.1;
       if (shins[0]) shins[0].rotation.x = bunk ? 0.85 : 1.22;
       if (shins[1]) shins[1].rotation.x = bunk ? 0.78 : 1.18;
-      limbs.arms[0].rotation.x = bunk ? 0.22 : 1.05;
-      limbs.arms[1].rotation.x = bunk ? 0.18 : 0.95;
+      limbs.arms[0].rotation.x = bunk ? 0.55 : 1.05;
+      limbs.arms[1].rotation.x = bunk ? 0.48 : 0.95;
       n.root.traverse((c) => {
         if (c.userData.billboard) c.position.y = 1.22;
       });
@@ -550,7 +550,7 @@ function makeDog(x, z, phase) {
 
 function faceOf(spec) {
   if (spec.id === 'starosta') return { skin: 0xc4926a, hair: 0x9a9a98, iris: 0x2a241c, bags: true, stubble: true };
-  if (spec.id === 'cellmate') return { skin: 0xd8b08a, hair: 0x1a1814, iris: 0x3a2a1c, thin: true };
+  if (spec.id === 'cellmate') return { skin: 0xd8b08a, hair: 0x4a3824, iris: 0x3a2a1c, thin: true };
   if (spec.id === 'bunk-bro') return { skin: 0xc4a078, hair: 0x3a2a1c, iris: 0x3a4a38 };
   if (kindGuard(spec)) return { skin: 0xb8926a, hair: 0x1a1814, iris: 0x2a241c };
   return { skin: 0xd4a07a, hair: 0x2a221c, iris: 0x2a241c };
@@ -566,12 +566,12 @@ function human(kind, spec) {
   const skin = new THREE.MeshStandardMaterial({
     color: look.skin,
     roughness: 0.52,
-    emissive: 0x4a2814,
-    emissiveIntensity: 0.16,
+    emissive: 0x5a3018,
+    emissiveIntensity: 0.28,
   });
   const cloth =
     kind === 'guard'
-      ? new THREE.MeshStandardMaterial({ color: 0x1c2228, roughness: 0.55, metalness: 0.08 })
+      ? new THREE.MeshStandardMaterial({ color: 0x1c2228, roughness: 0.55, metalness: 0.08, emissive: 0x0a0c10, emissiveIntensity: 0.12 })
       : striped(spec.robe || 0x5a5a56);
   const pants = new THREE.MeshStandardMaterial({
     color: kind === 'guard' ? 0x15181c : 0x3a3936,
@@ -582,8 +582,8 @@ function human(kind, spec) {
   hips.position.y = 0.92;
   root.add(hips);
 
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.44, 0.2), cloth);
-  torso.position.y = 0.1;
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5, 0.24), cloth);
+  torso.position.y = 0.12;
   torso.castShadow = true;
   hips.add(torso);
   const skirt = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.2, 0.22), cloth);
@@ -593,8 +593,8 @@ function human(kind, spec) {
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 8), skin);
   neck.position.y = 0.32;
   hips.add(neck);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.145, 20, 16), skin);
-  head.position.y = 0.5;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.155, 20, 16), skin);
+  head.position.y = 0.52;
   hips.add(head);
   const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 8), skin);
   jaw.scale.set(0.92, 0.7, 0.85);
@@ -615,15 +615,15 @@ function human(kind, spec) {
     ear.position.set(x * 2.6, 0.5, 0);
     hips.add(ear);
   }
-  const white = new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.35 });
-  const iris = new THREE.MeshStandardMaterial({ color: look.iris });
-  for (const x of [-0.04, 0.04]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 8), white);
+  const white = new THREE.MeshBasicMaterial({ color: 0xf4f0ea });
+  const iris = new THREE.MeshBasicMaterial({ color: look.iris });
+  for (const x of [-0.042, 0.042]) {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), white);
     eye.scale.set(1, 0.75, 0.7);
-    eye.position.set(x, 0.515, 0.108);
+    eye.position.set(x, 0.535, 0.118);
     hips.add(eye);
-    const p = new THREE.Mesh(new THREE.SphereGeometry(0.009, 8, 6), iris);
-    p.position.set(x, 0.515, 0.122);
+    const p = new THREE.Mesh(new THREE.SphereGeometry(0.01, 8, 6), iris);
+    p.position.set(x, 0.535, 0.132);
     hips.add(p);
   }
   const mouth = new THREE.Mesh(
@@ -689,12 +689,18 @@ function human(kind, spec) {
     barrel.position.set(0.18, 0.0, 0.62);
     hips.add(barrel);
   } else {
-    const buzz = new THREE.Mesh(
-      new THREE.SphereGeometry(0.144, 10, 8, 0, Math.PI * 2, 0, 1.05),
-      new THREE.MeshStandardMaterial({ color: look.hair, roughness: 0.85 }),
-    );
-    buzz.position.set(0, 0.5, 0);
+    const hairMat = new THREE.MeshStandardMaterial({
+      color: look.hair,
+      roughness: 0.9,
+      emissive: look.hair,
+      emissiveIntensity: 0.14,
+    });
+    const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.158, 12, 10, 0, Math.PI * 2, 0, 1.45), hairMat);
+    buzz.position.set(0, 0.525, -0.01);
     hips.add(buzz);
+    const fringe = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.04, 0.04), hairMat);
+    fringe.position.set(0, 0.58, 0.1);
+    hips.add(fringe);
   }
 
   if (spec.tattoos) {
@@ -759,7 +765,12 @@ function striped(hex) {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(1, 3);
-  const m = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.72 });
+  const m = new THREE.MeshStandardMaterial({
+    map: tex,
+    roughness: 0.72,
+    emissive: 0x2a2818,
+    emissiveIntensity: 0.38,
+  });
   m.color.setHex(hex);
   return m;
 }

@@ -179,8 +179,8 @@ export function moodFor(sim, place) {
         fill: 0.05,
         fillColor: 0xffaa44,
         exposure: 0.46,
-        cellLamp: 0.16,
-        windowFill: 0.32,
+        cellLamp: 0.32,
+        windowFill: 0.4,
         windowTint: 0x2a4068,
         bloom: 0.62,
         env: 0.05,
@@ -205,20 +205,21 @@ export function moodFor(sim, place) {
       });
     } else if (ph === 'food') {
       Object.assign(base, {
-        fog: 0x1a140e,
-        fogNear: 6,
-        fogFar: 16,
-        bg: 0x16120e,
-        hemiSky: 0xe0c8a0,
-        hemiGround: 0x4a3828,
-        hemi: 0.32,
-        fill: 0.28,
-        fillColor: 0xffcc88,
-        exposure: 0.98,
-        cellLamp: 0.85,
-        windowFill: 0.5,
-        windowTint: 0xd8c8a8,
-        bloom: 0.28,
+        fog: 0x1c140c,
+        fogNear: 5,
+        fogFar: 15,
+        bg: 0x18120c,
+        hemiSky: 0xf4d8a4,
+        hemiGround: 0x4a3018,
+        hemi: 0.42,
+        fill: 0.55,
+        fillColor: 0xffc878,
+        exposure: 1.14,
+        cellLamp: 1.28,
+        windowFill: 0.38,
+        windowTint: 0xf0c888,
+        bloom: 0.4,
+        env: 0.22,
       });
     } else {
       Object.assign(base, {
@@ -296,13 +297,18 @@ export function applyMood(game, mood, place) {
   fill.color.setHex(mood.fillColor);
   if ('environmentIntensity' in scene) scene.environmentIntensity = mood.env ?? 0.2;
 
-  const night = place === 'cell' && game.sim.phase?.id === 'evening';
+  const ph = phaseId(game.sim);
+  const night = place === 'cell' && ph === 'evening';
   if (prison.cellLamp) {
     prison.cellLamp.intensity = mood.cellLamp;
-    prison.cellLamp.color.setHex(night ? 0xff9944 : 0xffd7a0);
+    prison.cellLamp.color.setHex(night ? 0xff9944 : ph === 'food' ? 0xffc070 : 0xffd7a0);
   }
+  if (prison.foodLamp) {
+    prison.foodLamp.intensity = place === 'cell' && ph === 'food' ? 0.9 : 0;
+  }
+  if (prison.foodSet) prison.foodSet.visible = place === 'cell' && ph === 'food';
   if (prison.cellSodium) {
-    prison.cellSodium.intensity = night ? 0.55 : 0.04;
+    prison.cellSodium.intensity = night ? 0.95 : 0.04;
     prison.cellSodium.color.setHex(0xff8a33);
   }
   if (prison.cellSodiumTube) prison.cellSodiumTube.visible = night;

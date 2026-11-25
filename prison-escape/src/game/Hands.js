@@ -5,10 +5,10 @@ export function makeHands() {
   const g = new THREE.Group();
   g.name = 'FPHands';
   const skin = new THREE.MeshStandardMaterial({
-    color: 0xc4a07a,
+    color: 0xd4b08a,
     roughness: 0.55,
-    emissive: 0x3a2010,
-    emissiveIntensity: 0.12,
+    emissive: 0x5a3018,
+    emissiveIntensity: 0.28,
   });
   const sleeve = streetMat();
   g.userData.street = sleeve;
@@ -16,7 +16,7 @@ export function makeHands() {
   const arms = [];
   for (const side of [-1, 1]) {
     const arm = new THREE.Group();
-    arm.position.set(side * 0.18, -0.2, -0.26);
+    arm.position.set(side * 0.2, -0.16, -0.28);
     g.add(arm);
     const sleeveM = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.06, 0.16), sleeve);
     sleeveM.position.set(0, 0.01, 0.04);

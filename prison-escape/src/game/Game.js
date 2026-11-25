@@ -209,8 +209,8 @@ export class Game {
     this.finishEscort();
     const o = this.prison.cellOrigin;
     this.player.position.set(o.x + 0.42, 0, o.z - 0.12);
-    this.input.yaw = -0.42;
-    this.input.pitch = 0.1;
+    this.input.yaw = -0.22;
+    this.input.pitch = -0.2;
     this.npcs.snapSeats?.();
     this.paintWorld();
   }
@@ -219,8 +219,10 @@ export class Game {
     const place = placeOf(this.player.position);
     const mood = moodFor(this.sim, place);
     applyMood(this, mood, place);
+    this.prison.syncStoryProps?.(this.sim);
     this._place = place;
     this.audio.rain?.(place === 'intake' || (mood.rain && place === 'yard'));
+    if (place === 'cell') this.audio.drip?.();
   }
 
   applySkipFlags(params) {
@@ -1538,8 +1540,8 @@ export class Game {
       this.skipToCell();
       this.forcePhase('walk');
       this.player.position.set(0.15, 0, LAYOUT.corridorLen + 4.6);
-      this.input.yaw = 0.22;
-      this.input.pitch = 0.18;
+      this.input.yaw = 0.12;
+      this.input.pitch = -0.06;
       this.paintWorld();
       return;
     }
@@ -1773,6 +1775,15 @@ export class Game {
         p.position.y = ((t * 0.32 + i * 0.18) % 0.5);
         p.material.opacity = Math.max(0.04, 0.3 - p.position.y * 0.45);
       });
+    }
+    if (this.prison.foodSet?.visible) {
+      const t = this.clock.elapsedTime;
+      for (const steam of this.prison.foodSteams || [this.prison.foodSteam].filter(Boolean)) {
+        steam.children.forEach((p, i) => {
+          p.position.y = (t * 0.28 + i * 0.16) % 0.42;
+          p.material.opacity = Math.max(0.05, 0.34 - p.position.y * 0.5);
+        });
+      }
     }
     if (this.prison.cigSmoke?.visible) {
       const t = this.clock.elapsedTime;
