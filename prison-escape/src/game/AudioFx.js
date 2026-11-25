@@ -108,6 +108,31 @@ export class AudioFx {
     growl.stop(t + 0.44);
   }
 
+  rain(on) {
+    this.unlock();
+    if (!this.ctx) return;
+    if (!this._rain) {
+      const ctx = this.ctx;
+      const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.55;
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+      const f = ctx.createBiquadFilter();
+      f.type = 'highpass';
+      f.frequency.value = 1800;
+      const g = ctx.createGain();
+      g.gain.value = 0.0001;
+      src.connect(f).connect(g).connect(ctx.destination);
+      src.start();
+      this._rain = { src, g };
+    }
+    const now = this.ctx.currentTime;
+    this._rain.g.gain.cancelScheduledValues(now);
+    this._rain.g.gain.linearRampToValueAtTime(on ? 0.045 : 0.0001, now + 0.4);
+  }
+
   ambient() {
     this.unlock();
     if (!this.ctx || this._amb) return;

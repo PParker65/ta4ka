@@ -198,9 +198,11 @@ export class Game {
     this.scene.fog.far = 34;
     this.scene.fog.color.set(0x161410);
     this.scene.background.set(0x161410);
-    this.player.position.copy(this.prison.cellSpawn);
-    this.input.yaw = 0.62;
-    this.input.pitch = 0.28;
+    const o = this.prison.cellOrigin;
+    const win = this.prison.seats?.window;
+    this.player.position.set(win?.x ?? o.x - 1.35, 0, win?.z ?? o.z + 2.4);
+    this.input.yaw = 0;
+    this.input.pitch = 0.2;
     this.npcs.snapSeats?.();
     this.npcs.list.forEach((n) => {
       n.root.traverse((c) => {
@@ -216,8 +218,10 @@ export class Game {
 
   paintWorld() {
     const place = placeOf(this.player.position);
-    applyMood(this, moodFor(this.sim, place), place);
+    const mood = moodFor(this.sim, place);
+    applyMood(this, mood, place);
     this._place = place;
+    this.audio.rain?.(place === 'intake' || (mood.rain && place === 'yard'));
   }
 
   applySkipFlags(params) {
@@ -1547,10 +1551,12 @@ export class Game {
       if (at === 'kpp') {
         this.player.position.set(1.55, 0, -59.2);
         this.input.yaw = 0.55;
+        this.input.pitch = 0.28;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'van') {
         this.player.position.set(0, 0, -80.8);
-        this.input.yaw = 0;
+        this.input.yaw = 0.08;
+        this.input.pitch = 0.32;
         this.npcs.dogsAlert?.(true);
       } else if (at === 'shmon') {
         this.sim.docs = true;

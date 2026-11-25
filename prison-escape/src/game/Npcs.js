@@ -211,9 +211,22 @@ export class Npcs {
   }
 
   snapSeats() {
-    for (const n of this.list) {
-      if (!n.wantSit && !n.wantLie && !n.wantLean) continue;
-      if (n.home) this.arrive(n, n.home.x, n.home.z);
+    const s = this.prison?.seats;
+    if (!s) return;
+    const map = [
+      ['starosta', s.sedoyStool],
+      ['cellmate', s.lehaSit],
+      ['bunk-bro', s.valeraSit],
+    ];
+    for (const [id, spot] of map) {
+      const n = this.byId(id);
+      if (!n || !spot) continue;
+      n.holdYaw = spot.yaw ?? 0;
+      n.wantSit = !!spot.sit;
+      n.wantLie = !!spot.lie;
+      n.seatY = spot.seatY ?? 0.5;
+      n.sitStyle = spot.sitStyle || 'bunk';
+      this.arrive(n, spot.x, spot.z);
     }
   }
 

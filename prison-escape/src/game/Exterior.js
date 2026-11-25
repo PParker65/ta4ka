@@ -259,27 +259,33 @@ function addVan(prison) {
 }
 
 function addRain(prison) {
-  const n = 1100;
-  const pos = new Float32Array(n * 3);
+  const n = 900;
+  const pos = new Float32Array(n * 6);
   for (let i = 0; i < n; i++) {
-    pos[i * 3] = (Math.random() - 0.5) * 56;
-    pos[i * 3 + 1] = Math.random() * 14;
-    pos[i * 3 + 2] = -92 + Math.random() * 42;
+    const x = (Math.random() - 0.5) * 56;
+    const y = Math.random() * 16;
+    const z = -92 + Math.random() * 42;
+    const o = i * 6;
+    pos[o] = x;
+    pos[o + 1] = y;
+    pos[o + 2] = z;
+    pos[o + 3] = x;
+    pos[o + 4] = y - 0.55;
+    pos[o + 5] = z;
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const rain = new THREE.Points(
+  const rain = new THREE.LineSegments(
     g,
-    new THREE.PointsMaterial({
-      color: 0xd0d8e0,
-      size: 0.11,
+    new THREE.LineBasicMaterial({
+      color: 0xc8d4de,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.48,
       depthWrite: false,
-      sizeAttenuation: true,
     }),
   );
   rain.name = 'Rain';
+  rain.userData.streak = true;
   prison.group.add(rain);
   prison.rain = rain;
 }

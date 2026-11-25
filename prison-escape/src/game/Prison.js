@@ -1068,6 +1068,7 @@ export class Prison {
   addWindows(cell, w, d, h) {
     const view = new THREE.MeshBasicMaterial({
       map: this.tex.windowView,
+      color: 0xb8c4d0,
       side: THREE.DoubleSide,
     });
     this.windowGlass = this.windowGlass || [];
