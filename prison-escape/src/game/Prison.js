@@ -452,6 +452,24 @@ export class Prison {
     this.group.add(cell);
 
     this.box(w, 0.05, d, this.mat(this.tex.broken, { roughness: 0.9, repeat: [2.4, 2.8] }), 0, 0.025, 0, cell);
+    const wet = new THREE.MeshStandardMaterial({
+      color: 0x3a423c,
+      roughness: 0.14,
+      metalness: 0.28,
+      transparent: true,
+      opacity: 0.42,
+    });
+    for (const [px, pz, s] of [
+      [-0.8, 0.4, 0.55],
+      [1.2, -1.1, 0.4],
+      [0.15, 1.6, 0.7],
+      [-1.6, -0.6, 0.35],
+    ]) {
+      const p = new THREE.Mesh(new THREE.CircleGeometry(s, 10), wet);
+      p.rotation.x = -Math.PI / 2;
+      p.position.set(px, 0.04, pz);
+      cell.add(p);
+    }
 
     const wallMat = this.mat(this.tex.plaster, { repeat: [w / 1.3, h / 1.1], bump: 0.02 });
     wallMat.polygonOffset = true;
@@ -1178,16 +1196,16 @@ export class Prison {
         this.box(0.92, 0.02, 0.02, bars, x, 2.15 + j * 0.34, d / 2 - 0.16, cell);
       }
       const shaft = new THREE.Mesh(
-        new THREE.ConeGeometry(0.55, 2.4, 8, 1, true),
+        new THREE.ConeGeometry(0.72, 2.8, 8, 1, true),
         new THREE.MeshBasicMaterial({
           color: 0xc8d8e8,
           transparent: true,
-          opacity: 0.12,
+          opacity: 0.2,
           depthWrite: false,
           side: THREE.DoubleSide,
         }),
       );
-      shaft.position.set(x, 1.05, d / 2 - 1.15);
+      shaft.position.set(x, 0.95, d / 2 - 1.35);
       shaft.rotation.x = Math.PI;
       shaft.renderOrder = 2;
       cell.add(shaft);
@@ -3663,6 +3681,7 @@ export class Prison {
   }
 
   addLamps() {
+    this.hallLights = [];
     for (let z = 2.5; z < LAYOUT.corridorLen; z += 4.2) {
       const housing = new THREE.Mesh(
         new THREE.BoxGeometry(0.22, 0.08, 0.7),
@@ -3676,6 +3695,10 @@ export class Prison {
       tube.rotation.x = Math.PI / 2;
       tube.position.set(0, 2.66, z);
       this.group.add(tube);
+      const glow = new THREE.PointLight(0xf2ead0, 0.48, 6.8, 1.8);
+      glow.position.set(0, 2.52, z);
+      this.group.add(glow);
+      this.hallLights.push(glow);
     }
   }
 

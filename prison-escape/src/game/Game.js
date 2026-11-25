@@ -199,8 +199,9 @@ export class Game {
     this.scene.fog.color.set(0x161410);
     this.scene.background.set(0x161410);
     this.player.position.copy(this.prison.cellSpawn);
-    this.input.yaw = 1.05;
-    this.input.pitch = 0.08;
+    this.input.yaw = 0.62;
+    this.input.pitch = 0.28;
+    this.npcs.snapSeats?.();
     this.npcs.list.forEach((n) => {
       n.root.traverse((c) => {
         if (c.userData.billboard) c.visible = true;
@@ -1555,8 +1556,9 @@ export class Game {
         this.sim.docs = true;
         this.sim.stage = 'shmon';
         this.prison.openKpp();
-        this.player.position.set(0, 0, -36.4);
+        this.player.position.set(0.35, 0, -36.4);
         this.input.yaw = -Math.PI / 2;
+        this.input.pitch = 0.1;
       } else if (at === 'photo') {
         this.sim.docs = true;
         this.sim.pending = [];

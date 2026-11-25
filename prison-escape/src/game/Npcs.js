@@ -210,6 +210,13 @@ export class Npcs {
     this.goTo(n, { x, z, yaw, sit: true });
   }
 
+  snapSeats() {
+    for (const n of this.list) {
+      if (!n.wantSit && !n.wantLie && !n.wantLean) continue;
+      if (n.home) this.arrive(n, n.home.x, n.home.z);
+    }
+  }
+
   standAt(n, x, z, yaw) {
     this.goTo(n, { x, z, yaw, sit: false });
   }

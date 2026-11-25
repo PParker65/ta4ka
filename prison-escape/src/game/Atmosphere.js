@@ -4,6 +4,7 @@ import { LAYOUT } from './Prison.js';
 /** Where the player actually stands — intake compound, walking cage, cell, or hall. */
 export function placeOf(pos) {
   if (pos.z < -53) return 'intake';
+  if (pos.z < -2.2) return 'proc';
   if (pos.z > LAYOUT.corridorLen - 0.6) return 'yard';
   if (pos.x > 1.55) return 'cell';
   return 'hall';
@@ -62,15 +63,41 @@ export function moodFor(sim, place) {
 
   if (place === 'intake') {
     Object.assign(base, {
-      fogNear: 42,
-      fogFar: 155,
-      sunI: rain ? 0.55 : 1.35,
-      hemi: rain ? 0.7 : 1.05,
-      exposure: rain ? 0.92 : 1.18,
-      fill: 0.05,
-      sky: rain ? 0x6a7884 : 0x9aadb8,
-      bg: rain ? 0x6a7884 : 0x9aadb8,
-      fog: rain ? 0x6a7884 : 0x9aadb8,
+      rain: true,
+      fogNear: 28,
+      fogFar: 110,
+      sunI: 0.42,
+      hemi: 0.62,
+      exposure: 0.88,
+      fill: 0.04,
+      sky: 0x5a6874,
+      bg: 0x5a6874,
+      fog: 0x5a6874,
+      hemiSky: 0x9aa8b4,
+      hemiGround: 0x3a3c38,
+    });
+    return base;
+  }
+
+  if (place === 'proc') {
+    Object.assign(base, {
+      fog: 0x1a2220,
+      fogNear: 5,
+      fogFar: 18,
+      bg: 0x121816,
+      hemiSky: 0xd8ece8,
+      hemiGround: 0x2a3a38,
+      hemi: 0.55,
+      sun: 0xe8f4f0,
+      sunI: 0.12,
+      fill: 0.32,
+      fillColor: 0xd8f0ea,
+      exposure: 1.22,
+      bloom: 0.38,
+      env: 0.28,
+      hall: 0.85,
+      proc: 1.15,
+      hallColor: 0xe8f4f2,
     });
     return base;
   }
@@ -215,7 +242,7 @@ export function moodFor(sim, place) {
     return base;
   }
 
-  // hall / vestibule / сборник
+  // cell-block corridor
   if (ph === 'evening') {
     Object.assign(base, {
       fog: 0x100c0a,
@@ -228,6 +255,8 @@ export function moodFor(sim, place) {
       fillColor: 0xff9944,
       exposure: 0.58,
       bloom: 0.5,
+      hall: 0.55,
+      hallColor: 0xff9944,
     });
   } else {
     Object.assign(base, {
@@ -242,6 +271,8 @@ export function moodFor(sim, place) {
       fill: 0.2,
       exposure: 1.0,
       bloom: 0.2,
+      hall: 0.45,
+      hallColor: 0xf2ead0,
     });
   }
   return base;
@@ -285,13 +316,25 @@ export function applyMood(game, mood, place) {
   }
   if (prison.yardSky) prison.yardSky.material.color.setHex(mood.yardSky);
   if (prison.yardHemis) prison.yardHemis.material.color.setHex(mood.sky);
-  if (prison.rain) prison.rain.visible = mood.rain && place === 'intake';
+  if (prison.rain) prison.rain.visible = place === 'intake';
   if (prison.yardRain) prison.yardRain.visible = mood.rain && place === 'yard';
+  if (prison.hallLights) {
+    for (const l of prison.hallLights) {
+      l.intensity = mood.hall ?? 0.4;
+      l.color.setHex(mood.hallColor ?? 0xf2ead0);
+    }
+  }
+  if (prison.procLights) {
+    for (const l of prison.procLights) {
+      l.intensity = mood.proc ?? (place === 'proc' ? 1.0 : 0.22);
+      l.color.setHex(mood.hallColor ?? 0xe8f4f2);
+    }
+  }
   if (prison.windowShafts) {
     const on = place === 'cell' && phaseId(game.sim) !== 'shmon';
     for (const s of prison.windowShafts) {
       s.visible = on;
-      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.07 : 0.14;
+      s.material.opacity = phaseId(game.sim) === 'evening' ? 0.1 : 0.22;
       s.material.color.setHex(mood.windowTint);
     }
   }
@@ -312,6 +355,7 @@ export function weatherLabel(sim, place) {
     if (ph === 'food') return 'Хата · баландежка';
     return 'Хата · холодный свет';
   }
-  if (place === 'intake') return rain ? 'КПП · мокрый двор' : 'КПП · открытый двор';
-  return ph === 'evening' ? 'Коридор · ночь' : 'Коридор';
+  if (place === 'intake') return 'КПП · дождь';
+  if (place === 'proc') return ph === 'shmon' || sim.stage === 'shmon' ? 'Сборник · шмон' : 'Сборник · лампа';
+  return ph === 'evening' ? 'Коридор · натрий' : 'Коридор';
 }

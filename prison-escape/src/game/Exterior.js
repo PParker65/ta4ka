@@ -386,9 +386,16 @@ function addProcessing(prison) {
   const z0 = -28;
   const L = 52;
   const h = 3.1;
-  const floor = prison.mat(prison.tex.plaster, { roughness: 0.82, metalness: 0, env: 0.1, repeat: [3, 6] });
-  floor.color.set(0x8a8882);
+  const floor = prison.mat(prison.tex.plaster, { roughness: 0.38, metalness: 0.12, env: 0.18, repeat: [3, 6] });
+  floor.color.set(0x6a726c);
   prison.box(hw * 2 + 0.2, 0.06, L, floor, 0, 0.03, z0);
+  prison.procLights = prison.procLights || [];
+  for (let z = -50; z < -4; z += 5.4) {
+    const glow = new THREE.PointLight(0xe8f4f2, 0.7, 8.5, 1.7);
+    glow.position.set(0, 2.68, z);
+    prison.group.add(glow);
+    prison.procLights.push(glow);
+  }
 
   const wall = new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.9 });
   const dado = new THREE.MeshStandardMaterial({ color: 0x3a6a62, roughness: 0.75 });
@@ -2621,9 +2628,11 @@ function alcove(prison, x, z, title) {
   prison.box(2.4, 1.35, 0.05, darkBoard, 0.1, 1.95, 1.58, g);
   const farFace = (x < 0 ? -1 : 1) * 1.68;
   prison.box(0.08, 2.6, 2.8, darkBoard, farFace, 1.4, 0, g);
-  const lamp = new THREE.PointLight(0xf2ead0, 0.22, 4.6, 2.0);
+  const lamp = new THREE.PointLight(0xe8f4f2, 0.85, 5.4, 1.8);
   lamp.position.set(0, 2.45, 0);
   g.add(lamp);
+  prison.procLights = prison.procLights || [];
+  prison.procLights.push(lamp);
   const t = plaque(title, 1.2, 0.28);
   t.position.set(0, 2.55, 1.62);
   g.add(t);
