@@ -18,16 +18,16 @@ if (!existsSync(dist)) {
 rmSync(join(root, '.desktop-pack'), { recursive: true, force: true });
 mkdirSync(staging, { recursive: true });
 cpSync(dist, staging, { recursive: true });
-cpSync(join(root, 'desktop', 'Открыть СИЗО.command'), join(staging, 'Открыть СИЗО.command'));
-cpSync(join(root, 'desktop', 'Открыть СИЗО.bat'), join(staging, 'Открыть СИЗО.bat'));
+cpSync(join(root, 'desktop', 'START.command'), join(staging, 'START.command'));
+cpSync(join(root, 'desktop', 'START.bat'), join(staging, 'START.bat'));
 cpSync(join(root, 'desktop', 'README.txt'), join(staging, 'README.txt'));
-chmodSync(join(staging, 'Открыть СИЗО.command'), 0o755);
+chmodSync(join(staging, 'START.command'), 0o755);
 
 mkdirSync('/opt/cursor/artifacts', { recursive: true });
 execSync(`cd "${join(root, '.desktop-pack')}" && zip -r "${localZip}" "${outName}"`, { stdio: 'inherit' });
 cpSync(localZip, zipOut);
 writeFileSync(
   join('/opt/cursor/artifacts', `${outName}-HOW-TO.txt`),
-  `Скачай ${outName}.zip → распакуй на Рабочий стол → двойной клик «Открыть СИЗО.command» (Mac) или «Открыть СИЗО.bat» (Windows).\n`,
+  `Скачай ${outName}.zip → распакуй на Рабочий стол → двойной клик START.command (Mac) или START.bat (Windows).\n`,
 );
 console.log('packed', zipOut);
