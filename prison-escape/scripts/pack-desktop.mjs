@@ -22,6 +22,7 @@ cpSync(join(root, 'desktop', 'START.command'), join(staging, 'START.command'));
 cpSync(join(root, 'desktop', 'FIX-MAC.command'), join(staging, 'FIX-MAC.command'));
 cpSync(join(root, 'desktop', 'START.bat'), join(staging, 'START.bat'));
 cpSync(join(root, 'desktop', 'README.txt'), join(staging, 'README.txt'));
+cpSync(join(root, 'desktop', 'MAC-ТЕРМИНАЛ.txt'), join(staging, 'MAC-ТЕРМИНАЛ.txt'));
 chmodSync(join(staging, 'START.command'), 0o755);
 chmodSync(join(staging, 'FIX-MAC.command'), 0o755);
 

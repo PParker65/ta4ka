@@ -1,0 +1,3 @@
+Скопируй в Терминал одну строку (папка на Рабочем столе = SIZO-Hatka):
+
+cd ~/Desktop/SIZO-Hatka && xattr -cr . && (python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/sizo.log 2>&1 &) && sleep 1 && open -na "Google Chrome" --args --app="http://127.0.0.1:8765/"

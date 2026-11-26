@@ -1,13 +1,22 @@
-СИЗО · Хатка — Mac
+СИЗО · Хатка — Mac (без ярлыков .command)
 
-Если пишет «не удалось проверить на наличие вредоносного ПО» / «Apple не может проверить»:
+Двойной клик по .command на новых macOS часто блокируется.
+Делай так (надёжно):
 
-1. ПКМ (или Control+клик) по FIX-MAC.command → Открыть → Открыть
-2. Потом двойной клик по START.command
+1. Распакуй SIZO-Hatka.zip на Рабочий стол
+   (папка должна называться SIZO-Hatka)
 
-Или в Терминале одной строкой (подставь свой путь):
+2. Открой Программы → Утилиты → Терминал
 
-  xattr -cr ~/Desktop/SIZO-Hatka && open ~/Desktop/SIZO-Hatka/START.command
+3. Вставь целиком одну строку и Enter:
 
-Ярлык для игры: START.command
+cd ~/Desktop/SIZO-Hatka && xattr -cr . && (python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/sizo.log 2>&1 &) && sleep 1 && open -na "Google Chrome" --args --app="http://127.0.0.1:8765/"
+
+Если Chrome нет — эта строка:
+
+cd ~/Desktop/SIZO-Hatka && xattr -cr . && (python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/sizo.log 2>&1 &) && sleep 1 && open "http://127.0.0.1:8765/"
+
+Игра откроется в окне. Остановить: в Терминале Control+C
+или: kill $(lsof -t -iTCP:8765 -sTCP:LISTEN)
+
 Windows: START.bat
