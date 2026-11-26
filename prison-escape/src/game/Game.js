@@ -1638,10 +1638,23 @@ export class Game {
         this.player.shave?.();
         this.player.applyKazenka?.();
         this.hands.userData.setKazenka?.();
+        this.hands.visible = true;
         this.prison.openKpp();
         this.player.position.set(0, 0, -13.2);
         this.input.yaw = 0;
         this.input.pitch = 0.04;
+        this.introT = 22;
+        this._introHud = true;
+        this._introControl = true;
+        this._introOut = true;
+        this._introDoors = true;
+        this._introLook = true;
+        const fade = document.getElementById('fade');
+        if (fade) {
+          fade.style.opacity = '0';
+          fade.style.display = 'none';
+        }
+        document.getElementById('hud')?.classList.remove('hud-quiet');
         this.startEscort();
         return;
       } else if (at === 'neck') {
@@ -1981,37 +1994,30 @@ export class Game {
   stepEscort(dt) {
     const pts = this.escort.pts;
     const i = this.escort.i;
-    if (
-      i >= pts.length - 1 ||
-      (this.player.position.x > LAYOUT.corridorHalf + 1.15 && this.player.position.z > 4.0)
-    ) {
+    if (i >= pts.length - 1) {
       this.finishEscort();
       return;
     }
     const b = pts[i + 1];
     const dir = new THREE.Vector3(b.x - this.player.position.x, 0, b.z - this.player.position.z);
     const dist = dir.length();
-    if (dist < 0.22) {
+    if (dist < 0.18) {
       this.escort.i += 1;
       this.escortEvent(b.event);
       return;
     }
     dir.multiplyScalar(1 / dist);
-    const next = this.player.position.clone();
-    const step = Math.min(2.85 * dt, dist);
-    next.x += dir.x * step;
-    next.z += dir.z * step;
-    this.player.position.x = next.x;
-    this.player.position.z = next.z;
-    if (!this.escort.freeLook) {
-      const want = Math.atan2(dir.x, dir.z);
-      let d = want - this.input.yaw;
-      while (d > Math.PI) d -= Math.PI * 2;
-      while (d < -Math.PI) d += Math.PI * 2;
-      this.input.yaw += d * Math.min(1, dt * 3.2);
-      this.input.pitch += (0.04 - this.input.pitch) * Math.min(1, dt * 2.6);
-    }
-    this.npcs.followEscort(this.player.position, this.input.yaw);
+    const step = Math.min(2.35 * dt, dist);
+    this.player.position.x += dir.x * step;
+    this.player.position.z += dir.z * step;
+    // Always face the walk — never enter the door sideways.
+    const want = Math.atan2(dir.x, dir.z);
+    let d = want - this.input.yaw;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    this.input.yaw += d * Math.min(1, dt * 4.2);
+    this.input.pitch += (0.02 - this.input.pitch) * Math.min(1, dt * 2.6);
+    this.npcs.followEscort(this.player.position, this.input.yaw, true);
   }
 
   escortEvent(ev) {
@@ -2036,8 +2042,7 @@ export class Game {
       const col = this.prison.colliders.find((c) => c.id === door?.colliderId);
       if (col) col.active = false;
       this.audio.clang();
-      this.subtitle('Конвой: «Четвёртая. Заходи в дверь. Не боком — через порог.»');
-      if (this.escort) this.escort.freeLook = true;
+      this.subtitle('Конвой: «Четвёртая. Через порог. Руки вперёд — наручники до хаты.»');
     }
   }
 
@@ -2045,9 +2050,11 @@ export class Game {
     if (this.escort) return;
     this.sim.stage = 'escort';
     this.sim.cuffed = true;
+    this.sim.locked = true;
     this.guide = null;
     const spawn = this.prison.cellSpawn;
-    const origin = this.prison.cellOrigin;
+    const doorZ = 3.4;
+    const hw = LAYOUT.corridorHalf;
     this.escort = {
       i: 0,
       stuck: 0,
@@ -2058,23 +2065,22 @@ export class Game {
         { x: 0, z: -0.85, event: 'block' },
         { x: 0, z: 1.2, event: 'doors' },
         { x: 0, z: 2.45, event: 'voice' },
-        { x: 0, z: 3.2, event: 'cell' },
-        { x: LAYOUT.corridorHalf + 0.12, z: 3.4 },
-        { x: LAYOUT.corridorHalf + 1.05, z: 3.45 },
+        { x: 0, z: doorZ },
+        { x: hw - 0.35, z: doorZ, event: 'cell' },
+        { x: hw + 0.55, z: doorZ },
+        { x: hw + 1.45, z: doorZ },
+        { x: spawn.x, z: doorZ },
         { x: spawn.x, z: spawn.z },
-        { x: origin.x - 0.6, z: origin.z },
       ],
     };
     for (const n of this.npcs.list) {
       if (n.follow == null) continue;
       n.gone = false;
       n.root.visible = true;
-      const side = n.follow === 0 ? 0.65 : -0.65;
-      n.root.position.set(this.player.position.x + side, 0, this.player.position.z - 0.9);
+      const side = n.follow === 0 ? 0.55 : -0.55;
+      n.root.position.set(this.player.position.x + side, 0, this.player.position.z + 1.1);
     }
     this.prison.openDoor(this.prison.blockDoor);
-    const cellDoor = this.prison.interactables.find((it) => it.type === 'cell-door');
-    if (cellDoor) this.prison.openDoor(cellDoor);
     this.subtitle('Конвой: «Хату четыре. Шагом. Голову не поднимай без команды.»');
     this.audio.voiceOnce('cell', 'Хату четыре. Шагом.', 'Конвой');
     this.audio.clang();
@@ -2083,8 +2089,9 @@ export class Game {
   finishEscort() {
     this.escort = null;
     if (this.wishVel) this.wishVel.set(0, 0, 0);
-    if (this.player.position.x < LAYOUT.corridorHalf + 0.9) {
-      this.player.position.copy(this.prison.cellSpawn);
+    const spawn = this.prison.cellSpawn;
+    if (this.player.position.x < LAYOUT.corridorHalf + 0.5) {
+      this.player.position.set(spawn.x, 0, spawn.z);
     }
     this.sim.cuffed = false;
     this.sim.locked = false;
@@ -2094,7 +2101,8 @@ export class Game {
     if (shut?.open) this.prison.closeDoor(shut);
     this.input.yaw = Math.PI / 2;
     this.input.pitch = 0;
-    this.subtitle('Ты зашёл через дверь. Теперь хата — не конвой.');
+    this.npcs.dismissConvoy?.();
+    this.subtitle('Конвой снял наручники у порога. Хата теперь твоя.');
     this.audio.clang();
     this.cellLife.begin();
   }

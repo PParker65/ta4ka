@@ -76,7 +76,7 @@ export function makeHands() {
     new THREE.MeshStandardMaterial({ color: 0x8a9094, metalness: 0.82, roughness: 0.28 }),
   );
   cuff.name = 'Cuffs';
-  cuff.position.set(0, -0.24, -0.34);
+  cuff.position.set(0, -0.14, -0.26);
   cuff.rotation.y = Math.PI / 2;
   g.add(cuff);
   const chain = new THREE.Mesh(
@@ -84,7 +84,7 @@ export function makeHands() {
     new THREE.MeshStandardMaterial({ color: 0x6a7074, metalness: 0.7, roughness: 0.35 }),
   );
   chain.name = 'Cuffs';
-  chain.position.set(0, -0.24, -0.34);
+  chain.position.set(0, -0.14, -0.26);
   chain.rotation.z = Math.PI / 2;
   g.add(chain);
 
@@ -104,8 +104,10 @@ export function makeHands() {
       arm.rotation.x = 0.18 + swing;
       arm.position.y = -0.24 + Math.abs(Math.sin(t * freq)) * mag * 0.01;
       if (cuffed) {
-        arm.position.x = s * 0.11;
-        arm.rotation.z = -s * 0.16;
+        arm.position.x = s * 0.08;
+        arm.position.y = -0.14;
+        arm.rotation.z = -s * 0.22;
+        arm.rotation.x = 0.42 + swing * 0.35;
       } else {
         arm.position.x = s * 0.22;
         arm.rotation.z = 0;

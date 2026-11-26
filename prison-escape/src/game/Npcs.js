@@ -360,16 +360,20 @@ export class Npcs {
     }
   }
 
-  followEscort(player, yaw, t) {
+  followEscort(player, yaw, lead = false) {
     for (const n of this.list) {
-      if (n.follow == null) continue;
-      const side = n.follow === 0 ? 0.7 : -0.7;
-      const back = 0.85;
-      const tx = player.x + Math.cos(yaw) * side - Math.sin(yaw) * back;
-      const tz = player.z - Math.sin(yaw) * side - Math.cos(yaw) * back;
-      n.root.position.x += (tx - n.root.position.x) * 0.12;
-      n.root.position.z += (tz - n.root.position.z) * 0.12;
+      if (n.follow == null || n.gone) continue;
+      const side = n.follow === 0 ? 0.55 : -0.55;
+      // Lead in front of the player so guards walk you in, not trail behind.
+      const along = lead ? (n.follow === 0 ? 1.25 : 0.7) : -0.85;
+      const fx = Math.sin(yaw);
+      const fz = Math.cos(yaw);
+      const tx = player.x + fx * along + Math.cos(yaw) * side;
+      const tz = player.z + fz * along - Math.sin(yaw) * side;
+      n.root.position.x += (tx - n.root.position.x) * 0.16;
+      n.root.position.z += (tz - n.root.position.z) * 0.16;
       n.root.rotation.y = yaw;
+      n.root.visible = true;
     }
   }
 
