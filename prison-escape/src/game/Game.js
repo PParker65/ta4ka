@@ -27,7 +27,8 @@ export class Game {
   constructor(canvas) {
     this.canvas = canvas;
     this.mobile = isMobile();
-    this.lowEnd = this.mobile || (navigator.hardwareConcurrency || 4) <= 4;
+    // Playable first: bloom/shadows/high DPR made remote play stutter and look broken.
+    this.lowEnd = true;
     this.alarm = false;
     this.alarmHold = 0;
     this.clock = new THREE.Clock();
@@ -44,11 +45,11 @@ export class Game {
     window.speechSynthesis?.cancel();
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: !this.mobile,
+      antialias: false,
       powerPreference: 'high-performance',
-      logarithmicDepthBuffer: true,
+      logarithmicDepthBuffer: false,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.mobile ? 1.15 : 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.1));
     this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -65,9 +66,11 @@ export class Game {
     this.camera.add(this.hands);
     this.scene.add(this.camera);
 
-    const pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
-    if ('environmentIntensity' in this.scene) this.scene.environmentIntensity = 0.22;
+    if (!this.lowEnd) {
+      const pmrem = new THREE.PMREMGenerator(this.renderer);
+      this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
+      if ('environmentIntensity' in this.scene) this.scene.environmentIntensity = 0.22;
+    }
 
     this.hemi = new THREE.HemisphereLight(0xd8e4ee, 0x6a6050, 0.9);
     this.scene.add(this.hemi);
@@ -1675,14 +1678,17 @@ export class Game {
   }
 
   setupComposer() {
+    if (this.lowEnd) {
+      this.composer = null;
+      this.bloomPass = null;
+      return;
+    }
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    if (!this.lowEnd) {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      this.bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.22, 0.42, 0.84);
-      this.composer.addPass(this.bloomPass);
-    }
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(w, h), 0.22, 0.42, 0.84);
+    this.composer.addPass(this.bloomPass);
     this.composer.addPass(new OutputPass());
   }
 
@@ -1723,6 +1729,40 @@ export class Game {
       e.stopPropagation();
       this.openTalk();
     });
+    this.input.onEscape = () => this.togglePause(true);
+    document.getElementById('btn-menu')?.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      this.togglePause(true);
+    });
+    document.getElementById('btn-pause-continue')?.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      this.togglePause(false);
+    });
+    document.getElementById('btn-pause-restart')?.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      location.href = location.pathname + (location.search || '') + location.hash;
+      location.reload();
+    });
+    document.getElementById('btn-pause-close')?.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      document.exitPointerLock?.();
+      window.close();
+      this.toast('Закрой вкладку сам — браузер не даёт закрыть её скриптом.');
+    });
+  }
+
+  togglePause(open) {
+    const el = document.getElementById('pause-menu');
+    if (!el) return;
+    const show = open === true ? true : open === false ? false : el.classList.contains('hidden');
+    if (show) {
+      document.exitPointerLock?.();
+      el.classList.remove('hidden');
+      el.classList.add('flex');
+    } else {
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
   }
 
   onResize() {
@@ -1731,7 +1771,7 @@ export class Game {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    this.composer.setSize(w, h);
+    this.composer?.setSize(w, h);
   }
 
   loop() {
@@ -1739,8 +1779,9 @@ export class Game {
     const dt = Math.min(this.escort ? 0.4 : 0.05, raw);
     this.tick(dt);
     updateFlickerMaterials(this.prison.flickerMats, this.clock.elapsedTime, this.alarm);
-    if (this.clock.elapsedTime % 0.25 < dt + 0.002) this.cctv.renderFeeds(this.scene);
-    this.composer.render();
+    if (!this.lowEnd && this.clock.elapsedTime % 0.25 < dt + 0.002) this.cctv.renderFeeds(this.scene);
+    if (this.composer) this.composer.render();
+    else this.renderer.render(this.scene, this.camera);
     this.syncHud();
   }
 
@@ -1748,6 +1789,7 @@ export class Game {
     if (this.dialog.open || this.minigames.open || this.chat.open) return true;
     if (!document.getElementById('shmon-ui').classList.contains('hidden')) return true;
     if (!document.getElementById('shop').classList.contains('hidden')) return true;
+    if (!document.getElementById('pause-menu')?.classList.contains('hidden')) return true;
     return false;
   }
 

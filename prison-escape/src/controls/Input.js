@@ -84,7 +84,9 @@ export class Input {
   }
 
   overlay(e) {
-    return e.target.closest('button, input, textarea, #dialog, #shop, #shmon-ui, #cards, #rope, #boot, #chat');
+    return e.target.closest(
+      'button, input, textarea, #dialog, #shop, #shmon-ui, #cards, #rope, #boot, #chat, #pause-menu',
+    );
   }
 
   onLock() {
@@ -147,7 +149,10 @@ export class Input {
     }
     if ((e.code === 'KeyE' || e.code === 'Space' || e.code === 'KeyF') && !e.repeat) this.interactPulse = true;
     if (e.code === 'KeyT' && !e.repeat) this.talkPulse = true;
-    if (e.code === 'Escape' && this.locked) document.exitPointerLock?.();
+    if (e.code === 'Escape') {
+      document.exitPointerLock?.();
+      this.onEscape?.();
+    }
   }
 
   onKeyUp(e) {

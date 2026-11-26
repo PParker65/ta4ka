@@ -92,6 +92,13 @@
 
         <div class="pointer-events-auto absolute bottom-[22px] right-[12px] flex flex-col gap-2">
           <button
+            id="btn-menu"
+            type="button"
+            class="min-h-[48px] min-w-[118px] rounded-full border border-zinc-200/70 bg-black/70 px-4 text-[16px] font-semibold text-zinc-50"
+          >
+            Меню
+          </button>
+          <button
             id="btn-talk"
             type="button"
             class="min-h-[48px] min-w-[118px] rounded-full border border-sky-500/70 bg-black/55 px-4 text-[16px] font-semibold text-sky-100"
@@ -211,6 +218,35 @@
             <button type="submit" class="min-h-[48px] rounded-lg bg-sky-700 px-3 text-[16px] text-white">Ок</button>
           </form>
         </div>
+      </div>
+
+      <div
+        id="pause-menu"
+        class="absolute inset-0 z-[25] hidden flex-col items-center justify-center bg-black/85 px-6 text-center"
+      >
+        <p class="mb-2 font-mono text-[14px] tracking-[0.25em] text-amber-500">ПАУЗА</p>
+        <p class="mb-6 max-w-sm text-[16px] text-zinc-400">Мышь свободна. Можно закрыть вкладку.</p>
+        <button
+          id="btn-pause-continue"
+          type="button"
+          class="mb-3 min-h-[52px] min-w-[220px] rounded-full bg-amber-600 px-6 text-[16px] font-semibold text-black"
+        >
+          Продолжить
+        </button>
+        <button
+          id="btn-pause-restart"
+          type="button"
+          class="mb-3 min-h-[48px] min-w-[220px] rounded-full border border-zinc-500 bg-black/60 px-6 text-[16px] text-zinc-100"
+        >
+          В начало
+        </button>
+        <button
+          id="btn-pause-close"
+          type="button"
+          class="min-h-[48px] min-w-[220px] rounded-full border border-red-500/60 bg-black/60 px-6 text-[16px] text-red-100"
+        >
+          Закрыть вкладку
+        </button>
       </div>
 
       <div
