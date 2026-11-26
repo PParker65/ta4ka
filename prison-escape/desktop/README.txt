@@ -1,9 +1,13 @@
-СИЗО · Хатка
+СИЗО · Хатка — Mac
 
-1. Распакуй папку SIZO-Hatka на Рабочий стол.
-2. Двойной клик ТОЛЬКО по файлу:
+Если пишет «не удалось проверить на наличие вредоносного ПО» / «Apple не может проверить»:
 
-   START.command     ← Mac
-   START.bat         ← Windows
+1. ПКМ (или Control+клик) по FIX-MAC.command → Открыть → Открыть
+2. Потом двойной клик по START.command
 
-Если Mac пишет «нельзя открыть»: ПКМ по START.command → Открыть → Открыть.
+Или в Терминале одной строкой (подставь свой путь):
+
+  xattr -cr ~/Desktop/SIZO-Hatka && open ~/Desktop/SIZO-Hatka/START.command
+
+Ярлык для игры: START.command
+Windows: START.bat
